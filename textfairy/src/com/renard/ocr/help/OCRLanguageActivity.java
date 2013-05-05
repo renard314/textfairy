@@ -71,6 +71,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
 						File extDir = Environment.getExternalStorageDirectory();
 						File tessDir = new File(extDir, Util.OCR_DATA_DIRECTORY);
 						request.setDestinationUri(Uri.fromFile(tessDir));
+						@SuppressWarnings("unused")
 						long downloadId = dm.enqueue(request);
 						// PreferencesUtils.pushDownloadId(OCRLanguageActivity.this,
 						// downloadId);
@@ -305,5 +306,12 @@ public class OCRLanguageActivity extends MonitoredActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	}
+
 
 }

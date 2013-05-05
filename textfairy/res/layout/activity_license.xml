@@ -19,7 +19,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/textView_description"
+        android:id="@+id/textView_tesseract_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/tesseract_ocr_summary"
@@ -28,6 +28,8 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:background="@color/dark_grey" />
 
     <TextView
@@ -35,9 +37,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:gravity="left|center_vertical"
         android:text="@string/leptonica_title"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView_leptonica_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/leptonica_summary"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="@color/dark_grey" />
+
+    <TextView
+        android:id="@+id/textView_hocr2pdf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:gravity="left|center_vertical"
+        android:text="@string/hocr2pdf_title"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView_hocr2pdf_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hocr2pdf_summary"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </LinearLayout>

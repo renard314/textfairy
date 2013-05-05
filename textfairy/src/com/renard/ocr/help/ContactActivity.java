@@ -15,6 +15,7 @@ public class ContactActivity extends MonitoredActivity {
 		setContentView(R.layout.activity_contact);
 		// Show the Up button in the action bar.
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		
 	}
 
 	@Override
@@ -32,6 +33,12 @@ public class ContactActivity extends MonitoredActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
 }

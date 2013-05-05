@@ -1,8 +1,8 @@
 package com.renard.ocr.help;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.support.v4.app.NavUtils;
@@ -19,7 +19,11 @@ import com.renard.ocr.cropimage.MonitoredActivity;
  * @author renard
  * 
  */
-public class AppOptionsActivity extends SherlockPreferenceActivity implements BaseActivityInterface {
+public class AppOptionsActivity extends SherlockPreferenceActivity implements
+		BaseActivityInterface {
+	
+    private static final String MARKET_URL            = "market://details?id=com.renard.ocr";
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,30 +32,35 @@ public class AppOptionsActivity extends SherlockPreferenceActivity implements Ba
 		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
 		final Preference languagePreference = findPreference(getString(R.string.pref_key_default_ocr_lang));
-		languagePreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				startActivity(new Intent(AppOptionsActivity.this, OCRLanguageActivity.class));
-				return true;
-			}
-		});
+		languagePreference
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+					@Override
+					public boolean onPreferenceClick(Preference preference) {
+						startActivity(new Intent(AppOptionsActivity.this,
+								OCRLanguageActivity.class));
+						return true;
+					}
+				});
 
 		final Preference helpPreference = findPreference(getString(R.string.pref_key_help));
-		helpPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		helpPreference
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				startActivity(new Intent(AppOptionsActivity.this, HelpActivity.class));
-				return true;
-			}
-		});
+					@Override
+					public boolean onPreferenceClick(Preference preference) {
+						startActivity(new Intent(AppOptionsActivity.this,
+								HelpActivity.class));
+						return true;
+					}
+				});
 
 		final Preference contact = findPreference(getString(R.string.pref_key_contact));
 		contact.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				startActivity(new Intent(AppOptionsActivity.this, ContactActivity.class));
+				startActivity(new Intent(AppOptionsActivity.this,
+						ContactActivity.class));
 				return true;
 			}
 		});
@@ -61,10 +70,25 @@ public class AppOptionsActivity extends SherlockPreferenceActivity implements Ba
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				startActivity(new Intent(AppOptionsActivity.this, LicenseActivity.class));
+				startActivity(new Intent(AppOptionsActivity.this,
+						LicenseActivity.class));
 				return true;
 			}
 		});
+		
+		final Preference rate = findPreference(getString(R.string.pref_key_rate));
+		rate.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+			     Intent intent = new Intent(Intent.ACTION_VIEW);
+			        Uri url = Uri.parse(MARKET_URL);
+			        intent.setData(url);
+			        startActivity(intent);				
+			        return true;
+			}
+		});
+
 
 		MonitoredActivity.initAppIcon(this, -1);
 	}
@@ -72,7 +96,8 @@ public class AppOptionsActivity extends SherlockPreferenceActivity implements Ba
 	@Override
 	protected void onPause() {
 		super.onPause();
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		overridePendingTransition(android.R.anim.fade_in,
+				android.R.anim.fade_out);
 	}
 
 	@Override

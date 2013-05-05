@@ -16,11 +16,13 @@ public class LicenseActivity extends MonitoredActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_license);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
-		TextView leptonica  = (TextView) findViewById(R.id.textView_leptonica);
-		TextView tesseract  = (TextView) findViewById(R.id.textView_tesseract);
+
+		TextView leptonica = (TextView) findViewById(R.id.textView_leptonica);
+		TextView tesseract = (TextView) findViewById(R.id.textView_tesseract);
+		TextView hocr2pdf = (TextView) findViewById(R.id.textView_hocr2pdf);
 		leptonica.setMovementMethod(new LinkMovementMethod());
 		tesseract.setMovementMethod(new LinkMovementMethod());
+		hocr2pdf.setMovementMethod(new LinkMovementMethod());
 	}
 
 	@Override
@@ -31,6 +33,13 @@ public class LicenseActivity extends MonitoredActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		overridePendingTransition(android.R.anim.fade_in,
+				android.R.anim.fade_out);
 	}
 
 }

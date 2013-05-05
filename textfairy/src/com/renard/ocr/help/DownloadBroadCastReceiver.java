@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.renard.util.PreferencesUtils;
-
 public class DownloadBroadCastReceiver extends BroadcastReceiver {
 	private static final String LOG_TAG = DownloadBroadCastReceiver.class.getSimpleName();
 

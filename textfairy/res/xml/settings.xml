@@ -46,5 +46,10 @@
         android:summary="@string/pref_summary_license"
         android:title="@string/pref_title_license" >
     </Preference>
-
+    <Preference
+        android:key="@string/pref_key_rate"
+        android:summary="@string/pref_summary_rate"
+        android:title="@string/pref_title_rate" >
+    </Preference>
+    
 </PreferenceScreen>
