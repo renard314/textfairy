@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <color name="dark_grey">#ff333333</color>
+    <color name="grey2">#555555</color>
+    <color name="grey3">#777777</color>
+    <color name="grey5">#AAAAAA</color>
+    <color name="grey6">#DDDDDD</color>
+	<color name="progress_color">#ff33b5e5</color>  
+	<color name="circle_indicator_background">#66000000</color>  
+	
+	<color name="drop_shadow_start">#FFF3F3F3</color>
+    <color name="drop_shadow_end">#00000000</color>
+    <color name="start_activity_buttons_background">#ff3c3c3c</color>
+    	
+	<color name="bright_foreground_disabled_holo_dark">#ff4c4c4c</color>
+	<color name="bright_foreground_holo_dark">#fff3f3f3</color>
+	
+		
+</resources>

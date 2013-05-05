@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="ocr_languages">
+        <item>eng English</item>
+        <item>ukr Ukrainian</item>
+        <item>tur Turkish</item>
+        <item>tha Thai</item>
+        <item>tgl Tagalog</item>
+        <item>tel Telugu</item>
+        <item>tam Tamil</item>
+        <item>swe Swedish</item>
+        <item>swa Swahili</item>
+        <item>srp Serbian (Latin)</item>
+        <item>sqi Albanian</item>
+        <item>spa Spanish</item>
+        <item>slv Slovenian</item>
+        <item>slk Slovakian</item>
+        <item>ron Romanian</item>
+        <item>por Portuguese</item>
+        <item>pol Polish</item>
+        <item>nor Norwegian</item>
+        <item>nld Dutch</item>
+        <item>msa Malay</item>
+        <item>mlt Maltese</item>
+        <item>mkd Macedonian</item>
+        <item>mal Malayalam</item>
+        <item>lit Lithuanian</item>
+        <item>lav Latvian</item>
+        <item>kor Korean</item>
+        <item>kan Kannada</item>
+        <item>ita Italian</item>
+        <item>isl Icelandic</item>
+        <item>ind Indonesian</item>
+        <item>chr Cherokee</item>
+        <item>hun Hungarian</item>
+        <item>hrv Croatian</item>
+        <item>hin Hindi</item>
+        <item>heb Hebrew</item>
+        <item>glg Galician</item>
+        <item>frk Frankish</item>
+        <item>fra French</item>
+        <item>fin Finnish</item>
+        <item>eus Basque</item>
+        <item>est Estonian</item>
+        <item>equ Math / equation</item>
+        <item>epo Esperanto</item>
+        <item>ell Greek</item>
+        <item>deu German</item>
+        <item>dan Danish</item>
+        <item>ces Czech</item>
+        <item>cat Catalan</item>
+        <item>bul Bulgarian</item>
+        <item>ben Bengali</item>
+        <item>bel Belarusian</item>
+        <item>aze Azerbaijani</item>
+        <item>ara Arabic</item>
+        <item>afr Afrikaans</item>
+        <item>jpn Japanese</item>
+        <item>chi_sim Chinese (Simplified)</item>
+        <item>chi_tra Chinese (Traditional)</item>
+        <item>grc Ancient Greek</item>
+        <item>rus Russian</item>
+        <item>vie Vietnamese</item>
+    </string-array>
+    <string-array name="start_activity_texts">
+        <item>@string/start_text_1</item>
+        <item>@string/start_text_2</item>
+        <item>@string/start_text_3</item>
+        <item>@string/start_text_4</item>
+        <item>@string/start_text_5</item>
+        <item>@string/start_text_6</item>
+        <item>@string/start_text_7</item>
+        <item>@string/start_text_8</item>
+        <item>@string/start_text_9</item>
+        <item>@string/start_text_10</item>
+        <item>@string/start_text_11</item>
+        <item>@string/start_text_12</item>
+        <item>@string/start_text_13</item>
+        <item>@string/start_text_14</item>
+        <item>@string/start_text_15</item>
+        <item>@string/start_text_16</item>
+        <item>@string/start_text_17</item>
+        <item>@string/start_text_18</item>
+        <item>@string/start_text_19</item>
+        <item>@string/start_text_20</item>
+        <item>@string/start_text_21</item>
+    </string-array>
+
+</resources>

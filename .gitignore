@@ -1,0 +1,11 @@
+.settings/
+.svn/
+.*/
+.DS_Store
+obj/
+bin/
+gen/
+armeabi*/
+x86/
+*.o
+*.a

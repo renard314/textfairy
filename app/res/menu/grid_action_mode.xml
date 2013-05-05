@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item
+        android:id="@+id/item_edit_title"
+        android:title="@string/edit_title"
+        android:icon="@drawable/ic_action_edit"
+        android:showAsAction="always">
+    </item>
+    <item
+        android:id="@+id/item_join"
+        android:title="@string/join"
+        android:icon="@drawable/ic_action_merge"
+        android:showAsAction="always">
+    </item>
+    <item
+        android:id="@+id/item_export_as_pdf"
+        android:title="@string/export_as_pdf"
+        android:icon="@drawable/ic_action_pdf"
+        android:showAsAction="always">
+    </item>
+    <item
+        android:id="@+id/item_delete"
+        android:title="@string/delete"
+        android:icon="@drawable/ic_action_delete"
+        android:showAsAction="always">
+    </item>
+</menu>

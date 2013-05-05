@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="min_grid_size">50mm</dimen>
+    <dimen name="grid_spacing">8dip</dimen>
+    <dimen name="caption_text_size">24sp</dimen>
+</resources>

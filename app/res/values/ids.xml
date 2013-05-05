@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ 
+ -->
+<resources>
+  <!-- Messages IDs -->
+  <item type="id" name="assetsmanager_installingdone"/>
+  <item type="id" name="assetsmanager_installingcorrupted"/>
+  <item type="id" name="installactivity_killApp"/>  
+  <item type="id" name="document_fragment_container"/>  
+</resources>

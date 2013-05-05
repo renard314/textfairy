@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_key_default_ocr_lang">pref_key_default_ocr_lang</string>
+    <string name="pref_summary_default_ocr_lang">pref_summary_default_ocr_lang</string>
+    <string name="pref_title_default_ocr_lang">pref_title_default_ocr_lang</string>
+    <string name="pref_key_help">pref_key_help</string>
+    <string name="pref_key_contact">pref_key_contact</string>
+    <string name="pref_key_license">pref_key_license</string>    
+</resources>

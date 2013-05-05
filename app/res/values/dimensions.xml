@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="min_grid_size">20mm</dimen>
+    <dimen name="grid_spacing">9dip</dimen>
+    <dimen name="caption_text_size">16sp</dimen>
+    <dimen name="dropshadow_padding_left">5px</dimen>
+    <dimen name="dropshadow_padding_right">9px</dimen>
+    <dimen name="dropshadow_padding_top">4px</dimen>
+    <dimen name="dropshadow_padding_bottom">9px</dimen>
+
+</resources>

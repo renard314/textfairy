@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!--
+    <ListPreference
+        android:key="@string/pref_key_default_ocr_lang"
+        android:entries="@array/ocr_languages_display"
+        android:entryValues="@array/ocr_languages"
+        android:defaultValue="eng"
+        android:title="@string/pref_title_default_ocr_lang"
+        android:dialogTitle="@string/pref_title_default_ocr_lang" />
+    -->
+    <Preference
+        android:key="@string/pref_key_default_ocr_lang"
+        android:summary="@string/pref_summary_default_ocr_lang"
+        android:title="@string/pref_title_default_ocr_lang" >
+
+        <!--
+        does not work!
+        <intent
+             android:action="android.intent.action.VIEW"
+             android:targetPackage="com.renard.ocr.help"
+             android:targetClass="com.renard.ocr.help.HelpActivity" />
+        -->
+    </Preference>
+    <Preference
+        android:key="@string/pref_key_help"
+        android:summary="@string/pref_summary_help"
+        android:title="@string/pref_title_help" >
+
+        <!--
+        does not work!
+        <intent
+             android:action="android.intent.action.VIEW"
+             android:targetPackage="com.renard.ocr.help"
+             android:targetClass="com.renard.ocr.help.HelpActivity" />
+        -->
+    </Preference>
+    <Preference
+        android:key="@string/pref_key_contact"
+        android:summary="@string/pref_summary_contact"
+        android:title="@string/pref_title_contact" >
+    </Preference>
+    <Preference
+        android:key="@string/pref_key_license"
+        android:summary="@string/pref_summary_license"
+        android:title="@string/pref_title_license" >
+    </Preference>
+
+</PreferenceScreen>
