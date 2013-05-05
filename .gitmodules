@@ -1,0 +1,12 @@
+[submodule "ViewPager3D"]
+	path = ViewPager3D
+	url = https://github.com/renard314/ViewPager3D
+[submodule "ActionBarSherlock"]
+	path = ActionBarSherlock
+	url = git://github.com/JakeWharton/ActionBarSherlock.git
+[submodule "NineOldAndroids"]
+	path = NineOldAndroids
+	url = git://github.com/JakeWharton/NineOldAndroids.git
+[submodule "Android-ViewPagerIndicator"]
+	path = Android-ViewPagerIndicator
+	url = git://github.com/JakeWharton/Android-ViewPagerIndicator.git

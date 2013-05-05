@@ -26,9 +26,8 @@ import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.R;
 import com.renard.util.PreferencesUtils;
-import com.viewpagerindicator.TitleProvider;
 
-public class DocumentAdapter extends PagerAdapter implements TitleProvider {
+public class DocumentAdapter extends PagerAdapter {
 	private Set<Integer> mChangedDocuments = new HashSet<Integer>();
 	private SparseArray<Spanned> mSpannedTexts = new SparseArray<Spanned>();
 	private SparseArray<CharSequence> mChangedTexts = new SparseArray<CharSequence>();
@@ -136,9 +135,5 @@ public class DocumentAdapter extends PagerAdapter implements TitleProvider {
 		return null;
 	}
 
-	@Override
-	public String getTitle(int position) {
-		return String.valueOf(position + 1);
-	}
 
 }
