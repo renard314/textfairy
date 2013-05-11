@@ -81,30 +81,27 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 	private final static int REQUEST_CODE_CROP_PHOTO = 2;
 	protected final static int REQUEST_CODE_OCR = 3;
 
-	// reference to image data taken by camera. this way I can avoid passing
-	// image bytes via setResult().
-	// public static byte[] imageData = null;
-	public static File sImageFile = null;
-
 	protected abstract int getParentId();
 
 	ProgressDialog pdfProgressDialog;
 	ProgressDialog deleteProgressdialog;
 
+	private File getTmpPhotoFile() {
+		return new File(Environment.getExternalStorageDirectory(), "TmpPic.jpg");
+	}
+
 	protected void startCamera() {
 		Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-		File photo = new File(Environment.getExternalStorageDirectory(), "TmpPic.jpg");
+		File photo = getTmpPhotoFile();
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
-		sImageFile = photo;
 		startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
 	}
 
 	protected void startGallery() {
 		Intent i = new Intent(Intent.ACTION_GET_CONTENT, null);
 		i.setType("image/*");
-		File photo = new File(Environment.getExternalStorageDirectory(), "TmpPic.jpg");
+		File photo = getTmpPhotoFile();
 		i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
-		sImageFile = photo;
 		startActivityForResult(i, REQUEST_CODE_PICK_PHOTO);
 	}
 
@@ -124,7 +121,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.base_document_activity_options, menu);
+		getSupportMenuInflater().inflate(R.menu.base_document_activity_options,
+				menu);
 		return true;
 	}
 
@@ -137,22 +135,27 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 				int nativePix = data.getIntExtra(EXTRA_NATIVE_PIX, 0);
 				Intent intent = new Intent(this, OCRActivity.class);
 				intent.putExtra(EXTRA_NATIVE_PIX, nativePix);
-				intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
+				intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID,
+						getParentId());
 				startActivityForResult(intent, REQUEST_CODE_OCR);
 
 				break;
 			}
 			case REQUEST_CODE_MAKE_PHOTO: {
 				int[] degree = new int[1];
-				/* also gets rotation info from exif data */
-				p = readImageFromFile(sImageFile, degree);
-				File photo = new File(Environment.getExternalStorageDirectory(), "TmpPic.jpg");
-				photo.delete();
-				if (p != null) {
-					Intent intent = new Intent(this, CropImage.class);
-					intent.putExtra(EXTRA_NATIVE_PIX, p.getNativePix());
-					intent.putExtra(EXTRA_ROTATION, degree[0]);
-					startActivityForResult(intent, REQUEST_CODE_CROP_PHOTO);
+				File photo = getTmpPhotoFile();
+				if (photo.exists()) {
+					/* also gets rotation info from exif data */
+					p = readImageFromFile(photo, degree);
+					photo.delete();
+					if (p != null) {
+						Intent intent = new Intent(this, CropImage.class);
+						intent.putExtra(EXTRA_NATIVE_PIX, p.getNativePix());
+						intent.putExtra(EXTRA_ROTATION, degree[0]);
+						startActivityForResult(intent, REQUEST_CODE_CROP_PHOTO);
+					} else {
+						showFileError();
+					}
 				} else {
 					showFileError();
 				}
@@ -212,7 +215,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 				options.inScaled = false;
 				is = getContentResolver().openInputStream(imageUri);
-				final Bitmap bitmap = BitmapFactory.decodeStream(is, null, options);
+				final Bitmap bitmap = BitmapFactory.decodeStream(is, null,
+						options);
 				if (bitmap != null) {
 					final Pix p = ReadFile.readBitmap(bitmap);
 					bitmap.recycle();
@@ -262,29 +266,34 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			deleteProgressdialog.setMessage(message);
 			deleteProgressdialog.setIndeterminate(false);
 			deleteProgressdialog.setMax(max);
-			deleteProgressdialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			deleteProgressdialog
+					.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			deleteProgressdialog.setCancelable(false);
 			return deleteProgressdialog;
 		case EDIT_TITLE_DIALOG_ID:
-			View layout = getLayoutInflater().inflate(R.layout.edit_title_dialog, null);
-			final Uri documentUri = Uri.parse(args.getString(DIALOG_ARG_DOCUMENT_URI));
+			View layout = getLayoutInflater().inflate(
+					R.layout.edit_title_dialog, null);
+			final Uri documentUri = Uri.parse(args
+					.getString(DIALOG_ARG_DOCUMENT_URI));
 			final String oldTitle = args.getString(DIALOG_ARG_TITLE);
-			final EditText edit = (EditText) layout.findViewById(R.id.edit_title);
+			final EditText edit = (EditText) layout
+					.findViewById(R.id.edit_title);
 			edit.setText(oldTitle);
 
 			AlertDialog.Builder builder = new Builder(this);
 			builder.setView(layout);
 			builder.setTitle(R.string.edit_dialog_title);
 			builder.setIcon(R.drawable.fairy_showing);
-			builder.setPositiveButton(android.R.string.ok, new OnClickListener() {
+			builder.setPositiveButton(android.R.string.ok,
+					new OnClickListener() {
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					final String title = edit.getText().toString();
-					saveTitle(title, documentUri);
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							final String title = edit.getText().toString();
+							saveTitle(title, documentUri);
 
-				}
-			});
+						}
+					});
 			builder.setNegativeButton(R.string.cancel, new OnClickListener() {
 
 				@Override
@@ -301,9 +310,11 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
 		switch (id) {
 		case EDIT_TITLE_DIALOG_ID:
-			final Uri documentUri = Uri.parse(args.getString(DIALOG_ARG_DOCUMENT_URI));
+			final Uri documentUri = Uri.parse(args
+					.getString(DIALOG_ARG_DOCUMENT_URI));
 			final String oldTitle = args.getString(DIALOG_ARG_TITLE);
-			final EditText edit = (EditText) dialog.findViewById(R.id.edit_title);
+			final EditText edit = (EditText) dialog
+					.findViewById(R.id.edit_title);
 			edit.setText(oldTitle);
 			AlertDialog alertDialog = (AlertDialog) dialog;
 			Button okButton = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
@@ -360,7 +371,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		super.onPrepareDialog(id, dialog, args);
 	}
 
-	protected void askUserForNewTitle(final String oldTitle, final Uri documentUri) {
+	protected void askUserForNewTitle(final String oldTitle,
+			final Uri documentUri) {
 		Bundle bundle = new Bundle(2);
 		bundle.putString(DIALOG_ARG_TITLE, oldTitle);
 		bundle.putString(DIALOG_ARG_DOCUMENT_URI, documentUri.toString());
@@ -373,7 +385,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			uri = getIntent().getData();
 		}
 		if (uri != null) {
-			SaveDocumentTask saveTask = new SaveDocumentTask(documentUri, newTitle);
+			SaveDocumentTask saveTask = new SaveDocumentTask(documentUri,
+					newTitle);
 			saveTask.execute();
 		}
 
@@ -385,7 +398,9 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 	 * 
 	 */
 
-	protected class CreatePDFTask extends AsyncTask<Void, Integer, ArrayList<Uri>> implements PDFProgressListener {
+	protected class CreatePDFTask extends
+			AsyncTask<Void, Integer, ArrayList<Uri>> implements
+			PDFProgressListener {
 
 		private Set<Integer> mIds = new HashSet<Integer>();
 		private int mCurrentPageCount;
@@ -401,10 +416,13 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		public void onNewPage(int pageNumber) {
 			Bundle args = new Bundle(5);
 
-			String progressMsg = getResources().getString(R.string.progress_pfd_creation);
-			progressMsg = String.format(progressMsg, pageNumber, mCurrentPageCount, mCurrentDocumentName);
+			String progressMsg = getResources().getString(
+					R.string.progress_pfd_creation);
+			progressMsg = String.format(progressMsg, pageNumber,
+					mCurrentPageCount, mCurrentDocumentName);
 
-			String title = getResources().getString(R.string.pdf_creation_message);
+			String title = getResources().getString(
+					R.string.pdf_creation_message);
 
 			args.putString(DIALOG_ARG_MESSAGE, title);
 			args.putString(DIALOG_ARG_MESSAGE, progressMsg);
@@ -430,31 +448,41 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		protected void onPostExecute(ArrayList<Uri> pdfFiles) {
 			dismissDialog(PDF_PROGRESS_DIALOG_ID);
 			if (pdfFiles != null) {
-				Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
-				shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getText(R.string.share_subject));
+				Intent shareIntent = new Intent(
+						android.content.Intent.ACTION_SEND_MULTIPLE);
+				shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+						getText(R.string.share_subject));
 				CharSequence seq = Html.fromHtml(mOCRText.toString());
 				shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, seq);
 				// shareIntent.putExtra(android.content.Intent.EXTRA_TEXT,
 				// mHOCRText.toString());
 				shareIntent.setType("application/pdf");
 
-				shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, pdfFiles);
-				startActivity(Intent.createChooser(shareIntent, getText(R.string.share_chooser_title)));
+				shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM,
+						pdfFiles);
+				startActivity(Intent.createChooser(shareIntent,
+						getText(R.string.share_chooser_title)));
 			} else {
-				Toast.makeText(getApplicationContext(), getText(R.string.error_create_file), Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(),
+						getText(R.string.error_create_file), Toast.LENGTH_LONG)
+						.show();
 			}
 		}
-		
 
-		private Pair<File,File> createPDF(File dir, long documentId) {
-			
-			Cursor cursor = getContentResolver().query(DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?", new String[] { String.valueOf(documentId), String.valueOf(documentId) }, "created ASC");
+		private Pair<File, File> createPDF(File dir, long documentId) {
+
+			Cursor cursor = getContentResolver().query(
+					DocumentContentProvider.CONTENT_URI,
+					null,
+					Columns.PARENT_ID + "=? OR " + Columns.ID + "=?",
+					new String[] { String.valueOf(documentId),
+							String.valueOf(documentId) }, "created ASC");
 			cursor.moveToFirst();
 
 			int index = cursor.getColumnIndex(Columns.TITLE);
 			final String fileName = documentId + ".pdf";
 			File outPdf = new File(dir, fileName);
-			File outText = new File(dir, documentId+".txt");
+			File outText = new File(dir, documentId + ".txt");
 
 			mCurrentDocumentName = fileName;
 			mCurrentPageCount = cursor.getCount();
@@ -466,7 +494,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 				hocr[cursor.getPosition()] = cursor.getString(index);
 				index = cursor.getColumnIndex(Columns.PHOTO_PATH);
 				Uri imageUri = Uri.parse(cursor.getString(index));
-				images[cursor.getPosition()] = Util.getPathForUri(BaseDocumentActivitiy.this, imageUri);
+				images[cursor.getPosition()] = Util.getPathForUri(
+						BaseDocumentActivitiy.this, imageUri);
 				index = cursor.getColumnIndex(Columns.OCR_TEXT);
 				final String text = cursor.getString(index);
 				FileWriter writer;
@@ -475,18 +504,18 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 					writer.write(Html.fromHtml(text).toString());
 					writer.close();
 				} catch (IOException ioException) {
-					if (outText.exists()){
-						outText.delete();						
+					if (outText.exists()) {
+						outText.delete();
 					}
-					outText=null;
+					outText = null;
 				}
-				
+
 				mOCRText.append(text);
 			}
 			cursor.close();
 			Hocr2Pdf pdf = new Hocr2Pdf(this);
 			pdf.hocr2pdf(images, hocr, outPdf.getPath(), false, true);
-			return new Pair<File,File>(outPdf,outText);
+			return new Pair<File, File>(outPdf, outText);
 		}
 
 		@Override
@@ -501,13 +530,13 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			ArrayList<File> files = new ArrayList<File>();
 			mCurrentDocumentIndex = 0;
 			for (long id : mIds) {
-				final Pair<File,File> pair = createPDF(dir, id);
+				final Pair<File, File> pair = createPDF(dir, id);
 				final File pdf = pair.first;
-				final File text =pair.second;
+				final File text = pair.second;
 				if (pdf != null) {
 					files.add(pdf);
 				}
-				if (text!=null){
+				if (text != null) {
 					files.add(text);
 				}
 				mCurrentDocumentIndex++;
@@ -526,7 +555,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		private final static int RESULT_REMOTE_EXCEPTION = -1;
 		final boolean mFinishActivity;
 
-		public DeleteDocumentTask(Set<Integer> parentDocumentIds, final boolean finishActivityAfterExecution) {
+		public DeleteDocumentTask(Set<Integer> parentDocumentIds,
+				final boolean finishActivityAfterExecution) {
 			mIds.addAll(parentDocumentIds);
 			mFinishActivity = finishActivityAfterExecution;
 		}
@@ -544,7 +574,9 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		@Override
 		protected void onPostExecute(Integer result) {
 			if (result == RESULT_REMOTE_EXCEPTION) {
-				Toast.makeText(getApplicationContext(), getText(R.string.delete_error), Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(),
+						getText(R.string.delete_error), Toast.LENGTH_LONG)
+						.show();
 			} else if (result > 0) {
 				// String deleteMsg = null;
 				// if (result == 1) {
@@ -563,10 +595,13 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			}
 		}
 
-		private int deleteDocument(Cursor c, ContentProviderClient client) throws RemoteException {
+		private int deleteDocument(Cursor c, ContentProviderClient client)
+				throws RemoteException {
 			int index = c.getColumnIndex(Columns.ID);
 			int currentId = c.getInt(index);
-			Uri currentDocumentUri = Uri.withAppendedPath(DocumentContentProvider.CONTENT_URI, String.valueOf(currentId));
+			Uri currentDocumentUri = Uri.withAppendedPath(
+					DocumentContentProvider.CONTENT_URI,
+					String.valueOf(currentId));
 			index = c.getColumnIndex(Columns.PHOTO_PATH);
 			String imagePath = c.getString(index);
 			if (imagePath != null) {
@@ -578,13 +613,21 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		@Override
 		protected Integer doInBackground(Void... params) {
 
-			ContentProviderClient client = getContentResolver().acquireContentProviderClient(DocumentContentProvider.CONTENT_URI);
+			ContentProviderClient client = getContentResolver()
+					.acquireContentProviderClient(
+							DocumentContentProvider.CONTENT_URI);
 
 			int count = 0;
 			int progress = 0;
 			for (Integer id : mIds) {
 				try {
-					Cursor c = client.query(DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?", new String[] { String.valueOf(id), String.valueOf(id) }, Columns.PARENT_ID + " ASC");
+					Cursor c = client.query(
+							DocumentContentProvider.CONTENT_URI,
+							null,
+							Columns.PARENT_ID + "=? OR " + Columns.ID + "=?",
+							new String[] { String.valueOf(id),
+									String.valueOf(id) }, Columns.PARENT_ID
+									+ " ASC");
 
 					while (c.moveToNext()) {
 						count += deleteDocument(c, client);
@@ -620,7 +663,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
 		@Override
 		protected void onPreExecute() {
-			mSaveToast = Toast.makeText(BaseDocumentActivitiy.this, getText(R.string.saving_document), Toast.LENGTH_LONG);
+			mSaveToast = Toast.makeText(BaseDocumentActivitiy.this,
+					getText(R.string.saving_document), Toast.LENGTH_LONG);
 		}
 
 		@Override
