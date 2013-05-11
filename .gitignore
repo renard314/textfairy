@@ -5,6 +5,7 @@
 obj/
 bin/
 gen/
+debug/
 armeabi*/
 x86/
 *.o
