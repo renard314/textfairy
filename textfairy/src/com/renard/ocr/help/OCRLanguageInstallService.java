@@ -64,6 +64,10 @@ public class OCRLanguageInstallService extends IntentService {
 				TarArchiveInputStream tarIn = new TarArchiveInputStream(fileIn);
 
 				TarArchiveEntry entry = tarIn.getNextTarEntry();
+				
+				while (entry!=null && !(entry.getName().endsWith(".traineddata") && !entry.getName().endsWith("_old.traineddata"))){
+					entry = tarIn.getNextTarEntry();
+				}
 				if (entry != null) {
 					byte[] content = new byte[(int) entry.getSize()];
 					int bytesRead = 0;
