@@ -24,9 +24,12 @@ public class DownloadBroadCastReceiver extends BroadcastReceiver {
 			if (c.moveToFirst()) {
 				int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
 				int status = c.getInt(columnIndex);
+				columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
+				String title = c.getString(columnIndex);
 
 				if (DownloadManager.STATUS_SUCCESSFUL == status) {
 					Log.i(LOG_TAG,"Download successful");
+
 					//start service to extract language file
 					Intent serviceIntent = new Intent(context, OCRLanguageInstallService.class);
 					serviceIntent.putExtra(DownloadManager.EXTRA_DOWNLOAD_ID, downloadId);
@@ -36,7 +39,6 @@ public class DownloadBroadCastReceiver extends BroadcastReceiver {
 					Log.i(LOG_TAG,"Download failed");
 					Intent resultIntent = new Intent(OCRLanguageInstallService.ACTION_INSTALL_FAILED);
 					columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
-					String title = c.getString(columnIndex);
 					resultIntent.putExtra(OCRLanguageInstallService.EXTRA_STATUS,status );
 					resultIntent.putExtra(OCRLanguageInstallService.EXTRA_OCR_LANGUAGE_DISPLAY, title);
 					context.sendBroadcast(resultIntent);

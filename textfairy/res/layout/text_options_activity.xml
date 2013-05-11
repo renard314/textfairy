@@ -13,7 +13,13 @@
         android:padding="4dp"
         android:text="@string/options_preview_text"
         android:textColor="@android:color/primary_text_light" />
-
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="@color/dark_grey" />
+    
     <ScrollView
         android:id="@+id/pref_container"
         android:layout_width="fill_parent"

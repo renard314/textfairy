@@ -22,7 +22,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v4.app.FragmentManager;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -36,6 +38,7 @@ import com.renard.documentview.DocumentActivity;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.LayoutQuestionDialog.LayoutChoseListener;
 import com.renard.ocr.LayoutQuestionDialog.LayoutKind;
+import com.renard.ocr.SdWarningDialogFragment.SdReadyListener;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.Util;
 
@@ -45,20 +48,21 @@ import com.renard.util.Util;
  * @author renard
  * 
  */
-public class OCRActivity extends MonitoredActivity {
+public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = OCRActivity.class.getSimpleName();
 
 	public static final String EXTRA_PARENT_DOCUMENT_ID = "parent_id";
-	private static final String OCR_LANGUAGE =  "ocr_language";
+	private static final String OCR_LANGUAGE = "ocr_language";
 
 	private Button mButtonStartOCR;
 	private OCRImageView mImageView;
 	private int mOriginalHeight = 0;
 	private int mOriginalWidth = 0;
 	private Pix mFinalPix;
-	private String mOcrLanguage; //is set by dialog in askUserAboutDocumentLayout
+	private String mOcrLanguage; // is set by dialog in
+									// askUserAboutDocumentLayout
 	private OCR mOCR;
 	private Messenger mMessageReceiver = new Messenger(new ProgressActivityHandler()); // receives
 																						// messages
@@ -82,7 +86,6 @@ public class OCRActivity extends MonitoredActivity {
 		private int layoutPix;
 		private int mPreviewWith;
 		private int mPreviewHeight;
-		
 
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -164,7 +167,7 @@ public class OCRActivity extends MonitoredActivity {
 						int[] selectedImages = mImageView.getSelectedImageIndexes();
 						mImageView.clearAllProgressInfo();
 
-						mOCR.startOCRForComplexLayout(OCRActivity.this,mOcrLanguage, texts, images, selectedTexts, selectedImages);
+						mOCR.startOCRForComplexLayout(OCRActivity.this, mOcrLanguage, texts, images, selectedTexts, selectedImages);
 						mButtonStartOCR.setVisibility(View.GONE);
 
 					}
@@ -186,7 +189,7 @@ public class OCRActivity extends MonitoredActivity {
 				break;
 			}
 			case OCR.MESSAGE_END: {
-				saveDocument(mFinalPix, hocrString, utf8String);
+				saveDocument(mFinalPix, hocrString, utf8String, true);
 				break;
 			}
 			case OCR.MESSAGE_ERROR: {
@@ -197,48 +200,79 @@ public class OCRActivity extends MonitoredActivity {
 		}
 	}
 
-	private void saveDocument(final Pix pix, final String hocrString, final String utf8String) {
-		Util.startBackgroundJob(OCRActivity.this, "", getText(R.string.saving_document).toString(), new Runnable() {
+	private void saveDocument(final Pix pix, final String hocrString, final String utf8String, final boolean checkSd) {
+//		if (checkSd && !Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+//			waitForSdCard(pix, hocrString, utf8String);
+//		} else {
 
-			@Override
-			public void run() {
-				File imageFile;
-				Uri documentUri = null;
-				try {
-					imageFile = saveImage(pix);
-					documentUri = saveDocumentToDB(imageFile, hocrString, utf8String);
-					Util.createThumbnail(OCRActivity.this, imageFile, Integer.valueOf(documentUri.getLastPathSegment()));
-				} catch (RemoteException e) {
-					runOnUiThread(new Runnable() {
+			Util.startBackgroundJob(OCRActivity.this, "", getText(R.string.saving_document).toString(), new Runnable() {
 
-						@Override
-						public void run() {
-							Toast.makeText(getApplicationContext(), getText(R.string.error_create_file), Toast.LENGTH_LONG).show();
+				@Override
+				public void run() {
+					File imageFile = null;
+					Uri documentUri = null;
+					try {
+						if (checkSd) {
+							imageFile = saveImage(pix);
 						}
-					});
-				} catch (IOException e) {
-					runOnUiThread(new Runnable() {
+						documentUri = saveDocumentToDB(imageFile, hocrString, utf8String);
+						Util.createThumbnail(OCRActivity.this, imageFile, Integer.valueOf(documentUri.getLastPathSegment()));
+					} catch (RemoteException e) {
+						e.printStackTrace();
+						Log.e(TAG,e.getMessage());
+						e.printStackTrace();
+						runOnUiThread(new Runnable() {
 
-						@Override
-						public void run() {
-							Toast.makeText(getApplicationContext(), getText(R.string.error_create_file), Toast.LENGTH_LONG).show();
+							@Override
+							public void run() {
+								Toast.makeText(getApplicationContext(), getText(R.string.error_create_file), Toast.LENGTH_LONG).show();
+							}
+						});
+					} catch (IOException e) {
+						e.printStackTrace();
+						Log.e(TAG,e.getMessage());
+						runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								Toast.makeText(getApplicationContext(), getText(R.string.error_create_file), Toast.LENGTH_LONG).show();
+							}
+						});
+					} finally {
+						if (pix != null) {
+							pix.recycle();
 						}
-					});
-				} finally {
-					if (pix != null) {
-						pix.recycle();
-					}
-					if (documentUri!=null) {					
-						Intent i = new Intent(OCRActivity.this, DocumentActivity.class);
-						i.putExtra(DocumentActivity.EXTRA_ASK_FOR_TITLE, true);
-						i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						i.setData(documentUri);
-						startActivity(i);
-						finish();
+						if (documentUri != null) {
+							Intent i = new Intent(OCRActivity.this, DocumentActivity.class);
+							i.putExtra(DocumentActivity.EXTRA_ASK_FOR_TITLE, true);
+							i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+							i.setData(documentUri);
+							startActivity(i);
+							finish();
+						}
 					}
 				}
-			}
-		}, new Handler());
+			}, new Handler());
+	//	}
+
+	}
+	
+	@Override
+	public void onSdReady() {
+		//saveDocument(pix, hocrString, utf8String, true);
+	}
+
+	@Override
+	public void onSdNotReady() {
+		//saveDocument(pix, hocrString, utf8String, false);
+	}
+
+
+	private void waitForSdCard(final Pix pix, final String hocrString, final String utf8String) {
+
+		SdWarningDialogFragment warningDialog = new SdWarningDialogFragment();
+		FragmentManager fm = getSupportFragmentManager();
+		warningDialog.show(fm, OCRActivity.class.getSimpleName());
 	}
 
 	private File saveImage(Pix p) throws IOException {
@@ -253,18 +287,16 @@ public class OCRActivity extends MonitoredActivity {
 			if (imageFile != null) {
 				v = new ContentValues();
 				v.put(com.renard.ocr.DocumentContentProvider.Columns.PHOTO_PATH, imageFile.getPath());
-				if (hocr != null) {
-					v.put(Columns.HOCR_TEXT, hocr);
-				}
-				if (plainText != null) {
-					v.put(Columns.OCR_TEXT, plainText);
-				}
-				// if (pdfUri != null) {
-				// v.put(Columns.PDF_URI, pdfUri.toString());
-				// }
-				if (mParentId > -1) {
-					v.put(Columns.PARENT_ID, mParentId);
-				}
+			}
+			if (hocr != null) {
+				v.put(Columns.HOCR_TEXT, hocr);
+			}
+			if (plainText != null) {
+				v.put(Columns.OCR_TEXT, plainText);
+			}
+
+			if (mParentId > -1) {
+				v.put(Columns.PARENT_ID, mParentId);
 			}
 			client = getContentResolver().acquireContentProviderClient(DocumentContentProvider.CONTENT_URI);
 			return client.insert(DocumentContentProvider.CONTENT_URI, v);
@@ -307,7 +339,7 @@ public class OCRActivity extends MonitoredActivity {
 			@Override
 			public void onLayoutChosen(final LayoutKind layoutKind, final String ocrLanguage) {
 				if (layoutKind == LayoutKind.DO_NOTHING) {
-					saveDocument(pixOrg, null, null);
+					saveDocument(pixOrg, null, null, false);
 				} else {
 					getSupportActionBar().show();
 					getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -331,19 +363,19 @@ public class OCRActivity extends MonitoredActivity {
 		});
 		alertDialog.show();
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if (mOcrLanguage!=null){
+		if (mOcrLanguage != null) {
 			outState.putString(OCR_LANGUAGE, mOcrLanguage);
 		}
 	}
-	
+
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		if (mOcrLanguage==null){
+		if (mOcrLanguage == null) {
 			mOcrLanguage = savedInstanceState.getString(OCR_LANGUAGE);
 		}
 	}
