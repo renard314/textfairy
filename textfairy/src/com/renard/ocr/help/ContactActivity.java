@@ -1,7 +1,11 @@
 package com.renard.ocr.help;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.TextView;
 
 import com.actionbarsherlock.view.MenuItem;
 import com.renard.ocr.R;
@@ -15,7 +19,20 @@ public class ContactActivity extends MonitoredActivity {
 		setContentView(R.layout.activity_contact);
 		// Show the Up button in the action bar.
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
+		TextView email = (TextView) findViewById(R.id.textView_send_mail);
+		email.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("message/rfc822");
+				intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "text fairy feedback");
+				intent.putExtra(android.content.Intent.EXTRA_EMAIL,
+						new String[] { "renard.wellnitz+textfairy@googlemail.com" });
+				startActivity(intent);
+			}
+		});
+
 	}
 
 	@Override
@@ -34,11 +51,12 @@ public class ContactActivity extends MonitoredActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		overridePendingTransition(android.R.anim.fade_in,
+				android.R.anim.fade_out);
 	}
 
 }
