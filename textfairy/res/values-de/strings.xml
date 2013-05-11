@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources xmlns="http://schemas.android.com/apk/res/android">
+    <string name="get_more_languages">Lade weitere Sprachen.</string>
+	<string name="aborts_scan">Bricht aktuellen Scan ab!</string>       
     <string name="send_mail">sende eine email</string>
-    <string name="hocr2pdf_title"><a href="http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/">hocr2pdf</a> from exactCODE</string>   
+    <string name="hocr2pdf_title"><a href="http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/">hocr2pdf</a> von exactCODE</string>   
     <string name="hocr2pdf_summary">hocr2pdf erstellt durchsuchbare PDF-dateien aus der hOCR-Ausgabe einer Texterkennungssoftware.</string>       
     <string name="leptonica_title"><a href="http://www.leptonica.com/">leptonica</a></string>   
     <string name="leptonica_summary">Leptonica ist eine pädagogisch ausgerichtete open source Software die in den Bereichen Bildverarbeitung und -analyse nützlich ist.</string>   
     <string name="tesseract_ocr_title"><a href="https://code.google.com/p/tesseract-ocr/">tesseract-ocr</a></string>   
-    <string name="tesseract_ocr_summary">Tesseract ist eine freie Software zur Texterkennung und liefert wahrscheinlich die besten Ergebnisse aller open source Texterkennungsengine.</string>   
+    <string name="tesseract_ocr_summary">Tesseract ist eine freie Software zur Texterkennung und liefert wahrscheinlich die besten Ergebnisse aller Open-Source-Texterkennungsengines.</string>   
     <string name="contact_welcome_text">Hallo, ich bin Renard und habe die Textfee in meiner Freizeit erschaffen. Ich hoffe sie ist dir von Nutzen.</string>       
 	<string name="download_failed">Laden von %1$s fehlgeschlagen.</string>
 	<string name="language_downloaded">%1$s erfolgreich geladen</string>
@@ -59,12 +61,13 @@
     <string name="option_content">Inhaltsübersicht</string>
     <string name="option_line_spacing">Zeilenabstand</string>
     <string name="option_text_alignment">Textausrichtung</string>
-    <string name="options_preview_text">Dies ist eine Vorschau der aktuellen Einstellungen.  Drücken sie die Zurücktaste um weiterzulesen.\n Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</string>
+    <string name="options_preview_text">Dies ist eine Vorschau der aktuellen Einstellungen.  Drücken sie die Zurücktaste um weiterzulesen.\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</string>
     <string name="progress_analyse_layout">Ich analysiere das Layout. Bitte warte ein paar Sekunden.</string>
     <string name="progress_image_detection">Ich suche nach Textbereichen</string>
     <string name="progress_assemble_pix">Setze die ausgewählten Bereiche zu einem neuen Bild zusammen.</string>
     <string name="progress_choose_columns">Auswahl Bild- &amp; Textbereiche.</string>
     <string name="new_photo">Neues Photo</string>
+    <string name="problem">"There is a problem"</string>
     <string name="no_sd_card">Die Textfee kann nicht von der Speicherkarte lesen. Ist das Telefon vielleicht mit deinem PC verbunden? Wenn ja, dann entferne das Kabel und versuche es erneut.</string>
     <string name="rotate_right">rechts drehen</string>
     <string name="rotate_left">links drehen</string>

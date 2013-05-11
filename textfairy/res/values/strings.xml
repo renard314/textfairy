@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+    <string name="get_more_languages">Get more languages</string>
+    <string name="aborts_scan">Aborts current scan!</string>    
     <string name="send_mail">send a mail</string>
     <string name="hocr2pdf_title"><a href="http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/">hocr2pdf</a> from exactCODE</string>   
     <string name="hocr2pdf_summary">hocr2pdf is a command line front-end for the image processing library to create perfectly layouted, searchable PDF files from hOCR, annotated HTML, input obtained from an OCR system.</string>   
@@ -59,7 +61,7 @@
     <string name="option_content">table of content</string>
     <string name="option_line_spacing">line spacing</string>
     <string name="option_text_alignment">text alignment</string>
-    <string name="options_preview_text">This is a preview of your current text settings. Press the back key to continue reading.\n Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</string>
+    <string name="options_preview_text">This is a preview of your current text settings. Press the back key to continue reading.\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</string>
     <string name="progress_analyse_layout">I\'m analysing the layout. Please wait some seconds.</string>
     <string name="progress_image_detection">Searching for text</string>
     <string name="progress_assemble_pix">I\'m assembling the final picture now.</string>
@@ -116,6 +118,7 @@
     <string name="crop_help_title">You can crop and rotate your photo now</string>
     <string name="continue_ocr">continue</string>
     <string name="default_ocr_language">eng</string>
+    <string name="default_ocr_display_language">English</string>    
     <string name="title_activity_contact">Contact</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
