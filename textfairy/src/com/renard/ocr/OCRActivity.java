@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2012,2013 Renard Wellnitz.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.renard.ocr;
 
 import java.io.File;
@@ -50,7 +65,6 @@ import com.renard.util.Util;
  */
 public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 
-	@SuppressWarnings("unused")
 	private static final String TAG = OCRActivity.class.getSimpleName();
 
 	public static final String EXTRA_PARENT_DOCUMENT_ID = "parent_id";
@@ -165,10 +179,14 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 
 						int[] selectedTexts = mImageView.getSelectedTextIndexes();
 						int[] selectedImages = mImageView.getSelectedImageIndexes();
-						mImageView.clearAllProgressInfo();
-
-						mOCR.startOCRForComplexLayout(OCRActivity.this, mOcrLanguage, texts, images, selectedTexts, selectedImages);
-						mButtonStartOCR.setVisibility(View.GONE);
+						if (selectedTexts.length>0 || selectedImages.length>0){
+							mImageView.clearAllProgressInfo();
+	
+							mOCR.startOCRForComplexLayout(OCRActivity.this, mOcrLanguage, texts, images, selectedTexts, selectedImages);
+							mButtonStartOCR.setVisibility(View.GONE);
+						} else {
+							Toast.makeText(getApplicationContext(), R.string.please_tap_on_column, Toast.LENGTH_LONG).show();	
+						}
 
 					}
 				});
@@ -339,7 +357,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 			@Override
 			public void onLayoutChosen(final LayoutKind layoutKind, final String ocrLanguage) {
 				if (layoutKind == LayoutKind.DO_NOTHING) {
-					saveDocument(pixOrg, null, null, false);
+					saveDocument(pixOrg, null, null, true);
 				} else {
 					getSupportActionBar().show();
 					getSupportActionBar().setDisplayShowTitleEnabled(true);

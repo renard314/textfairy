@@ -1,9 +1,24 @@
+/*  This file is part of Text Fairy.
+ 
+ Text Fairy is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ Text Fairy is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with Text Fairy.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /*
  * main.cpp
  *
  *  Created on: Jul 4, 2011
  *      Author: renard
- *      Sister: jeanne
  */
 
 #include "/usr/local/include/tesseract/baseapi.h"
@@ -49,6 +64,55 @@ void pixCallBack(Pix* pix, bool b1, bool b2) {
 void messageCallback(int messageId) {
 
 }
+void messageCallback(const Pix* pix){
+
+}
+
+
+void onePictureWithColumns(const char* filename, int index) {
+	ostringstream s;
+	Pix* pixTextlines = NULL;
+	Pixa* pixaTexts, *pixaImages;
+	Pix* pixb, *pixhm;
+	Pix* pixsg;
+	Pix* pixFinal;
+	Pix* pixOcr;
+	Pix* pixOrg = pixRead(filename);
+	Boxa* boxaColumns;
+
+	s << index;
+	printf("%i\n", index);
+	L_TIMER timer = startTimerNested();
+
+	extractImages(pixOrg, &pixhm, &pixsg);
+	binarize(pixsg, pixhm, &pixb);
+	pixDestroy(&pixsg);
+
+	segmentComplexLayout(pixOrg, pixhm, pixb, &pixaImages, &pixaTexts, messageCallback, true);
+
+	ostringstream hocr;
+	ostringstream utf8text;
+	l_int32 textCount = pixaGetCount(pixaTexts);
+	l_int32* textIndexes= new l_int32[textCount];
+	for (int i = 0;i<textCount;i++){
+		textIndexes[i]=i;
+	}
+	combineSelectedPixa(pixaTexts, pixaImages, textIndexes,textCount, NULL, NULL, messageCallback, &pixFinal, &pixOcr, &boxaColumns, true);
+	pixWrite("dewarpedColumns.bmp",pixOcr,IFF_BMP);
+	printf("total time = %f", stopTimerNested(timer));
+
+	delete[] textIndexes;
+	boxaDestroy(&boxaColumns);
+	pixDestroy(&pixFinal);
+	pixDestroy(&pixOcr);
+	pixDestroy(&pixOrg);
+	pixDestroy(&pixb);
+	pixDestroy(&pixhm);
+	pixDestroy(&pixTextlines);
+	pixaDestroy(&pixaImages);
+	pixaDestroy(&pixaTexts);
+}
+
 
 void onePicture(const char* filename, int index) {
 	ostringstream s;
@@ -76,8 +140,8 @@ int main(int argc, const char* argv[]) {
 	ostringstream s;
 	if (argc == 3) {
 
-		s << "/Users/renard/Desktop/devel/workspace/OCRTest/" << argv[1] << "/" << argv[2] << ".jpg";
-		onePicture(s.str().c_str(), atoi(argv[1]));
+		s << "/Users/renard/Desktop/devel/textfairy/OCRTest/" << argv[1] << "/" << argv[2] << ".jpg";
+		onePictureWithColumns(s.str().c_str(), atoi(argv[1]));
 	} else if (argc == 4) {
 		int start = atoi(argv[2]);
 		int end = atoi(argv[3]);

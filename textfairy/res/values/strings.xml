@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+    <string name="please_tap_on_column">Please tap on a text column first</string>
     <string name="get_more_languages">Get more languages</string>
     <string name="aborts_scan">Aborts current scan!</string>    
     <string name="send_mail">send a mail</string>

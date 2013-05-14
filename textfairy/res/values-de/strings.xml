@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources xmlns="http://schemas.android.com/apk/res/android">
+	<string name="please_tap_on_column">Tappe erst auf die gewünschten Textspalten!</string>  
     <string name="get_more_languages">Lade weitere Sprachen.</string>
 	<string name="aborts_scan">Bricht aktuellen Scan ab!</string>       
     <string name="send_mail">sende eine email</string>
