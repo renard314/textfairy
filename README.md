@@ -1,0 +1,4 @@
+textfairy
+=========
+
+Android OCR App
