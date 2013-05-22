@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+    <item android:drawable="@drawable/warte1" android:duration="150" />
+    <item android:drawable="@drawable/warte2" android:duration="150" />
+    <item android:drawable="@drawable/warte3" android:duration="150" />
+    <item android:drawable="@drawable/warte4" android:duration="150" />
+    <item android:drawable="@drawable/warte5" android:duration="150" />
+ </animation-list>

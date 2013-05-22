@@ -1,0 +1,16 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+bindir=${exec_prefix}/bin
+datarootdir = ${prefix}/share
+datadir=${datarootdir}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/tesseract
+
+Name: tesseract
+Description: An OCR Engine that was developed at HP Labs between 1985 and 1995... and now at Google.
+URL: https://code.google.com/p/tesseract-ocr
+Version: 3.02.02
+# Requires.private: lept
+Libs: -L${libdir} -ltesseract
+Libs.private: -lpthread -llept
+Cflags: -I${includedir}

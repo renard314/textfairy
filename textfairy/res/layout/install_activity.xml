@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/content_view"
+    android:background="@drawable/install_background"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/fairy_container"
+        android:layout_width="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/imageView_fairy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/fairy_text_bubble"
+            android:contentDescription="@string/empty"
+            android:scaleType="fitCenter"
+            android:src="@drawable/textfairy_walking" />
+
+        <LinearLayout
+            android:id="@+id/fairy_text_bubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/speech_bubble"
+            android:paddingBottom="10dip"
+            android:paddingLeft="12dip"
+            android:paddingRight="20dip"
+            android:paddingTop="10dip" >
+
+            <TextView
+                android:id="@+id/fairy_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/fairy_welcome_bubble"
+                android:textAppearance="@style/FairySpeechbubble" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ViewSwitcher
+        android:id="@+id/viewSwitcher_progress"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:inAnimation="@android:anim/fade_in"
+        android:outAnimation="@android:anim/fade_out"
+        android:padding="4dp" >
+
+        <ProgressBar
+            android:id="@+id/installactivity_progressbar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+        </ProgressBar>
+
+        <Button
+            android:id="@+id/button_start_app"
+			android:textAppearance="@android:style/TextAppearance.Large"
+            android:layout_width="200dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            style="@style/StartActivityButton"
+            android:text="@android:string/ok"
+            />
+    </ViewSwitcher>
+
+</RelativeLayout>

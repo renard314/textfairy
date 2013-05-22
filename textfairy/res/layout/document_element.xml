@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.renard.ocr.CheckableGridElement xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dropshadow"
+        android:paddingBottom="@dimen/dropshadow_padding_bottom"
+        android:paddingLeft="@dimen/dropshadow_padding_left"
+        android:paddingRight="@dimen/dropshadow_padding_right"
+        android:paddingTop="@dimen/dropshadow_padding_top">
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/DocumentCaptionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:maxLines="1" />
+
+        <ImageView
+            android:id="@+id/thumb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:contentDescription="@string/empty"/>
+
+        <TextView
+            android:id="@+id/date"
+            style="@style/DocumentDateText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:layout_alignParentBottom="false"
+            android:layout_toLeftOf="@+id/page_number"
+            android:gravity="center_vertical"
+            android:maxLines="1" />
+        <TextView
+            android:id="@+id/page_number"
+            style="@style/DocumentDateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentRight="true"
+            android:gravity="center_vertical"
+            android:maxLines="1" />
+        </RelativeLayout>
+
+</com.renard.ocr.CheckableGridElement>

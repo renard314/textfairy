@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="app_name">File dialog</string>
+    <string name="location">Путь</string>
+    <string name="cant_read_folder">нельзя открыть директорию!</string>
+    <string name="nnew">Новый</string>
+    <string name="select">Выбрать</string>
+    <string name="file_name">Имя файла:</string>
+    <string name="cancel">Отмена</string>
+    <string name="create">Сохранить</string>
+    <string name="no_data">Нет данных</string>
+    <color name="gray">#ffff0000</color>
+    <string name="err">Ошибка</string>
+</resources>

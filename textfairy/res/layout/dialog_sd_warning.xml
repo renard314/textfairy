@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fairy_animation"
+    android:paddingBottom="5dp"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent" >
+
+    <include
+        android:id="@+id/help_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        layout="@layout/dialog_title"
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/help_header"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:text="@string/no_sd_card" />
+
+</RelativeLayout>

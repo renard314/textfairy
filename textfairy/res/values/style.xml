@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="DocumentCaptionText">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TOCPageNumber">
+        <item name="android:textSize">21sp</item>
+    </style>
+
+    <style name="TOCCaptionText">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TOCDateText">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="DocumentDateText">
+        <item name="android:textColor">#FFEFEFEF</item>
+        <item name="android:background">#aa000000</item>
+        <item name="android:textSize">@dimen/caption_text_size</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+    </style>
+
+    <style name="PageNumberText">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="OptionsText">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="FairySpeechbubble">
+        <item name="android:textColor">#000000</item>
+        <item name="android:textSize">16dip</item>
+    </style>
+
+    <style name="StartActivityText">
+        <item name="android:textColor">#000000</item>
+        <item name="android:textSize">18dip</item>
+    </style>
+
+    <style name="SelectorButton">
+        <item name="android:width">115dip</item>
+        <item name="android:height">40dip</item>
+        <item name="android:layout_marginLeft">5dip</item>
+        <item name="android:layout_marginRight">5dip</item>
+        <item name="android:paddingLeft">8dip</item>
+        <item name="android:paddingTop">5dip</item>
+        <item name="android:paddingRight">8dip</item>
+        <item name="android:paddingBottom">5dip</item>
+    </style>
+
+    <style name="DocumentThumbnail">
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
+    <style name="StartActivityButton">
+        <item name="android:background">@drawable/btn_start_activity</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">@android:color/primary_text_dark</item>         
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:minHeight">38dip</item>
+        <item name="android:minWidth">64dip</item>
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
+
+</resources>

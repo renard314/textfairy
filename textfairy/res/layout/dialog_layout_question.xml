@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fairy_animation"
+    android:paddingBottom="5dp"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent" >
+
+    <include
+        android:id="@+id/help_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        layout="@layout/dialog_title"
+        android:gravity="center_horizontal" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup_layout_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/help_header"
+        android:layout_centerHorizontal="true" >
+
+        <RadioButton
+            android:id="@+id/radio_simple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/layout_simple" />
+
+        <RadioButton
+            android:id="@+id/radio_complex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/layout_complex" />
+
+        <RadioButton
+            android:id="@+id/radio_no_ocr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_ocr" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/textview_ocr_language"
+        style="@style/OptionsText"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/radioGroup_layout_buttons"
+        android:layout_marginTop="5dp"
+        android:gravity="center_horizontal"
+        android:text="@string/pref_title_default_ocr_lang"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/button_language"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textview_ocr_language"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dip"
+        android:background="@drawable/btn_start_activity"
+        android:gravity="center"
+        android:minWidth="150dip"
+        android:text="@android:string/ok"
+        android:textSize="20sp" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/button_language"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/dark_grey" />
+
+    <Button
+        android:id="@+id/button_load_language"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/line"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/btn_start_activity"
+        android:drawableLeft="@drawable/ic_download"
+        android:gravity="center"
+        android:minWidth="150dip"
+        android:text="@string/get_more_languages"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_load_language"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2dp"
+        android:gravity="center_horizontal"
+        android:text="@string/aborts_scan" />
+
+</RelativeLayout>

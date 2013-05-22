@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fairy_overlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ff000000" >
+
+    <com.renard.ocr.OCRImageView
+        android:id="@+id/progress_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/button_container" />
+
+    <LinearLayout
+        android:id="@+id/button_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/start_activity_buttons_background" >
+
+        <Button
+            android:id="@+id/column_pick_completed"
+            style="@style/StartActivityButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/button_column_pick_completed"
+            android:textSize="18sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</RelativeLayout>
