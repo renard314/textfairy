@@ -22,6 +22,8 @@ armeabi*/
 x86/
 obj/
 hocr2pdf/objdir/
+hocr2pdf/Debug
+hocr2pdf/Default
 OCRTest/Debug
 OCRTest/Release
 
