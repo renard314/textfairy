@@ -22,7 +22,8 @@ armeabi*/
 x86/
 obj/
 hocr2pdf/objdir/
-OCRTest/Debug/*
+OCRTest/Debug
+OCRTest/Release
 
 # Local configuration file (sdk path, etc)
 local.properties
