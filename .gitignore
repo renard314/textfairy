@@ -12,14 +12,17 @@
 *.o
 *.a
 *.d
+
 # generated files
 bin/
 gen/
 debug/
+Debug/
 armeabi*/
 x86/
 obj/
 hocr2pdf/objdir/
+OCRTest/Debug/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -29,6 +32,7 @@ build.xml
 # Eclipse project files
 .classpath
 .project
+!OCRTest/.project
 
 # svn files
 .svn/
