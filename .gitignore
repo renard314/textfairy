@@ -19,6 +19,7 @@ debug/
 armeabi*/
 x86/
 obj/
+hocr2pdf/objdir/
 
 # Local configuration file (sdk path, etc)
 local.properties
