@@ -1,10 +1,26 @@
 textfairy
 =========
 
-Android OCR App
+Android OCR App.
+Features
+--------
+* convert images to pdf
+* recognize text in images
+* basic document management
+ * delete
+ * edit
+ * merge multiple documents into one
+ * view table of content
 
 Project Structure
 -----------------
+* *textfairy* this is the android app
+* *hocr2pdf* contains c++ code to create pdf files
+ * is used by the text fairy through a jni wrapper (textfairy/jni)
+* *OCRTest* contains image processing code (binarization and page segmentation)
+ * can be compiled to a command line executable main.cpp to debug/test the image processing code
+ * is used by the text fairy through a jni wrapper (textfairy/jni)
+
 The following android library projects are included as git submodules
 * [ActionBarSherlock] [1]
 * [Android-ViewPagerIndicator] [2]
