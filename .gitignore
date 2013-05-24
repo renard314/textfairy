@@ -16,8 +16,7 @@
 # generated files
 bin/
 gen/
-debug/*
-Debug/*
+debug/
 armeabi*/
 x86/
 obj/
@@ -35,13 +34,13 @@ build.xml
 # Eclipse project files
 .classpath
 .project
-!OCRTest/.project
 
 # svn files
 .svn/
 
 .settings/
-.metadata/
+
+# hidden directories
 .*/
 
 # mac finder
