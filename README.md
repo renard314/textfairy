@@ -13,7 +13,6 @@ The following android library projects are included as git submodules
 The following projects where added to the sources directly either because they where modified or they are not available as git repos
 * [Tesseract (OCR Engine)] [4]
 * [Leptonica (Image processing library)] [5]
-<div xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/" about="http://www.leptonica.com/index.html"><span property="dct:title">Leptonica</span> (<a rel="cc:attributionURL" property="cc:attributionName" href="http://www.leptonica.com/www.leptonica.org">Dan Bloomberg</a>) / <a rel="license" href="http://creativecommons.org/licenses/by/3.0/us/">CC BY 3.0</a></div>
 * [Android Page Curl] [6]
 * [hocr2pdf] [7]
 * [Tesseract android tools] [8]
