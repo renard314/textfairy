@@ -53,6 +53,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
 	public final static String ACTION_OCR_LANGUAGE_READY = "com.renard.ocr.language_ready";
 	public final static String EXTRA_OCR_LANGUAGE = "com.renard.ocr.language";
+	public static final String DOWNLOADED_TRAINING_DATA = "downloaded_training_data.tmp";
 
 	private BroadcastReceiver mDownloadReceiver;
 	private ListView mList;
@@ -61,6 +62,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
 	private BroadcastReceiver mFailedReceiver;
 
 	private class LoadListAsyncTask extends AsyncTask<Void, Void, OCRLanguageAdapter> {
+
 
 		@Override
 		protected void onPostExecute(OCRLanguageAdapter result) {
@@ -77,13 +79,14 @@ public class OCRLanguageActivity extends MonitoredActivity {
 					OCRLanguage language = (OCRLanguage) mAdapter.getItem(position);
 					if (!language.mDownloaded) {
 						final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-						final String part1 = "https://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.";
+						final String part1 = "http://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.";
 						final String part2 = ".tar.gz";
 						Uri uri = Uri.parse(part1 + language.mValue + part2);
 						Request request = new Request(uri);
 						request.setTitle(language.mDisplayText);
-						File tessDir = Util.getTrainingDataDir(OCRLanguageActivity.this);
-						request.setDestinationUri(Uri.fromFile(tessDir));
+						String tessDir = Util.getTessDir(OCRLanguageActivity.this);
+						File targetFile = new File(tessDir, DOWNLOADED_TRAINING_DATA);
+						request.setDestinationUri(Uri.fromFile(targetFile));
 						@SuppressWarnings("unused")
 						long downloadId = dm.enqueue(request);
 						// PreferencesUtils.pushDownloadId(OCRLanguageActivity.this,

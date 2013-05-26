@@ -30,7 +30,7 @@ import android.app.DownloadManager;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
+import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
 import com.renard.util.Util;
@@ -104,6 +104,12 @@ public class OCRLanguageInstallService extends IntentService {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			} finally {
+				String tessDir = Util.getTessDir(this);
+				File targetFile = new File(tessDir, OCRLanguageActivity.DOWNLOADED_TRAINING_DATA);
+				if (targetFile.exists()){
+					targetFile.delete();
+				}
 			}
 
 		}
