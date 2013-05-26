@@ -146,10 +146,9 @@ bool progressJavaCallback(int progress, int left, int right, int top, int bottom
 	return true;
 }
 
-char* GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceToShowColor) {
+std::string GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceToShowColor) {
 	  int lcnt = 1, bcnt = 1, pcnt = 1, wcnt = 1;
-
-	  STRING html_str("");
+	  ostringstream html_str;
 	  bool isItalic = false;
 	  bool isBold = false;
 
@@ -162,10 +161,10 @@ char* GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceTo
 
 	    // Open any new block/paragraph/textline.
 	    if (res_it->IsAtBeginningOf(tesseract::RIL_BLOCK)) {
-	    	html_str +="<div>";
+	    	html_str <<"<div>";
 	    }
 	    if (res_it->IsAtBeginningOf(tesseract::RIL_PARA)){
-	    	html_str += "<p>";
+	    	html_str << "<p>";
 	    }
 
 	    // Now, process the word...
@@ -183,8 +182,9 @@ char* GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceTo
 		bool addConfidence = false;
 		if (  confidence<minConfidenceToShowColor && res_it->GetUTF8Text(tesseract::RIL_WORD)!=" "){
 			addConfidence = true;
-			html_str.add_str_int("<font conf='", (int)confidence);
-			html_str += "' color='#DE2222'>";
+			html_str << "<font conf='";
+			html_str <<  (int)confidence;
+			html_str << "' color='#DE2222'>";
 		}
 
 		/*
@@ -195,7 +195,7 @@ char* GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceTo
 		*/
 
 	    if (!isItalic && italic) {
-	    	html_str += "<strong>";
+	    	html_str << "<strong>";
 	    	isItalic =  true;
 	    }
 	    do {
@@ -203,15 +203,15 @@ char* GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceTo
 	      if (grapheme && grapheme[0] != 0) {
 	        if (grapheme[1] == 0) {
 	          switch (grapheme[0]) {
-	            case '<': html_str += "&lt;"; break;
-	            case '>': html_str += "&gt;"; break;
-	            case '&': html_str += "&amp;"; break;
-	            case '"': html_str += "&quot;"; break;
-	            case '\'': html_str += "&#39;"; break;
-	            default: html_str += grapheme; break;
+	            case '<': html_str << "&lt;"; break;
+	            case '>': html_str << "&gt;"; break;
+	            case '&': html_str << "&amp;"; break;
+	            case '"': html_str << "&quot;"; break;
+	            case '\'': html_str << "&#39;"; break;
+	            default: html_str << grapheme; break;
 	          }
 	        } else {
-	        	html_str += grapheme;
+	        	html_str << grapheme;
 	        }
 	      }
 	      delete []grapheme;
@@ -219,7 +219,7 @@ char* GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceTo
 	    } while (!res_it->Empty(tesseract::RIL_BLOCK) && !res_it->IsAtBeginningOf(tesseract::RIL_WORD));
 
 	    if ((isItalic &&addConfidence==true) || (!italic && isItalic) || (isItalic && (last_word_in_block || last_word_in_para))){
-	    	html_str += "</strong>";
+	    	html_str << "</strong>";
 	    	isItalic = false;
 	    }
 	    /*
@@ -229,24 +229,21 @@ char* GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceTo
 	    }
 	    */
 		if (addConfidence==true){
-			html_str += "</font>";
+			html_str << "</font>";
 		}
 
-	    html_str += " ";
+	    html_str << " ";
 
 	    if (last_word_in_para) {
-	    	html_str += "</p>\n";
+	    	html_str << "</p>\n";
 	    	pcnt++;
 	    }
 	    if (last_word_in_block) {
-	    	html_str += "</div>\n";
+	    	html_str << "</div>\n";
 	    	bcnt++;
 	    }
 	  }
-	  char *ret = new char[html_str.length() + 1];
-	  strcpy(ret, html_str.string());
-	  delete res_it;
-	  return ret;
+	  return html_str.str();
 }
 
 void doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* const tessDir, const char* const lang,  bool debug = false) {
@@ -273,11 +270,10 @@ void doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* con
 		*hocr << hocrtext;
 		tesseract::ResultIterator* it = api.GetIterator();
 		LOGI("start getHTML");
-		const char* utf8text = GetHTMLText(it, 70);
+		std::string utf8text = GetHTMLText(it, 70);
 		LOGI("after getHTMLText");
-		if (utf8text != NULL) {
+		if (!utf8text.empty()) {
 			*utf8 << utf8text;
-			delete[] utf8text;
 		}
 
 		if (debug) {
@@ -327,10 +323,9 @@ void doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostring
 			*hocrtext << hocr;
 			delete[] hocr;
 			tesseract::ResultIterator* it = api.GetIterator();
-			const char* utf8 = GetHTMLText(it, 70);
-			if (utf8 != NULL) {
+			std::string utf8 = GetHTMLText(it, 70);
+			if (!utf8.empty()) {
 				*utf8text << utf8;
-				delete[] utf8;
 			}
 		} else {
 			boxDestroy(&currentTextBox);
@@ -425,6 +420,7 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeAnalyseLayout(JNIEnv *env, 
 	pixJavaCallback(pixsg, false, true);
 	binarize(pixsg, pixhm, &pixb);
 	pixDestroy(&pixsg);
+
 
 	segmentComplexLayout(pixOrg, pixhm, pixb, &pixaImages, &pixaTexts, callbackLayout, true);
 
