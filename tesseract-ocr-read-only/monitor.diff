@@ -1,0 +1,198 @@
+Index: ccmain/ltrresultiterator.h
+===================================================================
+--- ccmain/ltrresultiterator.h	(revision 844)
++++ ccmain/ltrresultiterator.h	(working copy)
+@@ -110,6 +110,8 @@
+                                  int* pointsize,
+                                  int* font_id) const;
+ 
++  void RowAttributes(float* row_height, float* descenders, float* ascenders) const;
++
+   // Return the name of the language used to recognize this word.
+   // On error, NULL.  Do not delete this pointer.
+   const char* WordRecognitionLanguage() const;
+Index: ccmain/ltrresultiterator.cpp
+===================================================================
+--- ccmain/ltrresultiterator.cpp	(revision 844)
++++ ccmain/ltrresultiterator.cpp	(working copy)
+@@ -161,6 +161,14 @@
+   return 0.0f;
+ }
+ 
++void LTRResultIterator::RowAttributes(	float* row_height,
++										float* descenders,
++										float* ascenders) const{
++	  *row_height = it_->row()->row->x_height() + it_->row()->row->ascenders() - it_->row()->row->descenders();
++	  *descenders = it_->row()->row->descenders();
++	  *ascenders = it_->row()->row->ascenders();
++}
++
+ // Returns the font attributes of the current word. If iterating at a higher
+ // level object than words, eg textlines, then this will return the
+ // attributes of the first word in that textline.
+Index: ccmain/control.cpp
+===================================================================
+--- ccmain/control.cpp	(revision 844)
++++ ccmain/control.cpp	(working copy)
+@@ -243,7 +243,11 @@
+       word_index++;
+       if (monitor != NULL) {
+         monitor->ocr_alive = TRUE;
+-        monitor->progress = 30 + 50 * word_index / stats_.word_count;
++        monitor->progress = 70 * word_index / stats_.word_count;
++        if (monitor->progress_callback!=NULL){
++        	TBOX box = page_res_it.word()->word->bounding_box();
++        	(*monitor->progress_callback)(monitor->progress,box.left(), box.right(), box.top(), box.bottom());
++        }
+         if (monitor->deadline_exceeded() ||
+             (monitor->cancel != NULL && (*monitor->cancel)(monitor->cancel_this,
+                                                            stats_.dict_words)))
+@@ -316,7 +320,10 @@
+     word_index++;
+     if (monitor != NULL) {
+       monitor->ocr_alive = TRUE;
+-      monitor->progress = 80 + 10 * word_index / stats_.word_count;
++      monitor->progress = 70 + 30 * word_index / stats_.word_count;
++      if (monitor->progress_callback!=NULL){
++          	  (*monitor->progress_callback)(monitor->progress,0,0,0,0);
++      }
+       if (monitor->deadline_exceeded() ||
+           (monitor->cancel != NULL && (*monitor->cancel)(monitor->cancel_this,
+                                                          stats_.dict_words)))
+Index: ccutil/ocrclass.h
+===================================================================
+--- ccutil/ocrclass.h	(revision 844)
++++ ccutil/ocrclass.h	(working copy)
+@@ -101,6 +101,7 @@
+  * the OCR engine is storing its output to shared memory.
+  * During progress, all the buffer info is -1.
+  * Progress starts at 0 and increases to 100 during OCR. No other constraint.
++ * Additionally the progress callback contains the bounding box of the word that is currently being processed
+  * Every progress callback, the OCR engine must set ocr_alive to 1.
+  * The HP side will set ocr_alive to 0. Repeated failure to reset
+  * to 1 indicates that the OCR engine is dead.
+@@ -108,6 +109,7 @@
+  * user words found. If it returns true then operation is cancelled.
+  **********************************************************************/
+ typedef bool (*CANCEL_FUNC)(void* cancel_this, int words);
++typedef bool (*PROGRESS_FUNC)(int progress, int left, int right, int top, int bottom );
+ 
+ class ETEXT_DESC {             // output header
+  public:
+@@ -117,6 +119,7 @@
+   volatile inT8 ocr_alive;     // ocr sets to 1, HP 0
+   inT8 err_code;               // for errcode use
+   CANCEL_FUNC cancel;          // returns true to cancel
++  PROGRESS_FUNC progress_callback;/*called whenever progress increases*/
+   void* cancel_this;           // this or other data for cancel
+   struct timeval end_time;     // time to stop. expected to be set only by call
+                                // to set_deadline_msecs()
+Index: tessdata/Makefile.am
+===================================================================
+--- tessdata/Makefile.am	(revision 844)
++++ tessdata/Makefile.am	(working copy)
+@@ -1,4 +1,4 @@
+-datadir = @datadir@/tessdata
++dir = @datadir@/tessdata
+ 
+ SUBDIRS = configs tessconfigs
+ 
+Index: api/baseapi.cpp
+===================================================================
+--- api/baseapi.cpp	(revision 844)
++++ api/baseapi.cpp	(working copy)
+@@ -71,6 +71,9 @@
+ #include "version.h"
+ #endif
+ 
++/* Version number of package */
++#define VERSION "3.02"
++
+ namespace tesseract {
+ 
+ /** Minimum sensible image size to be worth running tesseract. */
+@@ -1062,17 +1065,32 @@
+  * STL removed from original patch submission and refactored by rays.
+  */
+ char* TessBaseAPI::GetHOCRText(int page_number) {
++	return GetHOCRText(NULL,page_number);
++}
++
++
++/**
++ * Make a HTML-formatted string with hOCR markup from the internal
++ * data structures.
++ * page_number is 0-based but will appear in the output as 1-based.
++ * Image name/input_file_ can be set by SetInputName before calling
++ * GetHOCRText
++ * STL removed from original patch submission and refactored by rays.
++ */
++char* TessBaseAPI::GetHOCRText(struct ETEXT_DESC* monitor, int page_number) {
+   if (tesseract_ == NULL ||
+-      (page_res_ == NULL && Recognize(NULL) < 0))
++      (page_res_ == NULL && Recognize(monitor) < 0))
+     return NULL;
+ 
+   int lcnt = 1, bcnt = 1, pcnt = 1, wcnt = 1;
+   int page_id = page_number + 1;  // hOCR uses 1-based page numbers.
++  float row_height, descenders, ascenders;
+ 
+   STRING hocr_str("");
+ 
+-  if (input_file_ == NULL)
++  if (input_file_ == NULL) {
+       SetInputName(NULL);
++  }
+ 
+   #ifdef _WIN32
+       // convert input name from ANSI encoding to utf-8
+@@ -1121,6 +1139,11 @@
+     }
+     if (res_it->IsAtBeginningOf(RIL_TEXTLINE)) {
+       hocr_str.add_str_int("\n     <span class='ocr_line' id='line_", lcnt);
++      res_it->RowAttributes(&row_height,&descenders, &ascenders);
++      hocr_str.add_str_int("' font='", 15);
++      hocr_str.add_str_int("' size='", row_height);
++      hocr_str.add_str_int("' descenders='", descenders * -1);
++      hocr_str.add_str_int("' ascenders='", ascenders);
+       AddBoxTohOCR(res_it, RIL_TEXTLINE, &hocr_str);
+     }
+ 
+Index: api/baseapi.h
+===================================================================
+--- api/baseapi.h	(revision 844)
++++ api/baseapi.h	(working copy)
+@@ -521,8 +521,20 @@
+    * Make a HTML-formatted string with hOCR markup from the internal
+    * data structures.
+    * page_number is 0-based but will appear in the output as 1-based.
++   * monitor can be used to
++   * 	cancel the regocnition
++   * 	receive progress callbacks
+    */
++  char* GetHOCRText(struct ETEXT_DESC* monitor, int page_number);
++
++  /**
++   * Make a HTML-formatted string with hOCR markup from the internal
++   * data structures.
++   * page_number is 0-based but will appear in the output as 1-based.
++   */
+   char* GetHOCRText(int page_number);
++
++
+   /**
+    * The recognized text is returned as a char* which is coded in the same
+    * format as a box file used in training. Returned string must be freed with
+Index: api/capi.cpp
+===================================================================
+--- api/capi.cpp	(revision 844)
++++ api/capi.cpp	(working copy)
+@@ -319,7 +319,7 @@
+ 
+ TESS_API char* TESS_CALL TessBaseAPIGetHOCRText(TessBaseAPI* handle, int page_number)
+ {
+-    return handle->GetHOCRText(page_number);
++    return handle->GetHOCRText(NULL,page_number);
+ }
+ 
+ TESS_API char* TESS_CALL TessBaseAPIGetBoxText(TessBaseAPI* handle, int page_number)
