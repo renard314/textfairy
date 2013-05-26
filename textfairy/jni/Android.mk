@@ -3,6 +3,7 @@ MY_DIR := $(CURDIR)
 HOCR2PDF_PATH := $(MY_DIR)/../hocr2pdf/src
 IMAGE_PROCESSING_PATH := $(MY_DIR)/../OCRTest/src
 TESSERACT_PATH := $(MY_DIR)/../tesseract-ocr-read-only
+#TESSERACT_PATH := $(MY_DIR)/../../textfairy_test/tesseract-ocr-3.02
 TESSERACT_CHANGE_PATH := $(MY_DIR)/../tesseract-changeset
 LEPTONICA_PATH := $(MY_DIR)/../leptonica-1.68
 LIBJPEG_PATH := $(MY_DIR)/../libjpeg

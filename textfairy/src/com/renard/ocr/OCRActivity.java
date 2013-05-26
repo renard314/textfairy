@@ -119,7 +119,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 			case OCR.MESSAGE_PREVIEW_IMAGE: {
 				int nativePix = msg.arg1;
 
-				if (nativePix > 0) {
+				if (nativePix != 0) {
 					Pix pix = new Pix(nativePix);
 					final Bitmap preview = WriteFile.writeBitmap(pix);
 					pix.recycle();
@@ -132,14 +132,14 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 			case OCR.MESSAGE_FINAL_IMAGE: {
 				int nativePix = msg.arg1;
 
-				if (nativePix > 0) {
+				if (nativePix != 0) {
 					mFinalPix = new Pix(nativePix);
 				}
 				break;
 			}
 			case OCR.MESSAGE_LAYOUT_PIX: {
 				layoutPix = msg.arg1;
-				if (layoutPix > 0) {
+				if (layoutPix != 0) {
 					Pix pix = new Pix(layoutPix);
 					final Bitmap preview = WriteFile.writeBitmap(pix);
 					mPreviewHeight = pix.getHeight();

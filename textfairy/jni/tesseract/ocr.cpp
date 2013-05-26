@@ -151,7 +151,8 @@ std::string GetHTMLText(tesseract::ResultIterator* res_it, const float minConfid
 	  ostringstream html_str;
 	  bool isItalic = false;
 	  bool isBold = false;
-
+	  bool para_open = false;
+	  bool block_open = false;
 
 	  for (; !res_it->Empty(tesseract::RIL_BLOCK); wcnt++) {
 	    if (res_it->Empty(tesseract::RIL_WORD)) {
@@ -162,9 +163,19 @@ std::string GetHTMLText(tesseract::ResultIterator* res_it, const float minConfid
 	    // Open any new block/paragraph/textline.
 	    if (res_it->IsAtBeginningOf(tesseract::RIL_BLOCK)) {
 	    	html_str <<"<div>";
+	    	if(block_open){
+	    	    html_str << "</div>";
+	    	    bcnt++;
+	    	}
+	    	para_open = true;
 	    }
 	    if (res_it->IsAtBeginningOf(tesseract::RIL_PARA)){
 	    	html_str << "<p>";
+	    	if (para_open) {
+	    	    html_str << "</p>";
+	    	    pcnt++;
+	    	}
+	    	block_open =true;
 	    }
 
 	    // Now, process the word...
@@ -174,12 +185,22 @@ std::string GetHTMLText(tesseract::ResultIterator* res_it, const float minConfid
 	    font_name = res_it->WordFontAttributes(&bold, &italic, &underlined,
 	                                           &monospace, &serif, &smallcaps,
 	                                           &pointsize, &font_id);
-	    bool last_word_in_line = res_it->IsAtFinalElement(tesseract::RIL_TEXTLINE, tesseract::RIL_WORD);
-	    bool last_word_in_para = res_it->IsAtFinalElement(tesseract::RIL_PARA, tesseract::RIL_WORD);
-	    bool last_word_in_block = res_it->IsAtFinalElement(tesseract::RIL_BLOCK, tesseract::RIL_WORD);
+//	    bool last_word_in_line = res_it->IsAtFinalElement(tesseract::RIL_TEXTLINE, tesseract::RIL_WORD);
+//	    bool last_word_in_para = res_it->IsAtFinalElement(tesseract::RIL_PARA, tesseract::RIL_WORD);
+//	    bool last_word_in_block = res_it->IsAtFinalElement(tesseract::RIL_BLOCK, tesseract::RIL_WORD);
 
 	    float confidence = res_it->Confidence(tesseract::RIL_WORD);
 		bool addConfidence = false;
+
+	    if (!isItalic && italic) {
+	    	html_str << "<strong>";
+	    	isItalic =  true;
+	    } else if (isItalic && !italic){
+	    	html_str << "</strong>";
+	    	isItalic = false;
+	    }
+
+
 		if (  confidence<minConfidenceToShowColor && res_it->GetUTF8Text(tesseract::RIL_WORD)!=" "){
 			addConfidence = true;
 			html_str << "<font conf='";
@@ -194,10 +215,6 @@ std::string GetHTMLText(tesseract::ResultIterator* res_it, const float minConfid
 		}
 		*/
 
-	    if (!isItalic && italic) {
-	    	html_str << "<strong>";
-	    	isItalic =  true;
-	    }
 	    do {
 	      const char *grapheme = res_it->GetUTF8Text(tesseract::RIL_SYMBOL);
 	      if (grapheme && grapheme[0] != 0) {
@@ -218,10 +235,10 @@ std::string GetHTMLText(tesseract::ResultIterator* res_it, const float minConfid
 	      res_it->Next(tesseract::RIL_SYMBOL);
 	    } while (!res_it->Empty(tesseract::RIL_BLOCK) && !res_it->IsAtBeginningOf(tesseract::RIL_WORD));
 
-	    if ((isItalic &&addConfidence==true) || (!italic && isItalic) || (isItalic && (last_word_in_block || last_word_in_para))){
-	    	html_str << "</strong>";
-	    	isItalic = false;
-	    }
+//	    if ((isItalic &&addConfidence==true) || (!italic && isItalic)){
+//	    	html_str << "</strong>";
+//	    	isItalic = false;
+//	    }
 	    /*
 	    if ((!bold && isBold) || (isBold && (last_word_in_block || last_word_in_para))){
 	    	html_str += "</em>";
@@ -233,16 +250,21 @@ std::string GetHTMLText(tesseract::ResultIterator* res_it, const float minConfid
 		}
 
 	    html_str << " ";
-
-	    if (last_word_in_para) {
-	    	html_str << "</p>\n";
-	    	pcnt++;
-	    }
-	    if (last_word_in_block) {
-	    	html_str << "</div>\n";
-	    	bcnt++;
-	    }
 	  }
+		  if (isItalic){
+				html_str << "</strong>";
+				isItalic = false;
+		}
+		if (para_open) {
+			html_str << "</p>";
+			pcnt++;
+		}
+
+		if(block_open){
+			html_str << "</div>";
+			bcnt++;
+		}
+
 	  return html_str.str();
 }
 

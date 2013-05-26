@@ -119,11 +119,11 @@ char* GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceTo
 	    html_str += " ";
 
 	    if (last_word_in_para) {
-	    	html_str += "</p>\n";
+	    	html_str += "</p>";
 	    	pcnt++;
 	    }
 	    if (last_word_in_block) {
-	    	html_str += "</div>\n";
+	    	html_str += "</div>";
 	    	bcnt++;
 	    }
 	  }
@@ -150,7 +150,7 @@ void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s,
 	*s << debugText;
 	if (debug) {
 //		std::cout<<"html: " <<utf8text<<std::endl;
-		std::cout << "utf8text: " << debugText << std::endl;
+		std::cout << "utf8text: " <<"\n"<< debugText << std::endl;
 		std::cout << "ocr: " << stopTimer() << std::endl << "confidence: "
 				<< api.MeanTextConf() << std::endl;
 	}
