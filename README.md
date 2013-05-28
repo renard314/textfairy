@@ -1,7 +1,11 @@
 textfairy
 =========
 
-Android OCR App.
+Android OCR App
+
+available in the [play store] [p]
+[p]: https://play.google.com/store/apps/details?id=com.renard.oc
+
 Features
 --------
 * convert images to pdf
