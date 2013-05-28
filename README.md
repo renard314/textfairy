@@ -4,7 +4,7 @@ textfairy
 Android OCR App
 
 available in the [play store] [p]
-[p]: https://play.google.com/store/apps/details?id=com.renard.oc
+[p]: https://play.google.com/store/apps/details?id=com.renard.ocr
 
 Features
 --------
