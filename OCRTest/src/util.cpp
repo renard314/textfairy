@@ -29,7 +29,11 @@
 
 using namespace std;
 
-Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void(*messageJavaCallback) (int), void(*pixJavaCallback) (Pix*,bool,bool), bool showIntermediate, bool debug) {
+
+
+Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
+		void (*pixJavaCallback)(Pix*, bool, bool), bool showIntermediate,
+		bool debug) {
 	ostringstream debugstring;
 	Pix *pixhm, *pixb = NULL;
 	if (debug) {
@@ -42,7 +46,7 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void(*messageJavaCallback) (int), voi
 	pixJavaCallback(pixsg, false, true);
 	binarize(pixsg, pixhm, &pixb);
 
-	pixWrite("binarized.bmp",pixb,IFF_BMP);
+	pixWrite("binarized.bmp", pixb, IFF_BMP);
 
 	pixDestroy(&pixsg);
 
@@ -93,7 +97,7 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void(*messageJavaCallback) (int), voi
 		pixPaintThroughMask(pixOrg, pixhm, 0, 0, 0);
 		pixDestroy(&pixhm);
 		if (buildresult == 0) {
-			if (applyResult==0){
+			if (applyResult == 0) {
 				pixDestroy(&dew->pixd);
 			}
 			dewarpApplyDisparity(dew, pixOrg, 0);
@@ -125,14 +129,14 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void(*messageJavaCallback) (int), voi
 	return pixtext;
 }
 
-
-
 /**
  * translate all boxa which are below bottom dy pixel down
  * translate all boxa which are to the right of right dy pixel to the right
  */
-void translateBoxa(Pixa* pixa, l_int32 dx, l_int32 dy, l_int32 right, l_int32 bottom) {
-	log("translateBoxa dx=%i dy=%i, right=%i, bottom=%i",dx,dy,right,bottom);
+void translateBoxa(Pixa* pixa, l_int32 dx, l_int32 dy, l_int32 right,
+		l_int32 bottom) {
+	log("translateBoxa dx=%i dy=%i, right=%i, bottom=%i",
+			dx, dy, right, bottom);
 	bool moveDown = dy > 0;
 	bool moveRight = dx > 0;
 	l_int32 count = pixaGetBoxaCount(pixa);
@@ -144,11 +148,11 @@ void translateBoxa(Pixa* pixa, l_int32 dx, l_int32 dy, l_int32 right, l_int32 bo
 			Box* b = pixaGetBox(pixa, j, L_CLONE);
 			boxGetGeometry(b, &x, &y, &w, &h);
 			if (moveRight && x >= right) {
-				log("moving pix %i to %i pixel to right",j,dx);
+				log("moving pix %i to %i pixel to right", j, dx);
 				x += dx;
 			}
 			if (moveDown && y >= bottom) {
-				log("moving pix %i to %i pixel down",j,dy);
+				log("moving pix %i to %i pixel down", j, dy);
 				y += dy;
 			}
 			boxSetGeometry(b, x, y, w, h);
@@ -160,7 +164,10 @@ void translateBoxa(Pixa* pixa, l_int32 dx, l_int32 dy, l_int32 right, l_int32 bo
 /**
  * destroys all pixa
  */
-void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, l_int32 textCount, l_int32* imageindexes, l_int32 imageCount,void (*callbackMessage) (const int), Pix** pPixFinal, Pix** pPixOcr, Boxa** pBoxaColumns, bool debug){
+void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes,
+		l_int32 textCount, l_int32* imageindexes, l_int32 imageCount,
+		void (*callbackMessage)(const int), Pix** pPixFinal, Pix** pPixOcr,
+		Boxa** pBoxaColumns, bool debug) {
 	ostringstream debugstring;
 
 	if (debug) {
@@ -196,7 +203,7 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 		int textIndex = textindexes[i];
 		const l_int32 border = 10;
 		Pix* p = pixaGetPix(pixaText, textIndex, L_CLONE);
-		Pix* p_with_border = pixAddBorder(p,border,0);
+		Pix* p_with_border = pixAddBorder(p, border, 0);
 		pixDestroy(&p);
 		Box* b = pixaGetBox(pixaText, textIndex, L_CLONE);
 		boxAdjustSides(b, b, -border, border, -border, border);
@@ -287,8 +294,10 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 	int yoffset = top - border;
 
 	if (debug) {
-		debugstring << "extend of final pix: (" << right << "," << bottom << ")" << std::endl;
-		debugstring << "offset: (" << xoffset << "," << yoffset << ")" << std::endl;
+		debugstring << "extend of final pix: (" << right << "," << bottom << ")"
+				<< std::endl;
+		debugstring << "offset: (" << xoffset << "," << yoffset << ")"
+				<< std::endl;
 		startTimer();
 	}
 
@@ -299,10 +308,10 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 			continue;
 		}
 		Pix* pixi = pixaGetPix(pixaImage, index, L_CLONE);
-		pixRasterop(pixFinal, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC, pixi, 0, 0);
+		pixRasterop(pixFinal, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC, pixi,
+				0, 0);
 	}
-	printf("%s","after copying images");
-
+	printf("%s", "after copying images");
 
 	Boxa* boxaColumns = boxaCreate(0);
 	for (int i = 0; i < dewarpCount; i++) {
@@ -312,17 +321,20 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 		}
 		Pix* pixt = pixaGetPix(pixaSelectedColumns, i, L_CLONE);
 		Pix* pixt32 = pixConvertTo32(pixt);
-		pixRasterop(pixOCR, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC, pixt, 0, 0);
-		pixRasterop(pixFinal, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC, pixt32, 0, 0);
+		pixRasterop(pixOCR, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC, pixt,
+				0, 0);
+		pixRasterop(pixFinal, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC,
+				pixt32, 0, 0);
 		pixDestroy(&pixt32);
 		Box* boxColumn = boxCreate(xb - xoffset, yb - yoffset, wb, hb);
-		boxaAddBox(boxaColumns,boxColumn, L_INSERT);
+		boxaAddBox(boxaColumns, boxColumn, L_INSERT);
 	}
 
 	pixaDestroy(&pixaImage);
 
 	if (debug) {
-		debugstring << "time to assemble final pix: " << stopTimer() << std::endl;
+		debugstring << "time to assemble final pix: " << stopTimer()
+				<< std::endl;
 	}
 
 	*pPixFinal = pixFinal;
@@ -330,6 +342,100 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 	*pBoxaColumns = boxaColumns;
 }
 
+std::string GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceToShowColor) {
+	int lcnt = 1, bcnt = 1, pcnt = 1, wcnt = 1;
+	ostringstream html_str;
+	bool isItalic = false;
+	bool para_open = false;
 
+	for (; !res_it->Empty(tesseract::RIL_BLOCK); wcnt++) {
+		if (res_it->Empty(tesseract::RIL_WORD)) {
+			res_it->Next(tesseract::RIL_WORD);
+			continue;
+		}
 
+		if (res_it->IsAtBeginningOf(tesseract::RIL_PARA)) {
+			if (para_open) {
+				html_str << "</p>";
+				pcnt++;
+			}
+			html_str << "<p>";
+			para_open = true;
+		}
 
+		// Now, process the word...
+		const char *font_name;
+		bool bold, italic, underlined, monospace, serif, smallcaps;
+		int pointsize, font_id;
+		font_name = res_it->WordFontAttributes(&bold, &italic, &underlined,
+				&monospace, &serif, &smallcaps, &pointsize, &font_id);
+
+		float confidence = res_it->Confidence(tesseract::RIL_WORD);
+		bool addConfidence = false;
+
+		if (italic && !isItalic) {
+			html_str << "<strong>";
+			isItalic = true;
+		} else if (!italic && isItalic) {
+			html_str << "</strong>";
+			isItalic = false;
+		}
+
+		char* word = res_it->GetUTF8Text(tesseract::RIL_WORD);
+		bool isSpace = strcmp(word, " ") == 0;
+		delete[] word;
+		if (confidence < minConfidenceToShowColor && !isSpace) {
+			addConfidence = true;
+			html_str << "<font conf='";
+			html_str << (int) confidence;
+			html_str << "' color='#DE2222'>";
+		}
+
+		do {
+			const char *grapheme = res_it->GetUTF8Text(tesseract::RIL_SYMBOL);
+			if (grapheme && grapheme[0] != 0) {
+				if (grapheme[1] == 0) {
+					switch (grapheme[0]) {
+					case '<':
+						html_str << "&lt;";
+						break;
+					case '>':
+						html_str << "&gt;";
+						break;
+					case '&':
+						html_str << "&amp;";
+						break;
+					case '"':
+						html_str << "&quot;";
+						break;
+					case '\'':
+						html_str << "&#39;";
+						break;
+					default:
+						html_str << grapheme;
+						break;
+					}
+				} else {
+					html_str << grapheme;
+				}
+			}
+			delete[] grapheme;
+			res_it->Next(tesseract::RIL_SYMBOL);
+		} while (!res_it->Empty(tesseract::RIL_BLOCK)
+				&& !res_it->IsAtBeginningOf(tesseract::RIL_WORD));
+
+		if (addConfidence == true) {
+			html_str << "</font>";
+		}
+
+		html_str << " ";
+	}
+	if (isItalic) {
+		html_str << "</strong>";
+	}
+	if (para_open) {
+		html_str << "</p>";
+		pcnt++;
+	}
+	return html_str.str();
+}

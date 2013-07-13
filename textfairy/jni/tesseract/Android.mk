@@ -15,6 +15,8 @@ LOCAL_SRC_FILES := \
 
 LOCAL_C_INCLUDES := \
   $(LEPTONICA_PATH)/src
+  
+  
 
 LOCAL_CFLAGS := \
   -DHAVE_LIBLEPT
@@ -427,16 +429,28 @@ LOCAL_C_INCLUDES += \
 LOCAL_CFLAGS += \
   -DHAVE_LIBLEPT
 
-# jni
 
-LOCAL_SRC_FILES += \
-  $(REAL_LOCAL_PATH)/ocr.cpp
+LOCAL_EXPORT_C_INCLUDES := \
+  $(TESSERACT_PATH)/api \
+  $(TESSERACT_PATH)/ccutil \
+  $(TESSERACT_PATH)/ccstruct \
+  $(TESSERACT_PATH)/image \
+  $(TESSERACT_PATH)/viewer \
+  $(TESSERACT_PATH)/dict \
+  $(TESSERACT_PATH)/classify \
+  $(TESSERACT_PATH)/wordrec \
+  $(TESSERACT_PATH)/cutil \
+  $(TESSERACT_PATH)/textord \
+  $(TESSERACT_PATH)/ccmain \
+
 
 LOCAL_C_INCLUDES += \
   $(REAL_LOCAL_PATH) \
-  $(IMAGE_PROCESSING_PATH) \
   $(TESSERACT_PATH)/api \
   $(LEPTONICA_PATH)/src
+#  $(IMAGE_PROCESSING_PATH) \
+
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 
 LOCAL_LDLIBS += \
   -ljnigraphics \
@@ -445,6 +459,6 @@ LOCAL_LDLIBS += \
 # common
 
 LOCAL_PRELINK_MODULE := false
-LOCAL_SHARED_LIBRARIES := liblept libimage_processing
+LOCAL_SHARED_LIBRARIES := liblept
 
 include $(BUILD_SHARED_LIBRARY)

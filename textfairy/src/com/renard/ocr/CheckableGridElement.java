@@ -60,6 +60,7 @@ public class CheckableGridElement extends RelativeLayout implements Checkable {
 
 	private static int ANIMATION_DURATION = 200;
 	private final long TAP_ANIMATINO_DURATION;
+	@SuppressWarnings("unused")
 	private final String LOG_TAG = CheckableGridElement.class.getSimpleName();
 
 	public interface OnCheckedChangeListener {
@@ -95,10 +96,6 @@ public class CheckableGridElement extends RelativeLayout implements Checkable {
 
 	public void setOnCheckedChangeListener(OnCheckedChangeListener listener) {
 		mListener = listener;
-	}
-
-	private void privateInvalidate() {
-		this.invalidate();
 	}
 
 	/**

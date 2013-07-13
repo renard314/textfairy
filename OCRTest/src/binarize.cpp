@@ -127,7 +127,7 @@ Pix* createEdgeMask(Pix* pixs) {
 }
 
 /**
- * determines and applies a threshhold for each tile seperately
+ * determines and applies a threshold for each tile separately
  */
 Pix* binarizeTiled(Pix* pixs, const l_uint32 tileSize) {
 	L_TIMER timer = startTimerNested();

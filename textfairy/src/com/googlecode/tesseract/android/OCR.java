@@ -51,8 +51,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	static {
 		System.loadLibrary("gnustl_shared");		
 		System.loadLibrary("lept");
-		System.loadLibrary("image_processing");
 		System.loadLibrary("tess");
+		System.loadLibrary("image_processing");
+		System.loadLibrary("ocr");
 		nativeInit();
 
 	}

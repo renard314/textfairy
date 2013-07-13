@@ -9,13 +9,13 @@ LOCAL_SRC_FILES := binarize.cpp pageseg.cpp util.cpp
 LOCAL_C_INCLUDES := $(LEPTONICA_PATH)/src
 
 
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)
 
 LOCAL_LDLIBS += \
   -llog \
   -lstdc++ \
  
 LOCAL_PRELINK_MODULE := false  
-LOCAL_SHARED_LIBRARIES := liblept
+LOCAL_SHARED_LIBRARIES := liblept libtess
 
 include $(BUILD_SHARED_LIBRARY)

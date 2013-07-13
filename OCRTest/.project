@@ -3,7 +3,6 @@
 	<name>OCRTest</name>
 	<comment></comment>
 	<projects>
-		<project>tesseract-ocr-read-only</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

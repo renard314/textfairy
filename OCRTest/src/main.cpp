@@ -30,108 +30,6 @@
 using namespace std;
 using namespace tesseract;
 
-char* GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceToShowColor) {
-	  int lcnt = 1, bcnt = 1, pcnt = 1, wcnt = 1;
-
-	  STRING html_str("");
-	  bool isItalic = false;
-	  bool isBold = false;
-
-
-	  for (; !res_it->Empty(tesseract::RIL_BLOCK); wcnt++) {
-	    if (res_it->Empty(tesseract::RIL_WORD)) {
-	      res_it->Next(tesseract::RIL_WORD);
-	      continue;
-	    }
-
-	    // Open any new block/paragraph/textline.
-	    if (res_it->IsAtBeginningOf(tesseract::RIL_BLOCK)) {
-	    	html_str +="<div>";
-	    }
-	    if (res_it->IsAtBeginningOf(tesseract::RIL_PARA)){
-	    	html_str += "<p>";
-	    }
-
-	    // Now, process the word...
-	    const char *font_name;
-	    bool bold, italic, underlined, monospace, serif, smallcaps;
-	    int pointsize, font_id;
-	    font_name = res_it->WordFontAttributes(&bold, &italic, &underlined,
-	                                           &monospace, &serif, &smallcaps,
-	                                           &pointsize, &font_id);
-	    bool last_word_in_line = res_it->IsAtFinalElement(tesseract::RIL_TEXTLINE, tesseract::RIL_WORD);
-	    bool last_word_in_para = res_it->IsAtFinalElement(tesseract::RIL_PARA, tesseract::RIL_WORD);
-	    bool last_word_in_block = res_it->IsAtFinalElement(tesseract::RIL_BLOCK, tesseract::RIL_WORD);
-
-	    float confidence = res_it->Confidence(tesseract::RIL_WORD);
-		bool addConfidence = false;
-		if (  confidence<minConfidenceToShowColor && res_it->GetUTF8Text(tesseract::RIL_WORD)!=" "){
-			addConfidence = true;
-			html_str.add_str_int("<font conf='", (int)confidence);
-			html_str += "' color='#DE2222'>";
-		}
-
-		/*
-		if (!isBold && bold) {
-			html_str += "<em>";
-			isBold = true;
-		}
-		*/
-
-	    if (!isItalic && italic) {
-	    	html_str += "<strong>";
-	    	isItalic =  true;
-	    }
-	    do {
-	      const char *grapheme = res_it->GetUTF8Text(tesseract::RIL_SYMBOL);
-	      if (grapheme && grapheme[0] != 0) {
-	        if (grapheme[1] == 0) {
-	          switch (grapheme[0]) {
-	            case '<': html_str += "&lt;"; break;
-	            case '>': html_str += "&gt;"; break;
-	            case '&': html_str += "&amp;"; break;
-	            case '"': html_str += "&quot;"; break;
-	            case '\'': html_str += "&#39;"; break;
-	            default: html_str += grapheme; break;
-	          }
-	        } else {
-	        	html_str += grapheme;
-	        }
-	      }
-	      delete []grapheme;
-	      res_it->Next(tesseract::RIL_SYMBOL);
-	    } while (!res_it->Empty(tesseract::RIL_BLOCK) && !res_it->IsAtBeginningOf(tesseract::RIL_WORD));
-
-	    if ((isItalic &&addConfidence==true) || (!italic && isItalic) || (isItalic && (last_word_in_block || last_word_in_para))){
-	    	html_str += "</strong>";
-	    	isItalic = false;
-	    }
-	    /*
-	    if ((!bold && isBold) || (isBold && (last_word_in_block || last_word_in_para))){
-	    	html_str += "</em>";
-	    	isBold = false;
-	    }
-	    */
-		if (addConfidence==true){
-			html_str += "</font>";
-		}
-
-	    html_str += " ";
-
-	    if (last_word_in_para) {
-	    	html_str += "</p>";
-	    	pcnt++;
-	    }
-	    if (last_word_in_block) {
-	    	html_str += "</div>";
-	    	bcnt++;
-	    }
-	  }
-	  char *ret = new char[html_str.length() + 1];
-	  strcpy(ret, html_str.string());
-	  delete res_it;
-	  return ret;
-}
 
 void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s,
 		bool debug = false) {
@@ -146,7 +44,7 @@ void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s,
 	//const char* debugText = api.GetUTF8Text();
 	api.Recognize(monitor);
 	ResultIterator* it = api.GetIterator();
-	const char* debugText = GetHTMLText(it, 70);
+	std::string debugText = GetHTMLText(it, 70);
 	*s << debugText;
 	if (debug) {
 //		std::cout<<"html: " <<utf8text<<std::endl;
@@ -154,7 +52,6 @@ void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s,
 		std::cout << "ocr: " << stopTimer() << std::endl << "confidence: "
 				<< api.MeanTextConf() << std::endl;
 	}
-	delete[] debugText;
 //	delete[] utf8text;
 //	delete[] hocrtext;
 	api.End();

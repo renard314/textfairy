@@ -32,7 +32,7 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.292891919" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.260343876" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/leptonica-1.68/src"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/tesseract-ocr-read-only}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/local/include/tesseract"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1542995098" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -93,9 +93,7 @@
 					</sourceEntries>
 				</configuration>
 			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
-				<externalSettings containerId="tesseract-ocr-read-only;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
-			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 		</cconfiguration>
