@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +30,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -37,12 +38,9 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.text.Html;
@@ -97,28 +95,88 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 	private final static int REQUEST_CODE_CROP_PHOTO = 2;
 	protected final static int REQUEST_CODE_OCR = 3;
 
+	private static final String DATE_CAMERA_INTENT_STARTED_STATE = "your.package.android.photo.TakePhotoActivity.dateCameraIntentStarted";
+	private static Date dateCameraIntentStarted = null;
+	private static final String CAMERA_PIC_URI_STATE = "your.package.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
+	private static Uri cameraPicUri = null;
+	private static final String ROTATE_X_DEGREES_STATE = "your.package.android.photo.TakePhotoActivity.ROTATE_X_DEGREES_STATE";
+	private static int rotateXDegrees = 0;
+
+	
+	private static class CameraResult {
+		public CameraResult(int requestCode, int resultCode, Intent data) {
+			mRequestCode = requestCode;
+			mResultCode = resultCode;
+			mData = data;
+		}
+		private int mRequestCode;
+		private int mResultCode;
+		private Intent mData;	
+	}
+	
 	protected abstract int getParentId();
 
 	ProgressDialog pdfProgressDialog;
 	ProgressDialog deleteProgressdialog;
-
-	private File getTmpPhotoFile() {
-		return new File(Environment.getExternalStorageDirectory(), "TmpPic.jpg");
+	private AsyncTask<Void, Void, Pix> mBitmapLoadTask;
+	private CameraResult mCameraResult;
+	
+	protected void startGallery() {
+		cameraPicUri = null;
+		Intent i = new Intent(Intent.ACTION_GET_CONTENT, null);
+		i.setType("image/*");
+		// File photo = getTmpPhotoFile();
+		// i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
+		startActivityForResult(i, REQUEST_CODE_PICK_PHOTO);
 	}
 
 	protected void startCamera() {
-		Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-		File photo = getTmpPhotoFile();
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
-		startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
+		try {
+			cameraPicUri = null;
+			dateCameraIntentStarted = new Date();
+			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			// NOTE: Do NOT SET: intent.putExtra(MediaStore.EXTRA_OUTPUT,
+			// cameraPicUri) on Samsung Galaxy S2/S3/.. for the following
+			// reasons:
+			// 1.) it will break the correct picture orientation
+			// 2.) the photo will be stored in two locations (the given path and
+			// additionally in the MediaStore)
+			String manufacturer = android.os.Build.MANUFACTURER.toLowerCase();
+			if (!(manufacturer.contains("samsung")) && !(manufacturer.contains("sony"))) {
+				String filename = System.currentTimeMillis() + ".jpg";
+				ContentValues values = new ContentValues();
+				values.put(MediaStore.Images.Media.TITLE, filename);
+				cameraPicUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
+			}
+			startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
+		} catch (ActivityNotFoundException e) {
+			showFileError(R.string.error_could_not_take_photo);
+		}
 	}
 
-	protected void startGallery() {
-		Intent i = new Intent(Intent.ACTION_GET_CONTENT, null);
-		i.setType("image/*");
-		File photo = getTmpPhotoFile();
-		i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
-		startActivityForResult(i, REQUEST_CODE_PICK_PHOTO);
+	@Override
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		if (dateCameraIntentStarted != null) {
+			savedInstanceState.putLong(DATE_CAMERA_INTENT_STARTED_STATE, dateCameraIntentStarted.getTime());
+		}
+		if (cameraPicUri != null) {
+			savedInstanceState.putString(CAMERA_PIC_URI_STATE, cameraPicUri.toString());
+		}
+		savedInstanceState.putInt(ROTATE_X_DEGREES_STATE, rotateXDegrees);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		if (savedInstanceState.containsKey(DATE_CAMERA_INTENT_STARTED_STATE)) {
+			dateCameraIntentStarted = new Date(savedInstanceState.getLong(DATE_CAMERA_INTENT_STARTED_STATE));
+		}
+		if (savedInstanceState.containsKey(CAMERA_PIC_URI_STATE)) {
+			cameraPicUri = Uri.parse(savedInstanceState.getString(CAMERA_PIC_URI_STATE));
+		}
+		rotateXDegrees = savedInstanceState.getInt(ROTATE_X_DEGREES_STATE);
 	}
 
 	@Override
@@ -141,10 +199,109 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		return true;
 	}
 
+	private void onTakePhotoActivityResult(int requestCode, int resultCode, Intent intent) {
+		if (resultCode == RESULT_OK) {
+			if (requestCode == REQUEST_CODE_MAKE_PHOTO) {
+				Cursor myCursor = null;
+				Date dateOfPicture = null;
+				try {
+					// Create a Cursor to obtain the file Path for the large
+					// image
+					String[] largeFileProjection = { MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.ORIENTATION,
+							MediaStore.Images.ImageColumns.DATE_TAKEN };
+					String largeFileSort = MediaStore.Images.ImageColumns._ID + " DESC";
+					myCursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, largeFileProjection, null, null, largeFileSort);
+					myCursor.moveToFirst();
+					// This will actually give you the file path location of the
+					// image.
+					String largeImagePath = myCursor.getString(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+					Uri tempCameraPicUri = Uri.fromFile(new File(largeImagePath));
+					if (tempCameraPicUri != null) {
+						dateOfPicture = new Date(myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)));
+						if (dateOfPicture != null && dateOfPicture.after(dateCameraIntentStarted)) {
+							cameraPicUri = tempCameraPicUri;
+							rotateXDegrees = myCursor.getInt(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.ORIENTATION));
+						}
+					}
+				} catch (Exception e) {
+					// Log.w("TAG",
+					// "Exception - optaining the picture's uri failed: " +
+					// e.toString());
+				} finally {
+					if (myCursor != null) {
+						myCursor.close();
+					}
+				}
+			}
+
+			if (cameraPicUri == null) {
+				try {
+					cameraPicUri = intent.getData();
+				} catch (Exception e) {
+					showFileError(R.string.error_could_not_take_photo);
+				}
+			}
+
+			if (cameraPicUri != null) {
+				loadBitmapFromContentUri(cameraPicUri);
+				return;
+			} else {
+				showFileError(R.string.error_could_not_take_photo);
+			}
+		}
+	}
+
+	private void loadBitmapFromContentUri(final Uri cameraPicUri) {
+		if (mBitmapLoadTask != null) {
+			mBitmapLoadTask.cancel(true);
+		}
+		mBitmapLoadTask = new AsyncTask<Void, Void, Pix>() {
+			ProgressDialogFragment progressDialog;
+
+			protected void onPreExecute() {
+				progressDialog = ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image);
+				progressDialog.show(getSupportFragmentManager(), "load_image_progress");
+			};
+
+			protected void onPostExecute(Pix p) {
+				if (p != null) {
+					progressDialog.dismiss();
+					Intent actionIntent = new Intent(BaseDocumentActivitiy.this, CropImage.class);
+					actionIntent.putExtra(EXTRA_NATIVE_PIX, p.getNativePix());
+					actionIntent.putExtra(EXTRA_ROTATION, rotateXDegrees);
+					startActivityForResult(actionIntent, REQUEST_CODE_CROP_PHOTO);
+				} else {
+					showFileError(R.string.error_could_not_take_photo);
+				}
+			};
+
+			@Override
+			protected Pix doInBackground(Void... params) {
+				try {
+					Pix p = null;
+					String pathForUri = Util.getPathForUri(BaseDocumentActivitiy.this, cameraPicUri);
+					//MediaStore loves to crash with an oom exception. So we try to load bitmap nativly if it is on internal storage
+					if (pathForUri!=null && pathForUri.startsWith("http")){
+						Bitmap b = MediaStore.Images.Media.getBitmap(getContentResolver(), cameraPicUri);
+						p = ReadFile.readBitmap(b);
+						b.recycle();						
+					} else {
+						File imageFile = new File(pathForUri);
+						p = ReadFile.readFile(imageFile);						
+					}
+					return p;
+				} catch (FileNotFoundException e) {
+					return null;
+				} catch (IOException e) {
+					return null;
+				}
+			}
+		}.execute();
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (RESULT_OK == resultCode) {
-			Pix p = null;
 			switch (requestCode) {
 			case REQUEST_CODE_CROP_PHOTO: {
 				int nativePix = data.getIntExtra(EXTRA_NATIVE_PIX, 0);
@@ -152,108 +309,32 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 				intent.putExtra(EXTRA_NATIVE_PIX, nativePix);
 				intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
 				startActivityForResult(intent, REQUEST_CODE_OCR);
-
 				break;
 			}
-			case REQUEST_CODE_MAKE_PHOTO: {
-				int[] degree = new int[1];
-				File photo = getTmpPhotoFile();
-				if (photo.exists()) {
-					/* also gets rotation info from exif data */
-					p = readImageFromFile(photo, degree);
-					photo.delete();
-					if (p != null) {
-						Intent intent = new Intent(this, CropImage.class);
-						intent.putExtra(EXTRA_NATIVE_PIX, p.getNativePix());
-						intent.putExtra(EXTRA_ROTATION, degree[0]);
-						startActivityForResult(intent, REQUEST_CODE_CROP_PHOTO);
-					} else {
-						showFileError();
-					}
-				} else {
-					showFileError();
-				}
-				break;
-			}
-			case REQUEST_CODE_PICK_PHOTO: {
-				int[] degree = new int[1];
-				/* also gets rotation info from exif data */
-				if (data != null) {
-					Uri fileUri = data.getData();
-					if (fileUri == null) {
-						fileUri = Uri.parse(data.getAction());
-					}
-					p = readImageFromUri(fileUri, degree);
-					if (p != null) {
-						Intent intent = new Intent(this, CropImage.class);
-						intent.putExtra(EXTRA_NATIVE_PIX, p.getNativePix());
-						intent.putExtra(EXTRA_ROTATION, degree[0]);
-						startActivityForResult(intent, REQUEST_CODE_CROP_PHOTO);
-					} else {
-						showFileError();
-					}
-				}
-				break;
-
-			}
+			case REQUEST_CODE_MAKE_PHOTO:
+			case REQUEST_CODE_PICK_PHOTO:
+				mCameraResult = new CameraResult(requestCode,resultCode,data);				
+				break;			
 			}
 		}
 	}
+	
+	protected void onPostResume() {
+		super.onPostResume();
+		if (mCameraResult!=null){
+			onTakePhotoActivityResult(mCameraResult.mRequestCode, mCameraResult.mResultCode, mCameraResult.mData);
+			mCameraResult = null;
+		}		
+	};
 
-	private void showFileError() {
+	private void showFileError(int stringId) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle(R.string.error_title);
 		final TextView textview = new TextView(this);
-		textview.setText(R.string.error_load_file);
+		textview.setText(stringId);
 		alert.setView(textview);
-
 		alert.setPositiveButton(android.R.string.ok, null);
 		alert.show();
-	}
-
-	private Pix readImageFromFile(final File imageFile, int[] degree) {
-		degree[0] = Util.getExifOrientation(imageFile.getAbsolutePath());
-		try {
-			return ReadFile.readFile(imageFile);
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
-	}
-
-	private Pix readImageFromUri(Uri imageUri, int[] degree) {
-		InputStream is = null;
-		String path = Util.getPathForUri(this, imageUri);
-		if (path == null) {
-			try {
-				BitmapFactory.Options options = new Options();
-				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-				options.inScaled = false;
-				is = getContentResolver().openInputStream(imageUri);
-				final Bitmap bitmap = BitmapFactory.decodeStream(is, null, options);
-				if (bitmap != null) {
-					final Pix p = ReadFile.readBitmap(bitmap);
-					bitmap.recycle();
-					return p;
-				}
-				return null;
-			} catch (FileNotFoundException e1) {
-				return null;
-			} finally {
-				if (is != null) {
-					try {
-						is.close();
-					} catch (IOException ignored) {
-					}
-				}
-			}
-		}
-		File file = new File(path);
-		degree[0] = Util.getExifOrientation(path);
-		try {
-			return ReadFile.readFile(file);
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
 	}
 
 	@Override
@@ -464,7 +545,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
 		private Pair<File, File> createPDF(File dir, long documentId) {
 
-			Cursor cursor = getContentResolver().query(DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?", new String[] { String.valueOf(documentId), String.valueOf(documentId) }, "created ASC");
+			Cursor cursor = getContentResolver().query(DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?",
+					new String[] { String.valueOf(documentId), String.valueOf(documentId) }, "created ASC");
 			cursor.moveToFirst();
 
 			int index = cursor.getColumnIndex(Columns.TITLE);
@@ -474,7 +556,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
 			mCurrentDocumentName = fileName;
 			mCurrentPageCount = cursor.getCount();
-			String[] images = new String[cursor.getCount()];			
+			String[] images = new String[cursor.getCount()];
 			String[] hocr = new String[cursor.getCount()];
 			cursor.moveToPosition(-1);
 			while (cursor.moveToNext()) {
@@ -484,7 +566,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 				images[cursor.getPosition()] = Util.getPathForUri(BaseDocumentActivitiy.this, imageUri);
 				index = cursor.getColumnIndex(Columns.OCR_TEXT);
 				final String text = cursor.getString(index);
-				if (text != null && text.length()>0) {
+				if (text != null && text.length() > 0) {
 					hocr[cursor.getPosition()] = cursor.getString(index);
 					FileWriter writer;
 					try {
@@ -604,7 +686,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			int progress = 0;
 			for (Integer id : mIds) {
 				try {
-					Cursor c = client.query(DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?", new String[] { String.valueOf(id), String.valueOf(id) }, Columns.PARENT_ID + " ASC");
+					Cursor c = client.query(DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?",
+							new String[] { String.valueOf(id), String.valueOf(id) }, Columns.PARENT_ID + " ASC");
 
 					while (c.moveToNext()) {
 						count += deleteDocument(c, client);

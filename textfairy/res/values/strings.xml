@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+    <string name="please_wait">Please wait</string>
+    <string name="loading_image">Loading image..</string>
     <string name="please_tap_on_column">Please tap on a text column first</string>
     <string name="get_more_languages">Get more languages</string>
     <string name="aborts_scan">Aborts current scan!</string>
@@ -43,7 +45,8 @@
     <string name="edit_title">Change title</string>
     <string name="cancel">Cancel</string>
     <string name="edit_dialog_title">Enter a title for your document</string>
-    <string name="delete_error">Sorry I could not delete this document</string>
+    <string name="delete_error">Sorry, I could not delete this document</string>
+    <string name="error_could_not_take_photo">Sorry, I could not read the photo</string>
     <string name="empty"/>
     <string name="cropping_image">Cropping image</string>
     <string name="error_title">Error</string>

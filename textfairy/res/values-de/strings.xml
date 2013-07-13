@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources xmlns="http://schemas.android.com/apk/res/android">
+    <string name="please_wait">Bitte warte</string>
+    <string name="loading_image">Dein Bild wird geladen..</string>
     <string name="please_tap_on_column">Tappe erst auf die gewünschten Textspalten!</string>
     <string name="get_more_languages">Lade weitere Sprachen.</string>
     <string name="aborts_scan">Bricht aktuellen Scan ab!</string>
@@ -44,6 +46,7 @@
     <string name="cancel">Abbrechen</string>
     <string name="edit_dialog_title">Gib einen Titel für dein Dokument ein.</string>
     <string name="delete_error">Sorry, ich konnte das Dokument nicht löschen.</string>
+    <string name="error_could_not_take_photo">Sorry, Ich konnte kein Photo machen</string>
     <string name="empty"/>
     <string name="cropping_image">Bild wird beschnitten.</string>
     <string name="error_title">Fehler</string>

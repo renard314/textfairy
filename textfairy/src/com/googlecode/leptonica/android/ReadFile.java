@@ -169,10 +169,10 @@ public class ReadFile {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
             final int nativePix = nativeReadFile(file.getAbsolutePath());
 
-            if (nativePix == 0)
-                return null;
+            if (nativePix != 0) {
+                return new Pix(nativePix);
+            }
 
-            return new Pix(nativePix);
         }
 		final BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
