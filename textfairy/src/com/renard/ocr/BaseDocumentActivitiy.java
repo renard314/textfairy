@@ -264,8 +264,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			};
 
 			protected void onPostExecute(Pix p) {
+				progressDialog.dismiss();
 				if (p != null) {
-					progressDialog.dismiss();
 					Intent actionIntent = new Intent(BaseDocumentActivitiy.this, CropImage.class);
 					actionIntent.putExtra(EXTRA_NATIVE_PIX, p.getNativePix());
 					actionIntent.putExtra(EXTRA_ROTATION, rotateXDegrees);
@@ -283,8 +283,12 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 					//MediaStore loves to crash with an oom exception. So we try to load bitmap nativly if it is on internal storage
 					if (pathForUri!=null && pathForUri.startsWith("http")){
 						Bitmap b = MediaStore.Images.Media.getBitmap(getContentResolver(), cameraPicUri);
-						p = ReadFile.readBitmap(b);
-						b.recycle();						
+						if (b!=null){
+							p = ReadFile.readBitmap(b);
+							b.recycle();
+						} else {
+							return null;
+						}
 					} else {
 						File imageFile = new File(pathForUri);
 						p = ReadFile.readFile(imageFile);						
