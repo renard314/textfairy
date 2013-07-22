@@ -68,7 +68,7 @@ public class OCRLanguageInstallService extends IntentService {
 				BufferedInputStream in = new BufferedInputStream(fin);
 				FileOutputStream out = openFileOutput("tess-lang.tmp", Context.MODE_PRIVATE);
 				GzipCompressorInputStream gzIn = new GzipCompressorInputStream(in);
-				final byte[] buffer = new byte[2048];
+				final byte[] buffer = new byte[2048*2];
 				int n = 0;
 				while (-1 != (n = gzIn.read(buffer))) {
 					out.write(buffer, 0, n);
@@ -84,16 +84,14 @@ public class OCRLanguageInstallService extends IntentService {
 					entry = tarIn.getNextTarEntry();
 				}
 				if (entry != null) {
-					byte[] content = new byte[(int) entry.getSize()];
-					int bytesRead = 0;
-					while (bytesRead < entry.getSize()) {
-						bytesRead += tarIn.read(content, bytesRead, content.length - bytesRead);
-					}
 					File tessDir = Util.getTrainingDataDir(this);
 					final String langName = entry.getName().substring("tesseract-ocr/tessdata/".length());
 					File trainedData = new File(tessDir, langName);
 					FileOutputStream fout = new FileOutputStream(trainedData);
-					fout.write(content);
+					int len;
+					while ((len = tarIn.read(buffer)) != -1) {
+						fout.write(buffer, 0, len);
+					}
 					fout.close();
 					String lang = langName.substring(0, langName.length() - ".traineddata".length());
 					notifyReceivers(lang);
