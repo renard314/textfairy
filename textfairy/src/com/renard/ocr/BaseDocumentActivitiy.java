@@ -289,7 +289,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 						} else {
 							return null;
 						}
-					} else {
+					} else if (pathForUri!=null) {
 						File imageFile = new File(pathForUri);
 						p = ReadFile.readFile(imageFile);						
 					}

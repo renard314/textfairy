@@ -58,53 +58,64 @@ public class Util {
 	private final static String IMAGE_DIRECTORY = EXTERNAL_APP_DIRECTORY + "/pictures";
 	private final static String PDF_DIRECTORY = EXTERNAL_APP_DIRECTORY + "/pdfs";
 	private final static String OCR_DATA_DIRECTORY = "tessdata";
-	
+
 	private final static String THUMBNAIL_SUFFIX = "png";
 	public final static int MAX_THUMB_WIDTH = 512;
 	public final static int MAX_THUMB_HEIGHT = 512;
 	private static final FastBitmapDrawable NULL_DRAWABLE = new FastBitmapDrawable(null);
 	public static FastBitmapDrawable sDefaultDocumentThumbnail;
 
-	
-	public static int sThumbnailHeight = 0;
-	public static int sThumbnailWidth = 0;
-	
-	public static int determineThumbnailSize(final Activity context, final int[] outNum ){
+	public static int determineThumbnailSize(final Activity context, final int[] outNum) {
 		DisplayMetrics metrics = new DisplayMetrics();
 		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-		
 		final int spacing = context.getResources().getDimensionPixelSize(R.dimen.grid_spacing);
-		int minSize = context.getResources().getDimensionPixelSize(R.dimen.min_grid_size)+spacing;
+		int minSize = context.getResources().getDimensionPixelSize(R.dimen.min_grid_size) + spacing;
 		final int h = metrics.heightPixels;
 		final int w = metrics.widthPixels;
 		final int maxSize = Math.min(h, w) - spacing;
 		minSize = Math.min(maxSize, minSize);
-		final int screenWidth = (w-spacing);
-		final int num = (int) Math.max(2, Math.floor((double) (screenWidth) / minSize));		//i want at least 2 columns. if more than 2 columns are possible each document must be minSize pixels wide
-		
-		
-		int columnWidth = (screenWidth-num*spacing)/num;
-		if (columnWidth > (screenWidth-spacing)){
-			columnWidth = screenWidth-spacing;
+		final int screenWidth = (w - spacing);
+		final int num = (int) Math.max(2, Math.floor((double) (screenWidth) / minSize)); // i
+																							// want
+																							// at
+																							// least
+																							// 2
+																							// columns.
+																							// if
+																							// more
+																							// than
+																							// 2
+																							// columns
+																							// are
+																							// possible
+																							// each
+																							// document
+																							// must
+																							// be
+																							// minSize
+																							// pixels
+																							// wide
+
+		int columnWidth = (screenWidth - num * spacing) / num;
+		if (columnWidth > (screenWidth - spacing)) {
+			columnWidth = screenWidth - spacing;
 		}
-		
-		if (outNum!=null){
+
+		if (outNum != null) {
 			outNum[0] = num;
 		}
 		return columnWidth;
 	}
-	
-		
-	public static void setThumbnailSize(final int w, final int h, final Context c){
-		 Drawable drawable = c.getResources().getDrawable(R.drawable.default_thumbnail);
-		 drawable.setBounds(0,0,w,h);
-		 Bitmap b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-		 final Canvas canvas = new Canvas(b);
-		 drawable.draw(canvas);
-		 sDefaultDocumentThumbnail = new FastBitmapDrawable(b);
-		sThumbnailHeight = h;
-		sThumbnailWidth = w;
+
+	public static void setThumbnailSize(final int w, final int h, final Context c) {
+		Drawable drawable = c.getResources().getDrawable(R.drawable.default_thumbnail);
+		drawable.setBounds(0, 0, w, h);
+		Bitmap b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		final Canvas canvas = new Canvas(b);
+		drawable.draw(canvas);
+		sDefaultDocumentThumbnail = new FastBitmapDrawable(b);
+		PreferencesUtils.saveThumbnailSize(c,w,h);
 	}
 
 	private static class ThumbnailCache extends LruCache<Integer, FastBitmapDrawable> {
@@ -125,7 +136,9 @@ public class Util {
 
 		@Override
 		protected void entryRemoved(boolean evicted, Integer key, FastBitmapDrawable oldValue, FastBitmapDrawable newValue) {
-			oldValue.getBitmap().recycle();
+			if (oldValue != null && oldValue.getBitmap() != null) {
+				oldValue.getBitmap().recycle();
+			}
 		}
 	}
 
@@ -135,7 +148,7 @@ public class Util {
 		Log.i("cache", "loadDocumentThumbnail " + documentId);
 
 		File thumbDir = new File(Environment.getExternalStorageDirectory(), CACHE_DIRECTORY);
-		File thumbFile = new File(thumbDir, String.valueOf(documentId)+ "." + THUMBNAIL_SUFFIX);
+		File thumbFile = new File(thumbDir, String.valueOf(documentId) + "." + THUMBNAIL_SUFFIX);
 		if (thumbFile.exists()) {
 			InputStream stream = null;
 			try {
@@ -174,15 +187,16 @@ public class Util {
 		return drawable == NULL_DRAWABLE ? sDefaultDocumentThumbnail : drawable;
 	}
 
-	public static Bitmap loadBitmap(final Context c, final String imagePath, final int desiredWith, final int desiredHeight){
+	public static Bitmap loadBitmap(final Context c, final String imagePath, final int desiredWith, final int desiredHeight) {
 		int w = Math.min(1024, desiredWith);
 		int h = Math.min(1024, desiredHeight);
-		Bitmap orgBitmap =  Util.decodeFile(imagePath,w, h);
+		Bitmap orgBitmap = Util.decodeFile(imagePath, w, h);
 		return Util.adjustBitmapSize(desiredWith, desiredHeight, orgBitmap);
 	}
-	
+
 	/**
 	 * recycles orgBitmap
+	 * 
 	 * @param width
 	 * @param height
 	 * @param orgBitmap
@@ -265,19 +279,19 @@ public class Util {
 	 */
 	public static String getPathForUri(Context context, Uri uri) {
 		final String scheme = uri.getScheme();
-		if (scheme == null){
+		if (scheme == null) {
 			return uri.getPath();
 		}
 		if (scheme.equals("content")) {
 			ContentResolver resolver = context.getContentResolver();
-			if (resolver==null){
+			if (resolver == null) {
 				return null;
 			}
 			Cursor cursor = resolver.query(uri, null, null, null, null);
 			try {
 				if (cursor.moveToFirst()) {
 					final int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-					if(idx!=-1){
+					if (idx != -1) {
 						String absoluteFilePath = cursor.getString(idx);
 						return absoluteFilePath;
 					}
@@ -286,7 +300,7 @@ public class Util {
 			} finally {
 				cursor.close();
 			}
-		} else if (scheme.equals("file")){
+		} else if (scheme.equals("file")) {
 			return uri.getPath();
 		}
 		return null;
@@ -327,7 +341,7 @@ public class Util {
 		return degree;
 	}
 
-	public static File savePixToSD(final Pix pix,final String name) throws IOException {
+	public static File savePixToSD(final Pix pix, final String name) throws IOException {
 		final String fileName = name + ".jpg";
 
 		File picdir = new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY);
@@ -344,42 +358,42 @@ public class Util {
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
-		
+
 		return image;
 	}
-	
-	private static void createNoMediaFile(final File parentDir){
+
+	private static void createNoMediaFile(final File parentDir) {
 		File noMedia = new File(parentDir, ".nomedia");
 		try {
 			noMedia.createNewFile();
 		} catch (IOException ignore) {
 		}
 	}
-	
+
 	public static File getTrainingDataDir(Context appContext) {
 		String tessDir = PreferencesUtils.getTessDir(appContext);
-		if (tessDir==null){			
-			File parent = new File(Environment.getExternalStorageDirectory(),EXTERNAL_APP_DIRECTORY );
+		if (tessDir == null) {
+			File parent = new File(Environment.getExternalStorageDirectory(), EXTERNAL_APP_DIRECTORY);
 			return new File(parent, Util.OCR_DATA_DIRECTORY);
 		} else {
-			return new File(tessDir,Util.OCR_DATA_DIRECTORY);
+			return new File(tessDir, Util.OCR_DATA_DIRECTORY);
 		}
 	}
-	
 
-	
-	public static String getTessDir(final Context appContext){
-//		String dir = new File(Environment.getExternalStorageDirectory(),EXTERNAL_APP_DIRECTORY ).getPath() + "/";
-//		return dir;
+	public static String getTessDir(final Context appContext) {
+		// String dir = new
+		// File(Environment.getExternalStorageDirectory(),EXTERNAL_APP_DIRECTORY
+		// ).getPath() + "/";
+		// return dir;
 		String tessDir = PreferencesUtils.getTessDir(appContext);
-		if (tessDir==null){
-			return new File(Environment.getExternalStorageDirectory(),EXTERNAL_APP_DIRECTORY ).getPath() + "/";							
+		if (tessDir == null) {
+			return new File(Environment.getExternalStorageDirectory(), EXTERNAL_APP_DIRECTORY).getPath() + "/";
 		} else {
 			return tessDir;
 		}
 	}
-	
-	public static File getPDFDir(){
+
+	public static File getPDFDir() {
 		File dir = new File(Environment.getExternalStorageDirectory(), PDF_DIRECTORY);
 		if (!dir.exists()) {
 			dir.mkdirs();
@@ -395,27 +409,33 @@ public class Util {
 	 */
 	public static void createThumbnail(final Context context, final File image, final int documentId) {
 		Bitmap source = Util.decodeFile(image.getPath(), MAX_THUMB_WIDTH, MAX_THUMB_HEIGHT);
-		//Bitmap thumb =  Util.extractMiniThumb(source, width, height);
-		//final int color = context.getResources().getColor(R.color.document_element_background);
-		Bitmap thumb = Util.adjustBitmapSize(sThumbnailWidth, sThumbnailHeight, source);
+		if (source != null && source.getWidth() > 0 && source.getHeight() > 0) {
+			// Bitmap thumb = Util.extractMiniThumb(source, width, height);
+			// final int color =
+			// context.getResources().getColor(R.color.document_element_background);
+			int thumbnailHeight = PreferencesUtils.getThumbnailHeight(context);
+			int thumbnailWidth = PreferencesUtils.getThumbnailWidth(context);
+			Bitmap thumb = Util.adjustBitmapSize(thumbnailWidth, thumbnailHeight, source);
 
-		if (thumb != null) {
+			if (thumb != null) {
 
-			FastBitmapDrawable drawable = new FastBitmapDrawable(thumb);
-			mCache.put(documentId, drawable);
-			File thumbDir = new File(Environment.getExternalStorageDirectory(), CACHE_DIRECTORY);
-			if (!thumbDir.exists()) {
-				thumbDir.mkdirs();
-				createNoMediaFile(thumbDir);
-			}
-			File thumbFile = new File(thumbDir, String.valueOf(documentId) + "." + THUMBNAIL_SUFFIX);
-			FileOutputStream out;
-			try {
-				out = new FileOutputStream(thumbFile);
-				thumb.compress(Bitmap.CompressFormat.PNG, 85, out);
-			} catch (FileNotFoundException ignore) {
+				FastBitmapDrawable drawable = new FastBitmapDrawable(thumb);
+				mCache.put(documentId, drawable);
+				File thumbDir = new File(Environment.getExternalStorageDirectory(), CACHE_DIRECTORY);
+				if (!thumbDir.exists()) {
+					thumbDir.mkdirs();
+					createNoMediaFile(thumbDir);
+				}
+				File thumbFile = new File(thumbDir, String.valueOf(documentId) + "." + THUMBNAIL_SUFFIX);
+				FileOutputStream out;
+				try {
+					out = new FileOutputStream(thumbFile);
+					thumb.compress(Bitmap.CompressFormat.PNG, 85, out);
+				} catch (FileNotFoundException ignore) {
+				}
 			}
 		}
+
 	}
 
 	// public static File saveImageToSD(Context context, byte[] jpegData, String
@@ -557,186 +577,162 @@ public class Util {
 	// String imagePath = getPathForUri(c, imageUri);
 	// return loadBitmap(width, height, imagePath);
 	// }
-    /*
-     * Compute the sample size as a function of minSideLength
-     * and maxNumOfPixels.
-     * minSideLength is used to specify that minimal width or height of a bitmap.
-     * maxNumOfPixels is used to specify the maximal size in pixels that are tolerable
-     * in terms of memory usage.
-     *
-     * The function returns a sample size based on the constraints.
-     * Both size and minSideLength can be passed in as IImage.UNCONSTRAINED,
-     * which indicates no care of the corresponding constraint.
-     * The functions prefers returning a sample size that
-     * generates a smaller bitmap, unless minSideLength = IImage.UNCONSTRAINED.
-     */
-    
+	/*
+	 * Compute the sample size as a function of minSideLength and
+	 * maxNumOfPixels. minSideLength is used to specify that minimal width or
+	 * height of a bitmap. maxNumOfPixels is used to specify the maximal size in
+	 * pixels that are tolerable in terms of memory usage.
+	 * 
+	 * The function returns a sample size based on the constraints. Both size
+	 * and minSideLength can be passed in as IImage.UNCONSTRAINED, which
+	 * indicates no care of the corresponding constraint. The functions prefers
+	 * returning a sample size that generates a smaller bitmap, unless
+	 * minSideLength = IImage.UNCONSTRAINED.
+	 */
 
-    private static Bitmap transform(Matrix scaler,
-                                   Bitmap source,
-                                   int targetWidth,
-                                   int targetHeight,
-                                   boolean scaleUp) {
-        int deltaX = source.getWidth() - targetWidth;
-        int deltaY = source.getHeight() - targetHeight;
-        if (!scaleUp && (deltaX < 0 || deltaY < 0)) {
-            /*
-             * In this case the bitmap is smaller, at least in one dimension,
-             * than the target.  Transform it by placing as much of the image
-             * as possible into the target and leaving the top/bottom or
-             * left/right (or both) black.
-             */
-            Bitmap b2 = Bitmap.createBitmap(targetWidth, targetHeight,
-                    Bitmap.Config.ARGB_8888);
-            Canvas c = new Canvas(b2);
+	private static Bitmap transform(Matrix scaler, Bitmap source, int targetWidth, int targetHeight, boolean scaleUp) {
+		int deltaX = source.getWidth() - targetWidth;
+		int deltaY = source.getHeight() - targetHeight;
+		if (!scaleUp && (deltaX < 0 || deltaY < 0)) {
+			/*
+			 * In this case the bitmap is smaller, at least in one dimension,
+			 * than the target. Transform it by placing as much of the image as
+			 * possible into the target and leaving the top/bottom or left/right
+			 * (or both) black.
+			 */
+			Bitmap b2 = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888);
+			Canvas c = new Canvas(b2);
 
-            int deltaXHalf = Math.max(0, deltaX / 2);
-            int deltaYHalf = Math.max(0, deltaY / 2);
-            Rect src = new Rect(
-                    deltaXHalf,
-                    deltaYHalf,
-                    deltaXHalf + Math.min(targetWidth, source.getWidth()),
-                    deltaYHalf + Math.min(targetHeight, source.getHeight()));
-            int dstX = (targetWidth  - src.width())  / 2;
-            int dstY = (targetHeight - src.height()) / 2;
-            Rect dst = new Rect(
-                    dstX,
-                    dstY,
-                    targetWidth - dstX,
-                    targetHeight - dstY);
-            c.drawBitmap(source, src, dst, null);
-            return b2;
-        }
-        float bitmapWidthF = source.getWidth();
-        float bitmapHeightF = source.getHeight();
+			int deltaXHalf = Math.max(0, deltaX / 2);
+			int deltaYHalf = Math.max(0, deltaY / 2);
+			Rect src = new Rect(deltaXHalf, deltaYHalf, deltaXHalf + Math.min(targetWidth, source.getWidth()), deltaYHalf + Math.min(targetHeight, source.getHeight()));
+			int dstX = (targetWidth - src.width()) / 2;
+			int dstY = (targetHeight - src.height()) / 2;
+			Rect dst = new Rect(dstX, dstY, targetWidth - dstX, targetHeight - dstY);
+			c.drawBitmap(source, src, dst, null);
+			return b2;
+		}
+		float bitmapWidthF = source.getWidth();
+		float bitmapHeightF = source.getHeight();
 
-        float bitmapAspect = bitmapWidthF / bitmapHeightF;
-        float viewAspect   = (float) targetWidth / targetHeight;
+		float bitmapAspect = bitmapWidthF / bitmapHeightF;
+		float viewAspect = (float) targetWidth / targetHeight;
 
-        if (bitmapAspect > viewAspect) {
-            float scale = targetHeight / bitmapHeightF;
-            if (scale < .9F || scale > 1F) {
-                scaler.setScale(scale, scale);
-            } else {
-                scaler = null;
-            }
-        } else {
-            float scale = targetWidth / bitmapWidthF;
-            if (scale < .9F || scale > 1F) {
-                scaler.setScale(scale, scale);
-            } else {
-                scaler = null;
-            }
-        }
+		if (bitmapAspect > viewAspect) {
+			float scale = targetHeight / bitmapHeightF;
+			if (scale < .9F || scale > 1F) {
+				scaler.setScale(scale, scale);
+			} else {
+				scaler = null;
+			}
+		} else {
+			float scale = targetWidth / bitmapWidthF;
+			if (scale < .9F || scale > 1F) {
+				scaler.setScale(scale, scale);
+			} else {
+				scaler = null;
+			}
+		}
 
-        Bitmap b1;
-        if (scaler != null) {
-            // this is used for minithumb and crop, so we want to filter here.
-            b1 = Bitmap.createBitmap(source, 0, 0,
-                    source.getWidth(), source.getHeight(), scaler, true);
-        } else {
-            b1 = source;
-        }
+		Bitmap b1;
+		if (scaler != null) {
+			// this is used for minithumb and crop, so we want to filter here.
+			b1 = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), scaler, true);
+		} else {
+			b1 = source;
+		}
 
-        int dx1 = Math.max(0, b1.getWidth() - targetWidth);
-        int dy1 = Math.max(0, b1.getHeight() - targetHeight);
+		int dx1 = Math.max(0, b1.getWidth() - targetWidth);
+		int dy1 = Math.max(0, b1.getHeight() - targetHeight);
 
-        Bitmap b2 = Bitmap.createBitmap(
-                b1,
-                dx1 / 2,
-                dy1 / 2,
-                targetWidth,
-                targetHeight);
+		Bitmap b2 = Bitmap.createBitmap(b1, dx1 / 2, dy1 / 2, targetWidth, targetHeight);
 
-        if (b1 != source) {
-            b1.recycle();
-        }
+		if (b1 != source) {
+			b1.recycle();
+		}
 
-        return b2;
-    }
+		return b2;
+	}
 
-    /**
-     * Creates a centered bitmap of the desired size. Recycles the input.
-     * @param source
-     */
-    public static Bitmap extractMiniThumb(
-            Bitmap source, int width, int height) {
-        return Util.extractMiniThumb(source, width, height, true);
-    }
+	/**
+	 * Creates a centered bitmap of the desired size. Recycles the input.
+	 * 
+	 * @param source
+	 */
+	public static Bitmap extractMiniThumb(Bitmap source, int width, int height) {
+		return Util.extractMiniThumb(source, width, height, true);
+	}
 
-    public static Bitmap extractMiniThumb(
-            Bitmap source, int width, int height, boolean recycle) {
-        if (source == null) {
-            return null;
-        }
+	public static Bitmap extractMiniThumb(Bitmap source, int width, int height, boolean recycle) {
+		if (source == null) {
+			return null;
+		}
 
-        float scale;
-        if (source.getWidth() < source.getHeight()) {
-            scale = width / (float) source.getWidth();
-        } else {
-            scale = height / (float) source.getHeight();
-        }
-        Matrix matrix = new Matrix();
-        matrix.setScale(scale, scale);
-        Bitmap miniThumbnail = transform(matrix, source, width, height, true);
+		float scale;
+		if (source.getWidth() < source.getHeight()) {
+			scale = width / (float) source.getWidth();
+		} else {
+			scale = height / (float) source.getHeight();
+		}
+		Matrix matrix = new Matrix();
+		matrix.setScale(scale, scale);
+		Bitmap miniThumbnail = transform(matrix, source, width, height, true);
 
-        if (recycle && miniThumbnail != source) {
-            source.recycle();
-        }
-        return miniThumbnail;
-    }
+		if (recycle && miniThumbnail != source) {
+			source.recycle();
+		}
+		return miniThumbnail;
+	}
 
- 
-    private static class BackgroundJob extends MonitoredActivity.LifeCycleAdapter implements Runnable {
+	private static class BackgroundJob extends MonitoredActivity.LifeCycleAdapter implements Runnable {
 
-        private final MonitoredActivity mActivity;
-        private final ProgressDialog mDialog;
-        private final Runnable mJob;
-        private final Handler mHandler;
-        private final Runnable mCleanupRunner = new Runnable() {
-            public void run() {
-                mActivity.removeLifeCycleListener(BackgroundJob.this);
-                if (mDialog.getWindow() != null) mDialog.dismiss();
-            }
-        };
+		private final MonitoredActivity mActivity;
+		private final ProgressDialog mDialog;
+		private final Runnable mJob;
+		private final Handler mHandler;
+		private final Runnable mCleanupRunner = new Runnable() {
+			public void run() {
+				mActivity.removeLifeCycleListener(BackgroundJob.this);
+				if (mDialog.getWindow() != null)
+					mDialog.dismiss();
+			}
+		};
 
-        public BackgroundJob(MonitoredActivity activity, Runnable job,
-                ProgressDialog dialog, Handler handler) {
-            mActivity = activity;
-            mDialog = dialog;
-            mJob = job;
-            mActivity.addLifeCycleListener(this);
-            mHandler = handler;
-        }
+		public BackgroundJob(MonitoredActivity activity, Runnable job, ProgressDialog dialog, Handler handler) {
+			mActivity = activity;
+			mDialog = dialog;
+			mJob = job;
+			mActivity.addLifeCycleListener(this);
+			mHandler = handler;
+		}
 
-        public void run() {
-            try {
-                mJob.run();
-            } finally {
-                mHandler.post(mCleanupRunner);
-            }
-        }
+		public void run() {
+			try {
+				mJob.run();
+			} finally {
+				mHandler.post(mCleanupRunner);
+			}
+		}
 
+		@Override
+		public void onActivityDestroyed(MonitoredActivity activity) {
+			// We get here only when the onDestroyed being called before
+			// the mCleanupRunner. So, run it now and remove it from the queue
+			mCleanupRunner.run();
+			mHandler.removeCallbacks(mCleanupRunner);
+		}
 
-        @Override
-        public void onActivityDestroyed(MonitoredActivity activity) {
-            // We get here only when the onDestroyed being called before
-            // the mCleanupRunner. So, run it now and remove it from the queue
-            mCleanupRunner.run();
-            mHandler.removeCallbacks(mCleanupRunner);
-        }
+		@Override
+		public void onActivityStopped(MonitoredActivity activity) {
+			mDialog.hide();
+		}
 
-        @Override
-        public void onActivityStopped(MonitoredActivity activity) {
-            mDialog.hide();
-        }
+		@Override
+		public void onActivityStarted(MonitoredActivity activity) {
+			mDialog.show();
+		}
+	}
 
-        @Override
-        public void onActivityStarted(MonitoredActivity activity) {
-            mDialog.show();
-        }
-    }
-    
 	/**
 	 * @return the free space on sdcard in bytes
 	 */
@@ -751,13 +747,11 @@ public class Util {
 		}
 	}
 
-    public static void startBackgroundJob(MonitoredActivity activity,
-            String title, String message, Runnable job, Handler handler) {
-        // Make the progress dialog uncancelable, so that we can gurantee
-        // the thread will be done before the activity getting destroyed.
-        ProgressDialog dialog = ProgressDialog.show(
-                activity, title, message, true, false);
-        new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
-    }  
+	public static void startBackgroundJob(MonitoredActivity activity, String title, String message, Runnable job, Handler handler) {
+		// Make the progress dialog uncancelable, so that we can gurantee
+		// the thread will be done before the activity getting destroyed.
+		ProgressDialog dialog = ProgressDialog.show(activity, title, message, true, false);
+		new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
+	}
 
 }

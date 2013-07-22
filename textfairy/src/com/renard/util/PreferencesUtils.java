@@ -15,8 +15,6 @@
  */
 package com.renard.util;
 
-import java.io.File;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -41,6 +39,8 @@ public class PreferencesUtils {
 	private static final String PREFERENCES_OCR_LANG_DISPLAY = "ocr_language_display";
 
 	public final static String PREFERENCES_KEY = "text_preferences";
+	private static final String PREFERENCES_THUMBNAIL_HEIGHT = "thumbnail_width";
+	private static final String PREFERENCES_THUMBNAIL_WIDTH = "thumbnail_height";
 
 	public static void initPreferencesWithDefaultsIfEmpty(Context appContext) {
 		SharedPreferences prefs = getPreferences(appContext);
@@ -206,6 +206,24 @@ public class PreferencesUtils {
 
 	public static SharedPreferences getPreferences(Context applicationContext) {
 		return applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
+	}
+
+	public static int getThumbnailWidth(Context context) {
+		SharedPreferences prefs = getPreferences(context);
+		return prefs.getInt(PREFERENCES_THUMBNAIL_WIDTH, 20);		
+	}
+
+	public static int getThumbnailHeight(Context context) {
+		SharedPreferences prefs = getPreferences(context);
+		return prefs.getInt(PREFERENCES_THUMBNAIL_HEIGHT, 20);
+	}
+
+	public static void saveThumbnailSize(Context context, int w, int h) {
+		SharedPreferences prefs = getPreferences(context);
+		Editor edit = prefs.edit();
+		edit.putInt(PREFERENCES_THUMBNAIL_WIDTH, w);
+		edit.putInt(PREFERENCES_THUMBNAIL_HEIGHT, h);
+		edit.apply();
 	}
 
 }
