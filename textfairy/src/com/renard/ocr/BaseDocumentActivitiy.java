@@ -264,7 +264,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			};
 
 			protected void onPostExecute(Pix p) {
-				if (progressDialog.isVisible()) {
+				if (!progressDialog.isDetached()) {
 					try {
 						progressDialog.dismiss();
 					} catch (NullPointerException e) {

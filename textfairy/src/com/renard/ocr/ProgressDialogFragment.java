@@ -1,13 +1,14 @@
 package com.renard.ocr;
 
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class ProgressDialogFragment extends DialogFragment {
-	
+
 	private static final String MESSAGE_ID = "message_id";
 	private static final String TITLE_ID = "title_id";
 
@@ -19,7 +20,7 @@ public class ProgressDialogFragment extends DialogFragment {
 		progressDialogFragment.setArguments(args);
 		return progressDialogFragment;
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -27,20 +28,26 @@ public class ProgressDialogFragment extends DialogFragment {
 			outState.putBoolean("bug:fix", true);
 		}
 	}
-	
 	@Override
-	public Dialog onCreateDialog(final Bundle savedInstanceState) {
-		FragmentActivity activity = getActivity();
-	    final ProgressDialog dialog = new ProgressDialog(activity);
-	    Bundle arguments = getArguments();
-	    if (arguments!=null){
-	    	int titleId = arguments.getInt(TITLE_ID);
-	    	int messageId = arguments.getInt(MESSAGE_ID);
-		    dialog.setTitle(titleId);	    	
-		    dialog.setMessage(activity.getText(messageId));
-	    }
-	    dialog.setIndeterminate(true);
-	    dialog.setCancelable(false);
-	    return dialog;
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setStyle(DialogFragment.STYLE_NO_TITLE,getTheme());
 	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.progress_dialog, container, false);
+
+		Bundle arguments = getArguments();
+		if (arguments != null) {
+			int titleId = arguments.getInt(TITLE_ID);
+			int messageId = arguments.getInt(MESSAGE_ID);
+			TextView title = (TextView) view.findViewById(R.id.title);
+			TextView message = (TextView) view.findViewById(R.id.message);
+			title.setText(titleId);
+			message.setText(messageId);
+		}
+		return view;
+	}
+
 }
