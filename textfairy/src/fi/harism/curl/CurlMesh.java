@@ -675,7 +675,7 @@ public class CurlMesh {
 	 * Sets new texture for this mesh.
 	 */
 	public synchronized void setBitmap(Bitmap bitmap) {
-		if (DRAW_TEXTURE && bitmap!=null) {
+		if (DRAW_TEXTURE && bitmap!=null && !bitmap.isRecycled()) {
 			// Bitmap original size.
 			int w = bitmap.getWidth();
 			int h = bitmap.getHeight();
