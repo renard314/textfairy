@@ -102,25 +102,25 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 	private static final String ROTATE_X_DEGREES_STATE = "your.package.android.photo.TakePhotoActivity.ROTATE_X_DEGREES_STATE";
 	private static int rotateXDegrees = 0;
 
-	
 	private static class CameraResult {
 		public CameraResult(int requestCode, int resultCode, Intent data) {
 			mRequestCode = requestCode;
 			mResultCode = resultCode;
 			mData = data;
 		}
+
 		private int mRequestCode;
 		private int mResultCode;
-		private Intent mData;	
+		private Intent mData;
 	}
-	
+
 	protected abstract int getParentId();
 
 	ProgressDialog pdfProgressDialog;
 	ProgressDialog deleteProgressdialog;
 	private AsyncTask<Void, Void, Pix> mBitmapLoadTask;
 	private CameraResult mCameraResult;
-	
+
 	protected void startGallery() {
 		cameraPicUri = null;
 		Intent i = new Intent(Intent.ACTION_GET_CONTENT, null);
@@ -264,7 +264,14 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			};
 
 			protected void onPostExecute(Pix p) {
-				progressDialog.dismiss();
+				if (progressDialog.isVisible()) {
+					try {
+						progressDialog.dismiss();
+					} catch (NullPointerException e) {
+						//workaround strange playstore crash
+
+					}
+				}
 				if (p != null) {
 					Intent actionIntent = new Intent(BaseDocumentActivitiy.this, CropImage.class);
 					actionIntent.putExtra(EXTRA_NATIVE_PIX, p.getNativePix());
@@ -280,18 +287,19 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 				try {
 					Pix p = null;
 					String pathForUri = Util.getPathForUri(BaseDocumentActivitiy.this, cameraPicUri);
-					//MediaStore loves to crash with an oom exception. So we try to load bitmap nativly if it is on internal storage
-					if (pathForUri!=null && pathForUri.startsWith("http")){
+					// MediaStore loves to crash with an oom exception. So we
+					// try to load bitmap nativly if it is on internal storage
+					if (pathForUri != null && pathForUri.startsWith("http")) {
 						Bitmap b = MediaStore.Images.Media.getBitmap(getContentResolver(), cameraPicUri);
-						if (b!=null){
+						if (b != null) {
 							p = ReadFile.readBitmap(b);
 							b.recycle();
 						} else {
 							return null;
 						}
-					} else if (pathForUri!=null) {
+					} else if (pathForUri != null) {
 						File imageFile = new File(pathForUri);
-						p = ReadFile.readFile(imageFile);						
+						p = ReadFile.readFile(imageFile);
 					}
 					return p;
 				} catch (FileNotFoundException e) {
@@ -317,18 +325,18 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			}
 			case REQUEST_CODE_MAKE_PHOTO:
 			case REQUEST_CODE_PICK_PHOTO:
-				mCameraResult = new CameraResult(requestCode,resultCode,data);				
-				break;			
+				mCameraResult = new CameraResult(requestCode, resultCode, data);
+				break;
 			}
 		}
 	}
-	
+
 	protected void onPostResume() {
 		super.onPostResume();
-		if (mCameraResult!=null){
+		if (mCameraResult != null) {
 			onTakePhotoActivityResult(mCameraResult.mRequestCode, mCameraResult.mResultCode, mCameraResult.mData);
 			mCameraResult = null;
-		}		
+		}
 	};
 
 	private void showFileError(int stringId) {
