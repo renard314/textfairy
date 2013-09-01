@@ -30,8 +30,8 @@ import android.app.DownloadManager;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 import com.renard.util.Util;
 
@@ -42,9 +42,9 @@ public class OCRLanguageInstallService extends IntentService {
 	protected static final String EXTRA_OCR_LANGUAGE = "ocr_language";
 	protected static final String EXTRA_OCR_LANGUAGE_DISPLAY = "ocr_language_display";
 	public static final String EXTRA_STATUS = "status";
+	public static final String EXTRA_FILE_NAME = "file_name";
 
-	
-	public OCRLanguageInstallService(){
+	public OCRLanguageInstallService() {
 		this(OCRLanguageInstallService.class.getSimpleName());
 	}
 
@@ -68,33 +68,39 @@ public class OCRLanguageInstallService extends IntentService {
 				BufferedInputStream in = new BufferedInputStream(fin);
 				FileOutputStream out = openFileOutput("tess-lang.tmp", Context.MODE_PRIVATE);
 				GzipCompressorInputStream gzIn = new GzipCompressorInputStream(in);
-				final byte[] buffer = new byte[2048*2];
+				final byte[] buffer = new byte[2048 * 2];
 				int n = 0;
 				while (-1 != (n = gzIn.read(buffer))) {
 					out.write(buffer, 0, n);
 				}
 				out.close();
 				gzIn.close();
+				String fileName = intent.getStringExtra(EXTRA_FILE_NAME);
+				String langName = extractLanguageNameFromUri(fileName);
+
 				FileInputStream fileIn = openFileInput("tess-lang.tmp");
 				TarArchiveInputStream tarIn = new TarArchiveInputStream(fileIn);
 
 				TarArchiveEntry entry = tarIn.getNextTarEntry();
-				
-				while (entry!=null && !(entry.getName().endsWith(".traineddata") && !entry.getName().endsWith("_old.traineddata"))){
+				while (!entryIsNotLanguageFile(entry, langName)) {
+					if (entry==null){
+						break;
+					}
 					entry = tarIn.getNextTarEntry();
 				}
 				if (entry != null) {
 					File tessDir = Util.getTrainingDataDir(this);
-					final String langName = entry.getName().substring("tesseract-ocr/tessdata/".length());
-					File trainedData = new File(tessDir, langName);
+					final String currentLangName = entry.getName().substring("tesseract-ocr/tessdata/".length());
+					File trainedData = new File(tessDir, currentLangName);
 					FileOutputStream fout = new FileOutputStream(trainedData);
 					int len;
 					while ((len = tarIn.read(buffer)) != -1) {
 						fout.write(buffer, 0, len);
 					}
 					fout.close();
-					String lang = langName.substring(0, langName.length() - ".traineddata".length());
+					String lang = currentLangName.substring(0, currentLangName.length() - ".traineddata".length());
 					notifyReceivers(lang);
+					return;
 				}
 				tarIn.close();
 
@@ -105,7 +111,7 @@ public class OCRLanguageInstallService extends IntentService {
 			} finally {
 				String tessDir = Util.getTessDir(this);
 				File targetFile = new File(tessDir, OCRLanguageActivity.DOWNLOADED_TRAINING_DATA);
-				if (targetFile.exists()){
+				if (targetFile.exists()) {
 					targetFile.delete();
 				}
 			}
@@ -113,8 +119,38 @@ public class OCRLanguageInstallService extends IntentService {
 		}
 	}
 
+	private boolean entryIsNotLanguageFile(TarArchiveEntry entry, String langName) {
+		if (entry == null) {
+			return false;
+		}
+		if (!entry.getName().endsWith(".traineddata")) {
+			return false;
+		}
+		if (entry.getName().endsWith("_old.traineddata")) {
+			return false;
+		}
+		if (langName != null) {
+			String entryFileName = entry.getName().substring("tesseract-ocr/tessdata/".length());
+			if (entryFileName.equals(langName)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private String extractLanguageNameFromUri(String fileName) {
+		int end = fileName.indexOf(".tar.gz");
+		if (end > -1 && end > 2) {
+			return fileName.substring(end - 3, end) + ".traineddata";
+		}
+		return null;
+	}
+
 	private void notifyReceivers(String lang) {
-		//notify language activity
+		// notify language activity
+		Log.i(OCRLanguageInstallService.class.getSimpleName(), "Installing " + lang);
 		Intent resultIntent = new Intent(ACTION_INSTALL_COMPLETED);
 		resultIntent.putExtra(EXTRA_OCR_LANGUAGE, lang);
 		resultIntent.putExtra(EXTRA_STATUS, DownloadManager.STATUS_SUCCESSFUL);
