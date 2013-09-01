@@ -22,7 +22,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:contentDescription="@string/content_description_fairy"
-                android:scaleType="fitEnd"
+                android:scaleType="fitStart"
                 android:src="@drawable/text_fairy_start_activity" />
         </LinearLayout>
 
