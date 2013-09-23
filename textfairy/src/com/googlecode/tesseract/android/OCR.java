@@ -242,7 +242,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	@Override
 	public synchronized void onActivityDestroyed(MonitoredActivity activity) {
 		mIsActivityAttached = false;
-		activity.removeLifeCycleListener(this);
 		cancel();
 	}
 
