@@ -36,7 +36,7 @@ import com.actionbarsherlock.view.MenuItem;
 public class MonitoredActivity extends SherlockFragmentActivity implements BaseActivityInterface {
 
 	private final ArrayList<LifeCycleListener> mListeners = new ArrayList<LifeCycleListener>();
-	private int mDialogId=-1;
+	private int mDialogId = -1;
 
 	public static interface LifeCycleListener {
 		public void onActivityCreated(MonitoredActivity activity);
@@ -83,7 +83,7 @@ public class MonitoredActivity extends SherlockFragmentActivity implements BaseA
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected synchronized void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		for (LifeCycleListener listener : mListeners) {
@@ -114,41 +114,41 @@ public class MonitoredActivity extends SherlockFragmentActivity implements BaseA
 			listener.onActivityStopped(this);
 		}
 	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) 
-	{    
-	   switch (item.getItemId()) 
-	   {        
-	      case android.R.id.home:
-	          if (mDialogId!=-1) {
-	              showDialog(mDialogId);
-	          }
 
-	         return true;        
-	      default:            
-	         return super.onOptionsItemSelected(item);    
-	   }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			if (mDialogId != -1) {
+				showDialog(mDialogId);
+			}
+
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
+
 	/**
 	 * position the app icon at the bottom of the action bar and start animation
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public static void initAppIcon(final BaseActivityInterface activity, final int dialogId) {
 		activity.setDialogId(dialogId);
-//        ActionBar bar = getSupportActionBar();
-//        final ImageView appIcon = (ImageView) findViewById(16908332);
-//        final ImageView appIcon1 = (ImageView) findViewById(16908858);
-//        if (appIcon!=null){
-//            appIcon.setVisibility(View.INVISIBLE);
-//        }
+		// ActionBar bar = getSupportActionBar();
+		// final ImageView appIcon = (ImageView) findViewById(16908332);
+		// final ImageView appIcon1 = (ImageView) findViewById(16908858);
+		// if (appIcon!=null){
+		// appIcon.setVisibility(View.INVISIBLE);
+		// }
 		ImageView nativeAppIcon = null;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			nativeAppIcon = (ImageView) activity.findViewById(android.R.id.home);
 		} else {
 			nativeAppIcon = (ImageView) activity.findViewById(16908332);
 		}
 		ImageView sherlockAppIcon = (ImageView) activity.findViewById(com.actionbarsherlock.R.id.abs__home);
-		final ImageView appIcon = nativeAppIcon!=null?nativeAppIcon:sherlockAppIcon;
+		final ImageView appIcon = nativeAppIcon != null ? nativeAppIcon : sherlockAppIcon;
 
 		ViewTreeObserver viewTreeObserver = appIcon.getViewTreeObserver();
 		if (viewTreeObserver.isAlive()) {
@@ -157,26 +157,28 @@ public class MonitoredActivity extends SherlockFragmentActivity implements BaseA
 				public void onGlobalLayout() {
 					FrameLayout.LayoutParams llp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
 					appIcon.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-					final int iconHeight = appIcon.getHeight()+1;
+					final int iconHeight = appIcon.getHeight() + 1;
 					final int barHeight = ((FrameLayout) appIcon.getParent()).getHeight();
 					llp.setMargins(0, barHeight - iconHeight, 0, 0);
 					appIcon.setLayoutParams(llp);
 					appIcon.invalidate();
 
-					// start fairy animation at random intervalls 
-					final AnimationDrawable animation = (AnimationDrawable) appIcon.getDrawable();
-					final Runnable runnable = new Runnable() {
+					// start fairy animation at random intervalls
+					if (appIcon.getDrawable() instanceof AnimationDrawable) {
+						final AnimationDrawable animation = (AnimationDrawable) appIcon.getDrawable();
+						final Runnable runnable = new Runnable() {
 
-						@Override
-						public void run() {
-							animation.setVisible(false, true);
-							animation.start();
-							final int delayMillis = (int) ((Math.random() * 5 + 5) * 1000);
-							appIcon.postDelayed(this, delayMillis);
+							@Override
+							public void run() {
+								animation.setVisible(false, true);
+								animation.start();
+								final int delayMillis = (int) ((Math.random() * 5 + 5) * 1000);
+								appIcon.postDelayed(this, delayMillis);
 
-						}
-					};
-					appIcon.post(runnable);
+							}
+						};
+						appIcon.post(runnable);
+					}
 					if (dialogId != -1) {
 						// show hint dialog when user clicks on the app icon
 						appIcon.setOnClickListener(new OnClickListener() {
@@ -189,7 +191,7 @@ public class MonitoredActivity extends SherlockFragmentActivity implements BaseA
 					}
 				}
 			});
-			
+
 		}
 	}
 
