@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+    <string name="image_does_not_exist">The image was not found on your phone.</string>
+    <string name="camera_app_not_found">Camera app not found.</string>
+    <string name="gallery_io_error">Image could not be loaded.</string>
+    <string name="media_store_returned_null">Gallery returned no image to me.</string>
+    <string name="camera_app_error">Camera app error.</string>
+    <string name="camera_no_image_returned">Camera app returned no image.</string>
+    
     <string name="please_wait">Please wait</string>
     <string name="loading_image">Loading image..</string>
     <string name="please_tap_on_column">Please tap on a text column first</string>

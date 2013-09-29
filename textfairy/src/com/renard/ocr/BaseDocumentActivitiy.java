@@ -118,7 +118,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
 	ProgressDialog pdfProgressDialog;
 	ProgressDialog deleteProgressdialog;
-	private AsyncTask<Void, Void, Pix> mBitmapLoadTask;
+	private AsyncTask<Void, Void, Pair<Pix, PixLoadStatus>> mBitmapLoadTask;
 	private CameraResult mCameraResult;
 
 	protected void startGallery() {
@@ -151,7 +151,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			}
 			startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
 		} catch (ActivityNotFoundException e) {
-			showFileError(R.string.error_could_not_take_photo);
+			showFileError(PixLoadStatus.CAMERA_APP_NOT_FOUND);
 		}
 	}
 
@@ -238,7 +238,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 				try {
 					cameraPicUri = intent.getData();
 				} catch (Exception e) {
-					showFileError(R.string.error_could_not_take_photo);
+					showFileError(PixLoadStatus.CAMERA_APP_ERROR);
 				}
 			}
 
@@ -246,16 +246,21 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 				loadBitmapFromContentUri(cameraPicUri);
 				return;
 			} else {
-				showFileError(R.string.error_could_not_take_photo);
+				showFileError(PixLoadStatus.CAMERA_NO_IMAGE_RETURNED);
 			}
 		}
+	}
+
+	private enum PixLoadStatus {
+		MEDIA_STORE_RETURNED_NULL, IMAGE_DOES_NOT_EXIST, SUCCESS, IO_ERROR, CAMERA_APP_NOT_FOUND, CAMERA_APP_ERROR, CAMERA_NO_IMAGE_RETURNED
+
 	}
 
 	private void loadBitmapFromContentUri(final Uri cameraPicUri) {
 		if (mBitmapLoadTask != null) {
 			mBitmapLoadTask.cancel(true);
 		}
-		mBitmapLoadTask = new AsyncTask<Void, Void, Pix>() {
+		mBitmapLoadTask = new AsyncTask<Void, Void, Pair<Pix, PixLoadStatus>>() {
 			ProgressDialogFragment progressDialog;
 
 			protected void onPreExecute() {
@@ -263,27 +268,27 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 				progressDialog.show(getSupportFragmentManager(), "load_image_progress");
 			};
 
-			protected void onPostExecute(Pix p) {
+			protected void onPostExecute(Pair<Pix, PixLoadStatus> p) {
 				if (!progressDialog.isDetached()) {
 					try {
 						progressDialog.dismiss();
 					} catch (NullPointerException e) {
-						//workaround strange playstore crash
+						// workaround strange playstore crash
 
 					}
 				}
-				if (p != null) {
+				if (p.second == PixLoadStatus.SUCCESS) {
 					Intent actionIntent = new Intent(BaseDocumentActivitiy.this, CropImage.class);
-					actionIntent.putExtra(EXTRA_NATIVE_PIX, p.getNativePix());
+					actionIntent.putExtra(EXTRA_NATIVE_PIX, p.first.getNativePix());
 					actionIntent.putExtra(EXTRA_ROTATION, rotateXDegrees);
 					startActivityForResult(actionIntent, REQUEST_CODE_CROP_PHOTO);
 				} else {
-					showFileError(R.string.error_could_not_take_photo);
+					showFileError(p.second);
 				}
 			};
 
 			@Override
-			protected Pix doInBackground(Void... params) {
+			protected Pair<Pix, PixLoadStatus> doInBackground(Void... params) {
 				try {
 					Pix p = null;
 					String pathForUri = Util.getPathForUri(BaseDocumentActivitiy.this, cameraPicUri);
@@ -295,21 +300,21 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 							p = ReadFile.readBitmap(b);
 							b.recycle();
 						} else {
-							return null;
+							return Pair.create(null, PixLoadStatus.MEDIA_STORE_RETURNED_NULL);
 						}
 					} else if (pathForUri != null) {
 						File imageFile = new File(pathForUri);
-						if (imageFile.exists()){
+						if (imageFile.exists()) {
 							p = ReadFile.readFile(imageFile);
 						} else {
-							return null;
+							return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
 						}
 					}
-					return p;
+					return Pair.create(p, PixLoadStatus.SUCCESS);
 				} catch (FileNotFoundException e) {
-					return null;
+					return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
 				} catch (IOException e) {
-					return null;
+					return Pair.create(null, PixLoadStatus.IO_ERROR);
 				}
 			}
 		}.execute();
@@ -343,11 +348,35 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		}
 	};
 
-	private void showFileError(int stringId) {
+	private void showFileError(PixLoadStatus second) {
+		int textId;
+		switch (second) {
+		case IMAGE_DOES_NOT_EXIST:
+			textId = R.string.image_does_not_exist;
+			break;
+		case IO_ERROR:
+			textId = R.string.gallery_io_error;
+			break;
+		case CAMERA_APP_NOT_FOUND:
+			textId = R.string.camera_app_not_found;
+			break;
+		case MEDIA_STORE_RETURNED_NULL:
+			textId = R.string.media_store_returned_null;
+			break;
+		case CAMERA_APP_ERROR:
+			textId = R.string.camera_app_error;
+			break;
+		case CAMERA_NO_IMAGE_RETURNED:
+			textId = R.string.camera_no_image_returned;
+			break;
+		default:
+			textId = R.string.error_could_not_take_photo;
+		}
+
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle(R.string.error_title);
 		final TextView textview = new TextView(this);
-		textview.setText(stringId);
+		textview.setText(textId);
 		alert.setView(textview);
 		alert.setPositiveButton(android.R.string.ok, null);
 		alert.show();
