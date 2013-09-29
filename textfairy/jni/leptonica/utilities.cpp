@@ -23,8 +23,8 @@ extern "C" {
 #endif  /* __cplusplus */
  
 jint Java_com_googlecode_leptonica_android_Dewarp_nativeDewarp(JNIEnv *env, jclass clazz, jint nativePix) {
-  LOGV(__FUNCTION__);
-  PIX* pixd=NULL;
+	  LOGV("%s",__FUNCTION__);
+	  PIX* pixd=NULL;
   PIX *pixs = (PIX *) nativePix;
   PIX* pixb = pixThresholdToBinary(pixs, 130);
   //  Basic functioning:
@@ -50,7 +50,7 @@ jint Java_com_googlecode_leptonica_android_Dewarp_nativeDewarp(JNIEnv *env, jcla
 jint Java_com_googlecode_leptonica_android_Morphology_nativeTophat(JNIEnv *env,
                                                                                  jclass clazz,
                                                                                  jint nativePix) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
   if(pixs==0){
@@ -100,8 +100,8 @@ jint Java_com_googlecode_leptonica_android_AdaptiveMap_nativeBackgroundNormMorph
                                                                                  jint reduction,
                                                                                  jint size,
                                                                                  jint bgval) {
-  LOGV(__FUNCTION__);
-  // Normalizes the background of each element in pixa.
+	  LOGV("%s",__FUNCTION__);
+// Normalizes the background of each element in pixa.
 
   PIX *pixs = (PIX *) nativePix;
   PIX *pixd = pixBackgroundNormMorph(pixs, NULL, (l_int32) reduction, (l_int32) size,
@@ -122,7 +122,7 @@ jint Java_com_googlecode_leptonica_android_Binarize_nativeOtsuAdaptiveThreshold(
                                                                                 jint smoothX,
                                                                                 jint smoothY,
                                                                                 jfloat scoreFract) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
   PIX *pixd;
@@ -141,7 +141,7 @@ jint Java_com_googlecode_leptonica_android_Binarize_nativeOtsuAdaptiveThreshold(
 
 jint Java_com_googlecode_leptonica_android_Convert_nativeConvertTo8(JNIEnv *env, jclass clazz,
                                                                     jint nativePix) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
   PIX *pixd = pixConvertTo8(pixs, FALSE);
@@ -157,7 +157,7 @@ jint Java_com_googlecode_leptonica_android_Enhance_nativeUnsharpMasking(JNIEnv *
                                                                         jint nativePix,
                                                                         jint halfwidth,
                                                                         jfloat fract) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
   PIX *pixd = pixUnsharpMasking(pixs, (l_int32) halfwidth, (l_float32) fract);
@@ -174,7 +174,7 @@ jbyteArray Java_com_googlecode_leptonica_android_JpegIO_nativeCompressToJpeg(JNI
                                                                              jint nativePix,
                                                                              jint quality,
                                                                              jboolean progressive) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pix = (PIX *) nativePix;
 
@@ -203,7 +203,7 @@ jbyteArray Java_com_googlecode_leptonica_android_JpegIO_nativeCompressToJpeg(JNI
 jint Java_com_googlecode_leptonica_android_Scale_nativeScale(JNIEnv *env, jclass clazz,
                                                              jint nativePix, jfloat scaleX,
                                                              jfloat scaleY) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
   PIX *pixd = pixScale(pixs, (l_float32) scaleX, (l_float32) scaleY);
@@ -221,8 +221,8 @@ jfloat Java_com_googlecode_leptonica_android_Skew_nativeFindSkew(JNIEnv *env, jc
                                                                  jint sweepReduction,
                                                                  jint searchReduction,
                                                                  jfloat searchMinDelta) {
-  LOGV(__FUNCTION__);
-  // Corrects the rotation of each element in pixa to 0 degrees.
+	  LOGV("%s",__FUNCTION__);
+// Corrects the rotation of each element in pixa to 0 degrees.
 
   PIX *pixs = (PIX *) nativePix;
 
@@ -248,7 +248,7 @@ jfloat Java_com_googlecode_leptonica_android_Skew_nativeFindSkew(JNIEnv *env, jc
 
 jint Java_com_googlecode_leptonica_android_Rotate_nativeCleanbackground(JNIEnv *env, jclass clazz,
                                                                jint nativePix) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
   PIX *pixt1,*pixt2,*pixt3,*pixd;
@@ -266,7 +266,7 @@ jint Java_com_googlecode_leptonica_android_Rotate_nativeCleanbackground(JNIEnv *
 
 jint Java_com_googlecode_leptonica_android_Rotate_nativeRotateOrth(JNIEnv *env, jclass clazz,
                                                                jint nativePix, jint quads) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
   PIX *pixd;
@@ -275,7 +275,7 @@ jint Java_com_googlecode_leptonica_android_Rotate_nativeRotateOrth(JNIEnv *env, 
 }
 
 jint Java_com_googlecode_leptonica_android_Clip_nativeClipRectangle(JNIEnv *env, jclass clazz, jint nativePix, jint nativeBox) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
   BOX *box = (BOX *) nativeBox;
@@ -288,7 +288,7 @@ jint Java_com_googlecode_leptonica_android_Clip_nativeClipRectangle(JNIEnv *env,
 jint Java_com_googlecode_leptonica_android_Rotate_nativeRotate(JNIEnv *env, jclass clazz,
                                                                jint nativePix, jfloat degrees,
                                                                jboolean quality) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixd;
   PIX *pixs = (PIX *) nativePix;

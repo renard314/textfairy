@@ -66,7 +66,7 @@ jint Java_com_googlecode_leptonica_android_Pixa_nativeGetCount(JNIEnv *env, jcla
 
 void Java_com_googlecode_leptonica_android_Pixa_nativeAddPix(JNIEnv *env, jclass clazz, jint nativePixa,
                                                         jint nativePix, jint mode) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIXA *pixa = (PIXA *) nativePixa;
   PIX *pix = (PIX *) nativePix;
@@ -76,7 +76,7 @@ void Java_com_googlecode_leptonica_android_Pixa_nativeAddPix(JNIEnv *env, jclass
 
 void Java_com_googlecode_leptonica_android_Pixa_nativeAddBox(JNIEnv *env, jclass clazz, jint nativePixa,
                                                         jint nativeBox, jint mode) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIXA *pixa = (PIXA *) nativePixa;
   BOX *box = (BOX *) nativeBox;
@@ -86,7 +86,7 @@ void Java_com_googlecode_leptonica_android_Pixa_nativeAddBox(JNIEnv *env, jclass
 
 void Java_com_googlecode_leptonica_android_Pixa_nativeAdd(JNIEnv *env, jclass clazz, jint nativePixa,
                                                      jint nativePix, jint nativeBox, jint mode) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIXA *pixa = (PIXA *) nativePixa;
   PIX *pix = (PIX *) nativePix;
@@ -109,7 +109,7 @@ void Java_com_googlecode_leptonica_android_Pixa_nativeReplacePix(JNIEnv *env, jc
 void Java_com_googlecode_leptonica_android_Pixa_nativeMergeAndReplacePix(JNIEnv *env, jclass clazz,
                                                                     jint nativePixa, jint indexA,
                                                                     jint indexB) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIXA *pixa = (PIXA *) nativePixa;
 
@@ -149,7 +149,7 @@ jboolean Java_com_googlecode_leptonica_android_Pixa_nativeWriteToFileRandomCmap(
                                                                            jint nativePixa,
                                                                            jstring fileName,
                                                                            jint width, jint height) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixtemp;
   PIXA *pixa = (PIXA *) nativePixa;
@@ -176,7 +176,7 @@ jboolean Java_com_googlecode_leptonica_android_Pixa_nativeWriteToFileRandomCmap(
 
 jint Java_com_googlecode_leptonica_android_Pixa_nativeGetPix(JNIEnv *env, jclass clazz, jint nativePixa,
                                                         jint index) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIXA *pixa = (PIXA *) nativePixa;
   PIX *pix = pixaGetPix(pixa, (l_int32) index, L_CLONE);
@@ -186,7 +186,7 @@ jint Java_com_googlecode_leptonica_android_Pixa_nativeGetPix(JNIEnv *env, jclass
 
 jint Java_com_googlecode_leptonica_android_Pixa_nativeGetBox(JNIEnv *env, jclass clazz, jint nativePixa,
                                                         jint index) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIXA *pixa = (PIXA *) nativePixa;
   BOX *box = pixaGetBox(pixa, (l_int32) index, L_CLONE);

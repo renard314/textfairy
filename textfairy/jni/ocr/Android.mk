@@ -14,5 +14,6 @@ LOCAL_LDLIBS := -llog
 #common
 LOCAL_SHARED_LIBRARIES:= libtess liblept libimage_processing
 LOCAL_PRELINK_MODULE:= false
+LOCAL_DISABLE_FORMAT_STRING_CHECKS:=true
 
 include $(BUILD_SHARED_LIBRARY)

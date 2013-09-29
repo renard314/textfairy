@@ -29,7 +29,7 @@ extern "C" {
 jint Java_com_googlecode_leptonica_android_WriteFile_nativeWriteBytes8(JNIEnv *env, jclass clazz,
                                                                        jint nativePix,
                                                                        jbyteArray data) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   l_int32 w, h, d;
   PIX *pix = (PIX *) nativePix;
@@ -54,7 +54,7 @@ jboolean Java_com_googlecode_leptonica_android_WriteFile_nativeWriteFiles(JNIEnv
                                                                           jint nativePixa,
                                                                           jstring rootName,
                                                                           jint format) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIXA *pixas = (PIXA *) nativePixa;
 
@@ -80,7 +80,7 @@ jbyteArray Java_com_googlecode_leptonica_android_WriteFile_nativeWriteMem(JNIEnv
                                                                           jclass clazz,
                                                                           jint nativePix,
                                                                           jint format) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
 
@@ -108,7 +108,7 @@ jboolean Java_com_googlecode_leptonica_android_WriteFile_nativeWriteImpliedForma
                                                                                   jstring fileName,
                                                                                   jint quality,
                                                                                   jboolean progressive) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
 
@@ -134,7 +134,7 @@ jboolean Java_com_googlecode_leptonica_android_WriteFile_nativeWriteBitmap(JNIEn
     jclass clazz,
     jint nativePix,
     jobject bitmap) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
 

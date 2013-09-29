@@ -1,5 +1,4 @@
 MY_DIR := $(CURDIR)
-
 HOCR2PDF_PATH := $(MY_DIR)/../hocr2pdf/src
 IMAGE_PROCESSING_PATH := $(MY_DIR)/../OCRTest/src
 TESSERACT_PATH := $(MY_DIR)/../tesseract-ocr-read-only

@@ -23,7 +23,7 @@ extern "C" {
 
 jint Java_com_googlecode_leptonica_android_Pix_nativeCreatePix(JNIEnv *env, jclass clazz,
                                                                 jint w, jint h, jint d) {
-  LOGV(__FUNCTION__);
+  LOGV("%s",__FUNCTION__);
 
   PIX *pix = pixCreate((l_int32) w, (l_int32) h, (l_int32) d);
 
@@ -33,7 +33,7 @@ jint Java_com_googlecode_leptonica_android_Pix_nativeCreatePix(JNIEnv *env, jcla
 jint Java_com_googlecode_leptonica_android_Pix_nativeCreateFromData(JNIEnv *env, jclass clazz,
                                                                      jbyteArray data, jint w,
                                                                      jint h, jint d) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pix = pixCreateNoInit((l_int32) w, (l_int32) h, (l_int32) d);
 
@@ -50,7 +50,7 @@ jint Java_com_googlecode_leptonica_android_Pix_nativeCreateFromData(JNIEnv *env,
 
 jboolean Java_com_googlecode_leptonica_android_Pix_nativeGetData(JNIEnv *env, jclass clazz,
                                                                   jint nativePix, jbyteArray data) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pix = (PIX *) nativePix;
 
@@ -67,7 +67,7 @@ jboolean Java_com_googlecode_leptonica_android_Pix_nativeGetData(JNIEnv *env, jc
 
 jint Java_com_googlecode_leptonica_android_Pix_nativeGetDataSize(JNIEnv *env, jclass clazz,
                                                                   jint nativePix) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pix = (PIX *) nativePix;
 
@@ -78,7 +78,7 @@ jint Java_com_googlecode_leptonica_android_Pix_nativeGetDataSize(JNIEnv *env, jc
 
 jint Java_com_googlecode_leptonica_android_Pix_nativeClone(JNIEnv *env, jclass clazz,
                                                            jint nativePix) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
   PIX *pixd = pixClone(pixs);
@@ -88,7 +88,7 @@ jint Java_com_googlecode_leptonica_android_Pix_nativeClone(JNIEnv *env, jclass c
 
 jint Java_com_googlecode_leptonica_android_Pix_nativeCopy(JNIEnv *env, jclass clazz,
                                                            jint nativePix) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
   PIX *pixd = pixCopy(NULL, pixs);
@@ -98,7 +98,7 @@ jint Java_com_googlecode_leptonica_android_Pix_nativeCopy(JNIEnv *env, jclass cl
 
 jboolean Java_com_googlecode_leptonica_android_Pix_nativeInvert(JNIEnv *env, jclass clazz,
                                                                  jint nativePix) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pixs = (PIX *) nativePix;
 
@@ -111,7 +111,7 @@ jboolean Java_com_googlecode_leptonica_android_Pix_nativeInvert(JNIEnv *env, jcl
 
 void Java_com_googlecode_leptonica_android_Pix_nativeDestroy(JNIEnv *env, jclass clazz,
                                                               jint nativePix) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pix = (PIX *) nativePix;
 
@@ -121,7 +121,7 @@ void Java_com_googlecode_leptonica_android_Pix_nativeDestroy(JNIEnv *env, jclass
 jboolean Java_com_googlecode_leptonica_android_Pix_nativeGetDimensions(JNIEnv *env, jclass clazz,
                                                                         jint nativePix,
                                                                         jintArray dimensions) {
-  LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
   PIX *pix = (PIX *) nativePix;
   jint *dimensionArray = env->GetIntArrayElements(dimensions, NULL);

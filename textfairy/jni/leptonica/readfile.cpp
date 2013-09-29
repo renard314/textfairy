@@ -27,7 +27,7 @@ extern "C" {
  ************/
 
 jint Java_com_googlecode_leptonica_android_ReadFile_nativeReadMem(JNIEnv *env, jclass clazz, jbyteArray image, jint length) {
-	LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
 	jbyte *image_buffer = env->GetByteArrayElements(image, NULL);
 	int buffer_length = env->GetArrayLength(image);
@@ -40,7 +40,7 @@ jint Java_com_googlecode_leptonica_android_ReadFile_nativeReadMem(JNIEnv *env, j
 }
 
 jint Java_com_googlecode_leptonica_android_ReadFile_nativeReadBytes8(JNIEnv *env, jclass clazz, jbyteArray data, jint w, jint h) {
-	LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
 	PIX *pix = pixCreateNoInit((l_int32) w, (l_int32) h, 8);
 	l_uint8 **lineptrs = pixSetupByteProcessing(pix, NULL, NULL);
@@ -64,7 +64,7 @@ jint Java_com_googlecode_leptonica_android_ReadFile_nativeReadBytes8(JNIEnv *env
 }
 
 jboolean Java_com_googlecode_leptonica_android_ReadFile_nativeReplaceBytes8(JNIEnv *env, jclass clazz, jint nativePix, jbyteArray data, jint srcw, jint srch) {
-	LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
 	PIX *pix = (PIX *) nativePix;
 	l_int32 w, h, d;
@@ -92,7 +92,7 @@ jboolean Java_com_googlecode_leptonica_android_ReadFile_nativeReplaceBytes8(JNIE
 }
 
 jint Java_com_googlecode_leptonica_android_ReadFile_nativeReadFiles(JNIEnv *env, jclass clazz, jstring dirName, jstring prefix) {
-	LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
 	PIXA *pixad = NULL;
 
@@ -117,7 +117,7 @@ jint Java_com_googlecode_leptonica_android_ReadFile_nativeReadFiles(JNIEnv *env,
 }
 
 jint Java_com_googlecode_leptonica_android_ReadFile_nativeReadFile(JNIEnv *env, jclass clazz, jstring fileName) {
-	LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
 	PIX *pixd = NULL;
 
@@ -135,7 +135,7 @@ jint Java_com_googlecode_leptonica_android_ReadFile_nativeReadFile(JNIEnv *env, 
 }
 
 jint Java_com_googlecode_leptonica_android_ReadFile_nativeReadBitmap(JNIEnv *env, jclass clazz, jobject bitmap) {
-	LOGV(__FUNCTION__);
+	  LOGV("%s",__FUNCTION__);
 
 	l_int32 w, h, d;
 	AndroidBitmapInfo info;
