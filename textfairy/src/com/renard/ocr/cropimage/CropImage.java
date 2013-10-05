@@ -118,14 +118,14 @@ public class CropImage extends MonitoredActivity {
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.item_save:
+		int itemId = item.getItemId();
+		if (itemId == R.id.item_save) {
 			onSaveClicked();
 			return true;
-		case R.id.item_rotate_right:
+		} else if (itemId == R.id.item_rotate_right) {
 			onRotateClicked(1);
 			return true;
-		case R.id.item_rotate_left:
+		} else if (itemId == R.id.item_rotate_left) {
 			onRotateClicked(-1);
 			return true;
 		}

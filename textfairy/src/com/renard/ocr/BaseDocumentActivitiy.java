@@ -181,11 +181,11 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.item_camera:
+		int itemId = item.getItemId();
+		if (itemId == R.id.item_camera) {
 			startCamera();
 			return true;
-		case R.id.item_gallery:
+		} else if (itemId == R.id.item_gallery) {
 			startGallery();
 			return true;
 		}

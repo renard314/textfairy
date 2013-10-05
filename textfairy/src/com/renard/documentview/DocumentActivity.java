@@ -88,8 +88,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.item_view_mode:
+		int itemId = item.getItemId();
+		if (itemId == R.id.item_view_mode) {
 			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
 			if (fragment instanceof DocumentCurlFragment) {
 				setDocumentFragmentType(true);
@@ -97,22 +97,22 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 				setDocumentFragmentType(false);
 			}
 			return true;
-		case R.id.item_text_options:
+		} else if (itemId == R.id.item_text_options) {
 			Intent i = new Intent(this, TextOptionsActivity.class);
 			startActivityForResult(i, REQUEST_CODE_OPTIONS);
 			return true;
-		case R.id.item_content:
+		} else if (itemId == R.id.item_content) {
 			Intent tocIndent = new Intent(this, TableOfContentsActivity.class);
 			Uri uri = Uri.parse(DocumentContentProvider.CONTENT_URI + "/" + getParentId());
 			tocIndent.setData(uri);
 			startActivityForResult(tocIndent, REQUEST_CODE_TABLE_OF_CONTENTS);
 			return true;
-		case R.id.item_delete:
+		} else if (itemId == R.id.item_delete) {
 			Set<Integer> idToDelete = new HashSet<Integer>();
 			idToDelete.add(getParentId());
 			new DeleteDocumentTask(idToDelete, true).execute();
 			return true;
-		case R.id.item_export_as_pdf:
+		} else if (itemId == R.id.item_export_as_pdf) {
 			Set<Integer> idForPdf = new HashSet<Integer>();
 			idForPdf.add(getParentId());
 			new CreatePDFTask(idForPdf).execute();

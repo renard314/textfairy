@@ -314,23 +314,23 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			switch (item.getItemId()) {
-			case R.id.item_join:
+			int itemId = item.getItemId();
+			if (itemId == R.id.item_join) {
 				joinDocuments(mDocumentAdapter.getSelectedDocumentIds());
 				cancelMultiSelectionMode();
 				mode.finish();
 				return true;
-			case R.id.item_edit_title:
+			} else if (itemId == R.id.item_edit_title) {
 				final Set<Integer> selectedDocs = mDocumentAdapter.getSelectedDocumentIds();
 				final int documentId = selectedDocs.iterator().next();
 				getSupportLoaderManager().initLoader(documentId, null, DocumentGridActivity.this);
 				return true;
-			case R.id.item_export_as_pdf:
+			} else if (itemId == R.id.item_export_as_pdf) {
 				new CreatePDFTask(mDocumentAdapter.getSelectedDocumentIds()).execute();
 				cancelMultiSelectionMode();
 				mode.finish();
 				return true;
-			case R.id.item_delete:
+			} else if (itemId == R.id.item_delete) {
 				new DeleteDocumentTask(mDocumentAdapter.getSelectedDocumentIds(), false).execute();
 				cancelMultiSelectionMode();
 				mode.finish();

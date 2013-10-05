@@ -16,6 +16,7 @@
 # generated files
 bin/
 gen/
+target/
 debug/
 armeabi*/
 x86/

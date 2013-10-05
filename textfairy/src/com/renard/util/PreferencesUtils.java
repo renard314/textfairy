@@ -146,61 +146,16 @@ public class PreferencesUtils {
 	}
 
 	private static void applyById(TextView view, int id) {
-		switch (id) {
-		case R.id.align_block:
+		if (id == R.id.align_block) {
 			view.setGravity(Gravity.CENTER_HORIZONTAL);
-			break;
-		case R.id.align_left:
+		} else if (id == R.id.align_left) {
 			view.setGravity(Gravity.LEFT);
-			break;
-		case R.id.spacing_1:
+		} else if (id == R.id.spacing_1) {
 			view.setLineSpacing(0, 1f);
-			break;
-		case R.id.spacing_1_5:
+		} else if (id == R.id.spacing_1_5) {
 			view.setLineSpacing(0, 1.25f);
-			break;
-		case R.id.spacing_2:
+		} else if (id == R.id.spacing_2) {
 			view.setLineSpacing(0, 1.5f);
-			break;
-		// case R.id.design_night:
-		// Drawable d = view.getBackground();
-		// if (d != null) {
-		// final ViewParent parent = view.getParent();
-		// if (parent instanceof View) {
-		// ((View) parent).setBackgroundDrawable(null);
-		// }
-		// d.setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY);
-		// view.invalidate();
-		// } else {
-		// view.setBackgroundColor(Color.BLACK);
-		// }
-		// view.setTextColor(Color.WHITE);
-		//
-		// break;
-		// case R.id.design_day:
-		// d = view.getBackground();
-		// if (d != null) {
-		// final ViewParent parent = view.getParent();
-		// if (parent instanceof View) {
-		// //((View)
-		// parent).setBackgroundResource(R.color.bright_foreground_holo_dark);
-		// }
-		// // view.setBackgroundDrawable(null);
-		// d.mutate();
-		// // view.setBackgroundColor(Color. WHITE);
-		// // d.getCurrent().setColorFilter(Color.RED,
-		// // PorterDuff.Mode.MULTIPLY);
-		// // d.getCurrent().setColorFilter(new
-		// // LightingColorFilter(0xffffffff,0xff00ff00));
-		// d.getCurrent().setColorFilter(Color.WHITE, PorterDuff.Mode.ADD);
-		// // d.invalidateSelf();
-		// // d.setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-		// view.invalidate();
-		// } else {
-		// view.setBackgroundColor(Color.WHITE);
-		// }
-		// view.setTextColor(Color.BLACK);
-		// break;
 		}
 	}
 

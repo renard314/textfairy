@@ -105,16 +105,12 @@ public class LayoutQuestionDialog {
 						}
 						int checked = layoutRadioGroup
 								.getCheckedRadioButtonId();
-						switch (checked) {
-						case R.id.radio_complex:
+						if (checked == R.id.radio_complex) {
 							mLayout = LayoutKind.COMPLEX;
-							break;
-						case R.id.radio_no_ocr:
+						} else if (checked == R.id.radio_no_ocr) {
 							mLayout = LayoutKind.DO_NOTHING;
-							break;
-						case R.id.radio_simple:
+						} else if (checked == R.id.radio_simple) {
 							mLayout = LayoutKind.SIMPLE;
-							break;
 						}
 						listener.onLayoutChosen(mLayout, lang);
 
