@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>support-v4</artifactId>
-			<scope>system</scope>
+			<version>r18.1</version>			
 		</dependency>
 		<dependency>
 			<groupId>com.nineoldandroids</groupId>
@@ -68,6 +68,29 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
+			<plugin>
+				<!-- We dont want children attempting to install these jars to the repo. -->
+				<inherited>false</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>Android Support Library V4</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>${android.sdk.path}/extras/android/support/v4/android-support-v4.jar</file>
+							<groupId>com.google.android</groupId>
+							<artifactId>support-v4</artifactId>
+							<version>r18.1</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

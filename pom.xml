@@ -45,13 +45,6 @@
                 <version>4.1.1.4</version>
             </dependency>
             <dependency>
-                <groupId>com.google.android</groupId>
-                <artifactId>support-v4</artifactId>
-                <version>r18.1</version>
-                <scope>system</scope>
-                <systemPath>${android.sdk.path}/extras/android/support/v4/android-support-v4.jar</systemPath>
-            </dependency>
-            <dependency>
                 <groupId>de.renardwellnitz.android</groupId>
                 <artifactId>viewpager3d</artifactId>
                 <type>apklib</type>

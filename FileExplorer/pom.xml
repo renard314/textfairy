@@ -5,7 +5,7 @@
     
     <parent>
         <groupId>de.renardwellnitz.android</groupId>
-        <artifactId>textfairy</artifactId>
+        <artifactId>textfairy-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
