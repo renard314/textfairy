@@ -143,6 +143,10 @@ public class OCRLanguageInstallService extends IntentService {
 	private String extractLanguageNameFromUri(String fileName) {
 		int end = fileName.indexOf(".tar.gz");
 		if (end > -1 && end > 2) {
+			String sub = fileName.substring(end-7,end);
+			if (sub.startsWith("chi_")){
+				return sub + ".traineddata";
+			}
 			return fileName.substring(end - 3, end) + ".traineddata";
 		}
 		return null;
