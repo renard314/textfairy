@@ -269,12 +269,15 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			};
 
 			protected void onPostExecute(Pair<Pix, PixLoadStatus> p) {
-				if (!progressDialog.isDetached()) {
+				if (progressDialog !=null && !progressDialog.isDetached()) {
 					try {
 						progressDialog.dismiss();
 					} catch (NullPointerException e) {
 						// workaround strange playstore crash
 
+					} catch(IllegalStateException e){
+						// workaround strange playstore crash
+						
 					}
 				}
 				if (p.second == PixLoadStatus.SUCCESS) {
