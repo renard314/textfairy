@@ -46,11 +46,13 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
 	pixJavaCallback(pixsg, false, true);
 	binarize(pixsg, pixhm, &pixb);
 
-	pixWrite("binarized.bmp", pixb, IFF_BMP);
+	if (debug>0){
+		pixWrite("binarized.bmp", pixb, IFF_BMP);
+	}
 
 	pixDestroy(&pixsg);
 
-	if (debug) {
+	if (debug>1) {
 		debugstring << "Image-Text separation: " << stopTimer() << std::endl;
 		startTimer();
 	}
@@ -83,12 +85,12 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
 		pixDestroy(&pixb);
 	}
 
-	if (debug) {
+	if (debug>1) {
 		debugstring << "dewarp : " << stopTimer() << std::endl;
 	}
 
 	if (pixhm != NULL) {
-		if (debug) {
+		if (debug>1) {
 			startTimer();
 		}
 
@@ -111,7 +113,7 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
 		pixDestroy(&pixmask);
 		pixDestroy(&pixi);
 
-		if (debug) {
+		if (debug>1) {
 			debugstring << "image restoration: " << stopTimer() << std::endl;
 		}
 		if (TRUE == showIntermediate) {

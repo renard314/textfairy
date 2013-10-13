@@ -32,7 +32,7 @@ using namespace tesseract;
 
 
 void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s,
-		bool debug = false) {
+		int debug_level = 0) {
 	tesseract::TessBaseAPI api;
 	api.Init("/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/",
 			"eng+deu", tesseract::OEM_DEFAULT);
@@ -46,11 +46,13 @@ void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s,
 	ResultIterator* it = api.GetIterator();
 	std::string debugText = GetHTMLText(it, 70);
 	*s << debugText;
-	if (debug) {
+	if (debug_level>1) {
 //		std::cout<<"html: " <<utf8text<<std::endl;
 		std::cout << "utf8text: " <<"\n"<< debugText << std::endl;
 		std::cout << "ocr: " << stopTimer() << std::endl << "confidence: "
 				<< api.MeanTextConf() << std::endl;
+	} else if (debug_level>0){
+		std::cout << "confidence: "<< api.MeanTextConf() << std::endl;
 	}
 //	delete[] utf8text;
 //	delete[] hocrtext;
@@ -120,7 +122,25 @@ void onePictureWithColumns(const char* filename, int index) {
 	pixaDestroy(&pixaTexts);
 }
 
+void onPictureOnlyBinarize(const char* filename, int index){
+	Pix *pixhm, *pixb = NULL;
+	Pix* pixOrg = pixRead(filename);
+	Pix* pixsg;
+	extractImages(pixOrg, &pixhm, &pixsg);
+	binarize(pixsg, pixhm, &pixb);
+	pixDisplay(pixb, 0, 0);
+	pixWrite("binarized.bmp",pixb,IFF_BMP);
+
+	pixDestroy(&pixb);
+	pixDestroy(&pixsg);
+	pixDestroy(&pixOrg);
+
+}
+
 void onePicture(const char* filename, int index) {
+	log("%s",filename);
+
+	int debug_level =1;
 	ostringstream s;
 	Pix* pixFinal;
 	Pix* pixOrg = pixRead(filename);
@@ -130,11 +150,12 @@ void onePicture(const char* filename, int index) {
 	L_TIMER timer = startTimerNested();
 
 	Pix* pixtext = bookpage(pixOrg, &pixFinal, messageCallback, pixCallBack,
-			true, true);
-
-	printf("total time = %f", stopTimerNested(timer));
-	pixWrite("binarized_dewarped.bmp", pixtext, IFF_BMP);
-	doOCR(pixtext, NULL, &s, true);
+			debug_level>0, debug_level>1);
+	if (debug_level>1){
+		printf("total time = %f", stopTimerNested(timer));
+		pixWrite("binarized_dewarped.bmp", pixtext, IFF_BMP);
+	}
+	doOCR(pixtext, NULL, &s, debug_level);
 
 	pixDestroy(&pixFinal);
 	pixDestroy(&pixtext);
@@ -144,25 +165,31 @@ void onePicture(const char* filename, int index) {
 
 int main(int argc, const char* argv[]) {
 	l_chooseDisplayProg(L_DISPLAY_WITH_XV);
+	log("%s","hi");
+
 	ostringstream s;
 	if (argc == 3) {
 
 		s << "/Users/renard/Desktop/devel/textfairy/OCRTest/" << argv[1] << "/"
 				<< argv[2] << ".jpg";
-		onePicture(s.str().c_str(), atoi(argv[1]));
+		onPictureOnlyBinarize(s.str().c_str(), atoi(argv[1]));
+
+//		onePicture(s.str().c_str(), atoi(argv[1]));
 	} else if (argc == 4) {
 		int start = atoi(argv[2]);
 		int end = atoi(argv[3]);
 		for (int i = start; i < end; i++) {
-			s << "/Users/renard/Desktop/devel/workspace/OCRTest/" << argv[1]
+			s << "/Users/renard/Desktop/devel/textfairy/OCRTest/" << argv[1]
 					<< "/" << i << ".jpg";
-			onePicture(s.str().c_str(), i);
+			onPictureOnlyBinarize(s.str().c_str(), i);
+			//onePicture(s.str().c_str(), i);
 			s.str("");
 		}
 	} else {
-		for (int i = 3; i < 4; i++) {
-			s << "/Users/renard/Desktop/devel/workspace/OCRTest/dewarp/" << i
+		for (int i = 32; i < 33; i++) {
+			s << "/Users/renard/Desktop/devel/textfairy/OCRTest/pics/" << i
 					<< ".jpg";
+
 			onePicture(s.str().c_str(), i);
 			s.str("");
 		}
