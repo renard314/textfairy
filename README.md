@@ -55,17 +55,9 @@ make sure that you have got the android sdk as well as ndk (r8e) installed
 
 * git clone git@github.com:renard314/textfairy.git
 * cd textfairy
-* compile native code: ndk-build
-* get a coffee
-* now create the ant build files for all sub projects
-	* android update lib-project -t 17 -p ActionBarSherlock/actionbarsherlock
-	* android update lib-project -t 17 -p Android-ViewPagerIndicator/library/
-	* android update lib-project -t 17 -p ViewPager3D/
-	* android update lib-project -t 17 -p FileExplorer/
-* finally create build.xml for root project
-	* cd textfairy
-	* android update project --path .
-* ant-debug
+* git submodule update
+* git submodule init
+* mvn clean install -Dandroid.sdk.path=/path/to/android-sdk -Dandroid.ndk.path=/path/to/android-ndk
 
 Importing code into eclipse
 ---------------------------
