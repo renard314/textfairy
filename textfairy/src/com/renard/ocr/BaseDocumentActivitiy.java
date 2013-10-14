@@ -271,7 +271,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			protected void onPostExecute(Pair<Pix, PixLoadStatus> p) {
 				if (progressDialog !=null && !progressDialog.isDetached()) {
 					try {
-						progressDialog.dismiss();
+						getSupportFragmentManager().beginTransaction().remove(progressDialog).commitAllowingStateLoss();
 					} catch (NullPointerException e) {
 						// workaround strange playstore crash
 
