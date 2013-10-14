@@ -59,11 +59,11 @@ int determineThresholdForTile(Pix* pixt, bool debug) {
 		result = 0;
 	} else {
 		if ((mean * 0.5) < variance) {
-			result = mean + variance*0.4;
+			result = mean;// + variance*0.4;
 		} else {
 			//high variance means we have probably have a very good separation between fore and background
 			//in that case the threshold be closer to the mean
-			result = mean - sqrt(variance) * 2;
+			result = mean - sqrt(variance) * 3;
 			//result = mean - variance*0.66;
 		}
 		//result = mean - variance*0.66; //0.2 when median is activated, 0.66 otherwise
@@ -166,7 +166,7 @@ Pix* binarizeTiled(Pix* pixs, const l_uint32 tileSize) {
 		for (int j = 0; j < nx; j++) {
 			pixt = pixTilingGetTile(pt, i, j);
 			if (i == 0 && j == 0) {
-				debug = true;
+				debug = false;
 			} else {
 				debug = false;
 			}
