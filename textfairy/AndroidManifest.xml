@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.renard.ocr"
-    android:versionCode="10"
+    android:versionCode="11"
     android:versionName="1.1.6" >
 
     <uses-sdk
@@ -10,21 +10,22 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    
+
     <application
         android:name="com.renard.ocr.MyApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:hasCode="true"
         android:icon="@drawable/hdpi_app_icon"
-        android:installLocation="preferExternal"
+        android:installLocation="auto"
         android:label="@string/app_name"
         android:theme="@style/Theme.fairylightdarkactionbar" >
         <provider
             android:name="com.renard.ocr.DocumentContentProvider"
             android:authorities="com.renard.ocr"
             android:exported="false" />
- 		<activity
+
+        <activity
             android:name="com.lamerman.FileDialog"
             android:label="@string/app_name" >
         </activity>
@@ -75,6 +76,13 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
         <activity
