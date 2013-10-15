@@ -95,12 +95,17 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 	private final static int REQUEST_CODE_CROP_PHOTO = 2;
 	protected final static int REQUEST_CODE_OCR = 3;
 
-	private static final String DATE_CAMERA_INTENT_STARTED_STATE = "your.package.android.photo.TakePhotoActivity.dateCameraIntentStarted";
+	private static final String DATE_CAMERA_INTENT_STARTED_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.dateCameraIntentStarted";
 	private static Date dateCameraIntentStarted = null;
-	private static final String CAMERA_PIC_URI_STATE = "your.package.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
+	private static final String CAMERA_PIC_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
 	private static Uri cameraPicUri = null;
-	private static final String ROTATE_X_DEGREES_STATE = "your.package.android.photo.TakePhotoActivity.ROTATE_X_DEGREES_STATE";
+	private static final String ROTATE_X_DEGREES_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.ROTATE_X_DEGREES_STATE";
 	private static int rotateXDegrees = 0;
+
+	protected enum PixLoadStatus {
+		IMAGE_COULD_NOT_BE_READ, MEDIA_STORE_RETURNED_NULL, IMAGE_DOES_NOT_EXIST, SUCCESS, IO_ERROR, CAMERA_APP_NOT_FOUND, CAMERA_APP_ERROR, CAMERA_NO_IMAGE_RETURNED
+
+	}
 
 	private static class CameraResult {
 		public CameraResult(int requestCode, int resultCode, Intent data) {
@@ -251,12 +256,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		}
 	}
 
-	private enum PixLoadStatus {
-		MEDIA_STORE_RETURNED_NULL, IMAGE_DOES_NOT_EXIST, SUCCESS, IO_ERROR, CAMERA_APP_NOT_FOUND, CAMERA_APP_ERROR, CAMERA_NO_IMAGE_RETURNED
-
-	}
-
-	private void loadBitmapFromContentUri(final Uri cameraPicUri) {
+	protected void loadBitmapFromContentUri(final Uri cameraPicUri) {
 		if (mBitmapLoadTask != null) {
 			mBitmapLoadTask.cancel(true);
 		}
@@ -269,15 +269,15 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			};
 
 			protected void onPostExecute(Pair<Pix, PixLoadStatus> p) {
-				if (progressDialog !=null && !progressDialog.isDetached()) {
+				if (progressDialog != null && !progressDialog.isDetached()) {
 					try {
 						getSupportFragmentManager().beginTransaction().remove(progressDialog).commitAllowingStateLoss();
 					} catch (NullPointerException e) {
 						// workaround strange playstore crash
 
-					} catch(IllegalStateException e){
+					} catch (IllegalStateException e) {
 						// workaround strange playstore crash
-						
+
 					}
 				}
 				if (p.second == PixLoadStatus.SUCCESS) {
@@ -351,9 +351,16 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		}
 	};
 
-	private void showFileError(PixLoadStatus second) {
+	private void showFileError(PixLoadStatus status) {
+		showFileError(status, null);
+	}
+
+	protected void showFileError(PixLoadStatus second, OnClickListener positiveListener) {
 		int textId;
 		switch (second) {
+		case IMAGE_COULD_NOT_BE_READ:
+			textId = R.string.image_could_not_be_read;
+			break;
 		case IMAGE_DOES_NOT_EXIST:
 			textId = R.string.image_does_not_exist;
 			break;
@@ -381,7 +388,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 		final TextView textview = new TextView(this);
 		textview.setText(textId);
 		alert.setView(textview);
-		alert.setPositiveButton(android.R.string.ok, null);
+		alert.setPositiveButton(android.R.string.ok, positiveListener);
 		alert.show();
 	}
 

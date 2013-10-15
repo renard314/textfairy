@@ -17,7 +17,9 @@ package com.renard.start;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -61,15 +63,36 @@ public class StartActivity extends BaseDocumentActivitiy {
 		startInstallActivityIfNeeded();
 
 		getSupportActionBar().setDisplayShowHomeEnabled(false);
-		
-		//View actionbar = findViewById(R.id.abs__action_bar_container);
-		//actionbar.setVisibility(View.GONE);
 
 		initButtons();
 		initTextBubbles();
 		final int columnWidth = Util.determineThumbnailSize(this, null);
 		Util.setThumbnailSize(columnWidth, columnWidth, this);
 
+		checkForImageIntent();
+
+	}
+
+	private void checkForImageIntent() {
+		Intent intent = getIntent();
+		String action = intent.getAction();
+		String type = intent.getType();
+
+		if (Intent.ACTION_SEND.equals(action) && type != null) {
+			Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+			if (imageUri != null) {
+				loadBitmapFromContentUri(imageUri);
+			} else {
+				showFileError(PixLoadStatus.IMAGE_COULD_NOT_BE_READ, new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+					}
+				});
+			}
+		
+		}
 	}
 
 	private void initTextBubbles() {
@@ -95,23 +118,22 @@ public class StartActivity extends BaseDocumentActivitiy {
 			public void onClick(View v) {
 				Intent i = new Intent(StartActivity.this, AppOptionsActivity.class);
 				startActivity(i);
-				overridePendingTransition(R.anim.push_up_in,R.anim.push_up_out);  
+				overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
 			}
 		});
 
-		
 		newDocumentFromCamera.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				startCamera();
-				overridePendingTransition(R.anim.push_down_in,R.anim.push_down_out);  
+				overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
 			}
 		});
 		newDocumentFromGallery.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				startGallery();
-				overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);  
+				overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
 			}
 		});
@@ -120,7 +142,7 @@ public class StartActivity extends BaseDocumentActivitiy {
 			public void onClick(View v) {
 				Intent intent = new Intent(StartActivity.this, DocumentGridActivity.class);
 				startActivity(intent);
-				overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);  
+				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 			}
 		});
 
