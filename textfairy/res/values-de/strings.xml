@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources xmlns="http://schemas.android.com/apk/res/android">
+
+    <string name="image_could_not_be_read">Das Bild konnte nicht geladen werden.</string>
+    <string name="image_does_not_exist">Das Bild wurde nicht gefunden.</string>
+    <string name="camera_app_not_found">Kameraapp nicht gefunden.</string>
+    <string name="gallery_io_error">Bild konnte nicht von der Galerie geladen werden.</string>
+    <string name="media_store_returned_null">Medienspeicher konnte Bild nicht laden.</string>
+    <string name="camera_app_error">Kameraapp meldet Fehler. Bild konnte nicht geladen werden.</string>
+    <string name="camera_no_image_returned">Kameraapp hat kein Bild zurückgegeben.</string>
     <string name="please_wait">Bitte warte</string>
     <string name="loading_image">Dein Bild wird geladen..</string>
     <string name="please_tap_on_column">Tappe erst auf die gewünschten Textspalten!</string>
@@ -47,7 +55,7 @@
     <string name="edit_dialog_title">Gib einen Titel für dein Dokument ein.</string>
     <string name="delete_error">Sorry, ich konnte das Dokument nicht löschen.</string>
     <string name="error_could_not_take_photo">Sorry, Ich konnte kein Photo machen</string>
-    <string name="empty"/>
+    <string name="empty" />
     <string name="cropping_image">Bild wird beschnitten.</string>
     <string name="error_title">Fehler</string>
     <string name="error_load_file">Sorry aber ich konnte die Datei nicht finden. Wurde sie vielleicht gelöscht?</string>
@@ -125,4 +133,5 @@
     <string name="no_ocr">Keine Texterkennung. Bild nur speichern</string>
     <string name="crop_help_title">Hier kannst Du dein Photo beschneiden und drehen.</string>
     <string name="continue_ocr">Weiter</string>
+
 </resources>
