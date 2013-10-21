@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+
+    <string name="text_was_copied_to_clipboard">Text copied to clipboard.</string>
+    <string name="copy_to_clipboard">Copy to clipboard</string>
     <string name="image_could_not_be_read">The image was not found in the data sent.</string>
     <string name="image_does_not_exist">The image was not found on your phone.</string>
     <string name="camera_app_not_found">Camera app not found.</string>

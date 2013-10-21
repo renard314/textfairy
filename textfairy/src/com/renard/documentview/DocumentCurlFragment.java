@@ -19,12 +19,16 @@ package com.renard.documentview;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.renard.documentview.DocumentActivity.DocumentContainerFragment;
+import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.R;
+import com.renard.ocr.DocumentContentProvider.Columns;
 
 import fi.harism.curl.CurlView;
 
@@ -88,5 +92,17 @@ public class DocumentCurlFragment extends Fragment implements DocumentContainerF
 	public void onResume() {
 		super.onResume();
 		mCurlView.onResume();
+	}
+
+	@Override
+	public String getTextofCurrentlyShownDocument() {
+		int index = mCurlView.getCurrentIndex();
+		Cursor cursor = mBitmapProvider.getCursor();
+		final int columIndex = cursor.getColumnIndex(DocumentContentProvider.Columns.OCR_TEXT);
+		boolean success = mCursor.moveToPosition(index);
+		if (success){
+			return mCursor.getString(columIndex);
+		}
+		return null;
 	}
 }

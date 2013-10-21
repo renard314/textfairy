@@ -20,19 +20,26 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.Html;
 import android.text.Spanned;
 import android.util.Pair;
 import android.view.View;
+import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -46,6 +53,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
 	public interface DocumentContainerFragment {
 		public void setCursor(final Cursor cursor);
+
+		public String getTextofCurrentlyShownDocument();
 	}
 
 	private static final int REQUEST_CODE_OPTIONS = 4;
@@ -68,15 +77,6 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 		setDocumentFragmentType(true);
 		initAppIcon(this, HINT_DIALOG_ID);
 
-		// final ImageView appIcon = (ImageView)
-		// findViewById(com.actionbarsherlock.R.id.abs__home);
-		// appIcon.setOnClickListener(new View.OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// showDialog(HINT_DIALOG_ID);
-		// }
-		// });
 	}
 
 	@Override
@@ -117,8 +117,46 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 			idForPdf.add(getParentId());
 			new CreatePDFTask(idForPdf).execute();
 			return true;
+		} else if (itemId == R.id.item_copy_to_clipboard) {
+			copyTextToClipboard();
+			return true;
+
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void copyTextToClipboard() {
+		final String htmlText = getDocumentContainer().getTextofCurrentlyShownDocument();
+		final String text = Html.fromHtml(htmlText).toString();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			copyHtmlTextToClipboard(htmlText, text);
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			copyTextToClipboardNewApi(text);
+		} else {
+			copyTextToClipboard(text);
+		}
+
+		Toast.makeText(this, getString(R.string.text_was_copied_to_clipboard), Toast.LENGTH_LONG).show();
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private void copyTextToClipboardNewApi(final String text) {
+		ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+		ClipData clip = ClipData.newPlainText(getString(R.string.app_name), text);
+		clipboard.setPrimaryClip(clip);
+	}
+
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	private void copyHtmlTextToClipboard(final String htmlText, final String text) {
+		ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+		ClipData clip = ClipData.newHtmlText(getString(R.string.app_name), text, htmlText);
+		clipboard.setPrimaryClip(clip);
+	}
+
+	@SuppressWarnings("deprecation")
+	private void copyTextToClipboard(String text) {
+		android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+		clipboard.setText("text");
 	}
 
 	@Override
@@ -137,11 +175,11 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 				DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
 				if (fragment != null) {
 					if (fragment instanceof DocumentCurlFragment) {
-						((DocumentCurlFragment)fragment).setDisplayedPage(documentPos);
+						((DocumentCurlFragment) fragment).setDisplayedPage(documentPos);
 					} else {
-						((DocumentPagerFragment)fragment).setDisplayedPage(documentPos);						
+						((DocumentPagerFragment) fragment).setDisplayedPage(documentPos);
 					}
-				} 
+				}
 				break;
 			}
 		}
@@ -236,7 +274,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		return new CursorLoader(this, DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?", new String[] { String.valueOf(mParentId), String.valueOf(mParentId) }, "created ASC");
+		return new CursorLoader(this, DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?", new String[] { String.valueOf(mParentId),
+				String.valueOf(mParentId) }, "created ASC");
 	}
 
 	@Override

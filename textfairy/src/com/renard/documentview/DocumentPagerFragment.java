@@ -63,15 +63,11 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 
 		boolean isKeyboardHidden = Configuration.KEYBOARDHIDDEN_YES == newConfig.hardKeyboardHidden || Configuration.HARDKEYBOARDHIDDEN_YES == newConfig.hardKeyboardHidden;
 		boolean isKeyboardShown = Configuration.KEYBOARDHIDDEN_NO == newConfig.hardKeyboardHidden || Configuration.HARDKEYBOARDHIDDEN_NO == newConfig.hardKeyboardHidden;
-		// DocumentPagerFragment pagerFragment = (DocumentPagerFragment)
-		// getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
-		// if (pagerFragment!=null){
 		if (isKeyboardShown) {
 			showTitleIndicator(false);
 		} else if (isKeyboardHidden) {
 			showTitleIndicator(true);
 		}
-		// }
 	}
 
 	private void showTitleIndicator(final boolean show) {
@@ -92,18 +88,17 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 			PreferencesUtils.applyTextPreferences(e, getActivity());
 		}
 	}
-	
+
 	public void setDisplayedPage(final int pageno) {
 		mPager.setCurrentItem(pageno, true);
 	}
-	
 
 	private void initPager() {
 
 		if (mIsNewCursor && mPager != null) {
 			final DocumentAdapter adapter = new DocumentAdapter(getActivity(), mCursor);
 
-			Log.i(DocumentPagerFragment.class.getSimpleName(),mCursor.getCount()+"");
+			Log.i(DocumentPagerFragment.class.getSimpleName(), mCursor.getCount() + "");
 			mPager.setAdapter(adapter);
 			// mTitleIndicator.setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_bg_black));
 			if (adapter.getCount() > 1) {
@@ -118,8 +113,8 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 				@Override
 				public void onPageSelected(int position) {
 					final String title = adapter.getLongTitle(position);
-					((SherlockFragmentActivity)getActivity()).getSupportActionBar().setTitle(title);
-					((SherlockFragmentActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+					((SherlockFragmentActivity) getActivity()).getSupportActionBar().setTitle(title);
+					((SherlockFragmentActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
 				}
 
 				@Override
@@ -133,11 +128,11 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 			mIsNewCursor = false;
 		}
 	}
-	
-	public Pair<List<Uri>,List<Spanned>> getTextsToSave() {
+
+	public Pair<List<Uri>, List<Spanned>> getTextsToSave() {
 		PagerAdapter adapter = mPager.getAdapter();
-		if (adapter instanceof DocumentAdapter){
-			return ((DocumentAdapter)adapter).getTextsToSave();
+		if (adapter instanceof DocumentAdapter) {
+			return ((DocumentAdapter) adapter).getTextsToSave();
 		}
 		return null;
 	}
@@ -147,5 +142,12 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 		mIsNewCursor = true;
 		mCursor = cursor;
 		initPager();
+	}
+
+	@Override
+	public String getTextofCurrentlyShownDocument() {
+		DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
+		int currentItem = mPager.getCurrentItem();
+		return adapter.getTextByPosition(currentItem);
 	}
 }

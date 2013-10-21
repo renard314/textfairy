@@ -72,12 +72,12 @@ public class DocumentAdapter extends PagerAdapter {
 		View view = null;
 		if (mCursor.moveToPosition(position)) {
 			final int documentId = mCursor.getInt(mIndexId);
-			Spanned spanned  = mSpannedTexts.get(documentId);
-			
-			if (spanned==null) {
+			Spanned spanned = mSpannedTexts.get(documentId);
+
+			if (spanned == null) {
 				final String text = mCursor.getString(mIndexOCRText);
-				if (text==null){
-					spanned=SpannableStringBuilder.valueOf("");
+				if (text == null) {
+					spanned = SpannableStringBuilder.valueOf("");
 				} else {
 					spanned = Html.fromHtml(text);
 				}
@@ -107,7 +107,7 @@ public class DocumentAdapter extends PagerAdapter {
 		return view;
 	}
 
-	public Pair<List<Uri>,List<Spanned>> getTextsToSave() {
+	public Pair<List<Uri>, List<Spanned>> getTextsToSave() {
 		List<Uri> documentIds = new ArrayList<Uri>();
 		List<Spanned> texts = new ArrayList<Spanned>();
 
@@ -116,7 +116,7 @@ public class DocumentAdapter extends PagerAdapter {
 			final CharSequence text = mChangedTexts.get(id);
 			texts.add((Spanned) text);
 		}
-		return new Pair<List<Uri>, List<Spanned>>(documentIds,texts);		
+		return new Pair<List<Uri>, List<Spanned>>(documentIds, texts);
 	}
 
 	public void destroyItem(View collection, int position, Object view) {
@@ -151,5 +151,11 @@ public class DocumentAdapter extends PagerAdapter {
 		return null;
 	}
 
-
+	public String getTextByPosition(int position){
+		boolean success = mCursor.moveToPosition(position);
+		if (success) {
+			return mCursor.getString(mIndexOCRText);
+		}
+		return null;
+	}
 }

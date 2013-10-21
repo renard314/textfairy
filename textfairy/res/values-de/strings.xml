@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources xmlns="http://schemas.android.com/apk/res/android">
-
+    <string name="text_was_copied_to_clipboard">Text in Zwischenablage kopiert.</string>
+    <string name="copy_to_clipboard">Kopiere Text in Zwischenablage</string>   
     <string name="image_could_not_be_read">Das Bild konnte nicht geladen werden.</string>
     <string name="image_does_not_exist">Das Bild wurde nicht gefunden.</string>
     <string name="camera_app_not_found">Kameraapp nicht gefunden.</string>

@@ -37,5 +37,11 @@
         android:showAsAction="ifRoom"
         android:title="@string/export_as_pdf">
     </item>
-
+    <item
+        android:id="@+id/item_copy_to_clipboard"
+        android:icon="@drawable/ic_action_content_copy"
+        android:showAsAction="ifRoom"
+        android:title="@string/copy_to_clipboard">
+    </item>
+    
 </menu>

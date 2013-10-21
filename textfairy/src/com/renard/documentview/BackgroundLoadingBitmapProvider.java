@@ -178,6 +178,10 @@ public class BackgroundLoadingBitmapProvider implements CurlView.BitmapProvider,
 		mCache.evictAll();
 		mPageCursor = cursor;
 	}
+	
+	public Cursor getCursor(){
+		return mPageCursor;
+	}
 
 	@Override
 	public synchronized void onSizeChanged(int width, int height) {
