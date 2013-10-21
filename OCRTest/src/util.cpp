@@ -203,7 +203,7 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes,
 	Pixa* pixaSelectedColumns = pixaCreate(textCount);
 	for (int i = 0; i < textCount; i++) {
 		int textIndex = textindexes[i];
-		const l_int32 border = 10;
+		const l_int32 border = 40;
 		Pix* p = pixaGetPix(pixaText, textIndex, L_CLONE);
 		Pix* p_with_border = pixAddBorder(p, border, 0);
 		pixDestroy(&p);
