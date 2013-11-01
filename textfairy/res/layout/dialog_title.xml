@@ -8,12 +8,15 @@
 
     <ImageView
         android:id="@+id/fairy_image"
+        android:layout_margin="@dimen/default_padding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/empty"
         android:src="@drawable/warte3" />
 
     <LinearLayout
+        android:layout_marginTop="@dimen/default_padding"        
+        android:layout_marginRight="8dp"        
         android:id="@+id/fairy_text_bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

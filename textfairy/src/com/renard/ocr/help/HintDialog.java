@@ -25,6 +25,9 @@ import com.renard.ocr.R;
 
 public class HintDialog{
 
+	private HintDialog(){
+		
+	}
 	
 	public static AlertDialog createDialog(final Context context,final int speechBubbleText, final String pathToHTML){
 		AlertDialog.Builder builder;

@@ -3,6 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <Button
+        style="@style/WhatsNewButton"
+        android:id="@+id/whats_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/buttons"
+        android:drawableLeft="@drawable/ic_whats_new"
+        android:text="@string/whats_new" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -34,9 +44,9 @@
 
         <ViewFlipper
             android:id="@+id/viewflipper_text"
-            android:layout_marginTop="15dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:layout_weight="2"
             android:inAnimation="@android:anim/fade_in"
             android:outAnimation="@android:anim/fade_out" >

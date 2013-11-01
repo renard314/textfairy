@@ -61,6 +61,17 @@
         <item name="android:shadowDy">2</item>
         <item name="android:shadowRadius">2</item>
     </style>
+    
+    <style name="WhatsNewButton">
+        <item name="android:background">@drawable/btn_start_activity</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">@android:color/primary_text_light</item>         
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:minHeight">42dip</item>
+        <item name="android:minWidth">120dip</item>
+        <item name="android:layout_margin">16dp</item>
+    </style>
 
     <style name="StartActivityButton">
         <item name="android:background">@drawable/btn_start_activity</item>

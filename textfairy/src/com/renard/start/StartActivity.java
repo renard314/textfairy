@@ -17,13 +17,14 @@ package com.renard.start;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -37,6 +38,7 @@ import com.renard.ocr.BaseDocumentActivitiy;
 import com.renard.ocr.DocumentGridActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.help.AppOptionsActivity;
+import com.renard.ocr.help.ReleaseNoteDialog;
 import com.renard.util.Util;
 
 public class StartActivity extends BaseDocumentActivitiy {
@@ -50,6 +52,15 @@ public class StartActivity extends BaseDocumentActivitiy {
 		setContentView(R.layout.start_activity);
 		mTextFlipper = (ViewFlipper) findViewById(R.id.viewflipper_text);
 		ImageView fairy = (ImageView) findViewById(R.id.imageView_fairy);
+		Button whatsNewButton = (Button) findViewById(R.id.whats_new);
+		whatsNewButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				FragmentManager supportFragmentManager = getSupportFragmentManager();
+				new ReleaseNoteDialog().show(supportFragmentManager, ReleaseNoteDialog.TAG);
+			}
+		});
 		View.OnClickListener clicker = new View.OnClickListener() {
 
 			@Override
@@ -83,15 +94,15 @@ public class StartActivity extends BaseDocumentActivitiy {
 			if (imageUri != null) {
 				loadBitmapFromContentUri(imageUri);
 			} else {
-				showFileError(PixLoadStatus.IMAGE_COULD_NOT_BE_READ, new OnClickListener() {
-					
+				showFileError(PixLoadStatus.IMAGE_COULD_NOT_BE_READ, new DialogInterface.OnClickListener() {
+
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						finish();
 					}
 				});
 			}
-		
+
 		}
 	}
 
