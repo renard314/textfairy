@@ -66,7 +66,7 @@ bool onProgressChanged(int progress, int left, int right, int top, int bottom) {
 }
 
 void pixCallBack(Pix* pix, bool b1, bool b2) {
-	pixDisplay(pix, 0, 0);
+	//pixDisplay(pix, 0, 0);
 }
 
 void messageCallback(int messageId) {
@@ -101,14 +101,16 @@ void onePictureWithColumns(const char* filename, int index) {
 	ostringstream hocr;
 	ostringstream utf8text;
 	l_int32 textCount = pixaGetCount(pixaTexts);
+	l_int32* imageIndexes =new l_int32[0];
 	l_int32* textIndexes = new l_int32[textCount];
 	for (int i = 0; i < textCount; i++) {
 		textIndexes[i] = i;
 	}
-	combineSelectedPixa(pixaTexts, pixaImages, textIndexes, textCount, NULL,
-			NULL, messageCallback, &pixFinal, &pixOcr, &boxaColumns, true);
+	combineSelectedPixa(pixaTexts, pixaImages, textIndexes, textCount, imageIndexes, 0, messageCallback, &pixFinal, &pixOcr, &boxaColumns, true);
 	pixWrite("dewarpedColumns.bmp", pixOcr, IFF_BMP);
 	printf("total time = %f", stopTimerNested(timer));
+	renderTransformedBoxa(pixOcr,boxaColumns,255);
+	//pixDisplay(pixOcr,0,0);
 
 	delete[] textIndexes;
 	boxaDestroy(&boxaColumns);
@@ -128,7 +130,7 @@ void onPictureOnlyBinarize(const char* filename, int index){
 	Pix* pixsg;
 	extractImages(pixOrg, &pixhm, &pixsg);
 	binarize(pixsg, pixhm, &pixb);
-	pixDisplay(pixb, 0, 0);
+	//pixDisplay(pixb, 0, 0);
 	pixWrite("binarized.bmp",pixb,IFF_BMP);
 
 	pixDestroy(&pixb);
@@ -165,14 +167,13 @@ void onePicture(const char* filename, int index) {
 
 int main(int argc, const char* argv[]) {
 	l_chooseDisplayProg(L_DISPLAY_WITH_XV);
-	log("%s","hi");
 
 	ostringstream s;
 	if (argc == 3) {
 
 		s << "/Users/renard/Desktop/devel/textfairy/OCRTest/" << argv[1] << "/"
 				<< argv[2] << ".jpg";
-		onPictureOnlyBinarize(s.str().c_str(), atoi(argv[1]));
+		onePictureWithColumns(s.str().c_str(), atoi(argv[1]));
 
 //		onePicture(s.str().c_str(), atoi(argv[1]));
 	} else if (argc == 4) {

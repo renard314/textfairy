@@ -25,7 +25,7 @@
 
 using namespace std;
 
-l_int32 RenderTransformedBoxa(PIX *pixt, BOXA *boxa, l_int32 i) {
+l_int32 renderTransformedBoxa(PIX *pixt, BOXA *boxa, l_int32 i) {
 	l_int32 j, n, rval, gval, bval;
 	BOX *box;
 
@@ -92,6 +92,7 @@ Pixa* pagesegGetColumns(Pix* pixtext, bool debug) {
 
 	pixBinary = pixReduceRankBinaryCascade(pixtext, 1, 0, 0, 0);
 
+
 	/*remove long horizontal lines*/
 	Pix* pixhl = pixMorphCompSequence(pixBinary, "o70.1+c20.5+d5.10", 0);
 	pixSetMasked(pixBinary, pixhl, 0);
@@ -149,6 +150,7 @@ Pixa* pagesegGetColumns(Pix* pixtext, bool debug) {
 	pixDestroy(&pixb);
 	pixSubtract(pixBinary, pixBinary, pixhws);
 	pixDestroy(&pixhws);
+
 
 	/* Solidify the textblock mask and remove noise:
 	 *   (1) For each cc, close the blocks and dilate slightly to form a solid mask.

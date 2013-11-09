@@ -26,6 +26,7 @@
 
 #include "image_processing.h"
 
+l_int32 renderTransformedBoxa(PIX *pixt, BOXA *boxa, l_int32 i);
 Pixa* pagesegGetColumns(Pix* pixtext, bool debug);
 Pix* combinePixa(Pixa* pixaText, bool debug);
 void segmentComplexLayout(Pix* pixOrg, Pix* pixhm, Pix* pixb, Pixa** pixaImage, Pixa** pixaText, void(*callback) (const Pix*),bool debug);

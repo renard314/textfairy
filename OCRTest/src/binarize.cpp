@@ -39,6 +39,11 @@ int determineThresholdForTile(Pix* pixt, bool debug) {
 		closeSize++;
 	}
 	norm = numaNormalizeHistogram(histo, 1);
+	/*
+	l_float32 median;
+	numaGetMedian(histo,&median);
+	printf("%2.1f\t", median);
+	*/
 
 	l_float32 iMulty;
 	for (sum = 0.0, moment = 0.0, var = 0.0, countPixels = 0, i = start;
@@ -225,7 +230,7 @@ void binarize(Pix* pixGrey, Pix* pixhm, Pix** pixb) {
 
 	s << "text mask creation: " << stopTimerNested(timer) << std::endl;
 	printf("%s", s.str().c_str());
-
+	pixDisplay(pixGrey,0,0);
 	pixWrite("toThresh.bmp", pixGrey, IFF_BMP);
 
 	/*
