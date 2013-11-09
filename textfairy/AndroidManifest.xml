@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.renard.ocr"
     android:versionCode="13"
-    android:versionName="1.1.8" >
+    android:versionName="1.1.9" >
 
     <uses-sdk
         android:minSdkVersion="9"
