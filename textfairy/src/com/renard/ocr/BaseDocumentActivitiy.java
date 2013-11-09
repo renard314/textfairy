@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -38,6 +39,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -265,7 +267,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
 			protected void onPreExecute() {
 				progressDialog = ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image);
-				//getSupportFragmentManager().beginTransaction().show(progressDialog).commit();
+				// getSupportFragmentManager().beginTransaction().show(progressDialog).commit();
 				progressDialog.show(getSupportFragmentManager(), "load_image_progress");
 			};
 
@@ -313,7 +315,13 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 						} else {
 							return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
 						}
+					} else if (cameraPicUri.toString().startsWith("content")) {
+						InputStream stream = getContentResolver().openInputStream(cameraPicUri);
+						Bitmap b = BitmapFactory.decodeStream(stream);
+						p = ReadFile.readBitmap(b);
+						b.recycle();
 					}
+
 					return Pair.create(p, PixLoadStatus.SUCCESS);
 				} catch (FileNotFoundException e) {
 					return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
