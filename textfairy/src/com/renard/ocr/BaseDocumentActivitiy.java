@@ -320,6 +320,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 						Bitmap b = BitmapFactory.decodeStream(stream);
 						p = ReadFile.readBitmap(b);
 						b.recycle();
+					} else {
+						return Pair.create(null, PixLoadStatus.IO_ERROR);	
 					}
 
 					return Pair.create(p, PixLoadStatus.SUCCESS);
@@ -599,7 +601,6 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 				// shareIntent.putExtra(android.content.Intent.EXTRA_TEXT,
 				// mHOCRText.toString());
 				shareIntent.setType("application/pdf");
-
 				shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, pdfFiles);
 				startActivity(Intent.createChooser(shareIntent, getText(R.string.share_chooser_title)));
 			} else {
