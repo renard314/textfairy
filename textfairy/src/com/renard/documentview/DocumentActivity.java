@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ClipData;
@@ -141,17 +142,10 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 		Toast.makeText(this, getString(R.string.text_was_copied_to_clipboard), Toast.LENGTH_LONG).show();
 	}
 
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@SuppressLint("NewApi")
 	private void copyTextToClipboardNewApi(final String text) {
 		ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 		ClipData clip = ClipData.newPlainText(getString(R.string.app_name), text);
-		clipboard.setPrimaryClip(clip);
-	}
-
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	private void copyHtmlTextToClipboard(final String htmlText, final String text) {
-		ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-		ClipData clip = ClipData.newHtmlText(getString(R.string.app_name), text, htmlText);
 		clipboard.setPrimaryClip(clip);
 	}
 
