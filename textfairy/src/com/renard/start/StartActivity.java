@@ -24,7 +24,6 @@ import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -33,6 +32,7 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.renard.install.InstallActivity;
 import com.renard.ocr.BaseDocumentActivitiy;
 import com.renard.ocr.DocumentGridActivity;
@@ -52,15 +52,6 @@ public class StartActivity extends BaseDocumentActivitiy {
 		setContentView(R.layout.start_activity);
 		mTextFlipper = (ViewFlipper) findViewById(R.id.viewflipper_text);
 		ImageView fairy = (ImageView) findViewById(R.id.imageView_fairy);
-		Button whatsNewButton = (Button) findViewById(R.id.whats_new);
-		whatsNewButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				FragmentManager supportFragmentManager = getSupportFragmentManager();
-				new ReleaseNoteDialog().show(supportFragmentManager, ReleaseNoteDialog.TAG);
-			}
-		});
 		View.OnClickListener clicker = new View.OnClickListener() {
 
 			@Override
@@ -161,7 +152,21 @@ public class StartActivity extends BaseDocumentActivitiy {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		return false;
+		getSupportMenuInflater().inflate(R.menu.start_activity_options, menu);
+
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.whats_new) {
+			FragmentManager supportFragmentManager = getSupportFragmentManager();
+			new ReleaseNoteDialog().show(supportFragmentManager, ReleaseNoteDialog.TAG);
+
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	/**

@@ -33,7 +33,7 @@ public class HintDialog{
 		AlertDialog.Builder builder;
 
 		View layout = View.inflate(context, R.layout.dialog_fairy_helping, null);
-		TextView speech = (TextView) layout.findViewById(R.id.fairy_text);
+		TextView speech = (TextView) layout.findViewById(R.id.help_header);
 		speech.setText(speechBubbleText);
 		WebView webView = (WebView) layout.findViewById(R.id.webView_help);
 		webView.loadUrl(pathToHTML);
