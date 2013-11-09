@@ -147,7 +147,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			// 2.) the photo will be stored in two locations (the given path and
 			// additionally in the MediaStore)
 			String manufacturer = android.os.Build.MANUFACTURER.toLowerCase();
-			if (!(manufacturer.contains("samsung")) && !(manufacturer.contains("sony"))) {
+			if (!(manufacturer.contains("sony"))) {
 				String filename = System.currentTimeMillis() + ".jpg";
 				ContentValues values = new ContentValues();
 				values.put(MediaStore.Images.Media.TITLE, filename);
@@ -265,11 +265,12 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
 			protected void onPreExecute() {
 				progressDialog = ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image);
+				//getSupportFragmentManager().beginTransaction().show(progressDialog).commit();
 				progressDialog.show(getSupportFragmentManager(), "load_image_progress");
 			};
 
 			protected void onPostExecute(Pair<Pix, PixLoadStatus> p) {
-				if (progressDialog != null && !progressDialog.isDetached()) {
+				if (progressDialog != null) {
 					try {
 						getSupportFragmentManager().beginTransaction().remove(progressDialog).commitAllowingStateLoss();
 					} catch (NullPointerException e) {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources xmlns="http://schemas.android.com/apk/res/android">
-    <string name="whats_new_title">Sieh was es neues gibt:</string>
+    <string name="whats_new_title">Sieh was es Neues gibt</string>
     <string name="whats_new">Was is neu?</string>
     <string name="text_was_copied_to_clipboard">Text in Zwischenablage kopiert.</string>
     <string name="copy_to_clipboard">Kopiere Text in Zwischenablage</string>   

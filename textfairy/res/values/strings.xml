@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-    <string name="whats_new_title">Check out what has changed:</string>
+    <string name="whats_new_title">Check out what has changed</string>
     <string name="whats_new">Whats new?</string>  
     <string name="text_was_copied_to_clipboard">Text copied to clipboard.</string>
     <string name="copy_to_clipboard">Copy to clipboard</string>

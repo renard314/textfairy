@@ -105,9 +105,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 			switch (msg.what) {
 
 			case OCR.MESSAGE_EXPLANATION_TEXT: {
-				// CharSequence text = getText(msg.arg1);
 				getSupportActionBar().setTitle(msg.arg1);
-				// mFairyText.setText(text);
 				break;
 			}
 			case OCR.MESSAGE_TESSERACT_PROGRESS: {

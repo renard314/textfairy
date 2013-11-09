@@ -128,9 +128,11 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 	private void copyTextToClipboard() {
 		final String htmlText = getDocumentContainer().getTextofCurrentlyShownDocument();
 		final String text = Html.fromHtml(htmlText).toString();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-			copyHtmlTextToClipboard(htmlText, text);
-		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		//some apps don't like html text
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//			copyHtmlTextToClipboard(htmlText, text);
+//		} else 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			copyTextToClipboardNewApi(text);
 		} else {
 			copyTextToClipboard(text);

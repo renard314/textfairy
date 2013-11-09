@@ -62,11 +62,9 @@ public class LayoutQuestionDialog {
 				null);
 		builder.setView(layout);
 
-		final TextView speech = (TextView) layout.findViewById(R.id.fairy_text);
+		final TextView speech = (TextView) layout.findViewById(R.id.help_header);
 		speech.setText(context.getString(R.string.document_layout_dialog));
-		final ImageView fairyImage = (ImageView) layout
-				.findViewById(R.id.fairy_image);
-		fairyImage.setImageResource(R.drawable.fairy_question);
+		speech.setCompoundDrawables(context.getResources().getDrawable(R.drawable.fairy_question), null,null,null);
 		final RadioGroup layoutRadioGroup = (RadioGroup) layout
 				.findViewById(R.id.radioGroup_layout_buttons);
 		layoutRadioGroup.check(R.id.radio_simple);
