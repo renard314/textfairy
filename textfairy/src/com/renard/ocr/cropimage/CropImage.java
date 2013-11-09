@@ -52,7 +52,6 @@ import com.renard.util.Util;
 public class CropImage extends MonitoredActivity {
 	private static final int HINT_DIALOG_ID = 2;
 
-	private final int SCALE_FACTOR = 4;
 	private int mAspectX, mAspectY;
 	private final Handler mHandler = new Handler();
 
@@ -64,7 +63,8 @@ public class CropImage extends MonitoredActivity {
 	private CropImageView mImageView;
 
 	private Bitmap mBitmap;
-	HighlightView mCrop;
+	private HighlightView mCrop;
+	private float mScaleFactor = 1;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -92,8 +92,8 @@ public class CropImage extends MonitoredActivity {
 
 					// scale it so that it fits the screen
 					
-					float scaleFactor = getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
-					mPixScaled = Scale.scale(mPix, scaleFactor);
+					mScaleFactor = getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
+					mPixScaled = Scale.scale(mPix, mScaleFactor);
 
 					mBitmap = WriteFile.writeBitmap(mPixScaled);
 					mAspectX = extras.getInt("aspectX");
@@ -202,14 +202,14 @@ public class CropImage extends MonitoredActivity {
 		makeDefault();
 	}
 
-	private Box adjustBoundsToMultipleOf4(int left, int top, int width, int height) {
-		int newLeft = left;
-		int newTop = top;
-		int newRight = left + width;
-		int newBottom = top + height;
+	private Box adjustBoundsToMultipleOf4(float f, float g, float h, float j) {
+		int newLeft = (int) f;
+		int newTop = (int) g;
+		int newRight = (int) (f + h);
+		int newBottom = (int) (g + j);
 
-		int wDiff = width % 4;
-		int hDiff = height % 4;
+		int wDiff = ((int)h) % 4;
+		int hDiff = ((int)j) % 4;
 		for (int i = 0; i < wDiff; i++) {
 			if (i % 2 == 0) {
 				newLeft++;
@@ -242,11 +242,8 @@ public class CropImage extends MonitoredActivity {
 			public void run() {
 				try {
 					Rect r = mCrop.getCropRect();
-					/*
-					 * during image analysing image will be scaled to 1/4 of its
-					 * size to compute the halftone mask
-					 */
-					Box boundingBox = adjustBoundsToMultipleOf4(r.left * SCALE_FACTOR, r.top * SCALE_FACTOR, (r.right - r.left) * SCALE_FACTOR, (r.bottom - r.top) * SCALE_FACTOR);
+					float scale = 1f/mScaleFactor;
+					Box boundingBox = adjustBoundsToMultipleOf4(r.left * scale, r.top * scale, (r.right - r.left) * scale, (r.bottom - r.top) * scale);
 					Pix croppedPix = Clip.clipRectangle(mPix, boundingBox);
 					if (croppedPix == null) {
 						throw new IllegalStateException();

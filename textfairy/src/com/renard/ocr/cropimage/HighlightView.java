@@ -24,6 +24,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 
 import com.renard.ocr.R;
@@ -34,7 +35,7 @@ import com.renard.ocr.R;
 // space to screen space.
 class HighlightView {
 	@SuppressWarnings("unused")
-	private static final String TAG = "HighlightView";
+	private static final String LOG_TAG = HighlightView.class.getSimpleName();
 	View mContext; // The View displaying the image.
 
 	/* used during onDraw */
@@ -122,10 +123,6 @@ class HighlightView {
 		mResizeDrawableHeight.draw(canvas);
 	}
 
-	public ModifyMode getMode() {
-		return mMode;
-	}
-
 	public void setMode(ModifyMode mode) {
 		if (mode != mMode) {
 			mMode = mode;
@@ -197,51 +194,13 @@ class HighlightView {
 			// dy * (mCropRect.height() / r.height()));
 			moveBy(dx, dy);
 		} else {
-			if (((GROW_LEFT_EDGE | GROW_RIGHT_EDGE) & edge) == 0) {
-				dx = 0;
-			}
-
-			if (((GROW_TOP_EDGE | GROW_BOTTOM_EDGE) & edge) == 0) {
-				dy = 0;
-			}
-
-			// Convert to image space before sending to growBy().
-			// float xDelta = dx * (mCropRect.width() / r.width());
-			// float yDelta = dy * (mCropRect.height() / r.height());
-			float xDelta = dx;
-			float yDelta = dy;
-			growBy((((edge & GROW_LEFT_EDGE) != 0) ? -1 : 1) * xDelta, (((edge & GROW_TOP_EDGE) != 0) ? -1 : 1) * yDelta);
+			growBy(edge, dx, dy);
 		}
 	}
 
 	// Grows the cropping rectange by (dx, dy) in image space.
-	void moveBy(float dx, float dy) {
-		// System.out.println(String.format("move by : %3.0f - %3.0f",dx,dy));
-		Rect invalRect = new Rect(mDrawRect);
+	void growBy(int edge, float dx, float dy) {
 
-		float width = 0;
-		float height = 0;
-		if (mResizeDrawableHeight != null && mResizeDrawableWidth != null) {
-			width = mResizeDrawableHeight.getIntrinsicWidth() / 2;
-			height = mResizeDrawableWidth.getIntrinsicHeight() / 2;
-		}
-		invalRect.inset((int) -width, (int) -height);
-		mCropRect.offset(dx, dy);
-
-		// Put the cropping rectangle inside image rectangle.
-		mCropRect.offset(Math.max(0, mImageRect.left - mCropRect.left), Math.max(0, mImageRect.top - mCropRect.top));
-
-		mCropRect.offset(Math.min(0, mImageRect.right - mCropRect.right), Math.min(0, mImageRect.bottom - mCropRect.bottom));
-
-		mDrawRect = computeLayout();
-		invalRect.union(mDrawRect);
-		invalRect.inset(-10, -10);
-		mContext.invalidate(invalRect);
-	}
-
-	// Grows the cropping rectange by (dx, dy) in image space.
-	void growBy(float dx, float dy) {
-		// System.out.println(String.format("grow by : %3.0f - %3.0f",dx,dy));
 		if (mMaintainAspectRatio) {
 			if (dx != 0) {
 				dy = dx / mInitialAspectRatio;
@@ -268,8 +227,21 @@ class HighlightView {
 				dx = dy * mInitialAspectRatio;
 			}
 		}
+		
+		if (((GROW_LEFT_EDGE) & edge) != 0) {
+			r.left+=dx;
+		}
+		if (((GROW_RIGHT_EDGE) & edge) != 0) {
+			r.right+=dx;
+		}
+		if (((GROW_TOP_EDGE) & edge) != 0) {
+			r.top+=dy;
+		}
+		if (((GROW_BOTTOM_EDGE) & edge) != 0) {
+			r.bottom+=dy;
+		}
 
-		r.inset(-dx, -dy);
+		//r.inset(-dx, -dy);
 
 		// Don't let the cropping rectangle shrink too fast.
 		final float widthCap = 25F;
@@ -296,6 +268,31 @@ class HighlightView {
 		mCropRect.set(r);
 		mDrawRect = computeLayout();
 		mContext.invalidate();
+	}
+
+	// Grows the cropping rectange by (dx, dy) in image space.
+	void moveBy(float dx, float dy) {
+		// System.out.println(String.format("move by : %3.0f - %3.0f",dx,dy));
+		Rect invalRect = new Rect(mDrawRect);
+
+		float width = 0;
+		float height = 0;
+		if (mResizeDrawableHeight != null && mResizeDrawableWidth != null) {
+			width = mResizeDrawableHeight.getIntrinsicWidth() / 2;
+			height = mResizeDrawableWidth.getIntrinsicHeight() / 2;
+		}
+		invalRect.inset((int) -width, (int) -height);
+		mCropRect.offset(dx, dy);
+
+		// Put the cropping rectangle inside image rectangle.
+		mCropRect.offset(Math.max(0, mImageRect.left - mCropRect.left), Math.max(0, mImageRect.top - mCropRect.top));
+
+		mCropRect.offset(Math.min(0, mImageRect.right - mCropRect.right), Math.min(0, mImageRect.bottom - mCropRect.bottom));
+
+		mDrawRect = computeLayout();
+		invalRect.union(mDrawRect);
+		invalRect.inset(-10, -10);
+		mContext.invalidate(invalRect);
 	}
 
 	// Returns the cropping rectangle in image space.
@@ -329,7 +326,7 @@ class HighlightView {
 
 		mFocusPaint.setARGB(125, 50, 50, 50);
 		mNoFocusPaint.setARGB(125, 50, 50, 50);
-		mOutlinePaint.setARGB(125, Color.red(progressColor),Color.green(progressColor),Color.blue(progressColor));
+		mOutlinePaint.setARGB(125, Color.red(progressColor), Color.green(progressColor), Color.blue(progressColor));
 		mOutlinePaint.setStrokeWidth(3F);
 		mOutlinePaint.setStyle(Paint.Style.STROKE);
 		mOutlinePaint.setAntiAlias(true);
