@@ -55,8 +55,7 @@ make sure that you have got the android sdk as well as ndk (r8e) installed
 * cd textfairy
 * git submodule update
 * git submodule init
-* cd textfairy
-* ndk-build
-* import settings.gradle into android studio
+* make sure that ndk-build is on your path
+* import settings.gradle into android studio or execute gradle build 
 
 
