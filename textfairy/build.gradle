@@ -13,13 +13,34 @@ dependencies {
         mavenCentral()
     }
     compile fileTree(dir: 'libs', include: '*.jar')
+    compile fileTree(dir: 'build/native-libs', include: '*.jar')
     compile 'com.nineoldandroids:library:2.4.0+'
     compile 'com.android.support:support-v4:13.0.0'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'org.apache.commons:commons-compress:1.5'
     compile project(":Android-ViewPagerIndicator:library")
     compile project(":FileExplorer")
     compile project(":ViewPager3d:ViewPager3d")
 }
+
+// Task to run ndk-build
+task ndkBuild(type: Exec) {
+    commandLine 'ndk-build', '-j', Runtime.runtime.availableProcessors()
+}
+
+
+task nativeLibsToJar(type: Zip, description: 'create a jar archive of the native libs') {
+    destinationDir file("$buildDir/native-libs")
+    baseName 'native-libs'
+    extension 'jar'
+    from fileTree(dir: 'libs', include: '**/*.so')
+    into 'lib/'
+}
+
+tasks.withType(Compile) { compileTask -> compileTask.dependsOn(nativeLibsToJar) }
+nativeLibsToJar.dependsOn 'ndkBuild'
+
+clean.dependsOn 'cleanCopyNativeLibs'
 
 android {
     compileSdkVersion 17
