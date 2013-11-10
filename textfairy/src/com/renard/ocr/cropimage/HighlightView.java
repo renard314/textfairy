@@ -189,9 +189,6 @@ class HighlightView {
 			return;
 		} else if (edge == MOVE) {
 
-			// Convert to image space before sending to moveBy().
-			// moveBy(dx * (mCropRect.width() / r.width()),
-			// dy * (mCropRect.height() / r.height()));
 			moveBy(dx, dy);
 		} else {
 			growBy(edge, dx, dy);
@@ -241,8 +238,6 @@ class HighlightView {
 			r.bottom+=dy;
 		}
 
-		//r.inset(-dx, -dy);
-
 		// Don't let the cropping rectangle shrink too fast.
 		final float widthCap = 25F;
 		if (r.width() < widthCap) {
@@ -254,17 +249,10 @@ class HighlightView {
 		}
 
 		// Put the cropping rectangle inside the image rectangle.
-		if (r.left < mImageRect.left) {
-			r.offset(mImageRect.left - r.left, 0F);
-		} else if (r.right > mImageRect.right) {
-			r.offset(-(r.right - mImageRect.right), 0);
-		}
-		if (r.top < mImageRect.top) {
-			r.offset(0F, mImageRect.top - r.top);
-		} else if (r.bottom > mImageRect.bottom) {
-			r.offset(0F, -(r.bottom - mImageRect.bottom));
-		}
-
+        r.left=Math.max(0,r.left);
+        r.right=Math.min(mImageRect.right,r.right);
+        r.top=Math.max(0,r.top);
+        r.bottom=Math.min(mImageRect.bottom,r.bottom);
 		mCropRect.set(r);
 		mDrawRect = computeLayout();
 		mContext.invalidate();
