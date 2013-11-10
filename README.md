@@ -26,9 +26,8 @@ Project Structure
  * is used by the text fairy through a jni wrapper (textfairy/jni)
 
 The following android library projects are included as git submodules
-* [ActionBarSherlock] [1]
-* [Android-ViewPagerIndicator] [2]
-* [ViewPager3D] [3]
+* [Android-ViewPagerIndicator] [1]
+* [ViewPager3D] [2]
 
 The following projects where added to the sources directly either because they where modified or they are not available as git repos
 * [Tesseract (OCR Engine)] [4]
@@ -38,9 +37,8 @@ The following projects where added to the sources directly either because they w
 * [Tesseract android tools] [8]
 * [libjpeg] [9]
 
-  [1]: https://github.com/JakeWharton/ActionBarSherlock
-  [2]: https://github.com/JakeWharton/Android-ViewPagerIndicator
-  [3]: https://github.com/renard314/ViewPager3D
+  [1]: https://github.com/JakeWharton/Android-ViewPagerIndicator
+  [2]: https://github.com/renard314/ViewPager3D
   [4]: https://tesseract-ocr.googlecode.com/
   [5]: http://www.leptonica.com/index.html
   [6]: https://github.com/harism/android_page_curl/
@@ -49,17 +47,16 @@ The following projects where added to the sources directly either because they w
   [9]: http://libjpeg.sourceforge.net/
 
 
-Building from command line
---------------------------
+Building with gradle
+--------------------------------------
 make sure that you have got the android sdk as well as ndk (r8e) installed
 
 * git clone git@github.com:renard314/textfairy.git
 * cd textfairy
 * git submodule update
 * git submodule init
-* mvn clean install -Dandroid.sdk.path=/path/to/android-sdk -Dandroid.ndk.path=/path/to/android-ndk
+* cd textfairy
+* ndk-build
+* import settings.gradle into android studio
 
-Importing code into eclipse
----------------------------
-TODO
 
