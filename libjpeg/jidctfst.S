@@ -63,7 +63,7 @@
 
 
 jpeg_idct_ifast:
-    PLD     (r2, #0)
+    PLD     [r2, #0]
     stmdb   sp!, {r4,r5, r6,r7, r8,r9, r10,r11, r12,lr}
     ldr     r4, [sp, #4*10]
     sub     sp, #local_SIZE
