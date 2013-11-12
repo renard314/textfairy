@@ -21,6 +21,7 @@ debug/
 armeabi*/
 x86/
 obj/
+build/
 hocr2pdf/objdir/
 hocr2pdf/Debug
 hocr2pdf/Default

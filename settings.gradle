@@ -1,0 +1,4 @@
+include ':FileExplorer'
+include ':ViewPager3d:ViewPager3d'
+include ':textfairy'
+include ':Android-ViewPagerIndicator:library'

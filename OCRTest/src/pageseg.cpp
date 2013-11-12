@@ -75,6 +75,16 @@ l_int32 getMedianComponentHeight(Pix* pixtl, bool debug) {
 	return median;
 }
 
+void growTextBounds(Boxa* textBounds) {
+	int n = boxaGetCount(textBounds);
+	BOX *box;
+	for (int j = 0; j < n; j++) {
+		box = boxaGetBox(textBounds, j, L_CLONE);
+		boxAdjustSides(box,box,-5,5,-5,5);
+		boxDestroy(&box);
+	}
+}
+
 Pixa* pagesegGetColumns(Pix* pixtext, bool debug) {
 	ostringstream s;
 	PIX *pixb, *pixBinary;
@@ -184,6 +194,9 @@ Pixa* pagesegGetColumns(Pix* pixtext, bool debug) {
 	pixDilateBrick(pixBinary, pixBinary, 3, 3);
 
 	Boxa* boxatext = pixConnCompBB(pixBinary, 8);
+
+	growTextBounds(boxatext);
+
 	pixDestroy(&pixBinary);
 	Pixa* pixaText = pixaCreateFromBoxa(pixtext, boxatext, NULL);
 	boxaDestroy(&boxatext);
@@ -194,6 +207,8 @@ Pixa* pagesegGetColumns(Pix* pixtext, bool debug) {
 	}
 	return pixaText;
 }
+
+
 
 
 

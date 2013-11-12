@@ -6,15 +6,46 @@
 		<cconfiguration id="com.android.toolchain.gcc.536663258">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.android.toolchain.gcc.536663258" moduleId="org.eclipse.cdt.core.settings" name="Default">
 				<externalSettings>
-					<externalSetting/>
+					<externalSetting>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/platforms/android-14/arch-x86/usr/include"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include-fixed"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/sources/cxx-stl/gnu-libstdc++/libs/x86/include"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/sources/cxx-stl/gnu-libstdc++/libs/armeabi/include"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/textfairy/jni/tesseract"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/ccmain"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/wordrec"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/cube"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/neural_networks/runtime"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/textord"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/classify"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/api"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/viewer"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/image"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/dict"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/ccstruct"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/cutil"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/ccutil"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/textfairy/jni/leptonica"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/textfairy/jni/leptonica/stdio"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/OCRTest/src"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/leptonica-1.68/src"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="jni/hocr2pdf"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/lib"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/utility"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/codecs"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/platforms/android-14/arch-arm/usr/include"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/include"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/sources/cxx-stl/gnu-libstdc++/include"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/libjpeg"/>
+						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="lib"/>
+					</externalSetting>
 				</externalSettings>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -22,7 +53,7 @@
 					<folderInfo id="com.android.toolchain.gcc.536663258.865022876" name="/" resourcePath="">
 						<toolChain id="com.android.toolchain.gcc.118428578" name="com.android.toolchain.gcc" superClass="com.android.toolchain.gcc">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.android.targetPlatform.389360941" name="Android Platform" osList="all" superClass="com.android.targetPlatform"/>
-							<builder id="com.android.builder.1506484473" keepEnvironmentInBuildfile="false" managedBuildOn="false" superClass="com.android.builder">
+							<builder id="com.android.builder.1506484473" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Android Builder" superClass="com.android.builder">
 								<outputEntries>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="libs"/>
 								</outputEntries>
@@ -40,32 +71,9 @@
 							</tool>
 							<tool id="com.android.gcc.compiler.1404981835" name="Android GCC Compiler" superClass="com.android.gcc.compiler">
 								<option id="com.android.gcc.option.includePath.1815903660" superClass="com.android.gcc.option.includePath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OCRTest/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/hocr2pdf/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/hocr2pdf/src/codecs}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/hocr2pdf/src/lib}&quot;"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/android-ndk-r8e/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/android-ndk-r8e/platforms/android-9/arch-arm/usr/include"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/android-ndk-r8e/sources/cxx-stl/gnu-libstdc++/4.4.3/libs/armeabi-v7a/include"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/android-ndk-r8e/sources/cxx-stl/gnu-libstdc++/4.4.3/include"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/leptonica-1.68/src"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/OCRTest/src"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-readonly/api"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-readonly/ccutil"/>
+									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/android-ndk-r9/platforms/android-18/arch-arm/usr/include"/>
 								</option>
 								<inputType id="com.android.gcc.inputType.1843318489" superClass="com.android.gcc.inputType"/>
-							</tool>
-							<tool id="com.android.tool.compiler.g++.1625498081" name="Android G++" superClass="com.android.tool.compiler.g++">
-								<option id="gnu.cpp.compiler.option.include.paths.548593592" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/android-ndk-r8/platforms/android-9/arch-arm/usr/include"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/codecs"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/lib"/>
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/utility"/>
-								</option>
-								<inputType id="com.android.tool.compiler.g++.input.1069774770" superClass="com.android.tool.compiler.g++.input"/>
-							</tool>
-							<tool id="com.android.tool.compiler.c.1538038859" name="Android GCC" superClass="com.android.tool.compiler.c">
-								<inputType id="com.android.tool.compiler.c.input.1576068877" superClass="com.android.tool.compiler.c.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>

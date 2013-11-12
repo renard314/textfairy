@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -51,7 +52,6 @@ import com.renard.util.Util;
 public class CropImage extends MonitoredActivity {
 	private static final int HINT_DIALOG_ID = 2;
 
-	private final int SCALE_FACTOR = 4;
 	private int mAspectX, mAspectY;
 	private final Handler mHandler = new Handler();
 
@@ -63,49 +63,77 @@ public class CropImage extends MonitoredActivity {
 	private CropImageView mImageView;
 
 	private Bitmap mBitmap;
-	HighlightView mCrop;
+	private HighlightView mCrop;
+	private float mScaleFactor = 1;
 
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
 		getWindow().setFormat(PixelFormat.RGBA_8888);
-//		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.cropimage_activity);
 
-		//getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    	//getSupportActionBar().setDisplayShowHomeEnabled(true);
-    	
+		// getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		// getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 		mImageView = (CropImageView) findViewById(R.id.image);
+		mImageView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
-		Intent intent = getIntent();
-		Bundle extras = intent.getExtras();
-		if (extras != null) {
-			// mImagePath = extras.getString("image-path");
-			// mSaveUri = Uri.fromFile(new File(mImagePath));
-			// mBitmap = getBitmap(mImagePath);
-			mPix = new Pix(extras.getInt(DocumentGridActivity.EXTRA_NATIVE_PIX));
-			
-			// no need to load full pic
-			mPixScaled = Scale.scale(mPix, 1f / SCALE_FACTOR);
+			@Override
+			public void onGlobalLayout() {
+				Intent intent = getIntent();
+				Bundle extras = intent.getExtras();
+				if (extras != null) {
+					// mImagePath = extras.getString("image-path");
+					// mSaveUri = Uri.fromFile(new File(mImagePath));
+					// mBitmap = getBitmap(mImagePath);
+					mPix = new Pix(extras.getInt(DocumentGridActivity.EXTRA_NATIVE_PIX));
 
-			mBitmap = WriteFile.writeBitmap(mPixScaled);
-			mAspectX = extras.getInt("aspectX");
-			mAspectY = extras.getInt("aspectY");
-			mRotation = extras.getInt(DocumentGridActivity.EXTRA_ROTATION) / 90;
+					// scale it so that it fits the screen
+					
+					mScaleFactor = getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
+					mPixScaled = Scale.scale(mPix, mScaleFactor);
+
+					mBitmap = WriteFile.writeBitmap(mPixScaled);
+					mAspectX = extras.getInt("aspectX");
+					mAspectY = extras.getInt("aspectY");
+					mRotation = extras.getInt(DocumentGridActivity.EXTRA_ROTATION) / 90;
+				}
+
+				if (mBitmap == null) {
+					finish();
+					return;
+				}
+
+				mImageView.setImageBitmapResetBase(mBitmap, true, mRotation * 90);
+				makeDefault();
+				mImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+			}
+
+		});
+
+		initAppIcon(this, HINT_DIALOG_ID);
+	}
+
+	private float getScaleFactorToFitScreen(Pix mPix, int vwidth, int vheight) {
+		float scale;
+		float dx;
+		float dy;
+		int dwidth = mPix.getWidth();
+		int dheight = mPix.getHeight();
+		if (dwidth <= vwidth && dheight <= vheight) {
+			scale = 1.0f;
+		} else {
+			scale = Math.min((float) vwidth / (float) dwidth, (float) vheight / (float) dheight);
 		}
 
-		if (mBitmap == null) {
-			finish();
-			return;
-		}
+		//dx = (vwidth - dwidth * scale) * 0.5f;
+		//dy = (vheight - dheight * scale) * 0.5f;
 
-		// Make UI fullscreen.
-		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-		mImageView.setImageBitmapResetBase(mBitmap, true, mRotation*90);
-		makeDefault();
-		initAppIcon(this, HINT_DIALOG_ID);		
+		//mDrawMatrix.setScale(scale, scale);
+		//mDrawMatrix.postTranslate(dx, dy);
+		return scale;
 	}
 
 	@Override
@@ -116,6 +144,7 @@ public class CropImage extends MonitoredActivity {
 		}
 		return super.onCreateDialog(id, args);
 	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int itemId = item.getItemId();
@@ -132,53 +161,37 @@ public class CropImage extends MonitoredActivity {
 
 		return super.onOptionsItemSelected(item);
 	}
-	
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.crop_image_options, menu);
 
-    	/*
-        menu.add(R.string.continue_ocr)
-            .setIcon(R.drawable.ic_action_save)
-            .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-				
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					onSaveClicked();
-					return true;
-				}
-			})
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		/*
+		 * menu.add(R.string.continue_ocr) .setIcon(R.drawable.ic_action_save)
+		 * .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		 * 
+		 * @Override public boolean onMenuItemClick(MenuItem item) {
+		 * onSaveClicked(); return true; } })
+		 * .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS |
+		 * MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		 * 
+		 * menu.add("") .setIcon(R.drawable.ic_action_rotate_right)
+		 * .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		 * 
+		 * @Override public boolean onMenuItemClick(MenuItem item) {
+		 * onRotateClicked(1); return true; } })
+		 * .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		 * 
+		 * menu.add("") .setIcon(R.drawable.ic_action_rotate_left)
+		 * .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		 * 
+		 * @Override public boolean onMenuItemClick(MenuItem item) {
+		 * onRotateClicked(-1); return true; } })
+		 * .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		 */
+		return true;
+	}
 
-        menu.add("")
-            .setIcon(R.drawable.ic_action_rotate_right)
-            .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-				
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					onRotateClicked(1);
-					return true;
-				}
-			})
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add("")
-            .setIcon(R.drawable.ic_action_rotate_left)
-            .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-				
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					onRotateClicked(-1);
-					return true;
-				}
-			})
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-               
-               */
-        return true;
-    }
-	
-	
 	private void onRotateClicked(int delta) {
 		if (delta < 0) {
 			delta = -delta * 3;
@@ -189,32 +202,32 @@ public class CropImage extends MonitoredActivity {
 		makeDefault();
 	}
 
-	private Box adjustBoundsToMultipleOf4(int left, int top, int width, int height){
-		int newLeft = left;
-		int newTop = top;
-		int newRight = left+width;
-		int newBottom = top+height;
-		
-		int wDiff = width % 4;
-		int hDiff = height % 4;
-		for (int i  = 0; i< wDiff;i++){
-			if (i%2==0){
+	private Box adjustBoundsToMultipleOf4(float f, float g, float h, float j) {
+		int newLeft = (int) f;
+		int newTop = (int) g;
+		int newRight = (int) (f + h);
+		int newBottom = (int) (g + j);
+
+		int wDiff = ((int)h) % 4;
+		int hDiff = ((int)j) % 4;
+		for (int i = 0; i < wDiff; i++) {
+			if (i % 2 == 0) {
 				newLeft++;
 			} else {
 				newRight--;
 			}
 		}
-		for (int i  = 0; i< hDiff;i++){
-			if (i%2==0){
+		for (int i = 0; i < hDiff; i++) {
+			if (i % 2 == 0) {
 				newTop++;
 			} else {
 				newBottom--;
 			}
 		}
-		return new Box(newLeft,newTop,newRight-newLeft, newBottom-newTop);
+		return new Box(newLeft, newTop, newRight - newLeft, newBottom - newTop);
 
 	}
-	
+
 	private void onSaveClicked() {
 		if (mSaving)
 			return;
@@ -227,26 +240,26 @@ public class CropImage extends MonitoredActivity {
 
 		Util.startBackgroundJob(this, null, getText(R.string.cropping_image).toString(), new Runnable() {
 			public void run() {
-				try {					
+				try {
 					Rect r = mCrop.getCropRect();
-					/*during image analysing image will be scaled to 1/4 of its size to compute the halftone mask*/
-					Box boundingBox =  adjustBoundsToMultipleOf4(r.left * SCALE_FACTOR, r.top * SCALE_FACTOR, (r.right - r.left) * SCALE_FACTOR, (r.bottom - r.top) * SCALE_FACTOR);
+					float scale = 1f/mScaleFactor;
+					Box boundingBox = adjustBoundsToMultipleOf4(r.left * scale, r.top * scale, (r.right - r.left) * scale, (r.bottom - r.top) * scale);
 					Pix croppedPix = Clip.clipRectangle(mPix, boundingBox);
-					if(croppedPix==null){
+					if (croppedPix == null) {
 						throw new IllegalStateException();
 					}
 					if (mRotation != 0 && mRotation != 4) {
 						Pix rotatedPix = Rotate.rotateOrth(croppedPix, mRotation);
-						croppedPix.recycle();						
+						croppedPix.recycle();
 						croppedPix = rotatedPix;
 					}
-					if(croppedPix==null){
+					if (croppedPix == null) {
 						throw new IllegalStateException();
 					}
 					Intent result = new Intent();
 					result.putExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, croppedPix.getNativePix());
 					setResult(RESULT_OK, result);
-				} catch(IllegalStateException e){
+				} catch (IllegalStateException e) {
 					setResult(RESULT_CANCELED);
 				} finally {
 					mPix.recycle();
@@ -257,8 +270,6 @@ public class CropImage extends MonitoredActivity {
 
 	}
 
-	
-
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -267,10 +278,10 @@ public class CropImage extends MonitoredActivity {
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
-        setResult(RESULT_CANCELED);
+		setResult(RESULT_CANCELED);
 		mPix.recycle();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		mPixScaled.recycle();
@@ -305,15 +316,12 @@ public class CropImage extends MonitoredActivity {
 		DisplayMetrics metrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-		
 		hv.setup(mImageView.getImageViewMatrix(), imageRect, cropRect, mAspectX != 0 && mAspectY != 0, metrics.density);
 		mImageView.add(hv);
 		mImageView.invalidate();
 		mCrop = hv;
 		mCrop.setFocus(true);
 	}
-
-
 
 }
 
@@ -329,11 +337,11 @@ class CropImageView extends ImageViewTouchBase {
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
 		if (mBitmapDisplayed.getBitmap() != null) {
-				mHighlightView.mMatrix.set(getImageMatrix());
-				mHighlightView.invalidate();
-				if (mHighlightView.mIsFocused) {
-					centerBasedOnHighlightView(mHighlightView);
-				}
+			mHighlightView.mMatrix.set(getImageMatrix());
+			mHighlightView.invalidate();
+			if (mHighlightView.mIsFocused) {
+				centerBasedOnHighlightView(mHighlightView);
+			}
 		}
 	}
 
@@ -391,15 +399,15 @@ class CropImageView extends ImageViewTouchBase {
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-					int edge = mHighlightView.getHit(mappedPoint[0], mappedPoint[1], getScale());
-					if (edge != HighlightView.GROW_NONE) {
-						mMotionEdge = edge;
-						mMotionHighlightView = mHighlightView;
-						mLastX = mappedPoint[0];
-						mLastY = mappedPoint[1];
-						mMotionHighlightView.setMode((edge == HighlightView.MOVE) ? HighlightView.ModifyMode.Move : HighlightView.ModifyMode.Grow);
-						break;
-					}
+			int edge = mHighlightView.getHit(mappedPoint[0], mappedPoint[1], getScale());
+			if (edge != HighlightView.GROW_NONE) {
+				mMotionEdge = edge;
+				mMotionHighlightView = mHighlightView;
+				mLastX = mappedPoint[0];
+				mLastY = mappedPoint[1];
+				mMotionHighlightView.setMode((edge == HighlightView.MOVE) ? HighlightView.ModifyMode.Move : HighlightView.ModifyMode.Grow);
+				break;
+			}
 			break;
 		case MotionEvent.ACTION_UP:
 			if (mMotionHighlightView != null) {
@@ -491,8 +499,8 @@ class CropImageView extends ImageViewTouchBase {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		if (!isInEditMode()){
-		    mHighlightView.draw(canvas);
+		if (!isInEditMode()) {
+			mHighlightView.draw(canvas);
 		}
 	}
 
