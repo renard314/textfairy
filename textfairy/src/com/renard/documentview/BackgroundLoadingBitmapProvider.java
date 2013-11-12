@@ -124,7 +124,7 @@ public class BackgroundLoadingBitmapProvider implements CurlView.BitmapProvider,
 		if (height > 0 && width > 0) {
 			try {
 				Future<Bitmap> f = mCache.get(index);
-				if (f != null) {
+				if (f != null && !f.get().isRecycled()) {
 					return f.get();
 				}
 				final String path = getImagePathFromIndex(index);
