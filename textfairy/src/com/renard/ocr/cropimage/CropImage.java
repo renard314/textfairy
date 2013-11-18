@@ -92,7 +92,15 @@ public class CropImage extends MonitoredActivity {
 
 					// scale it so that it fits the screen
 					
-					mScaleFactor = getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
+					//mScaleFactor = getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
+                    mScaleFactor = Util.determineScaleFactor(mPix.getWidth(),mPix.getHeight(),mImageView.getWidth(), mImageView.getHeight());
+
+                    if (mScaleFactor==0){
+                        mScaleFactor=1;
+                    } else {
+                        mScaleFactor = 1/mScaleFactor;
+                    }
+
 					mPixScaled = Scale.scale(mPix, mScaleFactor);
 
 					mBitmap = WriteFile.writeBitmap(mPixScaled);

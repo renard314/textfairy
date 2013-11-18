@@ -59,14 +59,17 @@ def getVersionCodeFromManifest(String prefix) {
 
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion "18.1.0"
+    compileSdkVersion 19
+    buildToolsVersion "18.1.1"
 
     signingConfigs {
         release
     }
     buildTypes {
         release {
+	    //runProguard true
+            proguardFile file('android.pro')
+            proguardFile getDefaultProguardFile('proguard-android.txt')
             signingConfig signingConfigs.release
         }
     }

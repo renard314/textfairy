@@ -195,7 +195,7 @@ Pixa* pagesegGetColumns(Pix* pixtext, bool debug) {
 
 	Boxa* boxatext = pixConnCompBB(pixBinary, 8);
 
-	growTextBounds(boxatext);
+	//growTextBounds(boxatext);
 
 	pixDestroy(&pixBinary);
 	Pixa* pixaText = pixaCreateFromBoxa(pixtext, boxatext, NULL);

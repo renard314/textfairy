@@ -170,9 +170,10 @@ void doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* con
 	if (hocrtext != NULL && isStateValid()) {
 		*hocr << hocrtext;
 		tesseract::ResultIterator* it = api.GetIterator();
-		LOGI("start getHTML");
+		LOGI("start GetHTMLText");
 		std::string utf8text = GetHTMLText(it, 70);
-		LOGI("after getHTMLText");
+		//std::string utf8text = api.GetUTF8Text();
+		LOGI("after GetHTMLText");
 		if (!utf8text.empty()) {
 			*utf8 << utf8text;
 		}
