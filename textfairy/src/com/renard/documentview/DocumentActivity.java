@@ -76,7 +76,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 		// Load partially transparent black background
 		// getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_bg_black));
         if (getIntent().hasExtra(EXTRA_ASK_FOR_TITLE)){
-            //OCRResultDialog.newInstance().show(getSupportFragmentManager(),OCRResultDialog.TAG);
+            OCRResultDialog.newInstance().show(getSupportFragmentManager(),OCRResultDialog.TAG);
         }
 		setDocumentFragmentType(true);
 		initAppIcon(this, HINT_DIALOG_ID);

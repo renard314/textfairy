@@ -5,15 +5,19 @@
     android:layout_height="match_parent"
     android:padding="@dimen/default_element_padding">
 
-    <ImageView
+
+    <TextView
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:text="hallo"
+        android:drawablePadding="@dimen/default_padding"
+        android:gravity="center|left"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/ocr_accuracy"
         android:layout_alignBottom="@+id/ocr_accuracy"
-        android:src="@drawable/fairy_right_arm"
-        android:scaleType="center"
+        android:textAppearance="@style/FairySpeechbubble"
+        android:drawableLeft="@drawable/fairy_right_arm"
         android:id="@+id/imageView" />
 
     <TextView
@@ -26,7 +30,7 @@
         android:gravity="center"
         android:textSize="18sp"
         android:layout_height="wrap_content"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:text="@string/ocr_accuracy" />
 
     <TextView
@@ -56,11 +60,13 @@
         android:text="@string/copy_to_clipboard"
         android:gravity="left|center"
         android:drawablePadding="@dimen/default_padding"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
         android:drawableLeft="@drawable/ic_action_content_copy_dark"
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/divider1"/>
+        android:layout_below="@+id/divider1" />
 
     <View
         android:layout_width="match_parent"
@@ -70,6 +76,9 @@
         android:layout_below="@+id/button_copy_to_clipboard" />
 
     <Button
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+
         android:id="@+id/button_text_to_speech"
         android:text="@string/text_to_speech"
         android:gravity="left|center"
@@ -78,7 +87,8 @@
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/divider2"/>
+        android:layout_below="@+id/divider2" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -87,6 +97,8 @@
         android:layout_below="@+id/button_text_to_speech" />
 
     <Button
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
         android:id="@+id/button_export_pdf"
         android:text="@string/export_as_pdf"
         android:gravity="left|center"
@@ -95,6 +107,6 @@
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/divider3"/>
+        android:layout_below="@+id/divider3" />
 
 </RelativeLayout>

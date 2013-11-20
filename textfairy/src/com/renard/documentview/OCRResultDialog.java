@@ -18,7 +18,7 @@ public class OCRResultDialog extends SherlockDialogFragment {
 
     public static final String TAG = OCRResultDialog.class.getSimpleName();
 
-    public static OCRResultDialog newInstance(){
+    public static OCRResultDialog newInstance() {
         return new OCRResultDialog();
     }
 
@@ -26,7 +26,8 @@ public class OCRResultDialog extends SherlockDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
         builder.setCancelable(true);
-        builder.setView(getLayoutInflater(savedInstanceState).inflate(R.layout.ocr_result_dialog,null));
+        View view = getActivity().getLayoutInflater().inflate(R.layout.ocr_result_dialog, null);
+        builder.setView(view);
         builder.setTitle("TITLE");
         return builder.create();
     }
