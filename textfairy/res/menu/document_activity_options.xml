@@ -43,5 +43,10 @@
         android:showAsAction="ifRoom"
         android:title="@string/copy_to_clipboard">
     </item>
-    
+    <item
+        android:id="@+id/item_text_to_speech"
+        android:icon="@drawable/ic_action_text_to_speech"
+        android:showAsAction="ifRoom"
+        android:title="@string/text_to_speech">
+    </item>
 </menu>

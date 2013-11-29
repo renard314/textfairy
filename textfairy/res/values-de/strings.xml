@@ -136,7 +136,11 @@
     <string name="no_ocr">Keine Texterkennung. Bild nur speichern</string>
     <string name="crop_help_title">Hier kannst Du dein Photo beschneiden und drehen.</string>
     <string name="continue_ocr">Weiter</string>
-    <string name="ocr_accuracy">OCR Genauigkeit</string>
+    <string name="ocr_accuracy">OCR Genauigkeit: %1$d</string>
     <string name="text_to_speech">Text vorlesen</string>
-
+    <string name="ocr_result_is_bad">Ich konnte nicht viel erkennen. Ich hoffe die Tipps helfen.</string>
+    <string name="ocr_result_is_ok">Ich denke ich konnte das meiste lesen.</string>
+    <string name="ocr_result_is_good">Juhu, das lief ganz gut!</string>
+    <string name="play">play</string>
+    <string name="stop">stop</string>
 </resources>

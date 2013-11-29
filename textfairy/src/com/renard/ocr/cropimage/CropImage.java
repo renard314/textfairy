@@ -82,6 +82,7 @@ public class CropImage extends MonitoredActivity {
 
 			@Override
 			public void onGlobalLayout() {
+                //TODO not run on UI Thread
 				Intent intent = getIntent();
 				Bundle extras = intent.getExtras();
 				if (extras != null) {
@@ -92,7 +93,7 @@ public class CropImage extends MonitoredActivity {
 
 					// scale it so that it fits the screen
 					
-					float bestScale = getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
+					float bestScale = 1/getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
                     mScaleFactor = Util.determineScaleFactor(mPix.getWidth(),mPix.getHeight(),mImageView.getWidth(), mImageView.getHeight());
 
                     if (mScaleFactor==0){

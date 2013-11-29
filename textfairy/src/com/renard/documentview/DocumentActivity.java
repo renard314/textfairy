@@ -18,10 +18,10 @@ package com.renard.documentview;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -31,6 +31,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
@@ -38,12 +39,15 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
+import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.renard.model.Document;
 import com.renard.ocr.BaseDocumentActivitiy;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
@@ -52,7 +56,10 @@ import com.renard.ocr.help.HintDialog;
 
 public class DocumentActivity extends BaseDocumentActivitiy implements LoaderManager.LoaderCallbacks<Cursor> {
 
-	public interface DocumentContainerFragment {
+    private static final String STATE_DIALOG_SHOWN = "state_dialog_shown";
+    private final  static String LOG_TAG = DocumentActivity.class.getSimpleName();
+
+    public interface DocumentContainerFragment {
 		public void setCursor(final Cursor cursor);
 
 		public String getTextofCurrentlyShownDocument();
@@ -60,11 +67,15 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
 	private static final int REQUEST_CODE_OPTIONS = 4;
 	private static final int REQUEST_CODE_TABLE_OF_CONTENTS = 5;
-	public static final String EXTRA_ASK_FOR_TITLE = "ask_for_title";
+	public static final String EXTRA_ACCURACY = "ask_for_title";
 
 	private int mParentId;
 	private Cursor mCursor;
 	View mFragmentFrame;
+    private boolean mResultDialogShown = false;
+    private TextToSpeech mTextToSpeech= null;
+    private  boolean mTtsReady = false;
+    private ActionMode mActionMode;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,20 +86,45 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 		init();
 		// Load partially transparent black background
 		// getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_bg_black));
-        if (getIntent().hasExtra(EXTRA_ASK_FOR_TITLE)){
-            OCRResultDialog.newInstance().show(getSupportFragmentManager(),OCRResultDialog.TAG);
+        int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY,0);
+        if(savedInstanceState!=null){
+            mResultDialogShown = savedInstanceState.getBoolean(STATE_DIALOG_SHOWN);
+        }
+        if (accuracy>0 && !mResultDialogShown){
+            mResultDialogShown = true;
+            OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(),OCRResultDialog.TAG);
         }
 		setDocumentFragmentType(true);
 		initAppIcon(this, HINT_DIALOG_ID);
 
 	}
 
-	@Override
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY,0);
+        mResultDialogShown = true;
+        OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(),OCRResultDialog.TAG);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(STATE_DIALOG_SHOWN,mResultDialogShown);
+    }
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		getSupportMenuInflater().inflate(R.menu.document_activity_options, menu);
 		return true;
 	}
+
+    void exportAsPdf(){
+        Set<Integer> idForPdf = new HashSet<Integer>();
+        idForPdf.add(getParentId());
+        new CreatePDFTask(idForPdf).execute();
+    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -117,21 +153,115 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 			new DeleteDocumentTask(idToDelete, true).execute();
 			return true;
 		} else if (itemId == R.id.item_export_as_pdf) {
-			Set<Integer> idForPdf = new HashSet<Integer>();
-			idForPdf.add(getParentId());
-			new CreatePDFTask(idForPdf).execute();
+            exportAsPdf();
 			return true;
 		} else if (itemId == R.id.item_copy_to_clipboard) {
 			copyTextToClipboard();
 			return true;
-
-		}
+		} else if(itemId == R.id.item_text_to_speech){
+            startTextToSpeech();
+            return true;
+        }
 		return super.onOptionsItemSelected(item);
 	}
+    private class DocumentActionCallback implements ActionMode.Callback,TextToSpeech.OnInitListener {
 
-	private void copyTextToClipboard() {
-		final String htmlText = getDocumentContainer().getTextofCurrentlyShownDocument();
-		final String text = Html.fromHtml(htmlText).toString();
+        @Override
+        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+            getSupportMenuInflater().inflate(R.menu.tts_action_mode, menu);
+            if (mTextToSpeech==null){
+                mTtsReady = false;
+                mTextToSpeech = new TextToSpeech(DocumentActivity.this, this);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+            if (mTtsReady){
+                //show play and stop button
+                menu.findItem(R.id.item_play).setVisible(true);
+                menu.findItem(R.id.item_stop).setVisible(true);
+            } else {
+                //TODO show progress
+                menu.findItem(R.id.item_play).setVisible(false);
+                menu.findItem(R.id.item_stop).setVisible(false);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+            switch(menuItem.getItemId()){
+                case R.id.item_play:
+                    mTextToSpeech.speak(getPlainDocumentText(),TextToSpeech.QUEUE_FLUSH,null);
+                    break;
+                case R.id.item_stop:
+                    mTextToSpeech.stop();
+                    actionMode.finish();
+                    break;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode actionMode) {
+            if (mTtsReady){
+                mTextToSpeech.stop();
+            }
+
+        }
+
+        @Override
+        public void onInit(int status) {
+            // status can be either TextToSpeech.SUCCESS or TextToSpeech.ERROR.
+            if (status == TextToSpeech.ERROR){
+                Log.e(LOG_TAG, "Could not initialize TextToSpeech.");
+                //TODO show error dialog or toast
+            } else {
+                //TODO save document language and use it
+                int result = mTextToSpeech.setLanguage(Locale.GERMAN);
+
+                switch(result){
+                    case TextToSpeech.LANG_MISSING_DATA:
+                        Log.e(LOG_TAG, "LANG_MISSING_DATA");
+                        //TODO show error dialog, allow user to open settings for loading the language
+                        break;
+                    case TextToSpeech.LANG_NOT_SUPPORTED:
+                        Log.e(LOG_TAG, "LANG_NOT_SUPPORTED");
+                        //TODO show error dialog, allow user to select different language
+                        break;
+                    default:
+                        mActionMode.getMenu().findItem(R.id.item_play).setVisible(true);
+                        mActionMode.getMenu().findItem(R.id.item_stop).setVisible(true);
+                        mTtsReady = true;
+                        return;
+                }
+            }
+            if (mActionMode!=null){
+                mActionMode.finish();
+            }
+
+        }
+    }
+
+
+    @Override
+    protected synchronized void onDestroy() {
+        super.onDestroy();
+        if (mTextToSpeech!=null){
+            mTextToSpeech.shutdown();
+            mTextToSpeech = null;
+        }
+    }
+
+    void startTextToSpeech() {
+        mActionMode = startActionMode(new DocumentActionCallback());
+    }
+
+
+    void copyTextToClipboard() {
+        final String text = getPlainDocumentText();
 		//some apps don't like html text
 //		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 //			copyHtmlTextToClipboard(htmlText, text);
@@ -145,7 +275,12 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 		Toast.makeText(this, getString(R.string.text_was_copied_to_clipboard), Toast.LENGTH_LONG).show();
 	}
 
-	@SuppressLint("NewApi")
+    private String getPlainDocumentText() {
+        final String htmlText = getDocumentContainer().getTextofCurrentlyShownDocument();
+        return Html.fromHtml(htmlText).toString();
+    }
+
+    @SuppressLint("NewApi")
 	private void copyTextToClipboardNewApi(final String text) {
 		ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 		ClipData clip = ClipData.newPlainText(getString(R.string.app_name), text);

@@ -1,52 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical"
     android:layout_height="match_parent"
-    android:padding="@dimen/default_element_padding">
-
-
-    <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="hallo"
-        android:drawablePadding="@dimen/default_padding"
-        android:gravity="center|left"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/ocr_accuracy"
-        android:layout_alignBottom="@+id/ocr_accuracy"
-        android:textAppearance="@style/FairySpeechbubble"
-        android:drawableLeft="@drawable/fairy_right_arm"
-        android:id="@+id/imageView" />
-
+    >
     <TextView
         android:id="@+id/accuracy_title"
         android:padding="8dp"
         android:background="@color/dark_grey"
         android:textColor="@color/primary_text_btn_main"
-        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:gravity="center"
         android:textSize="18sp"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:text="@string/ocr_accuracy" />
-
-    <TextView
-        android:background="@drawable/border_background"
-        android:layout_alignLeft="@+id/accuracy_title"
-        android:layout_alignRight="@+id/accuracy_title"
-        android:gravity="center"
-        android:typeface="serif"
-        android:textSize="42sp"
-        android:padding="4dp"
-        android:id="@+id/ocr_accuracy"
-        android:layout_below="@+id/accuracy_title"
-        android:layout_width="0dp"
-        android:text="86%"
-        android:layout_height="wrap_content" />
-
+    <!--android:layout_marginLeft="@dimen/activity_vertical_margin"-->
+    <!--android:layout_marginRight="@dimen/activity_vertical_margin"-->
+    <include
+        android:id="@+id/help_header"
+        android:background="#F1F1F1"
+        android:layout_marginTop="@dimen/default_padding"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        layout="@layout/dialog_title" />
     <View
         android:layout_marginTop="@dimen/default_element_padding"
         android:layout_width="match_parent"
@@ -54,6 +35,27 @@
         android:id="@+id/divider1"
         android:background="@color/grey6"
         android:layout_below="@+id/ocr_accuracy" />
+
+    <Button
+        android:layout_marginTop="@dimen/default_padding"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:id="@+id/button_show_tips"
+        android:text="@string/show_tips"
+        android:gravity="left|center"
+        android:drawablePadding="@dimen/default_padding"
+        android:drawableLeft="@drawable/ic_action_tips_light"
+        android:layout_width="match_parent"
+        android:background="@drawable/btn_start_activity2"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ocr_accuracy" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/divider2"
+        android:background="@color/grey6"
+        android:layout_below="@+id/button_show_tips" />
 
     <Button
         android:id="@+id/button_copy_to_clipboard"
@@ -66,12 +68,12 @@
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/divider1" />
+        android:layout_below="@+id/divider2" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:id="@+id/divider2"
+        android:id="@+id/divider3"
         android:background="@color/grey6"
         android:layout_below="@+id/button_copy_to_clipboard" />
 
@@ -87,12 +89,12 @@
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/divider2" />
+        android:layout_below="@+id/divider3" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:id="@+id/divider3"
+        android:id="@+id/divider4"
         android:background="@color/grey6"
         android:layout_below="@+id/button_text_to_speech" />
 
@@ -107,6 +109,9 @@
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/divider3" />
+        android:layout_below="@+id/divider4" />
 
-</RelativeLayout>
+
+
+
+</LinearLayout>

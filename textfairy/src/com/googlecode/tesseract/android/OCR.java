@@ -79,12 +79,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 
 	/**
 	 * called from native code
-	 * 
-	 * @param percent
-	 * @param left
-	 * @param right
-	 * @param top
-	 * @param bottom
+	 *
 	 */
 	private synchronized void onProgressImage(final int nativePix) {
 		Pix preview = new Pix(nativePix);
@@ -160,7 +155,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	/**
 	 * called from native
 	 * 
-	 * @param native pix pointer
+	 * @param nativePix pix pointer
 	 */
 	private void onLayoutPix(int nativePix) {
 		sendMessage(MESSAGE_LAYOUT_PIX, nativePix);
@@ -169,7 +164,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	/**
 	 * called from native
 	 * 
-	 * @param native pix pointer
+	 * @param nativePix pix pointer
 	 */
 	private void onFinalPix(int nativePix) {
 		Pix pix = new Pix(nativePix);
@@ -184,14 +179,14 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	 * @param hocr
 	 *            string
 	 */
-	private void onHOCRResult(String hocr) {
-		sendMessage(MESSAGE_HOCR_TEXT, hocr);
+	private void onHOCRResult(String hocr, int accuracy) {
+		sendMessage(MESSAGE_HOCR_TEXT, hocr,accuracy);
 	}
 
 	/**
 	 * called from native
 	 * 
-	 * @param utf8
+	 * @param utf8Text
 	 *            string
 	 */
 	private void onUTF8Result(String utf8Text) {
@@ -214,6 +209,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 		sendMessage(what, 0, 0, string, null);
 	}
 
+    private void sendMessage(int what, String string, int accuracy) {
+        sendMessage(what, accuracy, 0, string, null);
+    }
 	private void sendMessage(int what, int arg1) {
 		sendMessage(what, arg1, 0, null, null);
 	}
@@ -281,9 +279,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	 * function
 	 * 
 	 * @param pixs
-	 * @param monitoredActivity
-	 * @param messenger
-	 */
+     */
 	public void startLayoutAnalysis(final Pix pixs) {
 
 		if (pixs == null) {
@@ -306,8 +302,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	 * function
 	 * 
 	 * @param pixs
-	 * @param monitoredActivity
-	 * @param messenger
+	 * @param context
 	 */
 	public void startOCRForSimpleLayout(final Context context, final String lang, final Pix pixs) {
 		if (pixs == null) {

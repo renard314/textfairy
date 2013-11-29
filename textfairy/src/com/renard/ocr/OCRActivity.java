@@ -75,6 +75,8 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
     private int mOriginalWidth = 0;
     private Pix mFinalPix;
     private String mOcrLanguage; // is set by dialog in
+    private int mAccuracy;
+
     // askUserAboutDocumentLayout
     private OCR mOCR;
     private Messenger mMessageReceiver = new Messenger(new ProgressActivityHandler()); // receives
@@ -196,6 +198,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
                 }
                 case OCR.MESSAGE_HOCR_TEXT: {
                     this.hocrString = (String) msg.obj;
+                    mAccuracy = msg.arg1;
                     break;
                 }
                 case OCR.MESSAGE_UTF8_TEXT: {
@@ -203,7 +206,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
                     break;
                 }
                 case OCR.MESSAGE_END: {
-                    saveDocument(mFinalPix, hocrString, utf8String, true);
+                    saveDocument(mFinalPix, hocrString, utf8String, true,mAccuracy);
                     break;
                 }
                 case OCR.MESSAGE_ERROR: {
@@ -214,7 +217,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
         }
     }
 
-    private void saveDocument(final Pix pix, final String hocrString, final String utf8String, final boolean checkSd) {
+    private void saveDocument(final Pix pix, final String hocrString, final String utf8String, final boolean checkSd, final int accuracy) {
 //		if (checkSd && !Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 //			waitForSdCard(pix, hocrString, utf8String);
 //		} else {
@@ -258,7 +261,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
                     }
                     if (documentUri != null) {
                         Intent i = new Intent(OCRActivity.this, DocumentActivity.class);
-                        i.putExtra(DocumentActivity.EXTRA_ASK_FOR_TITLE, true);
+                        i.putExtra(DocumentActivity.EXTRA_ACCURACY, accuracy);
                         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         i.setData(documentUri);
                         startActivity(i);
@@ -353,7 +356,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
             @Override
             public void onLayoutChosen(final LayoutKind layoutKind, final String ocrLanguage) {
                 if (layoutKind == LayoutKind.DO_NOTHING) {
-                    saveDocument(pixOrg, null, null, true);
+                    saveDocument(pixOrg, null, null, true,0);
                 } else {
                     getSupportActionBar().show();
                     getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -363,6 +366,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
                         mOCR.startOCRForSimpleLayout(OCRActivity.this, ocrLanguage, pixOrg);
                     } else if (layoutKind == LayoutKind.COMPLEX) {
                         mOcrLanguage = ocrLanguage;
+                        mAccuracy = 0;
                         mOCR.startLayoutAnalysis(pixOrg);
                     }
                 }
