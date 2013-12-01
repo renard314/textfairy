@@ -96,7 +96,7 @@ public class LayoutQuestionDialog {
 					public void onClick(DialogInterface dialog, int id) {
 						final String lang;
 						final String english = "eng";
-						if (!mLanguage.equals(english)) {
+						if (!mLanguage.equals(english)&& addEnglishData(mLanguage)) {
 							lang = mLanguage + "+" + english;
 						} else {
 							lang = mLanguage;
@@ -139,4 +139,23 @@ public class LayoutQuestionDialog {
 		return dialog;
 
 	}
+
+    //when combining languages that have multi byte characters with english training data the ocr text gets corrupted
+    //but adding english will improve overall accuracy for the other languages
+    private static boolean addEnglishData(String mLanguage) {
+        if (mLanguage.startsWith("chi")||
+                mLanguage.equalsIgnoreCase("kor")||
+                mLanguage.equalsIgnoreCase("hin")||
+                mLanguage.equalsIgnoreCase("heb")||
+                mLanguage.equalsIgnoreCase("ell")||
+                mLanguage.equalsIgnoreCase("bel")||
+                mLanguage.equalsIgnoreCase("ara")||
+                mLanguage.equalsIgnoreCase("grc")||
+                mLanguage.equalsIgnoreCase("rus")||
+                mLanguage.equalsIgnoreCase("vie")){
+            return false;
+
+        }
+        return true;
+    }
 }
