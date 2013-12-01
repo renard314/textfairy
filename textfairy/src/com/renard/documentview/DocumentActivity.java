@@ -64,7 +64,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
 		public String getTextofCurrentlyShownDocument();
 	}
-
+    private static final int REQUEST_CODE_TTS_CHECK = 6;
 	private static final int REQUEST_CODE_OPTIONS = 4;
 	private static final int REQUEST_CODE_TABLE_OF_CONTENTS = 5;
 	public static final String EXTRA_ACCURACY = "ask_for_title";
@@ -75,6 +75,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     private boolean mResultDialogShown = false;
     private TextToSpeech mTextToSpeech= null;
     private  boolean mTtsReady = false;
+    private DocumentActionCallback mActionCallback = new DocumentActionCallback();
     private ActionMode mActionMode;
 
 	@Override
@@ -164,14 +165,17 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         }
 		return super.onOptionsItemSelected(item);
 	}
+
+
     private class DocumentActionCallback implements ActionMode.Callback,TextToSpeech.OnInitListener {
 
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
             getSupportMenuInflater().inflate(R.menu.tts_action_mode, menu);
             if (mTextToSpeech==null){
-                mTtsReady = false;
-                mTextToSpeech = new TextToSpeech(DocumentActivity.this, this);
+                Intent checkIntent = new Intent();
+                checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+                startActivityForResult(checkIntent, 0);
             }
             return true;
         }
@@ -220,6 +224,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
                 //TODO show error dialog or toast
             } else {
                 //TODO save document language and use it
+                //TODO find out what languages are supported
                 int result = mTextToSpeech.setLanguage(Locale.GERMAN);
 
                 switch(result){
@@ -256,7 +261,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     }
 
     void startTextToSpeech() {
-        mActionMode = startActionMode(new DocumentActionCallback());
+        mActionMode = startActionMode(mActionCallback);
     }
 
 
@@ -296,7 +301,22 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_CODE_OPTIONS) {
+        if (requestCode == REQUEST_CODE_TTS_CHECK){
+                mTtsReady = false;
+                mTextToSpeech = new TextToSpeech(this, mActionCallback);
+
+                if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                    // success, create the TTS instance
+                    mTextToSpeech = new TextToSpeech(this, mActionCallback);
+                } else {
+                    mActionMode.finish();
+                    // missing data, install it
+                    Intent installIntent = new Intent();
+                    installIntent.setAction(
+                            TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                    startActivity(installIntent);
+                }
+        } else if (requestCode == REQUEST_CODE_OPTIONS) {
 			Fragment frag = getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
 			if (frag instanceof DocumentPagerFragment) {
 				DocumentPagerFragment pagerFragment = (DocumentPagerFragment) frag;
