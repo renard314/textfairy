@@ -72,16 +72,20 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
                 actionMode.getMenu().findItem(R.id.item_stop).setVisible(true);
                 break;
             case R.id.item_stop:
-                mTts.stop();
-                actionMode.getMenu().findItem(R.id.item_play).setVisible(true);
-                actionMode.getMenu().findItem(R.id.item_stop).setVisible(false);
+                stopPlaying(actionMode);
                 break;
             case R.id.item_tts_settings:
-                String ocrLanguage = activity.getLanguageOfDocument();
-                askForLocale(ocrLanguage);
+                stopPlaying(actionMode);
+                askForLocale();
                 break;
         }
         return false;
+    }
+
+    private void stopPlaying(ActionMode actionMode) {
+        mTts.stop();
+        actionMode.getMenu().findItem(R.id.item_play).setVisible(true);
+        actionMode.getMenu().findItem(R.id.item_stop).setVisible(false);
     }
 
     @Override
@@ -100,45 +104,32 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
             Toast.makeText(activity, R.string.tts_init_error, Toast.LENGTH_LONG).show();
             mActionMode.finish();
         } else {
-            checkLanguages();
             mActionMode.getMenu().findItem(R.id.item_tts_settings).setVisible(true);
             String ocrLanguage = activity.getLanguageOfDocument();
             Locale documentLocale = mapTesseractLanguageToLocale(ocrLanguage);
             if (documentLocale==null){
-                askForLocale(ocrLanguage);
+                askForLocale(ocrLanguage, true);
             }else {
                 if(isLanguageAvailable(new OCRLanguageAdapter.OCRLanguage(ocrLanguage, null,true,0))){
                     mTts.setLanguage(documentLocale);
                     mActionMode.getMenu().findItem(R.id.item_play).setVisible(true);
                     mTtsReady = true;
                 } else {
-                    askForLocale(ocrLanguage);
+                    askForLocale(ocrLanguage,true);
                 }
             }
         }
     }
 
-    private void checkLanguages() {
-        final Locale[] availableLocales = Locale.getAvailableLocales();
-        for(Locale l: availableLocales){
-            switch(mTts.isLanguageAvailable(l)){
-                case TextToSpeech.LANG_AVAILABLE:
-                    Log.i(LOG_TAG,l.toString() + " is LANG_AVAILABLE");
-                    break;
-                case TextToSpeech.LANG_COUNTRY_AVAILABLE:
-                    Log.i(LOG_TAG,l.toString() +  " is LANG_COUNTRY_AVAILABLE");
-                    break;
-                default:
-                    Log.i(LOG_TAG,l.toString() +  " is NOT AVAILABLE");
-            }
-        }
 
+    private void askForLocale(final String documentLanguage, boolean languageSupported) {
+
+        NoTtsLanguageDialog.newInstance(documentLanguage,languageSupported, activity).show(activity.getSupportFragmentManager(), NoTtsLanguageDialog.TAG);
     }
 
-    private void askForLocale(final String documentLanguage) {
-        NoTtsLanguageDialog.newInstance(documentLanguage, activity).show(activity.getSupportFragmentManager(), NoTtsLanguageDialog.TAG);
+    private void askForLocale() {
+        NoTtsLanguageDialog.newInstance(activity).show(activity.getSupportFragmentManager(), NoTtsLanguageDialog.TAG);
     }
-
     /**
      * user has picked a language for tts
      * @param lang
@@ -157,6 +148,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
                 break;
         }
         mActionMode.getMenu().findItem(R.id.item_play).setVisible(true);
+        mActionMode.getMenu().findItem(R.id.item_stop).setVisible(false);
         mTtsReady = true;
     }
 

@@ -30,11 +30,13 @@ public class NoTtsLanguageDialog extends SherlockDialogFragment {
     public static final String TAG = NoTtsLanguageDialog.class.getSimpleName();
     private final static String ARG_DOCUMENT_LANGUAGE = "language";
     private final static String ARG_LANGUAGES = "languages";
+    private final static String ARG_LANGUAGE_SUPPORTED = "language_supported";
 
 
-    public static NoTtsLanguageDialog newInstance(String documentLanguage, Context c) {
+    public static NoTtsLanguageDialog newInstance(String documentLanguage, boolean languageSupported, Context c) {
         Bundle arguments = new Bundle();
         arguments.putString(ARG_DOCUMENT_LANGUAGE, documentLanguage);
+        arguments.putBoolean(ARG_LANGUAGE_SUPPORTED,languageSupported);
         final ArrayList<OCRLanguageAdapter.OCRLanguage> languages = getLanguages(c);
         arguments.putParcelableArrayList(ARG_LANGUAGES, languages);
         final NoTtsLanguageDialog dialog = new NoTtsLanguageDialog();
@@ -42,6 +44,14 @@ public class NoTtsLanguageDialog extends SherlockDialogFragment {
         return dialog;
     }
 
+    public static NoTtsLanguageDialog newInstance(Context c) {
+        Bundle arguments = new Bundle();
+        final ArrayList<OCRLanguageAdapter.OCRLanguage> languages = getLanguages(c);
+        arguments.putParcelableArrayList(ARG_LANGUAGES, languages);
+        final NoTtsLanguageDialog dialog = new NoTtsLanguageDialog();
+        dialog.setArguments(arguments);
+        return dialog;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -65,7 +75,11 @@ public class NoTtsLanguageDialog extends SherlockDialogFragment {
             }
         }
         if (displayLanguage != null) {
-            builder.setTitle(getString(R.string.cannot_speak_language, displayLanguage));
+            if (getArguments().getBoolean(ARG_LANGUAGE_SUPPORTED)){
+                builder.setTitle(getString(R.string.choose_language_title));
+            } else {
+                builder.setTitle(getString(R.string.cannot_speak_language, displayLanguage));
+            }
         } else {
             builder.setTitle(getString(R.string.choose_language_title));
         }
