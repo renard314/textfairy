@@ -100,11 +100,12 @@ public class CropImage extends MonitoredActivity {
                         mScaleFactor=1;
                     } else {
                         if (bestScale<1 && bestScale>0.5f){
-                            mScaleFactor=0.5f;
+                            mScaleFactor = (float) (1/Math.pow(2,0.5f));
                         } else if (bestScale<=0.5f){
-                            mScaleFactor=0.25f;
+                            mScaleFactor = (float) (1/Math.pow(2,0.25f));
+                        } else {
+                            mScaleFactor = (float) (1/mScaleFactor);
                         }
-                        mScaleFactor = (float) (1/Math.pow(2,mScaleFactor));
                     }
 
 					mPixScaled = Scale.scale(mPix, mScaleFactor);
