@@ -1,57 +1,53 @@
 package com.renard.documentview;
 
 import android.app.AlertDialog;
-import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
-import android.view.View;
-import android.widget.TextView;
+import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.renard.ocr.R;
-import com.renard.ocr.help.HelpActivity;
 import com.renard.ocr.help.OCRLanguageAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by renard on 12/11/13.
  */
-public class NoTtsLanguageDialog extends SherlockDialogFragment {
+public class PickTtsLanguageDialog extends SherlockDialogFragment {
 
-    public static final String TAG = NoTtsLanguageDialog.class.getSimpleName();
+    public static final String TAG = PickTtsLanguageDialog.class.getSimpleName();
     private final static String ARG_DOCUMENT_LANGUAGE = "language";
     private final static String ARG_LANGUAGES = "languages";
     private final static String ARG_LANGUAGE_SUPPORTED = "language_supported";
 
 
-    public static NoTtsLanguageDialog newInstance(String documentLanguage, boolean languageSupported, Context c) {
+    public static PickTtsLanguageDialog newInstance(String documentLanguage, boolean languageSupported, Context c) {
         Bundle arguments = new Bundle();
         arguments.putString(ARG_DOCUMENT_LANGUAGE, documentLanguage);
-        arguments.putBoolean(ARG_LANGUAGE_SUPPORTED,languageSupported);
+        arguments.putBoolean(ARG_LANGUAGE_SUPPORTED, languageSupported);
         final ArrayList<OCRLanguageAdapter.OCRLanguage> languages = getLanguages(c);
         arguments.putParcelableArrayList(ARG_LANGUAGES, languages);
-        final NoTtsLanguageDialog dialog = new NoTtsLanguageDialog();
+        final PickTtsLanguageDialog dialog = new PickTtsLanguageDialog();
         dialog.setArguments(arguments);
         return dialog;
     }
 
-    public static NoTtsLanguageDialog newInstance(Context c) {
+    public static PickTtsLanguageDialog newInstance(Context c) {
         Bundle arguments = new Bundle();
         final ArrayList<OCRLanguageAdapter.OCRLanguage> languages = getLanguages(c);
         arguments.putParcelableArrayList(ARG_LANGUAGES, languages);
-        final NoTtsLanguageDialog dialog = new NoTtsLanguageDialog();
+        final PickTtsLanguageDialog dialog = new PickTtsLanguageDialog();
         dialog.setArguments(arguments);
         return dialog;
     }
+
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -75,13 +71,13 @@ public class NoTtsLanguageDialog extends SherlockDialogFragment {
             }
         }
         if (displayLanguage != null) {
-            if (getArguments().getBoolean(ARG_LANGUAGE_SUPPORTED)){
-                builder.setTitle(getString(R.string.choose_language_title));
+            if (getArguments().getBoolean(ARG_LANGUAGE_SUPPORTED)) {
+                builder.setTitle(getString(R.string.choose_language));
             } else {
                 builder.setTitle(getString(R.string.cannot_speak_language, displayLanguage));
             }
         } else {
-            builder.setTitle(getString(R.string.choose_language_title));
+            builder.setTitle(getString(R.string.choose_language));
         }
         final OCRLanguageAdapter adapter = new OCRLanguageAdapter(getActivity(), true);
         builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
@@ -92,8 +88,13 @@ public class NoTtsLanguageDialog extends SherlockDialogFragment {
                 activity.onTtsLanguageChosen(lang);
             }
         });
+
+        final AlertDialog alertDialog = builder.create();
+        final LayoutAnimationController layoutAnimationController = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation);
+        alertDialog.getListView().setLayoutAnimation(layoutAnimationController);
         fillAdapterWithAllowedTtsLanguages(adapter, languages);
-        return builder.create();
+        alertDialog.getWindow().getAttributes().height = WindowManager.LayoutParams.MATCH_PARENT;
+        return alertDialog;
     }
 
     private static ArrayList<OCRLanguageAdapter.OCRLanguage> getLanguages(Context c) {

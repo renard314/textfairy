@@ -1,7 +1,11 @@
 package com.renard.documentview;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.os.Build;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,6 +17,7 @@ import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.ocr.help.OCRLanguageAdapter;
 import com.renard.util.ResourceUtils;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -22,7 +27,6 @@ import java.util.Map;
 public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnInitListener, MonitoredActivity.LifeCycleListener {
 
     private final static String LOG_TAG = TtsActionCallback.class.getSimpleName();
-
 
     private TextToSpeech mTts;
     private final DocumentActivity activity;
@@ -53,6 +57,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
         if (mTtsReady) {
             //show play and stop button
             menu.findItem(R.id.item_play).setVisible(true);
+            menu.findItem(R.id.item_stop).setVisible(false);
             menu.findItem(R.id.item_tts_settings).setVisible(true);
         } else {
             activity.setSupportProgressBarIndeterminateVisibility(true);
@@ -67,9 +72,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.item_play:
-                int result = mTts.speak(activity.getPlainDocumentText(), TextToSpeech.QUEUE_FLUSH, null);
-                actionMode.getMenu().findItem(R.id.item_play).setVisible(false);
-                actionMode.getMenu().findItem(R.id.item_stop).setVisible(true);
+                startPlaying(actionMode);
                 break;
             case R.id.item_stop:
                 stopPlaying(actionMode);
@@ -80,6 +83,15 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
                 break;
         }
         return false;
+    }
+
+    private void startPlaying(ActionMode actionMode) {
+        HashMap<String, String> alarm = new HashMap<String, String>();
+        alarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(AudioManager.STREAM_ALARM));
+        alarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, LOG_TAG);
+        int result = mTts.speak(activity.getPlainDocumentText(), TextToSpeech.QUEUE_FLUSH, alarm);
+        actionMode.getMenu().findItem(R.id.item_play).setVisible(false);
+        actionMode.getMenu().findItem(R.id.item_stop).setVisible(true);
     }
 
     private void stopPlaying(ActionMode actionMode) {
@@ -104,6 +116,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
             Toast.makeText(activity, R.string.tts_init_error, Toast.LENGTH_LONG).show();
             mActionMode.finish();
         } else {
+            registerForSpeechFinished();
             mActionMode.getMenu().findItem(R.id.item_tts_settings).setVisible(true);
             String ocrLanguage = activity.getLanguageOfDocument();
             Locale documentLocale = mapTesseractLanguageToLocale(ocrLanguage);
@@ -121,14 +134,58 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
         }
     }
 
+    private void registerForSpeechFinished() {
+        final Handler handler = new Handler();
+        if(Build.VERSION.SDK_INT>=15){
+            mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                @Override
+                public void onStart(String utteranceId) {
+
+                }
+
+                @Override
+                public void onDone(String utteranceId) {
+                    onUtteranceDone(utteranceId, handler);
+                }
+
+                @Override
+                public void onError(String utteranceId) {
+
+                }
+            });
+
+        } else {
+            final TextToSpeech.OnUtteranceCompletedListener onUtteranceCompletedListener = new TextToSpeech.OnUtteranceCompletedListener() {
+
+                @Override
+                public void onUtteranceCompleted(String utteranceId) {
+                    onUtteranceDone(utteranceId, handler);
+                }
+            };
+            mTts.setOnUtteranceCompletedListener(onUtteranceCompletedListener);
+        }
+    }
+
+    private void onUtteranceDone(String utteranceId, Handler handler) {
+        if (utteranceId.equalsIgnoreCase(LOG_TAG)){
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mActionMode.getMenu().findItem(R.id.item_play).setVisible(true);
+                    mActionMode.getMenu().findItem(R.id.item_stop).setVisible(true);
+                }
+            });
+
+        }
+    }
+
 
     private void askForLocale(final String documentLanguage, boolean languageSupported) {
-
-        NoTtsLanguageDialog.newInstance(documentLanguage,languageSupported, activity).show(activity.getSupportFragmentManager(), NoTtsLanguageDialog.TAG);
+        PickTtsLanguageDialog.newInstance(documentLanguage, languageSupported, activity).show(activity.getSupportFragmentManager(), PickTtsLanguageDialog.TAG);
     }
 
     private void askForLocale() {
-        NoTtsLanguageDialog.newInstance(activity).show(activity.getSupportFragmentManager(), NoTtsLanguageDialog.TAG);
+        PickTtsLanguageDialog.newInstance(activity).show(activity.getSupportFragmentManager(), PickTtsLanguageDialog.TAG);
     }
     /**
      * user has picked a language for tts
