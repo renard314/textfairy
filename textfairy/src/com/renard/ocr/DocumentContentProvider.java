@@ -48,6 +48,7 @@ public class DocumentContentProvider extends ContentProvider {
         public static final String HOCR_TEXT = "hocr_text";
         public static final String PDF_URI = "pdf_uri";
         public static final String CHILD_COUNT = "child_count";
+        public static final String OCR_LANG = "ocr_lang";
     }
 
     private static final UriMatcher sUriMatcher;
@@ -63,11 +64,13 @@ public class DocumentContentProvider extends ContentProvider {
     private static class DBHelper extends SQLiteOpenHelper {
 
         private static final String TABLE_NAME = "documents";
-        private static final int DATABASE_VERSION = 11;
+        private static final int DATABASE_VERSION = 12;
 
         private static final String TABLE_CREATE = "CREATE TABLE " + TABLE_NAME + " (" + Columns.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + Columns.PARENT_ID
                 + " INTEGER DEFAULT -1, " + Columns.CREATED + " INTEGER, " + Columns.TITLE + " TEXT, " + Columns.PHOTO_PATH + " TEXT, " + Columns.PDF_URI + " TEXT, "
-                + Columns.HOCR_TEXT + " TEXT, " + Columns.CHILD_COUNT + " INTEGER DEFAULT 0, " + Columns.OCR_TEXT + " TEXT);";
+                + Columns.HOCR_TEXT + " TEXT, " + Columns.OCR_LANG + " TEXT, " + Columns.CHILD_COUNT + " INTEGER DEFAULT 0, " + Columns.OCR_TEXT + " TEXT);";
+
+        private static final String ADD_OCR_LANG_COLUMN ="ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + Columns.OCR_LANG + " TEXT;";
 
         private static final String DATABASE_NAME = "Transactions";
 
@@ -83,8 +86,10 @@ public class DocumentContentProvider extends ContentProvider {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-            onCreate(db);
+
+            if (oldVersion<=11){
+                db.execSQL(ADD_OCR_LANG_COLUMN);
+            }
         }
 
     }

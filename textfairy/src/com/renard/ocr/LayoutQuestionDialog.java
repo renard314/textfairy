@@ -64,6 +64,7 @@ public class LayoutQuestionDialog {
 
 		final TextView speech = (TextView) layout.findViewById(R.id.help_header);
 		speech.setText(context.getString(R.string.document_layout_dialog));
+        //TODO
 		speech.setCompoundDrawables(context.getResources().getDrawable(R.drawable.fairy_question), null,null,null);
 		final RadioGroup layoutRadioGroup = (RadioGroup) layout
 				.findViewById(R.id.radioGroup_layout_buttons);
@@ -94,13 +95,6 @@ public class LayoutQuestionDialog {
 				new DialogInterface.OnClickListener() {
 
 					public void onClick(DialogInterface dialog, int id) {
-						final String lang;
-						final String english = "eng";
-						if (!mLanguage.equals(english)&& addEnglishData(mLanguage)) {
-							lang = mLanguage + "+" + english;
-						} else {
-							lang = mLanguage;
-						}
 						int checked = layoutRadioGroup
 								.getCheckedRadioButtonId();
 						if (checked == R.id.radio_complex) {
@@ -110,7 +104,7 @@ public class LayoutQuestionDialog {
 						} else if (checked == R.id.radio_simple) {
 							mLayout = LayoutKind.SIMPLE;
 						}
-						listener.onLayoutChosen(mLayout, lang);
+						listener.onLayoutChosen(mLayout, mLanguage);
 
 					}
 				});
@@ -140,22 +134,4 @@ public class LayoutQuestionDialog {
 
 	}
 
-    //when combining languages that have multi byte characters with english training data the ocr text gets corrupted
-    //but adding english will improve overall accuracy for the other languages
-    private static boolean addEnglishData(String mLanguage) {
-        if (mLanguage.startsWith("chi")||
-                mLanguage.equalsIgnoreCase("kor")||
-                mLanguage.equalsIgnoreCase("hin")||
-                mLanguage.equalsIgnoreCase("heb")||
-                mLanguage.equalsIgnoreCase("ell")||
-                mLanguage.equalsIgnoreCase("bel")||
-                mLanguage.equalsIgnoreCase("ara")||
-                mLanguage.equalsIgnoreCase("grc")||
-                mLanguage.equalsIgnoreCase("rus")||
-                mLanguage.equalsIgnoreCase("vie")){
-            return false;
-
-        }
-        return true;
-    }
 }

@@ -13,5 +13,11 @@
         android:icon="@android:drawable/ic_media_pause"
         android:showAsAction="always">
     </item>
+    <item
+        android:id="@+id/item_tts_settings"
+        android:title="@string/choose_language"
+        android:icon="@drawable/ic_action_preferences"
+        android:showAsAction="always">
+    </item>
 
 </menu>

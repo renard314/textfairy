@@ -180,7 +180,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
                             if (selectedTexts.length > 0 || selectedImages.length > 0) {
                                 mImageView.clearAllProgressInfo();
 
-                                mOCR.startOCRForComplexLayout(OCRActivity.this, mOcrLanguage, texts, images, selectedTexts, selectedImages);
+                                mOCR.startOCRForComplexLayout(OCRActivity.this, determineOcrLanguage(mOcrLanguage), texts, images, selectedTexts, selectedImages);
                                 mButtonStartOCR.setVisibility(View.GONE);
                             } else {
                                 Toast.makeText(getApplicationContext(), R.string.please_tap_on_column, Toast.LENGTH_LONG).show();
@@ -311,6 +311,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
             if (plainText != null) {
                 v.put(Columns.OCR_TEXT, plainText);
             }
+            v.put(Columns.OCR_LANG,mOcrLanguage);
 
             if (mParentId > -1) {
                 v.put(Columns.PARENT_ID, mParentId);
@@ -358,14 +359,16 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
                 if (layoutKind == LayoutKind.DO_NOTHING) {
                     saveDocument(pixOrg, null, null, true,0);
                 } else {
+                    mOcrLanguage = ocrLanguage;
+
                     getSupportActionBar().show();
                     getSupportActionBar().setDisplayShowTitleEnabled(true);
                     // mFairyText.setText(R.string.progress_start);
                     getSupportActionBar().setTitle(R.string.progress_start);
+
                     if (layoutKind == LayoutKind.SIMPLE) {
-                        mOCR.startOCRForSimpleLayout(OCRActivity.this, ocrLanguage, pixOrg);
+                        mOCR.startOCRForSimpleLayout(OCRActivity.this, determineOcrLanguage(ocrLanguage), pixOrg);
                     } else if (layoutKind == LayoutKind.COMPLEX) {
-                        mOcrLanguage = ocrLanguage;
                         mAccuracy = 0;
                         mOCR.startLayoutAnalysis(pixOrg);
                     }
@@ -380,6 +383,34 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
             }
         });
         alertDialog.show();
+    }
+
+    private String determineOcrLanguage(String ocrLanguage) {
+        final String english = "eng";
+        if (!ocrLanguage.equals(english)&& addEnglishData(ocrLanguage)) {
+            return  ocrLanguage + "+" + english;
+        } else {
+            return ocrLanguage;
+        }
+
+    }
+    //when combining languages that have multi byte characters with english training data the ocr text gets corrupted
+    //but adding english will improve overall accuracy for the other languages
+    private static boolean addEnglishData(String mLanguage) {
+        if (mLanguage.startsWith("chi")||
+                mLanguage.equalsIgnoreCase("kor")||
+                mLanguage.equalsIgnoreCase("hin")||
+                mLanguage.equalsIgnoreCase("heb")||
+                mLanguage.equalsIgnoreCase("ell")||
+                mLanguage.equalsIgnoreCase("bel")||
+                mLanguage.equalsIgnoreCase("ara")||
+                mLanguage.equalsIgnoreCase("grc")||
+                mLanguage.equalsIgnoreCase("rus")||
+                mLanguage.equalsIgnoreCase("vie")){
+            return false;
+
+        }
+        return true;
     }
 
     @Override

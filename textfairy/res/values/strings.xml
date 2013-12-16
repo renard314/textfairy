@@ -146,4 +146,11 @@
     <string name="ocr_result_is_good">Yeah I\'m happy with my reading skills!</string>
     <string name="play">play</string>
     <string name="stop">stop</string>
+    <string name="tts_init_error">Text to speech could not load.</string>
+    <string name="open_settings">speech settings</string>
+    <string name="set_tts_language">Please set the appropriate language in your text to speech settings.</string>
+    <string name="cannot_speak_language">Your phone cannot speak %s. Pick another language.</string>
+    <string name="choose_language">Pick a language for text to speech.</string>
+    <string name="choose_language_title">What is the document language?</string>
+
 </resources>

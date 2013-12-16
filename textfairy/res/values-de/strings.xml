@@ -143,4 +143,10 @@
     <string name="ocr_result_is_good">Juhu, das lief ganz gut!</string>
     <string name="play">play</string>
     <string name="stop">stop</string>
+    <string name="tts_init_error">Sprachmodul konnte nicht geladen werden.</string>
+    <string name="open_settings">Sprachoptionen</string>
+    <string name="set_tts_language">Wähle die gewünschte Sprache in den Systemeinstellungen</string>
+    <string name="cannot_speak_language">Dein Telefon kann leider kein %s. Wähle eine andere Sprache.</string>
+    <string name="choose_language">Wähle die Sprache zum Vorlesen.</string>
+    <string name="choose_language_title">Sprache des Dokuments nicht bekannt. Wähle die Sprache zum Vorlesen.</string>
 </resources>
