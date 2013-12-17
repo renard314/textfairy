@@ -172,7 +172,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
                 @Override
                 public void run() {
                     mActionMode.getMenu().findItem(R.id.item_play).setVisible(true);
-                    mActionMode.getMenu().findItem(R.id.item_stop).setVisible(true);
+                    mActionMode.getMenu().findItem(R.id.item_stop).setVisible(false);
                 }
             });
 
