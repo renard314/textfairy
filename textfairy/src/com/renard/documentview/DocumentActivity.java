@@ -157,6 +157,10 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 		} else if(itemId == R.id.item_text_to_speech){
             startTextToSpeech();
             return true;
+        } else if (itemId == R.id.item_share_text){
+            shareText();
+            return true;
+
         }
 		return super.onOptionsItemSelected(item);
 	}
@@ -190,6 +194,16 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         final String htmlText = getDocumentContainer().getTextOfCurrentlyShownDocument();
         return Html.fromHtml(htmlText).toString();
     }
+
+    void shareText() {
+        String shareBody = getPlainDocumentText();
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, R.string.share_subject);
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_chooser_title)));
+    }
+
 
     @SuppressLint("NewApi")
 	private void copyTextToClipboardNewApi(final String text) {

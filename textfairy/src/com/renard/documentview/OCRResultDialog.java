@@ -61,6 +61,7 @@ public class OCRResultDialog extends SherlockDialogFragment implements View.OnCl
         view.findViewById(R.id.button_copy_to_clipboard).setOnClickListener(this);
         view.findViewById(R.id.button_text_to_speech).setOnClickListener(this);
         view.findViewById(R.id.button_export_pdf).setOnClickListener(this);
+        view.findViewById(R.id.button_share_text).setOnClickListener(this);
     }
 
     private void hideTips(View view) {
@@ -79,13 +80,16 @@ public class OCRResultDialog extends SherlockDialogFragment implements View.OnCl
                 startActivity(new Intent(activity,HelpActivity.class));
                 break;
             case R.id.button_copy_to_clipboard:
-                activity.copyTextToClipboard();;
+                activity.copyTextToClipboard();
                 break;
             case R.id.button_text_to_speech:
                 activity.startTextToSpeech();
                 break;
             case R.id.button_export_pdf:
                 activity.exportAsPdf();
+                break;
+            case R.id.button_share_text:
+                activity.shareText();
                 break;
         }
         final android.support.v4.app.Fragment fragmentByTag = activity.getSupportFragmentManager().findFragmentByTag(TAG);

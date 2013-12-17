@@ -58,6 +58,26 @@
         android:layout_below="@+id/button_show_tips" />
 
     <Button
+        android:id="@+id/button_share_text"
+        android:text="@string/share_text"
+        android:gravity="left|center"
+        android:drawablePadding="@dimen/default_padding"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:drawableLeft="@drawable/ic_action_share_dark"
+        android:layout_width="match_parent"
+        android:background="@drawable/btn_start_activity2"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/divider2" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/divider3"
+        android:background="@color/grey6"
+        android:layout_below="@+id/button_share_text" />
+
+    <Button
         android:id="@+id/button_copy_to_clipboard"
         android:text="@string/copy_to_clipboard"
         android:gravity="left|center"
@@ -68,12 +88,12 @@
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/divider2" />
+        android:layout_below="@+id/divider3" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:id="@+id/divider3"
+        android:id="@+id/divider4"
         android:background="@color/grey6"
         android:layout_below="@+id/button_copy_to_clipboard" />
 
@@ -89,12 +109,12 @@
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/divider3" />
+        android:layout_below="@+id/divider4" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:id="@+id/divider4"
+        android:id="@+id/divider5"
         android:background="@color/grey6"
         android:layout_below="@+id/button_text_to_speech" />
 
@@ -109,7 +129,7 @@
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/divider4" />
+        android:layout_below="@+id/divider5" />
 
 
 
