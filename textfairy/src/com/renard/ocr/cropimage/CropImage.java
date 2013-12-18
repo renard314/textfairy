@@ -108,7 +108,7 @@ public class CropImage extends MonitoredActivity {
                         }
                     }
 
-					mPixScaled = Scale.scale(mPix, mScaleFactor);
+					mPixScaled = Scale.scaleWithoutFiltering(mPix, mScaleFactor);
 
 					mBitmap = WriteFile.writeBitmap(mPixScaled);
 					mAspectX = extras.getInt("aspectX");
@@ -135,15 +135,15 @@ public class CropImage extends MonitoredActivity {
 		float scale;
 		float dx;
 		float dy;
-		int dwidth = mPix.getWidth();
-		int dheight = mPix.getHeight();
-		if (dwidth <= vwidth && dheight <= vheight) {
+		int dWidth = mPix.getWidth();
+		int dHeight = mPix.getHeight();
+		if (dWidth <= vwidth && dHeight <= vheight) {
 			scale = 1.0f;
 		} else {
-			scale = Math.min((float) vwidth / (float) dwidth, (float) vheight / (float) dheight);
+			scale = Math.min((float) vwidth / (float) dWidth, (float) vheight / (float) dHeight);
 		}
 
-		//dx = (vwidth - dwidth * scale) * 0.5f;
+		//dx = (vwidth - dWidth * scale) * 0.5f;
 		//dy = (vheight - dheight * scale) * 0.5f;
 
 		//mDrawMatrix.setScale(scale, scale);
