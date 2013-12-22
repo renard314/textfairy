@@ -39,7 +39,7 @@ public class OCRResultDialog extends SherlockDialogFragment implements View.OnCl
         View view = getActivity().getLayoutInflater().inflate(R.layout.ocr_result_dialog, null);
         TextView speech = (TextView) view.findViewById(R.id.help_header);
         final int accuracy = getArguments().getInt(EXTRA_ACCURACY);
-        if (accuracy<=70){
+        if (accuracy<=75){
             speech.setText(R.string.ocr_result_is_bad);
         } else if (accuracy<83){
             speech.setText(R.string.ocr_result_is_ok);
