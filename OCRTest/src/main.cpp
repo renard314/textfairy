@@ -21,15 +21,67 @@
  *      Author: renard
  */
 
-#include "/usr/local/include/tesseract/baseapi.h"
-#include "image_processing.h"
+#include <allheaders.h>
+#include <baseapi.h>
+#include <environ.h>
+#include <publictypes.h>
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
 #include "binarize.h"
 #include "pageseg.h"
-#include "dewarp.h"
 #include "util.h"
+
+#include <Codecs.hh>
+#include <pdf.hh>
+#include <hocr.hh>
+#include <jpeg.hh>
+
 using namespace std;
 using namespace tesseract;
 
+void createPdf(Pix* pix, const char* hocrText) {
+	printf("%s","creating pdf");
+
+	std::ofstream pdfOutStream("test.pdf");
+	PDFCodec* pdfContext = new PDFCodec(&pdfOutStream);
+	Pix* pixd = pixConvert1To8(NULL, pix, 255, 0);
+
+	pixWrite("/Users/renard/Desktop/pdf_image.jpg", pixd, IFF_JFIF_JPEG);
+	bool sloppy = false;
+	bool overlayImage = false;
+	Image image;
+	image.w = image.h = 0;
+	std::string fileName("/Users/renard/Desktop/pdf_image.jpg");
+	if (!ImageCodec::Read(fileName, image)) {
+		std::cout << "Error reading input file.";
+	}
+
+	if (image.resolutionX() <= 0 || image.resolutionY() <= 0) {
+		std::cout
+				<< "Warning: Image x/y resolution not set, defaulting to: 300 ";
+		image.setResolution(300, 300);
+	}
+
+	unsigned int res = image.resolutionX();
+
+	std::stringstream hocr(hocrText);
+
+	pdfContext->beginPage(72. * image.w / res, 72. * image.h / res);
+	pdfContext->setFillColor(0, 0, 0);
+	hocr2pdf(hocr, pdfContext, res, sloppy, !overlayImage);
+
+	if (overlayImage) {
+		pdfContext->showImage(image, 0, 0, 72. * image.w / res,
+				72. * image.h / res);
+	}
+
+	delete pdfContext;
+}
 
 void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s,
 		int debug_level = 0) {
@@ -38,7 +90,8 @@ void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s,
 			"eng+deu", tesseract::OEM_DEFAULT);
 	api.SetPageSegMode(tesseract::PSM_AUTO);
 	api.SetImage(pixb);
-	//const char* hocrtext = api.GetHOCRText(monitor, 0);
+	const char* hocrtext = api.GetHOCRText(monitor, 0);
+	createPdf(pixb, hocrtext);
 	//*s << hocrtext;
 	//const char* debugText = api.GetHTMLText(20);
 	//const char* debugText = api.GetUTF8Text();
@@ -46,13 +99,13 @@ void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s,
 	ResultIterator* it = api.GetIterator();
 	std::string debugText = GetHTMLText(it, 70);
 	*s << debugText;
-	if (debug_level>1) {
+	if (debug_level > 1) {
 //		std::cout<<"html: " <<utf8text<<std::endl;
-		std::cout << "utf8text: " <<"\n"<< debugText << std::endl;
+		std::cout << "utf8text: " << "\n" << debugText << std::endl;
 		std::cout << "ocr: " << stopTimer() << std::endl << "confidence: "
 				<< api.MeanTextConf() << std::endl;
-	} else if (debug_level>0){
-		std::cout << "confidence: "<< api.MeanTextConf() << std::endl;
+	} else if (debug_level > 0) {
+		std::cout << "confidence: " << api.MeanTextConf() << std::endl;
 	}
 //	delete[] utf8text;
 //	delete[] hocrtext;
@@ -101,15 +154,17 @@ void onePictureWithColumns(const char* filename, int index) {
 	ostringstream hocr;
 	ostringstream utf8text;
 	l_int32 textCount = pixaGetCount(pixaTexts);
-	l_int32* imageIndexes =new l_int32[0];
+	l_int32* imageIndexes = new l_int32[0];
 	l_int32* textIndexes = new l_int32[textCount];
 	for (int i = 0; i < textCount; i++) {
 		textIndexes[i] = i;
 	}
-	combineSelectedPixa(pixaTexts, pixaImages, textIndexes, textCount, imageIndexes, 0, messageCallback, &pixFinal, &pixOcr, &boxaColumns, true);
+	combineSelectedPixa(pixaTexts, pixaImages, textIndexes, textCount,
+			imageIndexes, 0, messageCallback, &pixFinal, &pixOcr, &boxaColumns,
+			true);
 	pixWrite("dewarpedColumns.bmp", pixOcr, IFF_BMP);
 	printf("total time = %f", stopTimerNested(timer));
-	renderTransformedBoxa(pixOcr,boxaColumns,255);
+	renderTransformedBoxa(pixOcr, boxaColumns, 255);
 	//pixDisplay(pixOcr,0,0);
 
 	delete[] textIndexes;
@@ -124,14 +179,14 @@ void onePictureWithColumns(const char* filename, int index) {
 	pixaDestroy(&pixaTexts);
 }
 
-void onPictureOnlyBinarize(const char* filename, int index){
+void onPictureOnlyBinarize(const char* filename, int index) {
 	Pix *pixhm, *pixb = NULL;
 	Pix* pixOrg = pixRead(filename);
 	Pix* pixsg;
 	extractImages(pixOrg, &pixhm, &pixsg);
 	binarize(pixsg, pixhm, &pixb);
 	//pixDisplay(pixb, 0, 0);
-	pixWrite("binarized.bmp",pixb,IFF_BMP);
+	pixWrite("binarized.bmp", pixb, IFF_BMP);
 
 	pixDestroy(&pixb);
 	pixDestroy(&pixsg);
@@ -140,9 +195,9 @@ void onPictureOnlyBinarize(const char* filename, int index){
 }
 
 void onePicture(const char* filename, int index) {
-	log("%s",filename);
+	log("%s", filename);
 
-	int debug_level =1;
+	int debug_level = 2;
 	ostringstream s;
 	Pix* pixFinal;
 	Pix* pixOrg = pixRead(filename);
@@ -152,8 +207,8 @@ void onePicture(const char* filename, int index) {
 	L_TIMER timer = startTimerNested();
 
 	Pix* pixtext = bookpage(pixOrg, &pixFinal, messageCallback, pixCallBack,
-			debug_level>0, debug_level>1);
-	if (debug_level>1){
+			debug_level > 0, debug_level > 1);
+	if (debug_level > 1) {
 		printf("total time = %f", stopTimerNested(timer));
 		pixWrite("binarized_dewarped.bmp", pixtext, IFF_BMP);
 	}
@@ -173,9 +228,9 @@ int main(int argc, const char* argv[]) {
 
 		s << "/Users/renard/Desktop/devel/textfairy/OCRTest/" << argv[1] << "/"
 				<< argv[2] << ".jpg";
-		onePictureWithColumns(s.str().c_str(), atoi(argv[1]));
+//		onePictureWithColumns(s.str().c_str(), atoi(argv[1]));
 
-//		onePicture(s.str().c_str(), atoi(argv[1]));
+		onePicture(s.str().c_str(), atoi(argv[1]));
 	} else if (argc == 4) {
 		int start = atoi(argv[2]);
 		int end = atoi(argv[3]);

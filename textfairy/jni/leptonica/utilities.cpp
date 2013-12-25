@@ -205,7 +205,7 @@ jint Java_com_googlecode_leptonica_android_Scale_nativeScaleGeneral(JNIEnv *env,
                                                              jfloat scaleY,jfloat sharpfract, jint sharpwidth) {
   LOGV("%s",__FUNCTION__);
   PIX *pixs = (PIX *) nativePix;
-  PIX *pixd = pixScaleGeneral(pixs, (l_float32) scaleX, (l_float32) scaleY,(l_float32) sharpfract, (l_int32) sharwidth);
+  PIX *pixd = pixScaleGeneral(pixs, (l_float32) scaleX, (l_float32) scaleY,(l_float32) sharpfract, (l_int32) sharpwidth);
   return (jint) pixd;
 }
 

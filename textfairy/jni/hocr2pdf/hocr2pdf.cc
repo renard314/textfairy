@@ -61,6 +61,7 @@ int hocr2pdf(const char* imageFileName, const char* hocrText, PDFCodec* pdfConte
 	  hocr2pdf(hocr, pdfContext, res, sloppy,!overlayImage);
 
 	  if (overlayImage) {
+        LOGI("Overlaying image");
 	    pdfContext->showImage(image, 0, 0, 72. * image.w / res, 72. * image.h / res);
 	  }
 
