@@ -241,7 +241,7 @@ struct Textline {
 				y = 72. * t / res;
 			}
 
-			std::cout <<text << " y="<< y << " height="<<height<<"\n";
+			std::cout <<text <<"\t"<< " x="<<(72. * spanbbox.x1  / res) <<"\ty="<< y << " height="<<height<<"\n";
 			pdfContext->textTo(72. * spanbbox.x1 / res, y);
 			pdfContext->showText(font, text, height);
 			if (txtStream) {
