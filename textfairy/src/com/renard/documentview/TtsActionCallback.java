@@ -121,7 +121,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
             String ocrLanguage = activity.getLanguageOfDocument();
             Locale documentLocale = mapTesseractLanguageToLocale(ocrLanguage);
             if (documentLocale==null){
-                askForLocale(ocrLanguage, true);
+                askForLocale();
             }else {
                 if(isLanguageAvailable(new OCRLanguageAdapter.OCRLanguage(ocrLanguage, null,true,0))){
                     mTts.setLanguage(documentLocale);

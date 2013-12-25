@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -625,18 +626,19 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			String[] hocr = new String[cursor.getCount()];
 			cursor.moveToPosition(-1);
 			while (cursor.moveToNext()) {
-				index = cursor.getColumnIndex(Columns.HOCR_TEXT);
+				int hocrIndex = cursor.getColumnIndex(Columns.HOCR_TEXT);
 				index = cursor.getColumnIndex(Columns.PHOTO_PATH);
 				Uri imageUri = Uri.parse(cursor.getString(index));
 				images[cursor.getPosition()] = Util.getPathForUri(BaseDocumentActivitiy.this, imageUri);
 				index = cursor.getColumnIndex(Columns.OCR_TEXT);
 				final String text = cursor.getString(index);
 				if (text != null && text.length() > 0) {
-					hocr[cursor.getPosition()] = cursor.getString(index);
+					hocr[cursor.getPosition()] = cursor.getString(hocrIndex);
 					FileWriter writer;
 					try {
 						writer = new FileWriter(outText);
-						writer.write(Html.fromHtml(text).toString());
+                        final String s = Html.fromHtml(text).toString();
+                        writer.write(s);
 						writer.close();
 					} catch (IOException ioException) {
 						if (outText.exists()) {
@@ -652,7 +654,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 			}
 			cursor.close();
 			Hocr2Pdf pdf = new Hocr2Pdf(this);
-			pdf.hocr2pdf(images, hocr, outPdf.getPath(), false, true);
+			pdf.hocr2pdf(images, hocr, outPdf.getPath(), true, true);
 			return new Pair<File, File>(outPdf, outText);
 		}
 
