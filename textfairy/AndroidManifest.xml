@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.renard.ocr"
-    android:versionCode="14"
-    android:versionName="1.1.9" >
+    android:versionCode="15"
+    android:versionName="1.1.10" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -82,7 +82,9 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:mimeType="image/*" />
+                <data android:mimeType="image/jpeg" />
+                <data android:mimeType="image/jpg" />
+                <data android:mimeType="image/png" />
             </intent-filter>
         </activity>
         <activity

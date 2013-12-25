@@ -200,6 +200,16 @@ jbyteArray Java_com_googlecode_leptonica_android_JpegIO_nativeCompressToJpeg(JNI
  * Scale *
  *********/
 
+jint Java_com_googlecode_leptonica_android_Scale_nativeScaleGeneral(JNIEnv *env, jclass clazz,
+                                                             jint nativePix, jfloat scaleX,
+                                                             jfloat scaleY,jfloat sharpfract, jint sharpwidth) {
+  LOGV("%s",__FUNCTION__);
+  PIX *pixs = (PIX *) nativePix;
+  PIX *pixd = pixScaleGeneral(pixs, (l_float32) scaleX, (l_float32) scaleY,(l_float32) sharpfract, (l_int32) sharpwidth);
+  return (jint) pixd;
+}
+
+
 jint Java_com_googlecode_leptonica_android_Scale_nativeScale(JNIEnv *env, jclass clazz,
                                                              jint nativePix, jfloat scaleX,
                                                              jfloat scaleY) {

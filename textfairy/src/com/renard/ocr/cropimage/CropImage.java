@@ -82,6 +82,7 @@ public class CropImage extends MonitoredActivity {
 
 			@Override
 			public void onGlobalLayout() {
+                //TODO not run on UI Thread
 				Intent intent = getIntent();
 				Bundle extras = intent.getExtras();
 				if (extras != null) {
@@ -92,8 +93,22 @@ public class CropImage extends MonitoredActivity {
 
 					// scale it so that it fits the screen
 					
-					mScaleFactor = getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
-					mPixScaled = Scale.scale(mPix, mScaleFactor);
+					float bestScale = 1/getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
+                    mScaleFactor = Util.determineScaleFactor(mPix.getWidth(),mPix.getHeight(),mImageView.getWidth(), mImageView.getHeight());
+
+                    if (mScaleFactor==0){
+                        mScaleFactor=1;
+                    } else {
+                        if (bestScale<1 && bestScale>0.5f){
+                            mScaleFactor = (float) (1/Math.pow(2,0.5f));
+                        } else if (bestScale<=0.5f){
+                            mScaleFactor = (float) (1/Math.pow(2,0.25f));
+                        } else {
+                            mScaleFactor = (float) (1/mScaleFactor);
+                        }
+                    }
+
+					mPixScaled = Scale.scaleWithoutFiltering(mPix, mScaleFactor);
 
 					mBitmap = WriteFile.writeBitmap(mPixScaled);
 					mAspectX = extras.getInt("aspectX");
@@ -120,15 +135,15 @@ public class CropImage extends MonitoredActivity {
 		float scale;
 		float dx;
 		float dy;
-		int dwidth = mPix.getWidth();
-		int dheight = mPix.getHeight();
-		if (dwidth <= vwidth && dheight <= vheight) {
+		int dWidth = mPix.getWidth();
+		int dHeight = mPix.getHeight();
+		if (dWidth <= vwidth && dHeight <= vheight) {
 			scale = 1.0f;
 		} else {
-			scale = Math.min((float) vwidth / (float) dwidth, (float) vheight / (float) dheight);
+			scale = Math.min((float) vwidth / (float) dWidth, (float) vheight / (float) dHeight);
 		}
 
-		//dx = (vwidth - dwidth * scale) * 0.5f;
+		//dx = (vwidth - dWidth * scale) * 0.5f;
 		//dy = (vheight - dheight * scale) * 0.5f;
 
 		//mDrawMatrix.setScale(scale, scale);

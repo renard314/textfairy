@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    >
+    <TextView
+        android:id="@+id/accuracy_title"
+        android:padding="8dp"
+        android:background="@color/dark_grey"
+        android:textColor="@color/primary_text_btn_main"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="@string/ocr_accuracy" />
+    <!--android:layout_marginLeft="@dimen/activity_vertical_margin"-->
+    <!--android:layout_marginRight="@dimen/activity_vertical_margin"-->
+    <include
+        android:id="@+id/help_header"
+        android:background="#F1F1F1"
+        android:layout_marginTop="@dimen/default_padding"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        layout="@layout/dialog_title" />
+    <View
+        android:layout_marginTop="@dimen/default_element_padding"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/divider1"
+        android:background="@color/grey6"
+        android:layout_below="@+id/ocr_accuracy" />
+
+    <Button
+        android:layout_marginTop="@dimen/default_padding"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:id="@+id/button_show_tips"
+        android:text="@string/show_tips"
+        android:gravity="left|center"
+        android:drawablePadding="@dimen/default_padding"
+        android:drawableLeft="@drawable/ic_action_tips_light"
+        android:layout_width="match_parent"
+        android:background="@drawable/btn_start_activity2"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ocr_accuracy" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/divider2"
+        android:background="@color/grey6"
+        android:layout_below="@+id/button_show_tips" />
+
+    <Button
+        android:id="@+id/button_share_text"
+        android:text="@string/share_text"
+        android:gravity="left|center"
+        android:drawablePadding="@dimen/default_padding"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:drawableLeft="@drawable/ic_action_share_dark"
+        android:layout_width="match_parent"
+        android:background="@drawable/btn_start_activity2"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/divider2" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/divider3"
+        android:background="@color/grey6"
+        android:layout_below="@+id/button_share_text" />
+
+    <Button
+        android:id="@+id/button_copy_to_clipboard"
+        android:text="@string/copy_to_clipboard"
+        android:gravity="left|center"
+        android:drawablePadding="@dimen/default_padding"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:drawableLeft="@drawable/ic_action_content_copy_dark"
+        android:layout_width="match_parent"
+        android:background="@drawable/btn_start_activity2"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/divider3" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/divider4"
+        android:background="@color/grey6"
+        android:layout_below="@+id/button_copy_to_clipboard" />
+
+    <Button
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+
+        android:id="@+id/button_text_to_speech"
+        android:text="@string/text_to_speech"
+        android:gravity="left|center"
+        android:drawablePadding="@dimen/default_padding"
+        android:drawableLeft="@drawable/ic_action_text_to_speech"
+        android:layout_width="match_parent"
+        android:background="@drawable/btn_start_activity2"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/divider4" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/divider5"
+        android:background="@color/grey6"
+        android:layout_below="@+id/button_text_to_speech" />
+
+    <Button
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:id="@+id/button_export_pdf"
+        android:text="@string/export_as_pdf"
+        android:gravity="left|center"
+        android:drawablePadding="@dimen/default_padding"
+        android:drawableLeft="@drawable/ic_action_pdf_light"
+        android:layout_width="match_parent"
+        android:background="@drawable/btn_start_activity2"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/divider5" />
+
+
+
+
+</LinearLayout>

@@ -48,6 +48,7 @@ public class DocumentAdapter extends PagerAdapter {
 	private SparseArray<Spanned> mSpannedTexts = new SparseArray<Spanned>();
 	private SparseArray<CharSequence> mChangedTexts = new SparseArray<CharSequence>();
 
+    private int mIndexLanguage;
 	private int mIndexTitle;
 	private int mIndexOCRText;
 	private int mIndexId;
@@ -63,6 +64,7 @@ public class DocumentAdapter extends PagerAdapter {
 		// mIndexCreated = mCursor.getColumnIndex(Columns.CREATED);
 		mIndexTitle = mCursor.getColumnIndex(Columns.TITLE);
 		mIndexId = mCursor.getColumnIndex(Columns.ID);
+        mIndexLanguage = mCursor.getColumnIndex(Columns.OCR_LANG);
 		mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 	}
@@ -144,6 +146,11 @@ public class DocumentAdapter extends PagerAdapter {
 		return mCursor.getCount();
 	}
 
+
+    public String getLanguage(int position){
+        return mCursor.getString(mIndexLanguage);
+    }
+
 	public String getLongTitle(int position) {
 		if (mCursor.moveToPosition(position)) {
 			return mCursor.getString(mIndexTitle);
@@ -151,7 +158,7 @@ public class DocumentAdapter extends PagerAdapter {
 		return null;
 	}
 
-	public String getTextByPosition(int position){
+	public String getText(int position){
 		boolean success = mCursor.moveToPosition(position);
 		if (success) {
 			return mCursor.getString(mIndexOCRText);

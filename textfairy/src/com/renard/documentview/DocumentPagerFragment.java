@@ -137,7 +137,14 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 		return null;
 	}
 
-	@Override
+    @Override
+    public String getLangOfCurrentlyShownDocument() {
+        DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
+        int currentItem = mPager.getCurrentItem();
+        return adapter.getLanguage(currentItem);
+    }
+
+    @Override
 	public void setCursor(Cursor cursor) {
 		mIsNewCursor = true;
 		mCursor = cursor;
@@ -145,9 +152,9 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 	}
 
 	@Override
-	public String getTextofCurrentlyShownDocument() {
+	public String getTextOfCurrentlyShownDocument() {
 		DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
 		int currentItem = mPager.getCurrentItem();
-		return adapter.getTextByPosition(currentItem);
+		return adapter.getText(currentItem);
 	}
 }

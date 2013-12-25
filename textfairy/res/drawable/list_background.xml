@@ -2,13 +2,13 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/dark_grey"/>
 <!--
-    <gradient 
+    <gradient
         android:endColor="#ff6b6b6b"
         android:startColor="#8b8b8b"
         android:type="radial"
         android:gradientRadius="450"
      />
-    <gradient 
+    <gradient
         android:endColor="#ff3b3b3b"
         android:centerColor="#ff1a1a1a"
         android:startColor="#ff3b3b3b"
@@ -16,6 +16,6 @@
         android:angle="90"
      />
      -->
-     
-     
+
+
 </shape>

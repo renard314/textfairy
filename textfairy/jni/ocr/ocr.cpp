@@ -61,7 +61,7 @@ void Java_com_googlecode_tesseract_android_OCR_nativeInit(JNIEnv *env, jobject _
 	onProgressImage = env->GetMethodID(cls, "onProgressImage", "(I)V");
 	onProgressValues = env->GetMethodID(cls, "onProgressValues", "(IIIIIIIII)V");
 	onProgressText = env->GetMethodID(cls, "onProgressText", "(I)V");
-	onHOCRResult = env->GetMethodID(cls, "onHOCRResult", "(Ljava/lang/String;)V");
+	onHOCRResult = env->GetMethodID(cls, "onHOCRResult", "(Ljava/lang/String;I)V");
 	onLayoutElements = env->GetMethodID(cls, "onLayoutElements", "(II)V");
 	onUTF8Result = env->GetMethodID(cls, "onUTF8Result", "(Ljava/lang/String;)V");
 	onLayoutPix = env->GetMethodID(cls, "onLayoutPix", "(I)V");
@@ -147,7 +147,7 @@ bool progressJavaCallback(int progress, int left, int right, int top, int bottom
 }
 
 
-void doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* const tessDir, const char* const lang,  bool debug = false) {
+int doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* const tessDir, const char* const lang,  bool debug = false) {
 	ETEXT_DESC monitor;
 
 	monitor.progress_callback = progressJavaCallback;
@@ -167,16 +167,19 @@ void doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* con
 	LOGI("ocr start");
 	const char* hocrtext = api.GetHOCRText(&monitor, 0);
 	LOGI("ocr finished");
+	int accuracy = 0;
 	if (hocrtext != NULL && isStateValid()) {
 		*hocr << hocrtext;
 		tesseract::ResultIterator* it = api.GetIterator();
-		LOGI("start getHTML");
+		LOGI("start GetHTMLText");
 		std::string utf8text = GetHTMLText(it, 70);
-		LOGI("after getHTMLText");
+
+		//std::string utf8text = api.GetUTF8Text();
+		LOGI("after GetHTMLText");
 		if (!utf8text.empty()) {
 			*utf8 << utf8text;
 		}
-
+        accuracy = api.MeanTextConf();
 		if (debug) {
 			ostringstream debugstring;
 			debugstring << "ocr: " << stopTimer() << std::endl << "confidence: " << api.MeanTextConf() << std::endl;
@@ -194,10 +197,10 @@ void doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* con
 		delete[] hocrtext;
 	}
 	api.End();
-
+    return accuracy;
 }
 
-void doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostringstream* utf8text, const char* const tessDir, const char* const lang, const bool debug) {
+int doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostringstream* utf8text, const char* const tessDir, const char* const lang, const bool debug) {
 	l_int32 xb, yb, wb, hb;
 	l_int32 columnCount = boxaGetCount(boxaColumns);
 
@@ -211,6 +214,7 @@ void doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostring
 	api.SetImage(pixOCR);
 
 	messageJavaCallback(MESSAGE_OCR);
+	float accuracy = 0;
 
 	for (int i = 0; i < columnCount; i++) {
 		if (boxaGetBoxGeometry(boxaColumns, i, &xb, &yb, &wb, &hb)) {
@@ -228,6 +232,7 @@ void doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostring
 			if (!utf8.empty()) {
 				*utf8text << utf8;
 			}
+			accuracy += api.MeanTextConf();
 		} else {
 			boxDestroy(&currentTextBox);
 			break;
@@ -236,6 +241,7 @@ void doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostring
 		boxDestroy(&currentTextBox);
 	}
 	api.End();
+	return accuracy/columnCount;
 }
 
 jint Java_com_googlecode_tesseract_android_OCR_nativeOCR(JNIEnv *env, jobject thiz, jint nativePixaText, jint nativePixaImage, jintArray selectedTexts, jintArray selectedImages, jstring tessDir, jstring lang) {
@@ -272,7 +278,7 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCR(JNIEnv *env, jobject th
 
 	cancel_ocr = false;
 
-	doMultiOcr(pixOcr, boxaColumns, &hocr, &utf8text, tessDirNative, langNative, true);
+	int accuracy = doMultiOcr(pixOcr, boxaColumns, &hocr, &utf8text, tessDirNative, langNative, true);
 
 	pixDestroy(&pixOcr);
 	boxaDestroy(&boxaColumns);
@@ -282,7 +288,7 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCR(JNIEnv *env, jobject th
 
 	if (isStateValid()) {
 		jstring result = env->NewStringUTF(hocr.str().c_str());
-		env->CallVoidMethod(thiz, onHOCRResult, result);
+		env->CallVoidMethod(thiz, onHOCRResult, result, accuracy);
 	}
 	if (isStateValid()) {
 		jstring result = env->NewStringUTF(utf8text.str().c_str());
@@ -370,7 +376,7 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobjec
 
 	messageJavaCallback(MESSAGE_OCR);
 
-	doOCR(pixText, &hocr, &utf8text, tessDirNative, langNative, true);
+	int accuracy = doOCR(pixText, &hocr, &utf8text, tessDirNative, langNative, true);
 
 	pixDestroy (&pixText);
 	boxDestroy(&currentTextBox);
@@ -380,7 +386,7 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobjec
 
 	if (isStateValid()) {
 		jstring result = env->NewStringUTF(hocr.str().c_str());
-		env->CallVoidMethod(thiz, onHOCRResult, result);
+		env->CallVoidMethod(thiz, onHOCRResult, result,accuracy);
 	}
 
 	if (isStateValid()) {

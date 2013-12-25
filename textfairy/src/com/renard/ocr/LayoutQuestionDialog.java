@@ -64,6 +64,7 @@ public class LayoutQuestionDialog {
 
 		final TextView speech = (TextView) layout.findViewById(R.id.help_header);
 		speech.setText(context.getString(R.string.document_layout_dialog));
+        //TODO
 		speech.setCompoundDrawables(context.getResources().getDrawable(R.drawable.fairy_question), null,null,null);
 		final RadioGroup layoutRadioGroup = (RadioGroup) layout
 				.findViewById(R.id.radioGroup_layout_buttons);
@@ -94,13 +95,6 @@ public class LayoutQuestionDialog {
 				new DialogInterface.OnClickListener() {
 
 					public void onClick(DialogInterface dialog, int id) {
-						final String lang;
-						final String english = "eng";
-						if (!mLanguage.equals(english)) {
-							lang = mLanguage + "+" + english;
-						} else {
-							lang = mLanguage;
-						}
 						int checked = layoutRadioGroup
 								.getCheckedRadioButtonId();
 						if (checked == R.id.radio_complex) {
@@ -110,7 +104,7 @@ public class LayoutQuestionDialog {
 						} else if (checked == R.id.radio_simple) {
 							mLayout = LayoutKind.SIMPLE;
 						}
-						listener.onLayoutChosen(mLayout, lang);
+						listener.onLayoutChosen(mLayout, mLanguage);
 
 					}
 				});
@@ -139,4 +133,5 @@ public class LayoutQuestionDialog {
 		return dialog;
 
 	}
+
 }

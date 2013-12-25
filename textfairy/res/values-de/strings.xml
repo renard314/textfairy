@@ -69,7 +69,7 @@
     <string name="layout_simple">Scanne Text als einzelnen Block</string>
     <string name="saving_document">Speichere Dokument</string>
     <string name="button_column_pick_completed">starte Texterkennung</string>
-    <string name="export_as_pdf">Versende als PDF</string>
+    <string name="export_as_pdf">erstelle PDF</string>
     <string name="delete_language_title">%1$s löschen?</string>
     <string name="delete_language_message">Du erhälst %1$d kb Speicher zurück.</string>
     <string name="delete_dialog_message">Dokumente werden gelöscht..</string>
@@ -136,5 +136,17 @@
     <string name="no_ocr">Keine Texterkennung. Bild nur speichern</string>
     <string name="crop_help_title">Hier kannst Du dein Photo beschneiden und drehen.</string>
     <string name="continue_ocr">Weiter</string>
-
+    <string name="ocr_accuracy">OCR Genauigkeit: %1$d</string>
+    <string name="text_to_speech">Text vorlesen</string>
+    <string name="ocr_result_is_bad">Ich konnte nicht viel erkennen. Ich hoffe die Tipps helfen.</string>
+    <string name="ocr_result_is_ok">Ich denke ich konnte das meiste lesen.</string>
+    <string name="ocr_result_is_good">Juhu, das lief ganz gut!</string>
+    <string name="play">play</string>
+    <string name="stop">stop</string>
+    <string name="tts_init_error">Sprachmodul konnte nicht geladen werden.</string>
+    <string name="open_settings">Sprachoptionen</string>
+    <string name="set_tts_language">Wähle die gewünschte Sprache in den Systemeinstellungen</string>
+    <string name="cannot_speak_language">Dein Telefon kann leider kein %s. Wähle eine andere Sprache.</string>
+    <string name="choose_language">Wähle die Sprache zum Vorlesen.</string>
+    <string name="share_text">Text teilen</string>
 </resources>

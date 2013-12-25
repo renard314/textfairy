@@ -34,75 +34,86 @@ import fi.harism.curl.CurlView;
 
 public class DocumentCurlFragment extends Fragment implements DocumentContainerFragment {
 
-	private CurlView mCurlView;
-	private Cursor mCursor;
-	private BackgroundLoadingBitmapProvider mBitmapProvider;
-	private boolean mIsNewCursor;
+    private CurlView mCurlView;
+    private Cursor mCursor;
+    private BackgroundLoadingBitmapProvider mBitmapProvider;
+    private boolean mIsNewCursor;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View v = inflater.inflate(R.layout.document_curl_fragment, container, false);
-		mCurlView = (CurlView) v.findViewById(R.id.curl);
-		initCurlView();
-		return v;
-	}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View v = inflater.inflate(R.layout.document_curl_fragment, container, false);
+        mCurlView = (CurlView) v.findViewById(R.id.curl);
+        initCurlView();
+        return v;
+    }
 
-	public void setDisplayedPage(final int pageno) {
-		mCurlView.setCurrentIndex(pageno);
-	}
+    public void setDisplayedPage(final int pageno) {
+        mCurlView.setCurrentIndex(pageno);
+    }
 
 
+    private void initCurlView() {
+        if (mIsNewCursor) {
+            mCurlView.setBitmapProvider(null);
 
-	private void initCurlView(){
-		if (mIsNewCursor) {
-			mCurlView.setBitmapProvider(null);
+            if (mBitmapProvider != null) {
+                mBitmapProvider.clearCache();
+                mBitmapProvider.setCursor(mCursor);
+            } else {
+                mBitmapProvider = new BackgroundLoadingBitmapProvider(mCursor, getActivity());
+            }
+            mCurlView.setIndexChangedObserver(mBitmapProvider);
+            mCurlView.setSizeChangedObserver(mBitmapProvider);
+            mCurlView.setBitmapProvider(mBitmapProvider);
+            mIsNewCursor = false;
+        }
+    }
 
-			if (mBitmapProvider != null) {
-				mBitmapProvider.clearCache();
-				mBitmapProvider.setCursor(mCursor);
-			} else {
-				mBitmapProvider = new BackgroundLoadingBitmapProvider(mCursor, getActivity());
-			}
-			mCurlView.setIndexChangedObserver(mBitmapProvider);
-			mCurlView.setSizeChangedObserver(mBitmapProvider);
-			mCurlView.setBitmapProvider(mBitmapProvider);
-			mIsNewCursor = false;
-		}
-	}
-	
-	@Override
-	public void setCursor(final Cursor cursor) {
-		mCursor = cursor;
-		mIsNewCursor = true;
-		if(isInLayout()){
-			initCurlView();
-		}
-	}
+    @Override
+    public String getLangOfCurrentlyShownDocument() {
+        int index = mCurlView.getCurrentIndex();
+        Cursor cursor = mBitmapProvider.getCursor();
+        final int columIndex = cursor.getColumnIndex(Columns.OCR_LANG);
+        boolean success = mCursor.moveToPosition(index);
+        if (success) {
+            return mCursor.getString(columIndex);
+        }
+        return null;
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
-		if (mBitmapProvider != null) {
-			mBitmapProvider.clearCache();
-		}
-		mCurlView.onPause();
-	}
+    @Override
+    public void setCursor(final Cursor cursor) {
+        mCursor = cursor;
+        mIsNewCursor = true;
+        if (isInLayout()) {
+            initCurlView();
+        }
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		mCurlView.onResume();
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mBitmapProvider != null) {
+            mBitmapProvider.clearCache();
+        }
+        mCurlView.onPause();
+    }
 
-	@Override
-	public String getTextofCurrentlyShownDocument() {
-		int index = mCurlView.getCurrentIndex();
-		Cursor cursor = mBitmapProvider.getCursor();
-		final int columIndex = cursor.getColumnIndex(DocumentContentProvider.Columns.OCR_TEXT);
-		boolean success = mCursor.moveToPosition(index);
-		if (success){
-			return mCursor.getString(columIndex);
-		}
-		return null;
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCurlView.onResume();
+    }
+
+    @Override
+    public String getTextOfCurrentlyShownDocument() {
+        int index = mCurlView.getCurrentIndex();
+        Cursor cursor = mBitmapProvider.getCursor();
+        final int columIndex = cursor.getColumnIndex(DocumentContentProvider.Columns.OCR_TEXT);
+        boolean success = mCursor.moveToPosition(index);
+        if (success) {
+            return mCursor.getString(columIndex);
+        }
+        return null;
+    }
 }

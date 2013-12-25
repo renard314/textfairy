@@ -38,7 +38,7 @@
     <string name="pref_summary_data_directory">Specify the directory where the text fairy should look for language files. Only change this if you know what you are doing.</string>
     <string name="pref_title_data_directory">Tessdata directory</string>
     <string name="pref_title_rate">Rate</string>
-    <string name="pref_title_default_ocr_lang">Default OCR language</string>
+    <string name="pref_title_default_ocr_lang">Document language</string>
     <string name="pref_title_help">Show tips</string>
     <string name="pref_title_contact">Contact information</string>
     <string name="pref_title_license">Licence info</string>
@@ -69,7 +69,7 @@
     <string name="layout_simple">Scan a single column of text</string>
     <string name="saving_document">Saving Document</string>
     <string name="button_column_pick_completed">start text recognition</string>
-    <string name="export_as_pdf">Export text</string>
+    <string name="export_as_pdf">create PDF</string>
     <string name="delete_language_title">Delete language?</string>
     <string name="delete_language_message">You\'ll free up %1$d kb.</string>
     <string name="delete_dialog_message">Deleting Documents..</string>
@@ -139,4 +139,18 @@
     <string name="title_activity_contact">Contact</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="ocr_accuracy">OCR accuracy: %1$d</string>
+    <string name="text_to_speech">speak text</string>
+    <string name="ocr_result_is_bad">That did not go so well. I hope the tips help.</string>
+    <string name="ocr_result_is_ok">I think i got most of the text.</string>
+    <string name="ocr_result_is_good">Yeah I\'m happy with my reading skills!</string>
+    <string name="play">play</string>
+    <string name="stop">stop</string>
+    <string name="tts_init_error">Text to speech could not load.</string>
+    <string name="open_settings">speech settings</string>
+    <string name="set_tts_language">Please set the appropriate language in your text to speech settings.</string>
+    <string name="cannot_speak_language">Your phone cannot speak %s. Pick another language.</string>
+    <string name="choose_language">Pick a language for text to speech.</string>
+    <string name="share_text">share text</string>
+
 </resources>

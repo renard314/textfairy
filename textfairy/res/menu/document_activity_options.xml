@@ -38,10 +38,21 @@
         android:title="@string/export_as_pdf">
     </item>
     <item
+        android:id="@+id/item_share_text"
+        android:icon="@drawable/ic_action_share"
+        android:showAsAction="ifRoom"
+        android:title="@string/share_text">
+    </item>
+    <item
         android:id="@+id/item_copy_to_clipboard"
         android:icon="@drawable/ic_action_content_copy"
         android:showAsAction="ifRoom"
         android:title="@string/copy_to_clipboard">
     </item>
-    
+    <item
+        android:id="@+id/item_text_to_speech"
+        android:icon="@drawable/ic_action_text_to_speech"
+        android:showAsAction="ifRoom"
+        android:title="@string/text_to_speech">
+    </item>
 </menu>
