@@ -24,4 +24,21 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>codecs</name>
+			<type>2</type>
+			<location>/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/codecs</location>
+		</link>
+		<link>
+			<name>lib</name>
+			<type>2</type>
+			<location>/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/lib</location>
+		</link>
+		<link>
+			<name>utility</name>
+			<type>2</type>
+			<location>/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/utility</location>
+		</link>
+	</linkedResources>
 </projectDescription>

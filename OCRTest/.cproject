@@ -31,6 +31,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="lept"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="png15"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="z"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jpeg"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1195525089" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -48,6 +49,10 @@
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/tesseract"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/leptonica"/>
+									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/codecs"/>
+									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/lib"/>
+									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/utility"/>
+									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/utility/template"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.716416864" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -59,7 +64,10 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="codecs"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="lib"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="utility"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
