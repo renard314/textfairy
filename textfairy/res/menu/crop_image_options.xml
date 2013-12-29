@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/item_rotate_right"
         android:icon="@drawable/ic_action_rotate_right"
-        android:showAsAction="always"
-        android:title="@string/rotate_right">
-    </item>
+        yourapp:showAsAction="always"
+        android:title="@string/rotate_right"></item>
     <item
         android:id="@+id/item_rotate_left"
         android:icon="@drawable/ic_action_rotate_left"
-        android:showAsAction="always"
-        android:title="@string/rotate_left">
-    </item>
+        yourapp:showAsAction="always"
+        android:title="@string/rotate_left"></item>
     <item
         android:id="@+id/item_save"
         android:icon="@drawable/ic_action_save"
-        android:showAsAction="always|withText"
-        android:title="@string/continue_ocr">
-    </item>
-    
+        yourapp:showAsAction="always|withText"
+        android:title="@string/continue_ocr"></item>
+
 </menu>

@@ -23,6 +23,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
@@ -31,8 +33,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.renard.install.InstallActivity;
 import com.renard.ocr.BaseDocumentActivitiy;
 import com.renard.ocr.DocumentGridActivity;
@@ -43,7 +43,6 @@ import com.renard.util.Util;
 
 public class StartActivity extends BaseDocumentActivitiy {
 
-	private static final int REQUEST_CODE_INSTALL = 234;
 	private ViewFlipper mTextFlipper;
 
 	@Override
@@ -62,40 +61,15 @@ public class StartActivity extends BaseDocumentActivitiy {
 
 		fairy.setOnClickListener(clicker);
 		mTextFlipper.setOnClickListener(clicker);
-		startInstallActivityIfNeeded();
 
 		getSupportActionBar().setDisplayShowHomeEnabled(false);
 
 		initButtons();
 		initTextBubbles();
-		final int columnWidth = Util.determineThumbnailSize(this, null);
-		Util.setThumbnailSize(columnWidth, columnWidth, this);
-
-		checkForImageIntent();
 
 	}
 
-	private void checkForImageIntent() {
-		Intent intent = getIntent();
-		String action = intent.getAction();
-		String type = intent.getType();
 
-		if (Intent.ACTION_SEND.equals(action) && type != null) {
-			Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-			if (imageUri != null) {
-				loadBitmapFromContentUri(imageUri);
-			} else {
-				showFileError(PixLoadStatus.IMAGE_COULD_NOT_BE_READ, new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						finish();
-					}
-				});
-			}
-
-		}
-	}
 
 	private void initTextBubbles() {
 		String[] texts = getResources().getStringArray(R.array.start_activity_texts);
@@ -152,16 +126,13 @@ public class StartActivity extends BaseDocumentActivitiy {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.start_activity_options, menu);
-
+		getMenuInflater().inflate(R.menu.start_activity_options, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.whats_new) {
-			FragmentManager supportFragmentManager = getSupportFragmentManager();
-			new ReleaseNoteDialog().show(supportFragmentManager, ReleaseNoteDialog.TAG);
 
 			return true;
 		}
@@ -177,48 +148,7 @@ public class StartActivity extends BaseDocumentActivitiy {
 		return -1;
 	}
 
-	/**
-	 * Start the InstallActivity if possible and needed.
-	 */
-	private void startInstallActivityIfNeeded() {
-		final String state = Environment.getExternalStorageState();
-		if (state.equals(Environment.MEDIA_MOUNTED)) {
-			if (InstallActivity.IsInstalled(this) == false) {
-				// install the languages if needed, create directory structure
-				// (one
-				// time)
-				Intent intent = new Intent(Intent.ACTION_VIEW);
-				intent.setClassName(this, com.renard.install.InstallActivity.class.getName());
-				startActivityForResult(intent, REQUEST_CODE_INSTALL);
-			}
-		} else {
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
-			// alert.setTitle(R.string.no_sd_card);
-			alert.setMessage(getString(R.string.no_sd_card));
-			alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					finish();
-				}
-			});
-			alert.show();
-		}
-	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == REQUEST_CODE_INSTALL) {
-			if (RESULT_OK == resultCode) {
-				// install successfull, show happy fairy or introduction text
 
-			} else {
-				// install failed, quit immediately
-				finish();
-			}
-
-		} else {
-			super.onActivityResult(requestCode, resultCode, data);
-		}
-	}
 }

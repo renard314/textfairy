@@ -155,7 +155,7 @@ int doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* cons
 
 	tesseract::TessBaseAPI api;
 	LOGI("OCR LANG = %s",lang);
-	api.Init(tessDir, lang, tesseract::OEM_TESSERACT_ONLY);
+	api.Init(tessDir, lang, tesseract::OEM_DEFAULT);
 
 	api.SetPageSegMode(tesseract::PSM_AUTO);
 
@@ -200,7 +200,7 @@ int doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* cons
     return accuracy;
 }
 
-int doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostringstream* utf8text, const char* const tessDir, const char* const lang, const bool debug) {
+int doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostringstream* utf8text, const char* const tessDir, const char* const lang, const bool debug, const bool usecube) {
 	l_int32 xb, yb, wb, hb;
 	l_int32 columnCount = boxaGetCount(boxaColumns);
 
@@ -209,7 +209,7 @@ int doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostrings
 	ETEXT_DESC monitor;
 	monitor.progress_callback = progressJavaCallback;
 	monitor.cancel = cancelFunc;
-	api.Init(tessDir, lang, tesseract::OEM_TESSERACT_ONLY);
+	api.Init(tessDir, lang, tesseract::OEM_DEFAULT);
 	api.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
 	api.SetImage(pixOCR);
 
@@ -244,7 +244,7 @@ int doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostrings
 	return accuracy/columnCount;
 }
 
-jint Java_com_googlecode_tesseract_android_OCR_nativeOCR(JNIEnv *env, jobject thiz, jint nativePixaText, jint nativePixaImage, jintArray selectedTexts, jintArray selectedImages, jstring tessDir, jstring lang) {
+jint Java_com_googlecode_tesseract_android_OCR_nativeOCR(JNIEnv *env, jobject thiz, jint nativePixaText, jint nativePixaImage, jintArray selectedTexts, jintArray selectedImages, jstring tessDir, jstring lang, jboolean useCube) {
 	LOGV(__FUNCTION__);
 	Pixa *pixaTexts = (PIXA *) nativePixaText;
 	Pixa *pixaImages = (PIXA *) nativePixaImage;
@@ -278,7 +278,7 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCR(JNIEnv *env, jobject th
 
 	cancel_ocr = false;
 
-	int accuracy = doMultiOcr(pixOcr, boxaColumns, &hocr, &utf8text, tessDirNative, langNative, true);
+	int accuracy = doMultiOcr(pixOcr, boxaColumns, &hocr, &utf8text, tessDirNative, langNative, true, useCube);
 
 	pixDestroy(&pixOcr);
 	boxaDestroy(&boxaColumns);

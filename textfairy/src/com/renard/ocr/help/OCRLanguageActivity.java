@@ -15,11 +15,6 @@
  */
 package com.renard.ocr.help;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.DownloadManager;
@@ -36,6 +31,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.util.Pair;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -43,11 +39,15 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import com.actionbarsherlock.view.MenuItem;
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.ocr.help.OCRLanguageAdapter.OCRLanguage;
 import com.renard.util.Util;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OCRLanguageActivity extends MonitoredActivity {
 
@@ -124,15 +124,10 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					File tessDir = Util.getTrainingDataDir(OCRLanguageActivity.this);
-					if (!tessDir.exists()) {
-						return;
-					}
-					File lang = new File(tessDir, language.mValue + ".traineddata");
-					if (lang.delete()) {
-						language.mDownloaded = false;
-						mAdapter.notifyDataSetChanged();
-					}
+                    if (deleteLanguage(language)){
+                        language.mDownloaded = false;
+                        mAdapter.notifyDataSetChanged();
+                    }
 
 				}
 			});
@@ -140,14 +135,54 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
 		}
 
-		@Override
+        private boolean deleteLanguage(final OCRLanguage language) {
+            File tessDir = Util.getTrainingDataDir(OCRLanguageActivity.this);
+            if (!tessDir.exists()) {
+                return false;
+            }
+
+            File lang = new File(tessDir, language.mValue + ".traineddata");
+            final String[] list = getCubeFilesForLanguage(language);
+            for (String fileName: list){
+                File f = new File(tessDir, fileName);
+                f.delete();
+            }
+            if (lang.delete()) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
 		protected OCRLanguageAdapter doInBackground(Void... params) {
 			return initLanguageList();
 		}
 
 	}
 
-	protected void onCreate(android.os.Bundle savedInstanceState) {
+    private String[] getCubeFilesForLanguage(OCRLanguage language) {
+        final String prefix = language.mValue + ".cube";
+        File tessDir = Util.getTrainingDataDir(OCRLanguageActivity.this);
+        if (!tessDir.exists()) {
+            return new String[0];
+        }
+        final String[] list = tessDir.list(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String filename) {
+                if (filename != null && filename.startsWith(prefix)) {
+                    return true;
+                }
+                return false;
+            }
+        });
+        if (list==null){
+            return new String[0];
+        } else {
+            return list;
+        }
+    }
+
+    protected void onCreate(android.os.Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ocr_language_activity);
 		mList = (ListView) findViewById(R.id.list_ocr_languages);
@@ -175,17 +210,23 @@ public class OCRLanguageActivity extends MonitoredActivity {
 			long size = 0;
 			for (Pair<String, Long> installedLang : installedLanguages) {
 				if (installedLang.first.equalsIgnoreCase(languageValues[i])) {
-					downloaded = true;
+                    downloaded = true;
 					size = installedLang.second;
 					break;
 				}
 			}
 			OCRLanguage language = new OCRLanguage(languageValues[i], languageDisplayValues[i], downloaded, size);
-			adapter.add(language);
+            if (language.needsCubeData && getCubeFilesForLanguage(language).length==0){
+                language.mDownloaded = false;
+            }
+
+            adapter.add(language);
 		}
 		updateLanguageListWithDownloadManagerStatus(adapter);
 		return adapter;
 	}
+
+
 
 
 	public static final List<Pair<String, Long>> getInstalledLanguages(Context appContext) {

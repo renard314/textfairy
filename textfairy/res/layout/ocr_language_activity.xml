@@ -12,6 +12,7 @@
         android:layout_height="wrap_content" />
 
     <ListView
+        android:layoutAnimation="@anim/layout_animation"
         android:id="@+id/list_ocr_languages"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >

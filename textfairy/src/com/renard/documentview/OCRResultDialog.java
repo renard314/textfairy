@@ -2,23 +2,19 @@ package com.renard.documentview;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.view.LayoutInflater;
+import android.support.v4.app.DialogFragment;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.renard.ocr.R;
 import com.renard.ocr.help.HelpActivity;
 
 /**
  * Created by renard on 12/11/13.
  */
-public class OCRResultDialog extends SherlockDialogFragment implements View.OnClickListener {
+public class OCRResultDialog extends DialogFragment implements View.OnClickListener {
 
     public static final String TAG = OCRResultDialog.class.getSimpleName();
 
@@ -26,7 +22,7 @@ public class OCRResultDialog extends SherlockDialogFragment implements View.OnCl
 
     public static OCRResultDialog newInstance(int ocrAccuracy) {
         Bundle extra = new Bundle();
-        extra.putInt(EXTRA_ACCURACY,ocrAccuracy);
+        extra.putInt(EXTRA_ACCURACY, ocrAccuracy);
         final OCRResultDialog ocrResultDialog = new OCRResultDialog();
         ocrResultDialog.setArguments(extra);
         return ocrResultDialog;
@@ -39,9 +35,9 @@ public class OCRResultDialog extends SherlockDialogFragment implements View.OnCl
         View view = getActivity().getLayoutInflater().inflate(R.layout.ocr_result_dialog, null);
         TextView speech = (TextView) view.findViewById(R.id.help_header);
         final int accuracy = getArguments().getInt(EXTRA_ACCURACY);
-        if (accuracy<=75){
+        if (accuracy <= 75) {
             speech.setText(R.string.ocr_result_is_bad);
-        } else if (accuracy<83){
+        } else if (accuracy < 83) {
             speech.setText(R.string.ocr_result_is_ok);
         } else {
             speech.setText(R.string.ocr_result_is_good);
@@ -71,13 +67,13 @@ public class OCRResultDialog extends SherlockDialogFragment implements View.OnCl
 
     @Override
     public void onClick(View v) {
-        final DocumentActivity activity = (DocumentActivity)getActivity();
-        if(activity==null){
+        final DocumentActivity activity = (DocumentActivity) getActivity();
+        if (activity == null) {
             return;
         }
-        switch(v.getId()){
+        switch (v.getId()) {
             case R.id.button_show_tips:
-                startActivity(new Intent(activity,HelpActivity.class));
+                startActivity(new Intent(activity, HelpActivity.class));
                 break;
             case R.id.button_copy_to_clipboard:
                 activity.copyTextToClipboard();
@@ -93,7 +89,7 @@ public class OCRResultDialog extends SherlockDialogFragment implements View.OnCl
                 break;
         }
         final android.support.v4.app.Fragment fragmentByTag = activity.getSupportFragmentManager().findFragmentByTag(TAG);
-        if(fragmentByTag!=null){
+        if (fragmentByTag != null) {
             activity.getSupportFragmentManager().beginTransaction().remove(fragmentByTag).commitAllowingStateLoss();
         }
     }

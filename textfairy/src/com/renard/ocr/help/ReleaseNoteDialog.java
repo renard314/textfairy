@@ -2,11 +2,10 @@ package com.renard.ocr.help;
 
 import android.app.Dialog;
 import android.os.Bundle;
-
-import com.actionbarsherlock.app.SherlockDialogFragment;
+import android.support.v4.app.DialogFragment;
 import com.renard.ocr.R;
 
-public class ReleaseNoteDialog extends SherlockDialogFragment {
+public class ReleaseNoteDialog extends DialogFragment {
 
 	public final static String TAG = ReleaseNoteDialog.class.getSimpleName();
 

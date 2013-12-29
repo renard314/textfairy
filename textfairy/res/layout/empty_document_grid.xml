@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/empty_view"
+    android:orientation="vertical"
+    android:padding="@dimen/default_padding"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <View
+        android:layout_marginBottom="-36dp"
+        android:id="@+id/gallery_hint_arrow"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="8dp"
+        android:layout_height="0dp"
+        android:layout_toRightOf="@+id/gallery_hint"
+        android:background="@drawable/hint_arrow"
+        android:layout_width="30dp"
+        android:layout_above="@+id/gallery_hint"
+        android:layout_alignTop="@+id/camera_hint_arrow" />
+
+    <View
+        android:layout_marginBottom="-36dp"
+        android:id="@+id/camera_hint_arrow"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="64dp"
+        android:layout_height="0dp"
+        android:background="@drawable/hint_arrow"
+        android:layout_width="45dp"
+        android:layout_above="@+id/camera_hint" />
+
+    <TextView
+        android:id="@+id/greeting"
+        android:textSize="48dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="@dimen/default_padding"
+        android:text="Hallo" />
+
+    <TextView
+        android:layout_marginRight="@dimen/default_padding"
+        android:layout_below="@+id/greeting"
+        android:layout_toLeftOf="@+id/camera_hint_arrow"
+        android:id="@+id/camera_hint"
+        android:textSize="20dp"
+        android:textColor="@color/grey3"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/default_element_padding"
+        android:layout_marginBottom="@dimen/default_element_padding"
+        android:text="@string/empty_grid_camera" />
+
+    <TextView
+        android:layout_marginTop="@dimen/default_element_padding"
+        android:layout_marginRight="@dimen/default_padding"
+        android:layout_toLeftOf="@+id/camera_hint_arrow"
+        android:layout_below="@+id/camera_hint"
+        android:id="@+id/gallery_hint"
+        android:textSize="20dp"
+        android:textColor="@color/grey3"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/empty_grid_gallery" />
+
+    <TextView
+        android:id="@+id/fairy_hint"
+        android:textSize="20dp"
+        android:layout_marginBottom="@dimen/default_padding"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/grey5"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/empty_grid_fairy" />
+</RelativeLayout>

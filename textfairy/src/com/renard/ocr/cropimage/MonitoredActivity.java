@@ -17,12 +17,12 @@
 
 package com.renard.ocr.cropimage;
 
-import java.util.ArrayList;
-
 import android.annotation.TargetApi;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewTreeObserver;
@@ -30,10 +30,12 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
+import com.renard.ocr.R;
 
-public class MonitoredActivity extends SherlockFragmentActivity implements BaseActivityInterface {
+import java.util.ArrayList;
+
+
+public class MonitoredActivity extends ActionBarActivity implements BaseActivityInterface {
 
 	private final ArrayList<LifeCycleListener> mListeners = new ArrayList<LifeCycleListener>();
 	private int mDialogId = -1;
@@ -147,7 +149,8 @@ public class MonitoredActivity extends SherlockFragmentActivity implements BaseA
 		} else {
 			nativeAppIcon = (ImageView) activity.findViewById(16908332);
 		}
-		ImageView sherlockAppIcon = (ImageView) activity.findViewById(com.actionbarsherlock.R.id.abs__home);
+        //TODO find id of home icon
+		ImageView sherlockAppIcon = null;//(ImageView) activity.findViewById(com.actionbarsherlock.R.id.abs__home);
 		final ImageView appIcon = nativeAppIcon != null ? nativeAppIcon : sherlockAppIcon;
 
 		ViewTreeObserver viewTreeObserver = appIcon.getViewTreeObserver();
@@ -159,7 +162,8 @@ public class MonitoredActivity extends SherlockFragmentActivity implements BaseA
 					appIcon.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 					final int iconHeight = appIcon.getHeight() + 1;
 					final int barHeight = ((FrameLayout) appIcon.getParent()).getHeight();
-					llp.setMargins(0, barHeight - iconHeight, 0, 0);
+                    int leftMargin = (int) appIcon.getContext().getResources().getDimension(R.dimen.home_icon_margin);
+					llp.setMargins(leftMargin, barHeight - iconHeight, 0, 0);
 					appIcon.setLayoutParams(llp);
 					appIcon.invalidate();
 

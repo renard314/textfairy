@@ -149,4 +149,12 @@
     <string name="cannot_speak_language">Dein Telefon kann leider kein %s. Wähle eine andere Sprache.</string>
     <string name="choose_language">Wähle die Sprache zum Vorlesen.</string>
     <string name="share_text">Text teilen</string>
+    <string name="help_to_improve">Verbessere die App</string>
+    <string name="drawer_open">Öffne Navigationsleiste</string>
+    <string name="drawer_close">Schließe Navigationsleiste</string>
+    <string name="product_tour">Produkttour</string>
+    <string name="empty_grid_greeting">Hallo</string>
+    <string name="empty_grid_camera">Hier tippen um Text auf einem neuem Bild zu erkennen.</string>
+    <string name="empty_grid_gallery">Und hier tippen um Text auf einem Bild aus deiner Galerie zu erkennen.</string>
+    <string name="empty_grid_fairy">PS: Tippe auf die Fee für noch mehr Infos.</string>
 </resources>

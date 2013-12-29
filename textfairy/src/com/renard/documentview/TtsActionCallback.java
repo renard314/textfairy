@@ -6,12 +6,11 @@ import android.os.Build;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
-
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.ocr.help.OCRLanguageAdapter;
@@ -38,18 +37,6 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
         hashMapResource = ResourceUtils.getHashMapResource(activity, R.xml.iso_639_mapping);
         this.activity = activity;
         this.activity.addLifeCycleListener(this);
-    }
-
-    @Override
-    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-        mActionMode = actionMode;
-        activity.getSupportMenuInflater().inflate(R.menu.tts_action_mode, menu);
-        if (mTts == null) {
-            Intent checkIntent = new Intent();
-            checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-            activity.startActivityForResult(checkIntent, DocumentActivity.REQUEST_CODE_TTS_CHECK);
-        }
-        return true;
     }
 
     @Override
@@ -98,6 +85,18 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
         mTts.stop();
         actionMode.getMenu().findItem(R.id.item_play).setVisible(true);
         actionMode.getMenu().findItem(R.id.item_stop).setVisible(false);
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+        mActionMode = actionMode;
+        activity.getMenuInflater().inflate(R.menu.tts_action_mode, menu);
+        if (mTts == null) {
+            Intent checkIntent = new Intent();
+            checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+            activity.startActivityForResult(checkIntent, DocumentActivity.REQUEST_CODE_TTS_CHECK);
+        }
+        return true;
     }
 
     @Override

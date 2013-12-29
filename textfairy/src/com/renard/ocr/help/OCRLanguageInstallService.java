@@ -68,7 +68,7 @@ public class OCRLanguageInstallService extends IntentService {
 				BufferedInputStream in = new BufferedInputStream(fin);
 				FileOutputStream out = openFileOutput("tess-lang.tmp", Context.MODE_PRIVATE);
 				GzipCompressorInputStream gzIn = new GzipCompressorInputStream(in);
-				final byte[] buffer = new byte[2048 * 2];
+				final byte[] buffer = new byte[4096];
 				int n = 0;
 				while (-1 != (n = gzIn.read(buffer))) {
 					out.write(buffer, 0, n);
@@ -81,8 +81,31 @@ public class OCRLanguageInstallService extends IntentService {
 				FileInputStream fileIn = openFileInput("tess-lang.tmp");
 				TarArchiveInputStream tarIn = new TarArchiveInputStream(fileIn);
 
-				TarArchiveEntry entry = tarIn.getNextTarEntry();
-				while (!entryIsNotLanguageFile(entry, langName)) {
+                if ("ara.traineddata".equalsIgnoreCase(langName)){
+                    //extract also cube data for arabic as otherwise tesseract will crash
+                    TarArchiveEntry entry = null;
+                    File tessDir = Util.getTrainingDataDir(this);
+                    String lang=null;
+                    while((entry = tarIn.getNextTarEntry())!=null){
+                        final String currentFileName = entry.getName().substring("tesseract-ocr/tessdata/".length());
+                        File trainedData = new File(tessDir, currentFileName);
+                        FileOutputStream fout = new FileOutputStream(trainedData);
+                        int len;
+                        while ((len = tarIn.read(buffer)) != -1) {
+                            fout.write(buffer, 0, len);
+                        }
+                        fout.close();
+                        if (entryIsNotLanguageFile(entry,langName)){
+                            lang = currentFileName.substring(0, currentFileName.length() - ".traineddata".length());
+                        }
+
+                    }
+                    notifyReceivers(lang);
+                    return;
+                }
+                TarArchiveEntry entry = tarIn.getNextTarEntry();
+
+                while (!entryIsNotLanguageFile(entry, langName)) {
 					if (entry==null){
 						break;
 					}

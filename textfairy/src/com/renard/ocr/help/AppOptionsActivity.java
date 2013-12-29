@@ -22,155 +22,115 @@ import android.os.Environment;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.support.v4.app.NavUtils;
+import android.view.MenuItem;
+import android.view.View;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.lamerman.FileDialog;
 import com.lamerman.SelectionMode;
 import com.renard.ocr.R;
-import com.renard.ocr.cropimage.BaseActivityInterface;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.PreferencesUtils;
 
 /**
  * preferences dialog for app wide settings or info stuff
- * 
+ *
  * @author renard
- * 
  */
-public class AppOptionsActivity extends SherlockPreferenceActivity implements
-		BaseActivityInterface {
-	
-    private static final String MARKET_URL            = "market://details?id=com.renard.ocr";
-	protected static final int REQUEST_LOAD_FILE = 474;
+
+public class AppOptionsActivity extends MonitoredActivity implements View.OnClickListener {
+
+    private static final String MARKET_URL = "market://details?id=com.renard.ocr";
+    protected static final int REQUEST_LOAD_FILE = 474;
 
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		addPreferencesFromResource(R.xml.settings);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.application_settings);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initAppIcon(this, -1);
 
-		final Preference languagePreference = findPreference(getString(R.string.pref_key_default_ocr_lang));
-		languagePreference
-				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-					@Override
-					public boolean onPreferenceClick(Preference preference) {
-						startActivity(new Intent(AppOptionsActivity.this,
-								OCRLanguageActivity.class));
-						return true;
-					}
-				});
+        findViewById(R.id.language_settings).setOnClickListener(this);
+        findViewById(R.id.show_licences).setOnClickListener(this);
+        findViewById(R.id.show_contact).setOnClickListener(this);
+        findViewById(R.id.rate_app).setOnClickListener(this);
+        findViewById(R.id.tessdata_directory).setOnClickListener(this);
+    }
 
-		final Preference helpPreference = findPreference(getString(R.string.pref_key_help));
-		helpPreference
-				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.language_settings:
+                startActivity(new Intent(AppOptionsActivity.this, OCRLanguageActivity.class));
+                break;
+            case R.id.show_licences:
+                startActivity(new Intent(AppOptionsActivity.this, LicenseActivity.class));
+                break;
+            case R.id.show_contact:
+                startActivity(new Intent(AppOptionsActivity.this, ContactActivity.class));
+                break;
+            case R.id.rate_app: {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Uri url = Uri.parse(MARKET_URL);
+                intent.setData(url);
+                startActivity(intent);
+                break;
+            }
+            case R.id.tessdata_directory: {
+                Intent intent = new Intent(getBaseContext(), FileDialog.class);
+                intent.putExtra(FileDialog.START_PATH, Environment.getExternalStorageDirectory().getPath());
 
-					@Override
-					public boolean onPreferenceClick(Preference preference) {
-						startActivity(new Intent(AppOptionsActivity.this,
-								HelpActivity.class));
-						return true;
-					}
-				});
+                //can user select directories or not
+                intent.putExtra(FileDialog.CAN_SELECT_DIR, true);
+                intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+                //alternatively you can set file filter
+                intent.putExtra(FileDialog.FORMAT_FILTER, new String[]{""});
 
-		final Preference contact = findPreference(getString(R.string.pref_key_contact));
-		contact.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+                startActivityForResult(intent, REQUEST_LOAD_FILE);
+                break;
+            }
+        }
+    }
 
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				startActivity(new Intent(AppOptionsActivity.this,
-						ContactActivity.class));
-				return true;
-			}
-		});
 
-		final Preference licence = findPreference(getString(R.string.pref_key_license));
-		licence.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
 
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				startActivity(new Intent(AppOptionsActivity.this,
-						LicenseActivity.class));
-				return true;
-			}
-		});
-		
-		final Preference rate = findPreference(getString(R.string.pref_key_rate));
-		rate.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-			     Intent intent = new Intent(Intent.ACTION_VIEW);
-			        Uri url = Uri.parse(MARKET_URL);
-			        intent.setData(url);
-			        startActivity(intent);				
-			        return true;
-			}
-		});
-		
-		final Preference data = findPreference(getString(R.string.pref_key_data_directory));
-		data.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+    @Override
+    public void setDialogId(int dialogId) {
+        // ignored
+    }
 
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				 Intent intent = new Intent(getBaseContext(), FileDialog.class);
-		         
-		         intent.putExtra(FileDialog.START_PATH, Environment.getExternalStorageDirectory().getPath());
-		         
-		         //can user select directories or not
-		         intent.putExtra(FileDialog.CAN_SELECT_DIR, true);
-		         intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
-		         //alternatively you can set file filter
-		         intent.putExtra(FileDialog.FORMAT_FILTER, new String[] { "" });
-		         
-		         startActivityForResult(intent, REQUEST_LOAD_FILE);
-		         return true;
-			}
-		});
-		MonitoredActivity.initAppIcon(this, -1);
-	}
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		overridePendingTransition(android.R.anim.fade_in,
-				android.R.anim.fade_out);
-	}
+        if (requestCode == REQUEST_LOAD_FILE) {
+            if (resultCode == RESULT_OK) {
+                String filePath = data.getStringExtra(FileDialog.RESULT_PATH);
+                if (filePath != null) {
+                    if (filePath.endsWith("tessdata")) {
+                        filePath = filePath.substring(0, filePath.length() - "tessdata".length());
+                    } else {
+                        filePath += "/";
+                    }
+                    PreferencesUtils.saveTessDir(this, filePath);
+                }
+            }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == android.R.id.home) {
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void setDialogId(int dialogId) {
-		// ignored
-	}
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    super.onActivityResult(requestCode, resultCode, data);
-
-	    if (requestCode == REQUEST_LOAD_FILE) {
-	    	 if (resultCode == RESULT_OK) {
-                 String filePath = data.getStringExtra(FileDialog.RESULT_PATH);
-                 if (filePath != null) {
-                     if (filePath.endsWith("tessdata")){
-                    	 filePath = filePath.substring(0,filePath.length()-"tessdata".length());
-                     } else {
-                    	 filePath+="/";
-                     }
-                	 PreferencesUtils.saveTessDir(this, filePath);
-                 }
-             }
-
-	    }
-	}
+        }
+    }
 
 }

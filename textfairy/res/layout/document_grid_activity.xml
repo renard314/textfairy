@@ -1,19 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/document_grid_view"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent">
+    <!-- The main content view -->
 
-    <com.renard.ocr.FancyGridView
-        android:id="@+id/gridview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:choiceMode="none"
-        android:drawSelectorOnTop="false"
-        android:horizontalSpacing="@dimen/grid_spacing"
-        android:listSelector="@android:color/transparent"
-        android:scrollingCache="true"
-        android:verticalSpacing="@dimen/grid_spacing" />
+    <FrameLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content">
 
-</RelativeLayout>
+        <include
+            layout="@layout/empty_document_grid"
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+        <com.renard.ocr.FancyGridView
+            android:id="@+id/gridview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:choiceMode="none"
+            android:drawSelectorOnTop="false"
+            android:horizontalSpacing="@dimen/grid_spacing"
+            android:listSelector="@android:color/transparent"
+            android:scrollingCache="true"
+            android:verticalSpacing="@dimen/grid_spacing" />
+    </FrameLayout>
+
+    <!-- The navigation drawer -->
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:background="@color/bright_foreground_holo_dark" />
+
+</android.support.v4.widget.DrawerLayout>

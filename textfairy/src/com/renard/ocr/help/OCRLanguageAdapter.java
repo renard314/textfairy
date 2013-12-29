@@ -69,6 +69,7 @@ public class OCRLanguageAdapter extends BaseAdapter implements ListAdapter {
 
 		boolean mDownloaded;
 		boolean mDownloading;
+        boolean needsCubeData;
 		String mValue;
 		String mDisplayText;
 		long mSize;
@@ -83,6 +84,9 @@ public class OCRLanguageAdapter extends BaseAdapter implements ListAdapter {
 			mValue = value;
 			mDisplayText = displayText;
 			this.mSize = size;
+            if ("ara".equalsIgnoreCase(value)){
+                needsCubeData = true;
+            }
 		}
 
         public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

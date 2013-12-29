@@ -19,18 +19,17 @@ package com.renard.documentview;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.renard.ocr.R;
 import com.renard.util.PreferencesUtils;
 
-public class TextOptionsActivity extends SherlockFragmentActivity {
+public class TextOptionsActivity extends FragmentActivity {
 
 	private SharedPreferences mPreferences;
 	private RadioGroup mTextAlignmentRadioGroup;
@@ -64,7 +63,7 @@ public class TextOptionsActivity extends SherlockFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.text_options_activity);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		mPreferences = PreferencesUtils.getPreferences(getApplicationContext());
 

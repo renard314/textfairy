@@ -142,8 +142,7 @@ dependencies {
     aV7Compile fileTree(dir: 'build/native-libs', include: 'armeabiv7a.jar')
     aV5Compile fileTree(dir: 'build/native-libs', include: 'armeabi.jar')
     compile 'com.nineoldandroids:library:2.4.0+'
-    compile 'com.android.support:support-v4:13.0.0'
-    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'com.android.support:appcompat-v7:19.0.+'
     compile 'org.apache.commons:commons-compress:1.5'
     compile project(":Android-ViewPagerIndicator:library")
     compile project(":FileExplorer")

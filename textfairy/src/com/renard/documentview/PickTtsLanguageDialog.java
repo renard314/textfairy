@@ -6,11 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.renard.ocr.R;
 import com.renard.ocr.help.OCRLanguageAdapter;
 
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 /**
  * Created by renard on 12/11/13.
  */
-public class PickTtsLanguageDialog extends SherlockDialogFragment {
+public class PickTtsLanguageDialog extends DialogFragment {
 
     public static final String TAG = PickTtsLanguageDialog.class.getSimpleName();
     private final static String ARG_DOCUMENT_LANGUAGE = "language";

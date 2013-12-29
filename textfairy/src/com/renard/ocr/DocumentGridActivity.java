@@ -15,46 +15,59 @@
  */
 package com.renard.ocr;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.renard.documentview.DocumentActivity;
 import com.renard.drawable.CrossFadeDrawable;
 import com.renard.drawable.FastBitmapDrawable;
+import com.renard.install.InstallActivity;
 import com.renard.ocr.DocumentAdapter.DocumentViewHolder;
 import com.renard.ocr.DocumentAdapter.OnCheckedChangeListener;
+import com.renard.ocr.help.AppOptionsActivity;
+import com.renard.ocr.help.HelpActivity;
 import com.renard.ocr.help.HintDialog;
+import com.renard.ocr.help.ReleaseNoteDialog;
 import com.renard.util.Util;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * main activity of the app
@@ -71,6 +84,8 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 	private static final String SAVE_STATE_KEY = "selection";
 	private static final int JOIN_PROGRESS_DIALOG = 4;
 	private ActionMode mActionMode;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private static final int REQUEST_CODE_INSTALL = 234;
 
 	/**
 	 * global state
@@ -90,16 +105,169 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 		setContentView(R.layout.document_grid_activity);
 
 		initAppIcon(this,HINT_DIALOG_ID);
-
+        initNavigationDrawer();
 		getSupportActionBar().setDisplayShowTitleEnabled(false);
 		initGridView();
-	}
+        startInstallActivityIfNeeded();
+        final int columnWidth = Util.determineThumbnailSize(this, null);
+        Util.setThumbnailSize(columnWidth, columnWidth, this);
+        checkForImageIntent();
+    }
 
-	public static boolean isInSelectionMode() {
+    private void checkForImageIntent() {
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (imageUri != null) {
+                loadBitmapFromContentUri(imageUri);
+            } else {
+                showFileError(PixLoadStatus.IMAGE_COULD_NOT_BE_READ, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+            }
+
+        }
+    }
+
+    /**
+     * Start the InstallActivity if possible and needed.
+     */
+    private void startInstallActivityIfNeeded() {
+        final String state = Environment.getExternalStorageState();
+        if (state.equals(Environment.MEDIA_MOUNTED)) {
+            if (InstallActivity.IsInstalled(this) == false) {
+                // install the languages if needed, create directory structure
+                // (one
+                // time)
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setClassName(this, com.renard.install.InstallActivity.class.getName());
+                startActivityForResult(intent, REQUEST_CODE_INSTALL);
+            }
+        } else {
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            // alert.setTitle(R.string.no_sd_card);
+            alert.setMessage(getString(R.string.no_sd_card));
+            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            alert.show();
+        }
+    }
+
+
+    private void initNavigationDrawer() {
+        final ListView drawer = (ListView) findViewById(R.id.left_drawer);
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        drawerLayout.setDrawerListener(mDrawerToggle);
+        // Set the adapter for the list view
+        drawer.setAdapter(new NavigationDrawerAdapter(DocumentGridActivity.this));
+        drawer.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch(position){
+                    case 0:
+                        FragmentManager supportFragmentManager = getSupportFragmentManager();
+                        new ReleaseNoteDialog().show(supportFragmentManager, ReleaseNoteDialog.TAG);
+                        break;
+                    case 1:
+                        Intent i = new Intent(DocumentGridActivity.this, AppOptionsActivity.class);
+                        startActivity(i);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        break;
+                    case 2:
+                        startActivity(new Intent(DocumentGridActivity.this,HelpActivity.class));
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        break;
+                    case 3:
+                        //TODO start improve app
+                        break;
+                    case 4:
+                        //TODO start product tour
+                        break;
+
+
+
+                }
+
+            }
+        });
+
+        // Enable ActionBar app icon to behave as action to toggle nav drawer
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_INSTALL) {
+            if (RESULT_OK == resultCode) {
+                // install successfull, show happy fairy or introduction text
+
+            } else {
+                // install failed, quit immediately
+                finish();
+            }
+
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    public static boolean isInSelectionMode() {
 		return sIsInSelectionMode;
 	}
 
-	@Override
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+
+    @Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		switch (id) {
 		case HINT_DIALOG_ID:
@@ -111,7 +279,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 	@Override
 	public void onCheckedChanged(Set<Integer> checkedIds) {
 		if (mActionMode == null && checkedIds.size() > 0) {
-			mActionMode = startActionMode(new DocumentActionCallback());
+			mActionMode = startSupportActionMode(new DocumentActionCallback());
 		} else if (mActionMode != null && checkedIds.size() == 0) {
 			mActionMode.finish();
 			mActionMode = null;
@@ -303,7 +471,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 
 		@Override
 		public boolean onCreateActionMode(final ActionMode mode, Menu menu) {
-			getSupportMenuInflater().inflate(R.menu.grid_action_mode, menu);
+            getMenuInflater().inflate(R.menu.grid_action_mode, menu);
 			return true;
 		}
 
@@ -366,12 +534,13 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 		mGridView.setOnItemLongClickListener(new DocumentLongClickListener());
 		mGridView.setOnScrollListener(new DocumentScrollListener());
 		mGridView.setOnTouchListener(new FingerTracker());
-
 		final int[] outNum = new int[1];
 		final int columnWidth = Util.determineThumbnailSize(this, outNum);
 		mGridView.setColumnWidth(columnWidth);
 		mGridView.setNumColumns(outNum[0]);
-	}
+        final View emptyView = findViewById(R.id.empty_view);
+        mGridView.setEmptyView(emptyView);
+    }
 
 	@Override
 	protected int getParentId() {

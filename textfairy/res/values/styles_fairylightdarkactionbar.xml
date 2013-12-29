@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- File created by the Android Action Bar Style Generator
 
+     Copyright (C) 2011 The Android Open Source Project
      Copyright (C) 2012 readyState Software Ltd
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,94 +19,68 @@
 
 <resources>
 
-    <style name="Theme.fairylightdarkactionbar" parent="@style/Theme.Sherlock.Light.DarkActionBar">
+    <style name="Theme.Fairylightdarkactionbar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="actionBarItemBackground">@drawable/selectable_background_fairylightdarkactionbar</item>
-        <item name="popupMenuStyle">@style/fairylightdarkactionbar_PopupMenu</item>
-        <item name="dropDownListViewStyle">@style/fairylightdarkactionbar_DropDownListView</item>
-        <item name="actionBarTabStyle">@style/fairylightdarkactionbar_ActionBarTabStyle</item>
-        <item name="actionDropDownStyle">@style/fairylightdarkactionbar_DropDownNav</item>
-        <item name="actionBarStyle">@style/fairylightdarkactionbar_solid_ActionBar</item>
+        <item name="popupMenuStyle">@style/PopupMenu.Fairylightdarkactionbar</item>
+        <item name="dropDownListViewStyle">@style/DropDownListView.Fairylightdarkactionbar</item>
+        <item name="actionBarTabStyle">@style/ActionBarTabStyle.Fairylightdarkactionbar</item>
+        <item name="actionDropDownStyle">@style/DropDownNav.Fairylightdarkactionbar</item>
+        <item name="actionBarStyle">@style/ActionBar.Solid.Fairylightdarkactionbar</item>
+        <item name="actionModeBackground">@drawable/cab_background_top_fairylightdarkactionbar</item>
+        <item name="actionModeSplitBackground">@drawable/cab_background_bottom_fairylightdarkactionbar</item>
+        <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Fairylightdarkactionbar</item>
 
-        <item name="android:actionBarItemBackground">@drawable/selectable_background_fairylightdarkactionbar</item>
-        <item name="android:popupMenuStyle">@style/fairylightdarkactionbar_PopupMenu</item>
-        <item name="android:dropDownListViewStyle">@style/fairylightdarkactionbar_DropDownListView</item>
-        <item name="android:actionBarTabStyle">@style/fairylightdarkactionbar_ActionBarTabStyle</item>
-        <item name="android:actionDropDownStyle">@style/fairylightdarkactionbar_DropDownNav</item>
-        <item name="android:actionBarStyle">@style/fairylightdarkactionbar_solid_ActionBar</item>
-        <item name="android:panelBackground">@drawable/menu_hardkey_panel_fairylightdarkactionbar</item>
-        
                 <!-- Light.DarkActionBar specific -->
-        <item name="actionBarWidgetTheme">@style/Theme.fairylightdarkactionbar.widget</item>
-        <item name="android:actionBarWidgetTheme">@style/Theme.fairylightdarkactionbar.widget</item>
-        <item name="spinnerDropDownItemStyle">@style/fairylightdarkactionbar_DropDownItem</item>
-        <item name="android:spinnerDropDownItemStyle">@style/fairylightdarkactionbar_DropDownItem</item>
-        <item name="spinnerItemStyle">@style/fairylightdarkactionbar_SpinnerItem</item>
-        <item name="android:spinnerItemStyle">@style/fairylightdarkactionbar_SpinnerItem</item>
-        <item name="android:displayOptions">showTitle</item>
-        <item name="displayOptions">showTitle</item>             
+        <item name="actionBarWidgetTheme">@style/Theme.Fairylightdarkactionbar.Widget</item>
+
     </style>
 
-    <style name="fairylightdarkactionbar_solid_ActionBar" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+    <style name="ActionBar.Solid.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="background">@drawable/ab_solid_fairylightdarkactionbar</item>
         <item name="backgroundStacked">@drawable/ab_stacked_solid_fairylightdarkactionbar</item>
         <item name="backgroundSplit">@drawable/ab_bottom_solid_fairylightdarkactionbar</item>
-        <item name="progressBarStyle">@style/fairylightdarkactionbar_ProgressBar</item>
-
-        <item name="android:background">@drawable/ab_solid_fairylightdarkactionbar</item>
-        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_fairylightdarkactionbar</item>
-        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_fairylightdarkactionbar</item>
-        <item name="android:progressBarStyle">@style/fairylightdarkactionbar_ProgressBar</item>
+        <item name="progressBarStyle">@style/ProgressBar.Fairylightdarkactionbar</item>
     </style>
 
-    <style name="fairylightdarkactionbar_transparent_ActionBar" parent="@style/Widget.Sherlock.ActionBar">
+    <style name="ActionBar.Transparent.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.ActionBar">
         <item name="background">@drawable/ab_transparent_fairylightdarkactionbar</item>
-        <item name="progressBarStyle">@style/fairylightdarkactionbar_ProgressBar</item>
-        
-        <item name="android:background">@drawable/ab_transparent_fairylightdarkactionbar</item>
-        <item name="android:progressBarStyle">@style/fairylightdarkactionbar_ProgressBar</item>
+        <item name="progressBarStyle">@style/ProgressBar.Fairylightdarkactionbar</item>
     </style>
 	
-    <style name="fairylightdarkactionbar_PopupMenu" parent="@style/Widget.Sherlock.ListPopupWindow">	
+    <style name="PopupMenu.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.PopupMenu">	
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_fairylightdarkactionbar</item>	
     </style>
 	
-    <style name="fairylightdarkactionbar_DropDownListView" parent="@style/Widget.Sherlock.ListView.DropDown">
+    <style name="DropDownListView.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.ListView.DropDown">
         <item name="android:listSelector">@drawable/selectable_background_fairylightdarkactionbar</item>
     </style>
 
-    <style name="fairylightdarkactionbar_ActionBarTabStyle" parent="@style/Widget.Sherlock.ActionBar.TabView">
-        <item name="background">@drawable/tab_indicator_ab_fairylightdarkactionbar</item>
-
+    <style name="ActionBarTabStyle.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.ActionBar.TabView">
         <item name="android:background">@drawable/tab_indicator_ab_fairylightdarkactionbar</item>
     </style>
 	
-    <style name="fairylightdarkactionbar_DropDownNav" parent="@style/Widget.Sherlock.Spinner.DropDown.ActionBar">
-        <item name="background">@drawable/spinner_background_ab_fairylightdarkactionbar</item>
-
+    <style name="DropDownNav.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">
         <item name="android:background">@drawable/spinner_background_ab_fairylightdarkactionbar</item>
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_fairylightdarkactionbar</item>
         <item name="android:dropDownSelector">@drawable/selectable_background_fairylightdarkactionbar</item>
     </style>
     
-    <style name="fairylightdarkactionbar_ProgressBar" parent="@style/Widget.Sherlock.ProgressBar.Horizontal">
+    <style name="ProgressBar.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/progress_horizontal_fairylightdarkactionbar</item>
     </style>
     
-    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="Theme.fairylightdarkactionbar.widget" parent="@style/Theme.Sherlock">
-        <item name="popupMenuStyle">@style/fairylightdarkactionbar_PopupMenu</item>
-        <item name="dropDownListViewStyle">@style/fairylightdarkactionbar_DropDownListView</item>
-        
-        <item name="android:popupMenuStyle">@style/fairylightdarkactionbar_PopupMenu</item>
-        <item name="android:dropDownListViewStyle">@style/fairylightdarkactionbar_DropDownListView</item>
-    </style>    
-    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="fairylightdarkactionbar_DropDownItem" parent="@style/Widget.Sherlock.Light.DropDownItem.Spinner">
-        <item name="android:textAppearance">?android:attr/textAppearanceInverse</item>
+    <style name="ActionButton.CloseMode.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.ActionButton.CloseMode">
+        <item name="android:background">@drawable/btn_cab_done_fairylightdarkactionbar</item>
     </style>
+    
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="fairylightdarkactionbar_SpinnerItem" parent="@style/Widget.Sherlock.TextView.SpinnerItem">
-        <item name="android:textAppearance">?android:attr/textAppearanceInverse</item>
+    <style name="Theme.Fairylightdarkactionbar.Widget" parent="@style/Theme.AppCompat">
+        <item name="popupMenuStyle">@style/PopupMenu.Fairylightdarkactionbar</item>
+        <item name="dropDownListViewStyle">@style/DropDownListView.Fairylightdarkactionbar</item>
+    </style>
+
+    <style name="Theme.AppCompat.Light.NoActionBar" parent="@style/Theme.AppCompat.Light">
+        <item name="android:windowNoTitle">true</item>
     </style>
 
 </resources>

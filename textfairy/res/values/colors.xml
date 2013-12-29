@@ -11,10 +11,10 @@
 	
 	<color name="drop_shadow_start">#FFF3F3F3</color>
     <color name="drop_shadow_end">#00000000</color>
-    <color name="start_activity_buttons_background">#ff3c3c3c</color>
-    	
-	<color name="bright_foreground_disabled_holo_dark">#ff4c4c4c</color>
-	<color name="bright_foreground_holo_dark">#fff3f3f3</color>
+    <color name="start_activity_buttons_background">@android:color/transparent</color>
+
+    <color name="bright_foreground_disabled_holo_dark">#ff4c4c4c</color>
+    <color name="bright_foreground_holo_dark">#fff3f3f3</color>
 	
 		
 </resources>

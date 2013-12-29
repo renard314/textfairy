@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/item_play"
         android:title="@string/play"
         android:icon="@drawable/ic_action_play"
-        android:showAsAction="always">
-    </item>
+        yourapp:showAsAction="always"></item>
     <item
         android:id="@+id/item_stop"
         android:title="@string/stop"
         android:icon="@drawable/ic_action_stop"
-        android:showAsAction="always">
-    </item>
+        yourapp:showAsAction="always"></item>
     <item
         android:id="@+id/item_tts_settings"
         android:title="@string/choose_language"
         android:icon="@drawable/ic_action_preferences"
-        android:showAsAction="always">
-    </item>
+        yourapp:showAsAction="always"></item>
 
 </menu>

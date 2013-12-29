@@ -30,11 +30,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.googlecode.leptonica.android.Box;
 import com.googlecode.leptonica.android.Clip;
 import com.googlecode.leptonica.android.Pix;
@@ -179,7 +179,7 @@ public class CropImage extends MonitoredActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.crop_image_options, menu);
+		getMenuInflater().inflate(R.menu.crop_image_options, menu);
 
 		/*
 		 * menu.add(R.string.continue_ocr) .setIcon(R.drawable.ic_action_save)
