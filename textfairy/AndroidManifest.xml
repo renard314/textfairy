@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.renard.ocr"
-    android:versionCode="15"
-    android:versionName="1.1.10">
+    android:versionCode="16"
+    android:versionName="1.1.11">
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -38,7 +38,12 @@
             android:label="@string/empty"
             android:launchMode="singleTop"
             android:logo="@drawable/textfairy_title"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.renard.ocr.DocumentGridActivity" />
+
+        </activity>
         <activity
             android:name="com.renard.documentview.TextOptionsActivity"
             android:label="@string/text_options_title" />
@@ -69,7 +74,11 @@
         <activity
             android:name="com.renard.documentview.TableOfContentsActivity"
             android:label="@string/toc_title"
-            android:logo="@drawable/textfairy_title" />
+            android:logo="@drawable/textfairy_title">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.renard.documentview.DocumentActivity" />
+        </activity>
         <activity
             android:name="com.renard.install.InstallActivity"
             android:label="@string/toc_title"

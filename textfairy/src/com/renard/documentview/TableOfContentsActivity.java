@@ -22,8 +22,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -37,76 +39,86 @@ import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.ocr.help.HintDialog;
 
-public class TableOfContentsActivity extends MonitoredActivity implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener  {
-	private final static String[] PROJECTION = { Columns.ID, Columns.TITLE, Columns.OCR_TEXT, Columns.CREATED};
-
-	
-	public final static String EXTRA_DOCUMENT_ID = "document_id";
-	public final static String EXTRA_DOCUMENT_POS = "document_pos";
-	private ListView mList; 
-	private static final int HINT_DIALOG_ID = 2;
-
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.table_of_contents_activity);
-		if (getIntent()==null || getIntent().getData()==null) {
-			finish();
-			return;
-		}
-		mList = (ListView) findViewById(R.id.list);
-		mList.setOnItemClickListener(this);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportLoaderManager().initLoader(0, null, this);
-		initAppIcon(this, -1);
-	}
-	
-	@Override
-	protected Dialog onCreateDialog(int id, Bundle args) {
-		switch (id) {
-		case HINT_DIALOG_ID:
-			return HintDialog.createDialog(this, R.string.toc_help_title, "file:///android_res/raw/toc_help.html");
-		}
-		return super.onCreateDialog(id, args);
-	}
+public class TableOfContentsActivity extends MonitoredActivity implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+    private final static String[] PROJECTION = {Columns.ID, Columns.TITLE, Columns.OCR_TEXT, Columns.CREATED};
 
 
-	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		final Uri documentUri = getIntent().getData();		
-		final String selection = DocumentContentProvider.Columns.PARENT_ID + "=? OR " + Columns.ID + "=?";
-		final String [] args = new String[]{documentUri.getLastPathSegment(), documentUri.getLastPathSegment()};
-		return new CursorLoader(this, DocumentContentProvider.CONTENT_URI, PROJECTION, selection, args, "created ASC");
-	}
+    public final static String EXTRA_DOCUMENT_ID = "document_id";
+    public final static String EXTRA_DOCUMENT_POS = "document_pos";
+    private ListView mList;
+    private static final int HINT_DIALOG_ID = 2;
 
-	@Override
-	public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
-		
-		final SimpleDocumentAdapter adapter = new SimpleDocumentAdapter(this,R.layout.table_of_contents_element, cursor,new ViewBinder() {
 
-			@Override
-			public void bind(View v, DocumentViewHolder holder, String title, CharSequence formattedDate, String text, int position, final int id) {
-				holder.date.setText(formattedDate);
-				holder.text.setText(title);
-				final String pageNo = String.valueOf(position+1);
-				holder.mPageNumber.setText(pageNo);
-			}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.table_of_contents_activity);
+        if (getIntent() == null || getIntent().getData() == null) {
+            finish();
+            return;
+        }
+        mList = (ListView) findViewById(R.id.list);
+        mList.setOnItemClickListener(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportLoaderManager().initLoader(0, null, this);
+        initAppIcon(this, -1);
+    }
 
-		});
-		mList.setAdapter(adapter);
-	}
+    @Override
+    protected Dialog onCreateDialog(int id, Bundle args) {
+        switch (id) {
+            case HINT_DIALOG_ID:
+                return HintDialog.createDialog(this, R.string.toc_help_title, "file:///android_res/raw/toc_help.html");
+        }
+        return super.onCreateDialog(id, args);
+    }
 
-	@Override
-	public void onLoaderReset(Loader<Cursor> arg0) {
-	}
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Intent data = new Intent();
-		data.putExtra(EXTRA_DOCUMENT_ID, (int)id);
-		data.putExtra(EXTRA_DOCUMENT_POS, position);
-		setResult(RESULT_OK, data);
-		finish();
-	}
+    @Override
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        final Uri documentUri = getIntent().getData();
+        final String selection = DocumentContentProvider.Columns.PARENT_ID + "=? OR " + Columns.ID + "=?";
+        final String[] args = new String[]{documentUri.getLastPathSegment(), documentUri.getLastPathSegment()};
+        return new CursorLoader(this, DocumentContentProvider.CONTENT_URI, PROJECTION, selection, args, "created ASC");
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
+
+        final SimpleDocumentAdapter adapter = new SimpleDocumentAdapter(this, R.layout.table_of_contents_element, cursor, new ViewBinder() {
+
+            @Override
+            public void bind(View v, DocumentViewHolder holder, String title, CharSequence formattedDate, String text, int position, final int id) {
+                holder.date.setText(formattedDate);
+                holder.text.setText(title);
+                final String pageNo = String.valueOf(position + 1);
+                holder.mPageNumber.setText(pageNo);
+            }
+
+        });
+        mList.setAdapter(adapter);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> arg0) {
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent data = new Intent();
+        data.putExtra(EXTRA_DOCUMENT_ID, (int) id);
+        data.putExtra(EXTRA_DOCUMENT_POS, position);
+        setResult(RESULT_OK, data);
+        finish();
+    }
 }

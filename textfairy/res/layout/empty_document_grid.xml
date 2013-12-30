@@ -3,6 +3,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/empty_view"
     android:orientation="vertical"
+    android:layout_marginLeft="@dimen/default_padding"
     android:padding="@dimen/default_padding"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
@@ -66,10 +67,10 @@
 
     <TextView
         android:id="@+id/fairy_hint"
-        android:textSize="20dp"
+        android:textSize="15dp"
         android:layout_marginBottom="@dimen/default_padding"
         android:layout_alignParentBottom="true"
-        android:textColor="@color/grey5"
+        android:textColor="@color/grey3"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="@string/empty_grid_fairy" />

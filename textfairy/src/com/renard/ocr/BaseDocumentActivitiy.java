@@ -141,20 +141,11 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             cameraPicUri = null;
             dateCameraIntentStarted = new Date();
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            // NOTE: Do NOT SET: intent.putExtra(MediaStore.EXTRA_OUTPUT,
-            // cameraPicUri) on Samsung Galaxy S2/S3/.. for the following
-            // reasons:
-            // 1.) it will break the correct picture orientation
-            // 2.) the photo will be stored in two locations (the given path and
-            // additionally in the MediaStore)
-            String manufacturer = android.os.Build.MANUFACTURER.toLowerCase();
-            if (!(manufacturer.contains("sony"))) {
-                String filename = System.currentTimeMillis() + ".jpg";
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE, filename);
-                cameraPicUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
-            }
+            String filename = System.currentTimeMillis() + ".jpg";
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, filename);
+            cameraPicUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
             startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
         } catch (ActivityNotFoundException e) {
             showFileError(PixLoadStatus.CAMERA_APP_NOT_FOUND);

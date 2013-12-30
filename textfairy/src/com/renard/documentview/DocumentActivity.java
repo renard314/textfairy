@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.Html;
@@ -81,6 +82,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.document_activity);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mFragmentFrame = findViewById(R.id.document_fragment_container);
         init();
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
@@ -90,6 +92,9 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         if (accuracy > 0 && !mResultDialogShown) {
             mResultDialogShown = true;
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
+        }
+        if (accuracy == 0) {
+            mResultDialogShown = true;
         }
         setDocumentFragmentType(true);
         initAppIcon(this, HINT_DIALOG_ID);
@@ -101,8 +106,10 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
-        mResultDialogShown = true;
-        OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
+        if (accuracy > 0) {
+            mResultDialogShown = true;
+            OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
+        }
     }
 
     @Override
@@ -124,9 +131,15 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         new CreatePDFTask(idForPdf).execute();
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
+        }
+
         if (itemId == R.id.item_view_mode) {
             Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
             if (fragment instanceof DocumentCurlFragment) {
