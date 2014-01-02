@@ -60,7 +60,7 @@ def getVersionCodeFromManifest(String prefix) {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "18.1.1"
+    buildToolsVersion "19.0.1"
 
     signingConfigs {
         release
