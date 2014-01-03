@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.renard.ocr"
-    android:versionCode="16"
-    android:versionName="1.1.11">
+    android:installLocation="auto"
+    android:versionCode="17"
+    android:versionName="1.1.12">
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -45,6 +46,7 @@
 
         </activity>
         <activity
+            android:logo="@drawable/textfairy_title"
             android:name="com.renard.documentview.TextOptionsActivity"
             android:label="@string/text_options_title" />
         <activity
@@ -120,6 +122,7 @@
         </receiver>
 
         <activity
+            android:logo="@drawable/textfairy_title"
             android:name="com.renard.ocr.help.ContactActivity"
             android:label="@string/pref_title_contact">
             <meta-data
@@ -127,6 +130,7 @@
                 android:value="com.renard.ocr.help.AppOptionsActivity" />
         </activity>
         <activity
+            android:logo="@drawable/textfairy_title"
             android:name="com.renard.ocr.help.LicenseActivity"
             android:label="@string/pref_title_license">
             <meta-data
