@@ -52,7 +52,7 @@
         <activity
             android:name="com.renard.ocr.help.HelpActivity"
             android:label="@string/tips"
-            android:logo="@drawable/textfairy_title">
+            android:logo="@drawable/textfairy_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.renard.ocr.DocumentGridActivity" />
@@ -60,7 +60,7 @@
         <activity
             android:name="com.renard.ocr.help.OCRLanguageActivity"
             android:label="@string/ocr_language_title"
-            android:logo="@drawable/textfairy_title">
+            android:logo="@drawable/textfairy_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.renard.ocr.help.AppOptionsActivity" />
@@ -115,7 +115,7 @@
 
         <service android:name="com.renard.ocr.help.OCRLanguageInstallService"></service>
 
-        <receiver android:name="com.renard.ocr.help.DownloadBroadCastReceiver">
+        <receiver android:name="com.renard.ocr.help.DownloadBroadCastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
@@ -124,7 +124,7 @@
         <activity
             android:logo="@drawable/textfairy_title"
             android:name="com.renard.ocr.help.ContactActivity"
-            android:label="@string/pref_title_contact">
+            android:label="@string/pref_title_contact" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.renard.ocr.help.AppOptionsActivity" />
@@ -132,7 +132,7 @@
         <activity
             android:logo="@drawable/textfairy_title"
             android:name="com.renard.ocr.help.LicenseActivity"
-            android:label="@string/pref_title_license">
+            android:label="@string/pref_title_license" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.renard.ocr.help.AppOptionsActivity" />
