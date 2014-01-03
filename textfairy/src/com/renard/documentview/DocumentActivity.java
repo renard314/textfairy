@@ -106,7 +106,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
-        if (accuracy > 0) {
+        if (accuracy > 0 && !mResultDialogShown) {
             mResultDialogShown = true;
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
         }
