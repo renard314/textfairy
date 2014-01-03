@@ -27,9 +27,10 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 import com.renard.ocr.R;
+import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.PreferencesUtils;
 
-public class TextOptionsActivity extends FragmentActivity {
+public class TextOptionsActivity extends MonitoredActivity {
 
 	private SharedPreferences mPreferences;
 	private RadioGroup mTextAlignmentRadioGroup;
@@ -64,6 +65,7 @@ public class TextOptionsActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.text_options_activity);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+        initAppIcon(this,-1);
 
 		mPreferences = PreferencesUtils.getPreferences(getApplicationContext());
 
