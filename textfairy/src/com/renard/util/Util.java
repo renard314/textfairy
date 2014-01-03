@@ -241,9 +241,6 @@ public class Util {
 	 * http://stackoverflow
 	 * .com/questions/477572/android-strange-out-of-memory-issue/823966#823966
 	 * 
-	 * @param f
-	 * @param maxSize
-	 * @return
 	 */
 	public static Bitmap decodeFile(String imagePath, int maxWidth, int maxHeight) {
 		Bitmap b = null;
