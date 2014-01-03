@@ -143,16 +143,18 @@ public class MonitoredActivity extends ActionBarActivity implements BaseActivity
         // if (appIcon!=null){
         // appIcon.setVisibility(View.INVISIBLE);
         // }
+
         ImageView nativeAppIcon = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             nativeAppIcon = (ImageView) activity.findViewById(android.R.id.home);
         } else {
-            nativeAppIcon = (ImageView) activity.findViewById(16908332);
+            nativeAppIcon = (ImageView) activity.findViewById(android.support.v7.appcompat.R.id.home);
         }
-        //TODO find id of home icon
         ImageView sherlockAppIcon = null;//(ImageView) activity.findViewById(com.actionbarsherlock.R.id.abs__home);
         final ImageView appIcon = nativeAppIcon != null ? nativeAppIcon : sherlockAppIcon;
-
+        if (appIcon==null){
+            return;
+        }
         ViewTreeObserver viewTreeObserver = appIcon.getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
