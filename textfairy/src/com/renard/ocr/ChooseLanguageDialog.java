@@ -38,21 +38,10 @@ public class ChooseLanguageDialog {
 	}
 
 	public static AlertDialog createDialog(Context context, final OnLanguageChosenListener onLanguageChosenListener) {
-		List<Pair<String,Long>> installedLanguages = OCRLanguageActivity.getInstalledLanguages(context);
+		List<OCRLanguage> installedLanguages = OCRLanguageActivity.getInstalledOCRLanguages(context);
 		// actual values uses by tesseract
-		final String[] languageValues = context.getResources().getStringArray(R.array.ocr_languages);
 		OCRLanguageAdapter adapter = new OCRLanguageAdapter(context,true);
-		for(String val : languageValues){
-			final int firstSpace = val.indexOf(' ');
-			final String displayText= val.substring(firstSpace + 1, val.length());
-			final String value = val.substring(0, firstSpace);
-			for (Pair<String,Long> installedLang: installedLanguages){
-				if (installedLang.first.equalsIgnoreCase(value)) {
-					OCRLanguage language = new OCRLanguage(value,displayText,true,installedLang.second);
-					adapter.add(language);					
-				}
-			}
-		}
+        adapter.addAll(installedLanguages);
 		LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View layout =  li.inflate(R.layout.dialog_language_list, null,false);
 		final ListView list = (ListView) layout.findViewById(R.id.listView_languages);

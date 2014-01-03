@@ -51,89 +51,89 @@ import java.util.List;
 
 public class OCRLanguageActivity extends MonitoredActivity {
 
-	public final static String ACTION_OCR_LANGUAGE_READY = "com.renard.ocr.language_ready";
-	public final static String EXTRA_OCR_LANGUAGE = "com.renard.ocr.language";
-	public static final String DOWNLOADED_TRAINING_DATA = "downloaded_training_data.tmp";
+    public final static String ACTION_OCR_LANGUAGE_READY = "com.renard.ocr.language_ready";
+    public final static String EXTRA_OCR_LANGUAGE = "com.renard.ocr.language";
+    public static final String DOWNLOADED_TRAINING_DATA = "downloaded_training_data.tmp";
 
-	private BroadcastReceiver mDownloadReceiver;
-	private ListView mList;
-	private OCRLanguageAdapter mAdapter;
-	private ViewSwitcher mSwitcher;
-	private BroadcastReceiver mFailedReceiver;
+    private BroadcastReceiver mDownloadReceiver;
+    private ListView mList;
+    private OCRLanguageAdapter mAdapter;
+    private ViewSwitcher mSwitcher;
+    private BroadcastReceiver mFailedReceiver;
 
-	private class LoadListAsyncTask extends AsyncTask<Void, Void, OCRLanguageAdapter> {
+    private class LoadListAsyncTask extends AsyncTask<Void, Void, OCRLanguageAdapter> {
 
 
-		@Override
-		protected void onPostExecute(OCRLanguageAdapter result) {
-			super.onPostExecute(result);
-			registerDownloadReceiver();
-			mAdapter = result;
-			mList.setAdapter(result);
-			mSwitcher.setDisplayedChild(1);
-			mList.setOnItemClickListener(new OnItemClickListener() {
+        @Override
+        protected void onPostExecute(OCRLanguageAdapter result) {
+            super.onPostExecute(result);
+            registerDownloadReceiver();
+            mAdapter = result;
+            mList.setAdapter(result);
+            mSwitcher.setDisplayedChild(1);
+            mList.setOnItemClickListener(new OnItemClickListener() {
 
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-					OCRLanguage language = (OCRLanguage) mAdapter.getItem(position);
-					if (!language.mDownloaded) {
-						final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-						final String part1 = "http://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.";
-						final String part2 = ".tar.gz";
-						Uri uri = Uri.parse(part1 + language.mValue + part2);
-						Request request = new Request(uri);
-						request.setTitle(language.mDisplayText);
-						String tessDir = Util.getTessDir(OCRLanguageActivity.this);
-						File targetFile = new File(tessDir, DOWNLOADED_TRAINING_DATA);
-						request.setDestinationUri(Uri.fromFile(targetFile));
-						@SuppressWarnings("unused")
-						long downloadId = dm.enqueue(request);
-						// PreferencesUtils.pushDownloadId(OCRLanguageActivity.this,
-						// downloadId);
-						language.mDownloading = true;
-						mAdapter.notifyDataSetChanged();
+                    OCRLanguage language = (OCRLanguage) mAdapter.getItem(position);
+                    if (!language.mDownloaded) {
+                        final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                        final String part1 = "http://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.";
+                        final String part2 = ".tar.gz";
+                        Uri uri = Uri.parse(part1 + language.mValue + part2);
+                        Request request = new Request(uri);
+                        request.setTitle(language.mDisplayText);
+                        String tessDir = Util.getTessDir(OCRLanguageActivity.this);
+                        File targetFile = new File(tessDir, DOWNLOADED_TRAINING_DATA);
+                        request.setDestinationUri(Uri.fromFile(targetFile));
+                        @SuppressWarnings("unused")
+                        long downloadId = dm.enqueue(request);
+                        // PreferencesUtils.pushDownloadId(OCRLanguageActivity.this,
+                        // downloadId);
+                        language.mDownloading = true;
+                        mAdapter.notifyDataSetChanged();
 
-					} else {
-						deleteLanguage(position);
-					}
+                    } else {
+                        deleteLanguage(position);
+                    }
 
-				}
-			});
+                }
+            });
 
-		}
+        }
 
-		protected void deleteLanguage(int position) {
-			final OCRLanguage language = (OCRLanguage) mAdapter.getItem(position);
-			AlertDialog.Builder b = new Builder(OCRLanguageActivity.this);
-			String msg = getString(R.string.delete_language_message);
-			String title = getString(R.string.delete_language_title);
-			title = String.format(title, language.mDisplayText);
-			msg = String.format(msg, language.mSize / 1024);
-			b.setTitle(title);
-			b.setMessage(msg);
-			b.setCancelable(true);
-			b.setNegativeButton(R.string.cancel, new OnClickListener() {
+        protected void deleteLanguage(int position) {
+            final OCRLanguage language = (OCRLanguage) mAdapter.getItem(position);
+            AlertDialog.Builder b = new Builder(OCRLanguageActivity.this);
+            String msg = getString(R.string.delete_language_message);
+            String title = getString(R.string.delete_language_title);
+            title = String.format(title, language.mDisplayText);
+            msg = String.format(msg, language.mSize / 1024);
+            b.setTitle(title);
+            b.setMessage(msg);
+            b.setCancelable(true);
+            b.setNegativeButton(R.string.cancel, new OnClickListener() {
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-				}
-			});
-			b.setPositiveButton(R.string.ocr_language_delete, new OnClickListener() {
+                }
+            });
+            b.setPositiveButton(R.string.ocr_language_delete, new OnClickListener() {
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-                    if (deleteLanguage(language)){
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (deleteLanguage(language)) {
                         language.mDownloaded = false;
                         mAdapter.notifyDataSetChanged();
                     }
 
-				}
-			});
-			b.show();
+                }
+            });
+            b.show();
 
-		}
+        }
 
         private boolean deleteLanguage(final OCRLanguage language) {
             File tessDir = Util.getTrainingDataDir(OCRLanguageActivity.this);
@@ -142,8 +142,8 @@ public class OCRLanguageActivity extends MonitoredActivity {
             }
 
             File lang = new File(tessDir, language.mValue + ".traineddata");
-            final String[] list = getCubeFilesForLanguage(language);
-            for (String fileName: list){
+            final String[] list = getCubeFilesForLanguage(language.mValue, OCRLanguageActivity.this);
+            for (String fileName : list) {
                 File f = new File(tessDir, fileName);
                 f.delete();
             }
@@ -154,15 +154,15 @@ public class OCRLanguageActivity extends MonitoredActivity {
         }
 
         @Override
-		protected OCRLanguageAdapter doInBackground(Void... params) {
-			return initLanguageList();
-		}
+        protected OCRLanguageAdapter doInBackground(Void... params) {
+            return initLanguageList();
+        }
 
-	}
+    }
 
-    private String[] getCubeFilesForLanguage(OCRLanguage language) {
-        final String prefix = language.mValue + ".cube";
-        File tessDir = Util.getTrainingDataDir(OCRLanguageActivity.this);
+    private static String[] getCubeFilesForLanguage(String language, final Context context) {
+        final String prefix = language + ".cube";
+        File tessDir = Util.getTrainingDataDir(context);
         if (!tessDir.exists()) {
             return new String[0];
         }
@@ -175,7 +175,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
                 return false;
             }
         });
-        if (list==null){
+        if (list == null) {
             return new String[0];
         } else {
             return list;
@@ -183,188 +183,206 @@ public class OCRLanguageActivity extends MonitoredActivity {
     }
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.ocr_language_activity);
-		mList = (ListView) findViewById(R.id.list_ocr_languages);
-		mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher_language_list);
-		initAppIcon(this, -1);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		new LoadListAsyncTask().execute();
-	};
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.ocr_language_activity);
+        mList = (ListView) findViewById(R.id.list_ocr_languages);
+        mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher_language_list);
+        initAppIcon(this, -1);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        new LoadListAsyncTask().execute();
+    }
 
-	private OCRLanguageAdapter initLanguageList() {
-		// actual values uses by tesseract
-		final String[] languageValues = getResources().getStringArray(R.array.ocr_languages);
-		// values shown to the user
-		final String[] languageDisplayValues = new String[languageValues.length];
-		for (int i = 0; i < languageValues.length; i++) {
-			final String val = languageValues[i];
-			final int firstSpace = val.indexOf(' ');
-			languageDisplayValues[i] = languageValues[i].substring(firstSpace + 1, languageValues[i].length());
-			languageValues[i] = languageValues[i].substring(0, firstSpace);
-		}
-		final List<Pair<String, Long>> installedLanguages = getInstalledLanguages(this);
-		OCRLanguageAdapter adapter = new OCRLanguageAdapter(getApplicationContext(), false);
-		for (int i = 0; i < languageValues.length; i++) {
-			boolean downloaded = false;
-			long size = 0;
-			for (Pair<String, Long> installedLang : installedLanguages) {
-				if (installedLang.first.equalsIgnoreCase(languageValues[i])) {
+    ;
+
+    private OCRLanguageAdapter initLanguageList() {
+        OCRLanguageAdapter adapter = new OCRLanguageAdapter(getApplicationContext(), false);
+        List<OCRLanguage> languages = getAllOCRLanguages(this);
+        adapter.addAll(languages);
+        updateLanguageListWithDownloadManagerStatus(adapter);
+        return adapter;
+    }
+
+    private static final List<Pair<String, Long>> getInstalledLanguages(Context appContext) {
+        final List<Pair<String, Long>> result = new ArrayList<Pair<String, Long>>();
+        final File tessDir = Util.getTrainingDataDir(appContext);
+        if (!tessDir.exists()) {
+            return result;
+        }
+        final String[] languageFiles = tessDir.list(new FilenameFilter() {
+
+            @Override
+            public boolean accept(File dir, String filename) {
+                if (filename.endsWith(".traineddata")) {
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        for (final String val : languageFiles) {
+            final int dotIndex = val.indexOf('.');
+            if (dotIndex > -1) {
+                File f = new File(tessDir, val);
+                result.add(Pair.create(val.substring(0, dotIndex), f.length()));
+            }
+        }
+        return result;
+    }
+
+    private static List<OCRLanguage> getAllOCRLanguages(Context context) {
+        List<OCRLanguage> languages = new ArrayList<OCRLanguage>();
+        // actual values uses by tesseract
+        final String[] languageValues = context.getResources().getStringArray(R.array.ocr_languages);
+        // values shown to the user
+        final String[] languageDisplayValues = new String[languageValues.length];
+        for (int i = 0; i < languageValues.length; i++) {
+            final String val = languageValues[i];
+            final int firstSpace = val.indexOf(' ');
+            languageDisplayValues[i] = languageValues[i].substring(firstSpace + 1, languageValues[i].length());
+            languageValues[i] = languageValues[i].substring(0, firstSpace);
+        }
+        final List<Pair<String, Long>> installedLanguages = getInstalledLanguages(context);
+        for (int i = 0; i < languageValues.length; i++) {
+            boolean downloaded = false;
+            long size = 0;
+            for (Pair<String, Long> installedLang : installedLanguages) {
+                if (installedLang.first.equalsIgnoreCase(languageValues[i])) {
                     downloaded = true;
-					size = installedLang.second;
-					break;
-				}
-			}
-			OCRLanguage language = new OCRLanguage(languageValues[i], languageDisplayValues[i], downloaded, size);
-            if (language.needsCubeData && getCubeFilesForLanguage(language).length==0){
+                    size = installedLang.second;
+                    break;
+                }
+            }
+            OCRLanguage language = new OCRLanguage(languageValues[i], languageDisplayValues[i], downloaded, size);
+            if (language.needsCubeData && getCubeFilesForLanguage(language.mValue, context).length == 0) {
                 language.mDownloaded = false;
             }
 
-            adapter.add(language);
-		}
-		updateLanguageListWithDownloadManagerStatus(adapter);
-		return adapter;
-	}
+            languages.add(language);
+        }
+        return languages;
+    }
 
 
+    public static final List<OCRLanguage> getInstalledOCRLanguages(Context appContext) {
+        final List<OCRLanguage> ocrLanguages = getAllOCRLanguages(appContext);
+        final List<OCRLanguage> result = new ArrayList<OCRLanguage>();
+        for(OCRLanguage lang:ocrLanguages){
+            if(lang.mDownloaded){
+                result.add(lang);
+            }
+        }
+        return result;
+    }
 
+    @Override
+    protected synchronized void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mDownloadReceiver);
+        unregisterReceiver(mFailedReceiver);
+    }
 
-	public static final List<Pair<String, Long>> getInstalledLanguages(Context appContext) {
-		final List<Pair<String, Long>> result = new ArrayList<Pair<String, Long>>();
-		final File tessDir = Util.getTrainingDataDir(appContext);
-		if (!tessDir.exists()) {
-			return result;
-		}
-		final String[] languageFiles = tessDir.list(new FilenameFilter() {
+    // @Override
+    // protected void onResume() {
+    // super.onResume();
+    // updateLanguageListWithDownloadManagerStatus(mAdapter);
+    // registerDownloadReceiver();
+    // }
 
-			@Override
-			public boolean accept(File dir, String filename) {
-				if (filename.endsWith(".traineddata")) {
-					return true;
-				}
-				return false;
-			}
-		});
+    private void updateLanguageListWithDownloadManagerStatus(OCRLanguageAdapter adapter) {
+        if (adapter != null) {
+            // find languages that are currently beeing downloaded
+            Query query = new Query();
+            query.setFilterByStatus(DownloadManager.STATUS_RUNNING | DownloadManager.STATUS_PENDING | DownloadManager.STATUS_PAUSED);
+            final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+            Cursor c = dm.query(query);
+            int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
+            while (c.moveToNext()) {
+                final String title = c.getString(columnIndex);
+                adapter.setDownloading(title, true);
+            }
+            adapter.notifyDataSetChanged();
+            c.close();
+        }
+    }
 
-		for (final String val : languageFiles) {
-			final int dotIndex = val.indexOf('.');
-			if (dotIndex > -1) {
-				File f = new File(tessDir, val);
-				result.add(Pair.create(val.substring(0, dotIndex), f.length()));
-			}
-		}
-		return result;
-	}
+    private void registerDownloadReceiver() {
+        mDownloadReceiver = new BroadcastReceiver() {
 
-	@Override
-	protected synchronized void onDestroy() {
-		super.onDestroy();
-		unregisterReceiver(mDownloadReceiver);
-		unregisterReceiver(mFailedReceiver);
-	}
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String lang = intent.getStringExtra(OCRLanguageInstallService.EXTRA_OCR_LANGUAGE);
+                int status = intent.getIntExtra(OCRLanguageInstallService.EXTRA_STATUS, -1);
+                updateLanguageList(lang, status);
+            }
 
-	// @Override
-	// protected void onResume() {
-	// super.onResume();
-	// updateLanguageListWithDownloadManagerStatus(mAdapter);
-	// registerDownloadReceiver();
-	// }
+        };
+        mFailedReceiver = new BroadcastReceiver() {
 
-	private void updateLanguageListWithDownloadManagerStatus(OCRLanguageAdapter adapter) {
-		if (adapter != null) {
-			// find languages that are currently beeing downloaded
-			Query query = new Query();
-			query.setFilterByStatus(DownloadManager.STATUS_RUNNING | DownloadManager.STATUS_PENDING | DownloadManager.STATUS_PAUSED);
-			final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-			Cursor c = dm.query(query);
-			int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
-			while (c.moveToNext()) {
-				final String title = c.getString(columnIndex);
-				adapter.setDownloading(title, true);
-			}
-			adapter.notifyDataSetChanged();
-			c.close();
-		}
-	}
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String lang = intent.getStringExtra(OCRLanguageInstallService.EXTRA_OCR_LANGUAGE_DISPLAY);
+                int status = intent.getIntExtra(OCRLanguageInstallService.EXTRA_STATUS, -1);
+                updateLanguageListByDisplayValue(lang, status);
+            }
+        };
+        registerReceiver(mFailedReceiver, new IntentFilter(OCRLanguageInstallService.ACTION_INSTALL_FAILED));
+        registerReceiver(mDownloadReceiver, new IntentFilter(OCRLanguageInstallService.ACTION_INSTALL_COMPLETED));
+    }
 
-	private void registerDownloadReceiver() {
-		mDownloadReceiver = new BroadcastReceiver() {
+    protected void updateLanguageListByDisplayValue(String displayValue, int status) {
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            final OCRLanguage language = (OCRLanguage) mAdapter.getItem(i);
+            if (language.getDisplayText().equalsIgnoreCase(displayValue)) {
+                updateLanguage(language, status);
+                return;
+            }
+        }
+    }
 
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				String lang = intent.getStringExtra(OCRLanguageInstallService.EXTRA_OCR_LANGUAGE);
-				int status = intent.getIntExtra(OCRLanguageInstallService.EXTRA_STATUS, -1);
-				updateLanguageList(lang, status);
-			}
+    protected void updateLanguageList(String lang, int status) {
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            final OCRLanguage language = (OCRLanguage) mAdapter.getItem(i);
+            if (language.getValue().equalsIgnoreCase(lang)) {
+                updateLanguage(language, status);
+                return;
+            }
+        }
+    }
 
-		};
-		mFailedReceiver = new BroadcastReceiver() {
+    private void updateLanguage(final OCRLanguage language, int status) {
+        language.mDownloading = false;
+        if (status == DownloadManager.STATUS_SUCCESSFUL) {
+            language.mDownloaded = true;
+        } else {
+            language.mDownloaded = false;
+            runOnUiThread(new Runnable() {
 
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				String lang = intent.getStringExtra(OCRLanguageInstallService.EXTRA_OCR_LANGUAGE_DISPLAY);
-				int status = intent.getIntExtra(OCRLanguageInstallService.EXTRA_STATUS, -1);
-				updateLanguageListByDisplayValue(lang, status);
-			}
-		};
-		registerReceiver(mFailedReceiver, new IntentFilter(OCRLanguageInstallService.ACTION_INSTALL_FAILED));
-		registerReceiver(mDownloadReceiver, new IntentFilter(OCRLanguageInstallService.ACTION_INSTALL_COMPLETED));
-	}
+                @Override
+                public void run() {
+                    String msg = getString(R.string.download_failed);
+                    msg = String.format(msg, language.mDisplayText);
+                    Toast.makeText(OCRLanguageActivity.this, msg, Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        mAdapter.notifyDataSetChanged();
+    }
 
-	protected void updateLanguageListByDisplayValue(String displayValue, int status) {
-		for (int i = 0; i < mAdapter.getCount(); i++) {
-			final OCRLanguage language = (OCRLanguage) mAdapter.getItem(i);
-			if (language.getDisplayText().equalsIgnoreCase(displayValue)) {
-				updateLanguage(language, status);
-				return;
-			}
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	protected void updateLanguageList(String lang, int status) {
-		for (int i = 0; i < mAdapter.getCount(); i++) {
-			final OCRLanguage language = (OCRLanguage) mAdapter.getItem(i);
-			if (language.getValue().equalsIgnoreCase(lang)) {
-				updateLanguage(language, status);
-				return;
-			}
-		}
-	}
-
-	private void updateLanguage(final OCRLanguage language, int status) {
-		language.mDownloading = false;
-		if (status == DownloadManager.STATUS_SUCCESSFUL) {
-			language.mDownloaded = true;
-		} else {
-			language.mDownloaded = false;
-			runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					String msg = getString(R.string.download_failed);
-					msg = String.format(msg, language.mDisplayText);
-					Toast.makeText(OCRLanguageActivity.this, msg, Toast.LENGTH_LONG).show();
-				}
-			});
-		}
-		mAdapter.notifyDataSetChanged();
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
 
 
 }

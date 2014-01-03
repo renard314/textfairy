@@ -81,7 +81,7 @@ public class OCRLanguageInstallService extends IntentService {
 				FileInputStream fileIn = openFileInput("tess-lang.tmp");
 				TarArchiveInputStream tarIn = new TarArchiveInputStream(fileIn);
 
-                if ("ara.traineddata".equalsIgnoreCase(langName)){
+                if ("ara.traineddata".equalsIgnoreCase(langName)||"hin.traineddata".equalsIgnoreCase(langName)){
                     //extract also cube data for arabic as otherwise tesseract will crash
                     TarArchiveEntry entry = null;
                     File tessDir = Util.getTrainingDataDir(this);
