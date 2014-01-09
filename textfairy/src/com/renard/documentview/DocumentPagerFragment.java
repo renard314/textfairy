@@ -24,6 +24,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Spanned;
 import android.util.Log;
 import android.util.Pair;
@@ -112,8 +113,8 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
                 @Override
                 public void onPageSelected(int position) {
                     final String title = adapter.getLongTitle(position);
-                    getActivity().getActionBar().setTitle(title);
-                    getActivity().getActionBar().setDisplayShowTitleEnabled(true);
+                    ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle(title);
+                    ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
                 }
 
                 @Override
