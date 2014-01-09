@@ -310,10 +310,12 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                             return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
                         }
                     } else if (cameraPicUri.toString().startsWith("content")) {
+                        //TODO test
                         InputStream stream = getContentResolver().openInputStream(cameraPicUri);
-                        Bitmap b = BitmapFactory.decodeStream(stream);
-                        p = ReadFile.readBitmap(b);
-                        b.recycle();
+                        p = ReadFile.readMem(Util.toByteArray(stream));
+                        //Bitmap b = BitmapFactory.decodeStream(stream);
+                        //p = ReadFile.readBitmap(b);
+                        //b.recycle();
                     } else {
                         return Pair.create(null, PixLoadStatus.IO_ERROR);
                     }

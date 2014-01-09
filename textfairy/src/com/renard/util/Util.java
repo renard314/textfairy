@@ -15,12 +15,14 @@
  */
 package com.renard.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -750,5 +752,22 @@ public class Util {
 		ProgressDialog dialog = ProgressDialog.show(activity, title, message, true, false);
 		new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
 	}
+
+    public static byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        copy(input, output);
+        return output.toByteArray();
+    }
+
+    public static long copy(InputStream input, OutputStream output) throws IOException {
+        byte[] buffer= new byte[1024 * 4];
+        long count = 0;
+        int n = 0;
+        while (-1 != (n = input.read(buffer))) {
+            output.write(buffer, 0, n);
+            count += n;
+        }
+        return count;
+    }
 
 }
