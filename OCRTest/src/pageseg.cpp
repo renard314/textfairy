@@ -194,11 +194,10 @@ Pixa* pagesegGetColumns(Pix* pixtext, bool debug) {
 	pixDilateBrick(pixBinary, pixBinary, 3, 3);
 
 	Boxa* boxatext = pixConnCompBB(pixBinary, 8);
-
 	//growTextBounds(boxatext);
-
-	pixDestroy(&pixBinary);
 	Pixa* pixaText = pixaCreateFromBoxa(pixtext, boxatext, NULL);
+	//substract
+	pixDestroy(&pixBinary);
 	boxaDestroy(&boxatext);
 	if (debug) {
 		Pix* pixdisplay = pixaDisplay(pixaText, 0, 0);
