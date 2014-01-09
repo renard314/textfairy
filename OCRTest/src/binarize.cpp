@@ -129,6 +129,7 @@ Pix* createEdgeMask(Pix* pixs) {
 
 	Pix* pixForeground = pixThresholdToBinary(pixConvEdges, thresh);
 	pixDestroy(&pixConvEdges);
+	pixCloseBrick(pixForeground,pixForeground,64,64);
 
 	pixWrite("foreground.bmp", pixForeground, IFF_BMP);
 
@@ -212,13 +213,6 @@ void binarize(Pix* pixGrey, Pix* pixhm, Pix** pixb) {
 	const l_uint32 tileSize = 60; //size of tile during threshholding
 	L_TIMER timer = startTimerNested();
 	ostringstream s;
-
-	/*
-	 int result = pixAddConstantGray(pixGrey,-15);
-
-	 printf("grey result = %i",result );
-	 pixWrite("greyed.bmp",pixGrey,IFF_BMP);
-	 */
 
 	pixEdgeMask = createEdgeMask(pixGrey);
 	pixSetMasked(pixGrey, pixEdgeMask, 255);
