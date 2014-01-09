@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:largeHeap="true"
         android:name="com.renard.ocr.MyApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
