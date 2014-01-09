@@ -148,24 +148,23 @@ void onePictureWithColumns(const char* filename, int index) {
 	binarize(pixsg, pixhm, &pixb);
 	pixDestroy(&pixsg);
 
-	segmentComplexLayout(pixOrg, pixhm, pixb, &pixaImages, &pixaTexts,
-			messageCallback, true);
-
+	segmentComplexLayout(pixOrg, pixhm, pixb, &pixaImages, &pixaTexts, messageCallback, true);
 	ostringstream hocr;
 	ostringstream utf8text;
 	l_int32 textCount = pixaGetCount(pixaTexts);
 	l_int32* imageIndexes = new l_int32[0];
-	l_int32* textIndexes = new l_int32[textCount];
-	for (int i = 0; i < textCount; i++) {
-		textIndexes[i] = i;
-	}
-	combineSelectedPixa(pixaTexts, pixaImages, textIndexes, textCount,
-			imageIndexes, 0, messageCallback, &pixFinal, &pixOcr, &boxaColumns,
-			true);
+	l_int32* textIndexes = new l_int32[2];
+	textIndexes[0]=5;
+	textIndexes[1]=7;
+	textCount = 2;
+	//for (int i = 0; i < textCount; i++) {
+	//	textIndexes[i] = i;
+	//}
+	combineSelectedPixa(pixaTexts, pixaImages, textIndexes, textCount, imageIndexes, 0, messageCallback, &pixFinal, &pixOcr, &boxaColumns, true);
 	pixWrite("dewarpedColumns.bmp", pixOcr, IFF_BMP);
 	printf("total time = %f", stopTimerNested(timer));
 	renderTransformedBoxa(pixOcr, boxaColumns, 255);
-	//pixDisplay(pixOcr,0,0);
+	pixDisplay(pixOcr,0,0);
 
 	delete[] textIndexes;
 	boxaDestroy(&boxaColumns);
@@ -175,7 +174,6 @@ void onePictureWithColumns(const char* filename, int index) {
 	pixDestroy(&pixb);
 	pixDestroy(&pixhm);
 	pixDestroy(&pixTextlines);
-	pixaDestroy(&pixaImages);
 	pixaDestroy(&pixaTexts);
 }
 
@@ -228,9 +226,9 @@ int main(int argc, const char* argv[]) {
 
 		s << "/Users/renard/Desktop/devel/textfairy/OCRTest/" << argv[1] << "/"
 				<< argv[2] << ".jpg";
-//		onePictureWithColumns(s.str().c_str(), atoi(argv[1]));
+		onePictureWithColumns(s.str().c_str(), atoi(argv[1]));
 
-		onePicture(s.str().c_str(), atoi(argv[1]));
+		//onePicture(s.str().c_str(), atoi(argv[1]));
 	} else if (argc == 4) {
 		int start = atoi(argv[2]);
 		int end = atoi(argv[3]);
