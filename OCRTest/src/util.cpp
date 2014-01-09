@@ -132,13 +132,11 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
 }
 
 /**
- * translate all boxa which are below bottom dy pixel down
- * translate all boxa which are to the right of right dy pixel to the right
+ * translate all boxa which are below top dy pixel down
+ * translate all boxa which are to the right of left dy pixel to the right
  */
-void translateBoxa(Pixa* pixa, l_int32 dx, l_int32 dy, l_int32 right,
-		l_int32 bottom) {
-	log("translateBoxa dx=%i dy=%i, right=%i, bottom=%i",
-			dx, dy, right, bottom);
+void translateBoxa(Pixa* pixa, l_int32 dx, l_int32 dy, l_int32 left, l_int32 top) {
+	log("translateBoxa dx=%i dy=%i, left=%i, top=%i", dx, dy, left, top);
 	bool moveDown = dy > 0;
 	bool moveRight = dx > 0;
 	l_int32 count = pixaGetBoxaCount(pixa);
@@ -149,11 +147,11 @@ void translateBoxa(Pixa* pixa, l_int32 dx, l_int32 dy, l_int32 right,
 			l_int32 x, y, h, w;
 			Box* b = pixaGetBox(pixa, j, L_CLONE);
 			boxGetGeometry(b, &x, &y, &w, &h);
-			if (moveRight && x >= right) {
+			if (moveRight && x > left) {
 				log("moving pix %i to %i pixel to right", j, dx);
 				x += dx;
 			}
-			if (moveDown && y >= bottom) {
+			if (moveDown && y > top) {
 				log("moving pix %i to %i pixel down", j, dy);
 				y += dy;
 			}
@@ -166,10 +164,7 @@ void translateBoxa(Pixa* pixa, l_int32 dx, l_int32 dy, l_int32 right,
 /**
  * destroys all pixa
  */
-void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes,
-		l_int32 textCount, l_int32* imageindexes, l_int32 imageCount,
-		void (*callbackMessage)(const int), Pix** pPixFinal, Pix** pPixOcr,
-		Boxa** pBoxaColumns, bool debug) {
+void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, l_int32 textCount, l_int32* imageindexes, l_int32 imageCount, void (*callbackMessage)(const int), Pix** pPixFinal, Pix** pPixOcr,Boxa** pBoxaColumns, bool debug) {
 	ostringstream debugstring;
 
 	if (debug) {
@@ -211,6 +206,9 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes,
 		boxAdjustSides(b, b, -border, border, -border, border);
 		pixaAddPix(pixaSelectedColumns, p_with_border, L_INSERT);
 		pixaAddBox(pixaSelectedColumns, b, L_INSERT);
+		int x,y,w,h;
+		boxGetGeometry(b,&x,&y,&w,&h);
+		translateBoxa(pixaText,border,border,x,y);
 	}
 	pixaDestroy(&pixaText);
 
@@ -236,7 +234,7 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes,
 				pixaReplacePix(pixaSelectedColumns, i, pixClone(dew->pixd), b);
 				l_int32 right = x + w;
 				l_int32 bottom = y + h;
-				translateBoxa(pixaSelectedColumns, dx, dy, right, bottom);
+				translateBoxa(pixaSelectedColumns, dx, dy, x, y);
 			}
 		}
 		dewarpDestroy(&dew);
@@ -310,8 +308,7 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes,
 			continue;
 		}
 		Pix* pixi = pixaGetPix(pixaImage, index, L_CLONE);
-		pixRasterop(pixFinal, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC, pixi,
-				0, 0);
+		pixRasterop(pixFinal, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC, pixi, 0, 0);
 	}
 	printf("%s", "after copying images");
 
@@ -323,20 +320,20 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes,
 		}
 		Pix* pixt = pixaGetPix(pixaSelectedColumns, i, L_CLONE);
 		Pix* pixt32 = pixConvertTo32(pixt);
-		pixRasterop(pixOCR, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC, pixt,
-				0, 0);
-		pixRasterop(pixFinal, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC,
-				pixt32, 0, 0);
+		pixRasterop(pixOCR, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC, pixt, 0, 0);
+		pixRasterop(pixFinal, xb - xoffset, yb - yoffset, wb, hb, PIX_SRC, pixt32, 0, 0);
 		pixDestroy(&pixt32);
 		Box* boxColumn = boxCreate(xb - xoffset, yb - yoffset, wb, hb);
 		boxaAddBox(boxaColumns, boxColumn, L_INSERT);
 	}
 
-	pixaDestroy(&pixaImage);
+	if (pixaImage!=NULL){
+		pixaDestroy(&pixaImage);
+	}
 
 	if (debug) {
-		debugstring << "time to assemble final pix: " << stopTimer()
-				<< std::endl;
+		debugstring << "time to assemble final pix: " << stopTimer() << std::endl;
+		printf("%s",debugstring.str().c_str());
 	}
 
 	*pPixFinal = pixFinal;
