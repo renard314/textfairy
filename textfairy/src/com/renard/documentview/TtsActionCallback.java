@@ -1,5 +1,6 @@
 package com.renard.documentview;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Build;
@@ -133,6 +134,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
         }
     }
 
+    @SuppressLint("NewApi")
     private void registerForSpeechFinished() {
         final Handler handler = new Handler();
         if(Build.VERSION.SDK_INT>=15){
