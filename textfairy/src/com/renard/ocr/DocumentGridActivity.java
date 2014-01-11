@@ -58,6 +58,7 @@ import com.renard.install.InstallActivity;
 import com.renard.ocr.DocumentAdapter.DocumentViewHolder;
 import com.renard.ocr.DocumentAdapter.OnCheckedChangeListener;
 import com.renard.ocr.help.AppOptionsActivity;
+import com.renard.ocr.help.ContributeActivity;
 import com.renard.ocr.help.HelpActivity;
 import com.renard.ocr.help.HintDialog;
 import com.renard.ocr.help.ReleaseNoteDialog;
@@ -202,7 +203,8 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
                     case 3:
-                        //TODO start improve app
+                        startActivity(new Intent(DocumentGridActivity.this,ContributeActivity.class));
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
                     case 4:
                         //TODO start product tour

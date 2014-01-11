@@ -381,7 +381,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
 

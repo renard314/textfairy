@@ -31,7 +31,7 @@ public class LicenseActivity extends MonitoredActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_license);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        initAppIcon(this,-1);
 		TextView leptonica = (TextView) findViewById(R.id.textView_leptonica);
 		TextView tesseract = (TextView) findViewById(R.id.textView_tesseract);
 		TextView hocr2pdf = (TextView) findViewById(R.id.textView_hocr2pdf);
@@ -53,8 +53,7 @@ public class LicenseActivity extends MonitoredActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		overridePendingTransition(android.R.anim.fade_in,
-				android.R.anim.fade_out);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 
 }

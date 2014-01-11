@@ -15,45 +15,68 @@
  */
 package com.renard.ocr.help;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 
-public class ContributeActivity extends MonitoredActivity {
+public class ContributeActivity extends MonitoredActivity implements View.OnClickListener {
+    private static final String MARKET_URL = "market://details?id=com.renard.ocr";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_license);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_contribute);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initAppIcon(this, -1);
+        TextView email = (TextView) findViewById(R.id.button_send_feedback);
+        email.setOnClickListener(this);
 
-		TextView leptonica = (TextView) findViewById(R.id.textView_leptonica);
-		TextView tesseract = (TextView) findViewById(R.id.textView_tesseract);
-		TextView hocr2pdf = (TextView) findViewById(R.id.textView_hocr2pdf);
-		leptonica.setMovementMethod(new LinkMovementMethod());
-		tesseract.setMovementMethod(new LinkMovementMethod());
-		hocr2pdf.setMovementMethod(new LinkMovementMethod());
-	}
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+    @Override
+    protected void onPause() {
+        super.onPause();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-	}
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent;
+        switch (v.getId()) {
+            case R.id.layout_enroll_beta_test:
+            case R.id.button_enroll_beta_test:
+                break;
+            case R.id.layout_send_feedback:
+            case R.id.button_send_feedback:
+                intent = ContactActivity.getFeedbackIntent();
+                startActivity(intent);
+                break;
+            case R.id.layout_rate_app:
+            case R.id.button_rate_app:
+                intent = new Intent(Intent.ACTION_VIEW);
+                Uri url = Uri.parse(MARKET_URL);
+                intent.setData(url);
+                startActivity(intent);
+                break;
+        }
+
+    }
 
 }

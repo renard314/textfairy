@@ -5,6 +5,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="default_padding">8dp</dimen>
+    <dimen name="default_padding_half">4dp</dimen>
     <dimen name="two_line_item_margin">4dp</dimen>
     <dimen name="home_icon_margin">28dp</dimen>
 
@@ -16,5 +17,6 @@
     <dimen name="dropshadow_padding_right">9px</dimen>
     <dimen name="dropshadow_padding_top">4px</dimen>
     <dimen name="dropshadow_padding_bottom">9px</dimen>
+    <dimen name="contribute_text_size">17sp</dimen>
 
 </resources>

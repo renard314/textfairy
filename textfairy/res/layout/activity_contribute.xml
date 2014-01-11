@@ -2,79 +2,162 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fillViewport="true" >
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        tools:context=".LicenseActivity" >
+        tools:context=".ContributeActivity">
 
         <TextView
-            android:id="@+id/textView_tesseract"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:gravity="left|center_vertical"
-            android:text="@string/tesseract_ocr_title"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <TextView
-            android:id="@+id/textView_tesseract_description"
+            android:id="@+id/textView_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tesseract_ocr_summary"
+            android:text="@string/contribute_text"
             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_width="wrap_content"
+            android:drawablePadding="@dimen/default_padding"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/default_padding"
+            android:gravity="left|center_vertical"
+            android:drawableLeft="@drawable/ic_feedback"
+            android:text="@string/feedback_title"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+
+        <LinearLayout
+            android:clickable="true"
+            android:paddingLeft="@dimen/default_padding_half"
+            android:id="@+id/layout_send_feedback"
+            android:background="@drawable/btn_start_activity2"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/feedback_text_1"
+                style="@style/contribute_bullet_point" />
+
+            <TextView
+                android:text="@string/feedback_text_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/contribute_bullet_point" />
+
+            <TextView
+                android:text="@string/feedback_text_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/contribute_bullet_point" />
+
+            <Button
+                android:id="@+id/button_send_feedback"
+                android:text="@string/send_mail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/contribute_action" />
+        </LinearLayout>
 
         <View
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:background="@color/dark_grey" />
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:background="@color/grey2" />
+
 
         <TextView
-            android:id="@+id/textView_leptonica"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
+            android:drawablePadding="@dimen/default_padding"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/default_padding"
             android:gravity="left|center_vertical"
-            android:text="@string/leptonica_title"
+            android:drawableLeft="@drawable/ic_beta_test"
+            android:text="@string/beta_test_title"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <TextView
-            android:id="@+id/textView_leptonica_description"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:clickable="true"
+            android:paddingLeft="@dimen/default_padding_half"
+            android:id="@+id/layout_enroll_beta_test"
+            android:background="@drawable/btn_start_activity2"
             android:layout_height="wrap_content"
-            android:text="@string/leptonica_summary"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_width="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="@string/beta_test_text_1"
+                style="@style/contribute_bullet_point"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                style="@style/contribute_bullet_point"
+                android:text="@string/beta_test_text_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+            <Button
+                android:id="@+id/button_enroll_beta_test"
+                style="@style/contribute_action"
+                android:text="@string/enroll_as_beta_tester"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
         <View
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:background="@color/dark_grey" />
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:background="@color/grey2" />
 
         <TextView
-            android:id="@+id/textView_hocr2pdf"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
+            android:drawableLeft="@drawable/ic_rating"
+            android:drawablePadding="@dimen/default_padding"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/default_padding"
             android:gravity="left|center_vertical"
-            android:text="@string/hocr2pdf_title"
+            android:text="@string/rating_title"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <TextView
-            android:id="@+id/textView_hocr2pdf_description"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:clickable="true"
+            android:paddingLeft="@dimen/default_padding_half"
+            android:id="@+id/layout_rate_app"
+            android:background="@drawable/btn_start_activity2"
             android:layout_height="wrap_content"
-            android:text="@string/hocr2pdf_summary"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_width="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="@string/rating_text"
+                style="@style/contribute_bullet_point"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/button_rate_app"
+                style="@style/contribute_action"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pref_summary_rate" />
+        </LinearLayout>
+
+
     </LinearLayout>
 
 </ScrollView>

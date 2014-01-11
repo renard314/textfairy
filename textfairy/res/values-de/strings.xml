@@ -16,7 +16,7 @@
     <string name="please_tap_on_column">Tappe erst auf die gewünschten Textspalten!</string>
     <string name="get_more_languages">Lade weitere Sprachen.</string>
     <string name="aborts_scan">Bricht aktuellen Scan ab!</string>
-    <string name="send_mail">sende eine email</string>
+    <string name="send_mail">Sende mir eine E-mail.</string>
     <string name="hocr2pdf_title"><a href="http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/">hocr2pdf</a> von exactCODE</string>
     <string name="hocr2pdf_summary">hocr2pdf erstellt durchsuchbare PDF-dateien aus der hOCR-Ausgabe einer Texterkennungssoftware.</string>
     <string name="leptonica_title"><a href="http://www.leptonica.com/">leptonica</a></string>
@@ -32,7 +32,7 @@
     <string name="pref_title_help">Zeige Tipps</string>
     <string name="pref_title_contact">Kontakt</string>
     <string name="download_title">Sprachdaten für %s</string>
-    <string name="pref_summary_rate">Bewerte die Textfee im Play Store!</string>
+    <string name="pref_summary_rate">Bewerte die Textfee.</string>
     <string name="pref_summary_license">Welche open source Software wird von der Textfee genutzt?</string>
     <string name="pref_summary_contact">Find heraus wer hinter der Textfee steckt.</string>
     <string name="ocr_language_title">Wähle Sprache für Texterkennung</string>
@@ -84,7 +84,6 @@
     <string name="progress_assemble_pix">Setze die ausgewählten Bereiche zu einem neuen Bild zusammen.</string>
     <string name="progress_choose_columns">Auswahl Bild- &amp; Textbereiche.</string>
     <string name="new_photo">Neues Photo</string>
-    <string name="problem">"There is a problem"</string>
     <string name="no_sd_card">Die Textfee kann nicht von der Speicherkarte lesen. Ist das Telefon vielleicht mit deinem PC verbunden? Wenn ja, dann entferne das Kabel und versuche es erneut.</string>
     <string name="rotate_right">rechts drehen</string>
     <string name="rotate_left">links drehen</string>
@@ -98,7 +97,9 @@
     <string name="option_camera_title">Mache eine neues Photo</string>
     <string name="option_preference_title">Optionen</string>
     <string name="show_tips">Zeige Tipps.</string>
-    <string name="option_extra">Hilfsthemen</string>
+    <string name="default_ocr_display_language">Englisch</string>
+    <string name="title_activity_contact">Kontakt</string>
+    <string name="action_settings">Einstellungen</string>
     <string name="document_help_title">Hier kannst du auf die Seiten deines Dokumentes zugreifen und sie verwalten.</string>
     <string name="fairy_welcome_bubble">Ich bin die Textfee</string>
     <string name="new_photo_gallery">Photo aus Galerie</string>
@@ -157,4 +158,17 @@
     <string name="empty_grid_camera">Hier tippen um Text auf einem neuem Bild zu erkennen.</string>
     <string name="empty_grid_gallery">Und hier tippen um Text auf einem Bild aus deiner Galerie zu erkennen.</string>
     <string name="empty_grid_fairy">PS: Tippe auf die Fee für noch mehr Infos.</string>
+    <string name="contribute_title">Verbessere die App</string>
+    <string name="contribute_text">Eine OCR-App zu programmieren ist schwer. Aber Du kannst mir helfen die App zu verbessern</string>
+    <string name="rating_title">Bewerte die App</string>
+    <string name="rating_text">Du findest die App nützlich? Ich freue mich immer über gute Bewertungen.</string>
+    <string name="feedback_title">Sende Feedback</string>
+    <string name="feedback_text_1">Die App funktioniert nicht wie erwartet?</string>
+    <string name="feedback_text_2">Du hast einen Verbesserungsvorschlag?</string>
+    <string name="feedback_text_3">Oder hast du einen Fehler gefunden?</string>
+    <string name="beta_test_title">Werde Betatester</string>
+    <string name="beta_test_text_1">Neue Funktionen früher ausprobieren?</string>
+    <string name="beta_test_text_2">Einfluß auf die Entwicklung neuer Funktionen ausüben?</string>
+    <string name="enroll_as_beta_tester">Werde Betatester</string>
+
 </resources>

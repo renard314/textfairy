@@ -4,14 +4,13 @@
     android:layout_width="match_parent"
     android:background="#FFFFFF"
     android:orientation="vertical"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/accuracy_title"
         android:padding="8dp"
         android:background="@color/dark_grey"
         android:textColor="@color/primary_text_btn_main"
-        android:layout_alignParentRight="true"
         android:gravity="center"
         android:textSize="18sp"
         android:layout_height="wrap_content"
@@ -23,18 +22,17 @@
         android:id="@+id/help_header"
         android:background="#F1F1F1"
         android:layout_marginTop="@dimen/default_padding"
-        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         layout="@layout/dialog_title" />
+
     <View
         android:layout_marginTop="@dimen/default_element_padding"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:id="@+id/divider1"
-        android:background="@color/grey6"
-        android:layout_below="@+id/ocr_accuracy" />
+        android:background="@color/grey6" />
 
     <Button
         android:layout_marginTop="@dimen/default_padding"
@@ -47,15 +45,13 @@
         android:drawableLeft="@drawable/ic_action_tips_light"
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ocr_accuracy" />
+        android:layout_height="wrap_content" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:id="@+id/divider2"
-        android:background="@color/grey6"
-        android:layout_below="@+id/button_show_tips" />
+        android:background="@color/grey6" />
 
     <Button
         android:id="@+id/button_share_text"
@@ -67,15 +63,13 @@
         android:drawableLeft="@drawable/ic_action_share_dark"
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/divider2" />
+        android:layout_height="wrap_content" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:id="@+id/divider3"
-        android:background="@color/grey6"
-        android:layout_below="@+id/button_share_text" />
+        android:background="@color/grey6" />
 
     <Button
         android:id="@+id/button_copy_to_clipboard"
@@ -87,15 +81,13 @@
         android:drawableLeft="@drawable/ic_action_content_copy_dark"
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/divider3" />
+        android:layout_height="wrap_content" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:id="@+id/divider4"
-        android:background="@color/grey6"
-        android:layout_below="@+id/button_copy_to_clipboard" />
+        android:background="@color/grey6" />
 
     <Button
         android:paddingLeft="@dimen/default_padding"
@@ -108,15 +100,13 @@
         android:drawableLeft="@drawable/ic_action_text_to_speech"
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/divider4" />
+        android:layout_height="wrap_content" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:id="@+id/divider5"
-        android:background="@color/grey6"
-        android:layout_below="@+id/button_text_to_speech" />
+        android:background="@color/grey6" />
 
     <Button
         android:paddingLeft="@dimen/default_padding"
@@ -128,10 +118,7 @@
         android:drawableLeft="@drawable/ic_action_pdf_light"
         android:layout_width="match_parent"
         android:background="@drawable/btn_start_activity2"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/divider5" />
-
-
+        android:layout_height="wrap_content" />
 
 
 </LinearLayout>

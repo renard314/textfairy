@@ -3,7 +3,7 @@
 
 
 
-    <string-array name="ocr_languages">
+    <string-array name="ocr_languages"  translatable="false">
         <item>eng English</item>
         <item>ukr Ukrainian</item>
         <item>tur Turkish</item>

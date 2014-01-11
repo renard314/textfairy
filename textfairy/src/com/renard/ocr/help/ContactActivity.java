@@ -38,16 +38,20 @@ public class ContactActivity extends MonitoredActivity {
 
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(Intent.ACTION_SEND);
-				intent.setType("message/rfc822");
-				intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "text fairy feedback");
-				intent.putExtra(android.content.Intent.EXTRA_EMAIL,
-						new String[] { "renard.wellnitz+textfairy@googlemail.com" });
+                Intent intent = getFeedbackIntent();
 				startActivity(intent);
 			}
 		});
 
 	}
+
+    public static Intent getFeedbackIntent(){
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc822");
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "text fairy feedback");
+        intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { "renard.wellnitz+textfairy@googlemail.com" });
+        return intent;
+    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -69,8 +73,7 @@ public class ContactActivity extends MonitoredActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		overridePendingTransition(android.R.anim.fade_in,
-				android.R.anim.fade_out);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 
 }

@@ -21,7 +21,7 @@ public class NavigationDrawerAdapter extends BaseAdapter implements ListAdapter 
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 
     @Override
