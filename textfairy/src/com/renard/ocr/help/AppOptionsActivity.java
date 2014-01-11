@@ -39,7 +39,6 @@ import com.renard.util.PreferencesUtils;
 
 public class AppOptionsActivity extends MonitoredActivity implements View.OnClickListener {
 
-    private static final String MARKET_URL = "market://details?id=com.renard.ocr";
     protected static final int REQUEST_LOAD_FILE = 474;
 
 
@@ -53,7 +52,6 @@ public class AppOptionsActivity extends MonitoredActivity implements View.OnClic
         findViewById(R.id.language_settings).setOnClickListener(this);
         findViewById(R.id.show_licences).setOnClickListener(this);
         findViewById(R.id.show_contact).setOnClickListener(this);
-        findViewById(R.id.rate_app).setOnClickListener(this);
         findViewById(R.id.tessdata_directory).setOnClickListener(this);
     }
 
@@ -69,13 +67,6 @@ public class AppOptionsActivity extends MonitoredActivity implements View.OnClic
             case R.id.show_contact:
                 startActivity(new Intent(AppOptionsActivity.this, ContactActivity.class));
                 break;
-            case R.id.rate_app: {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                Uri url = Uri.parse(MARKET_URL);
-                intent.setData(url);
-                startActivity(intent);
-                break;
-            }
             case R.id.tessdata_directory: {
                 Intent intent = new Intent(getBaseContext(), FileDialog.class);
                 intent.putExtra(FileDialog.START_PATH, Environment.getExternalStorageDirectory().getPath());
