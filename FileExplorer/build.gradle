@@ -3,10 +3,19 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.+'
+        classpath 'com.android.tools.build:gradle:0.7.+'
     }
 }
 apply plugin: 'android-library'
+
+android {
+    lintOptions {
+        // if true, stop the gradle build if errors are found
+        abortOnError false
+        ignoreWarnings true
+    }
+}
+
 
 dependencies {
     repositories {
