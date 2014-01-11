@@ -5,14 +5,22 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.+'
+        classpath 'com.android.tools.build:gradle:0.7.+'
     }
 }
+
 apply plugin: 'android'
+
+android {
+    lintOptions {
+        abortOnError true
+        ignoreWarnings true
+    }
+}
 
 // Task to run ndk-build
 task ndkBuild(type: Exec) {
-    commandLine 'ndk-build', '-j', Runtime.runtime.availableProcessors()
+    commandLine "$ndkDir/ndk-build", '-j', Runtime.runtime.availableProcessors()
 }
 
 // Task to put native libs into a jar file
@@ -37,7 +45,7 @@ task nativeX86LibsToJar(type: Zip, description: 'create a jar archive of the nat
     from fileTree(dir: 'libs', include: 'x86/*.so')
     into 'lib/'
 }
-tasks.withType(Compile) { compileTask -> compileTask.dependsOn(nativeArmV5LibsToJar, nativeArmV7LibsToJar, nativeX86LibsToJar) }
+tasks.withType(JavaCompile) { compileTask -> compileTask.dependsOn(nativeArmV5LibsToJar, nativeArmV7LibsToJar, nativeX86LibsToJar) }
 nativeArmV5LibsToJar.dependsOn 'ndkBuild'
 nativeArmV7LibsToJar.dependsOn 'ndkBuild'
 nativeX86LibsToJar.dependsOn 'ndkBuild'
