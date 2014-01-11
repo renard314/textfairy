@@ -1,0 +1,2 @@
+org.gradle.jvmargs=-XX:MaxPermSize=512m
+ndk.dir=/Users/renard/Desktop/devel/android-ndk-r9
