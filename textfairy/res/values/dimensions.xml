@@ -17,6 +17,5 @@
     <dimen name="dropshadow_padding_right">9px</dimen>
     <dimen name="dropshadow_padding_top">4px</dimen>
     <dimen name="dropshadow_padding_bottom">9px</dimen>
-    <dimen name="contribute_text_size">17sp</dimen>
 
 </resources>

@@ -39,63 +39,6 @@
             android:layout_height="1dp"
             android:background="@color/grey6" />
 
-        <LinearLayout
-            android:padding="@dimen/default_padding"
-            android:id="@+id/show_licences"
-            android:background="@drawable/btn_start_activity2"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                android:text="@string/pref_title_license"
-                android:gravity="left|center"
-                android:layout_marginBottom="@dimen/two_line_item_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:text="@string/pref_summary_license"
-                android:gravity="left|center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/grey6" />
-
-        <LinearLayout
-            android:padding="@dimen/default_padding"
-            android:id="@+id/show_contact"
-            android:background="@drawable/btn_start_activity2"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                android:text="@string/pref_title_contact"
-                android:gravity="left|center"
-                android:layout_marginBottom="@dimen/two_line_item_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:text="@string/pref_summary_contact"
-                android:gravity="left|center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/grey6" />
 
         <View
             android:layout_width="match_parent"

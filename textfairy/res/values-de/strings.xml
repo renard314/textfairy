@@ -150,7 +150,7 @@
     <string name="cannot_speak_language">Dein Telefon kann leider kein %s. Wähle eine andere Sprache.</string>
     <string name="choose_language">Wähle die Sprache zum Vorlesen.</string>
     <string name="share_text">Text teilen</string>
-    <string name="help_to_improve">Verbessere die App</string>
+    <string name="help_to_improve">Feedback</string>
     <string name="drawer_open">Öffne Navigationsleiste</string>
     <string name="drawer_close">Schließe Navigationsleiste</string>
     <string name="product_tour">Produkttour</string>
@@ -170,5 +170,11 @@
     <string name="beta_test_text_1">Neue Funktionen früher ausprobieren?</string>
     <string name="beta_test_text_2">Einfluß auf die Entwicklung neuer Funktionen ausüben?</string>
     <string name="enroll_as_beta_tester">Werde Betatester</string>
+    <string name="about">Über die Textfee</string>
+    <string name="feedback_subject">Feedback für die Textfee</string>
+    <string name="beta_test_body">Bitte informiere mich wenn eine neue Version für den Beta-Test zur Verfügung steht.</string>
+    <string name="beta_test_subject">Textfee Beta Test</string>
+    <string name="app_version">Version %s</string>
+    <string name="image_not_32_bit">Das Bild muss 32 Bit Farbtiefe haben.</string>
 
 </resources>

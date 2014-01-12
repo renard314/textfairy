@@ -1,129 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:padding="@dimen/default_padding"
-        android:orientation="vertical"
         android:layout_height="wrap_content">
 
-
         <LinearLayout
+            android:layout_width="match_parent"
             android:padding="@dimen/default_padding"
-            android:id="@+id/language_settings"
-            android:background="@drawable/btn_start_activity2"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                android:text="@string/pref_title_default_ocr_lang"
-                android:gravity="left|center"
-                android:layout_marginBottom="@dimen/two_line_item_margin"
+            <LinearLayout
+                android:padding="@dimen/default_padding"
+                android:id="@+id/show_licences"
+                android:background="@drawable/btn_start_activity2"
+                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:orientation="vertical">
 
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:text="@string/pref_summary_default_ocr_lang"
-                android:gravity="left|center"
+                <TextView
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:text="@string/pref_title_license"
+                    android:gravity="left|center"
+                    android:layout_marginBottom="@dimen/two_line_item_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:text="@string/pref_summary_license"
+                    android:gravity="left|center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="1dp"
+                android:background="@color/grey6" />
+
+            <LinearLayout
+                android:padding="@dimen/default_padding"
+                android:id="@+id/show_contact"
+                android:background="@drawable/btn_start_activity2"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:textAppearance="@android:style/TextAppearance.Medium"
+                    android:text="@string/pref_title_contact"
+                    android:gravity="left|center"
+                    android:layout_marginBottom="@dimen/two_line_item_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:text="@string/pref_summary_contact"
+                    android:gravity="left|center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
         </LinearLayout>
+    </ScrollView>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/grey6" />
-
-        <LinearLayout
-            android:padding="@dimen/default_padding"
-            android:id="@+id/show_licences"
-            android:background="@drawable/btn_start_activity2"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                android:text="@string/pref_title_license"
-                android:gravity="left|center"
-                android:layout_marginBottom="@dimen/two_line_item_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:text="@string/pref_summary_license"
-                android:gravity="left|center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/grey6" />
-
-        <LinearLayout
-            android:padding="@dimen/default_padding"
-            android:id="@+id/show_contact"
-            android:background="@drawable/btn_start_activity2"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                android:text="@string/pref_title_contact"
-                android:gravity="left|center"
-                android:layout_marginBottom="@dimen/two_line_item_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:text="@string/pref_summary_contact"
-                android:gravity="left|center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/grey6" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/grey6" />
-
-        <LinearLayout
-            android:padding="@dimen/default_padding"
-            android:id="@+id/tessdata_directory"
-            android:background="@drawable/btn_start_activity2"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                android:text="@string/pref_title_data_directory"
-                android:gravity="left|center"
-                android:layout_marginBottom="@dimen/two_line_item_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:text="@string/pref_summary_data_directory"
-                android:gravity="left|center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    <TextView
+        android:padding="@dimen/default_padding"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        android:textColor="@color/grey3"
+        android:layout_marginBottom="@dimen/default_element_padding"
+        android:id="@+id/version_name"
+        android:layout_alignParentBottom="true"
+        android:text="@string/app_version"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</RelativeLayout>
