@@ -104,7 +104,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     private static int rotateXDegrees = 0;
 
     protected enum PixLoadStatus {
-        IMAGE_COULD_NOT_BE_READ, MEDIA_STORE_RETURNED_NULL, IMAGE_DOES_NOT_EXIST, SUCCESS, IO_ERROR, CAMERA_APP_NOT_FOUND, CAMERA_APP_ERROR, CAMERA_NO_IMAGE_RETURNED
+        IMAGE_NOT_32_BIT,IMAGE_COULD_NOT_BE_READ, MEDIA_STORE_RETURNED_NULL, IMAGE_DOES_NOT_EXIST, SUCCESS, IO_ERROR, CAMERA_APP_NOT_FOUND, CAMERA_APP_ERROR, CAMERA_NO_IMAGE_RETURNED
 
     }
 
@@ -297,6 +297,9 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     if (pathForUri != null && pathForUri.startsWith("http")) {
                         Bitmap b = MediaStore.Images.Media.getBitmap(getContentResolver(), cameraPicUri);
                         if (b != null) {
+                            if (b.getConfig()!= Bitmap.Config.ARGB_8888){
+                                return Pair.create(null, PixLoadStatus.IMAGE_NOT_32_BIT);
+                            }
                             p = ReadFile.readBitmap(b);
                             b.recycle();
                         } else {
@@ -367,6 +370,9 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     protected void showFileError(PixLoadStatus second, OnClickListener positiveListener) {
         int textId;
         switch (second) {
+            case IMAGE_NOT_32_BIT:
+                textId = R.string.image_not_32_bit;
+                break;
             case IMAGE_COULD_NOT_BE_READ:
                 textId = R.string.image_could_not_be_read;
                 break;
