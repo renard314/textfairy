@@ -149,6 +149,7 @@ dependencies {
     x86Compile fileTree(dir: 'build/native-libs', include: 'x86.jar')
     aV7Compile fileTree(dir: 'build/native-libs', include: 'armeabiv7a.jar')
     aV5Compile fileTree(dir: 'build/native-libs', include: 'armeabi.jar')
+    compile 'com.google.code.findbugs:jsr305:2.0.2'
     compile 'com.nineoldandroids:library:2.4.0+'
     compile 'com.android.support:appcompat-v7:19.0.+'
     compile 'org.apache.commons:commons-compress:1.5'
