@@ -21,17 +21,13 @@
             android:text="@string/contribute_text"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_width="wrap_content"
-            android:drawablePadding="@dimen/default_padding"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/default_padding"
-            android:gravity="left|center_vertical"
-            android:drawableLeft="@drawable/ic_feedback"
-            android:text="@string/feedback_title"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
+        <View
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:background="@color/grey2" />
 
         <LinearLayout
             android:clickable="true"
@@ -41,6 +37,16 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:drawablePadding="@dimen/default_padding"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/default_padding"
+                android:gravity="left|center_vertical"
+                android:drawableLeft="@drawable/ic_feedback"
+                android:text="@string/feedback_title"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -60,7 +66,8 @@
                 android:layout_height="wrap_content"
                 style="@style/contribute_bullet_point" />
 
-            <Button
+            <TextView
+                android:visibility="gone"
                 android:id="@+id/button_send_feedback"
                 android:text="@string/send_mail"
                 android:layout_width="match_parent"
@@ -69,22 +76,13 @@
         </LinearLayout>
 
         <View
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="@dimen/activity_horizontal_margin"
             android:background="@color/grey2" />
 
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:drawablePadding="@dimen/default_padding"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/default_padding"
-            android:gravity="left|center_vertical"
-            android:drawableLeft="@drawable/ic_beta_test"
-            android:text="@string/beta_test_title"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <LinearLayout
             android:clickable="true"
@@ -94,6 +92,16 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:drawablePadding="@dimen/default_padding"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/default_padding"
+                android:gravity="left|center_vertical"
+                android:drawableLeft="@drawable/ic_beta_test"
+                android:text="@string/beta_test_title"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:text="@string/beta_test_text_1"
@@ -108,7 +116,8 @@
                 android:layout_height="wrap_content" />
 
 
-            <Button
+            <TextView
+                android:visibility="gone"
                 android:id="@+id/button_enroll_beta_test"
                 style="@style/contribute_action"
                 android:text="@string/enroll_as_beta_tester"
@@ -117,21 +126,12 @@
         </LinearLayout>
 
         <View
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="@dimen/activity_horizontal_margin"
             android:background="@color/grey2" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:drawableLeft="@drawable/ic_rating"
-            android:drawablePadding="@dimen/default_padding"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/default_padding"
-            android:gravity="left|center_vertical"
-            android:text="@string/rating_title"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
 
 
         <LinearLayout
@@ -144,12 +144,23 @@
             android:orientation="vertical">
 
             <TextView
+                android:layout_width="wrap_content"
+                android:drawableLeft="@drawable/ic_rating"
+                android:drawablePadding="@dimen/default_padding"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/default_padding"
+                android:gravity="left|center_vertical"
+                android:text="@string/rating_title"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
                 android:text="@string/rating_text"
                 style="@style/contribute_bullet_point"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <Button
+            <TextView
+                android:visibility="gone"
                 android:id="@+id/button_rate_app"
                 style="@style/contribute_action"
                 android:layout_width="match_parent"
