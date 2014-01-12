@@ -81,7 +81,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.document_activity);
+        setContentView(R.layout.activity_document);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mFragmentFrame = findViewById(R.id.document_fragment_container);
         init();

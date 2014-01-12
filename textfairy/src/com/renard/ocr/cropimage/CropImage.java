@@ -72,7 +72,7 @@ public class CropImage extends MonitoredActivity {
 
 		getWindow().setFormat(PixelFormat.RGBA_8888);
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.cropimage_activity);
+		setContentView(R.layout.activity_cropimage);
 
 		// getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		// getSupportActionBar().setDisplayShowHomeEnabled(true);

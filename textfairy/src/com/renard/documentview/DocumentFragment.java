@@ -48,7 +48,7 @@ public class DocumentFragment extends Fragment {
             final String text = getArguments().getString("text");
             mSpanned = Html.fromHtml(text);
         }
-        View view = inflater.inflate(R.layout.document_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_document, container, false);
         mEditText = (EditText) view.findViewById(R.id.editText_document);
         mEditText.setText(mSpanned);
         return view;

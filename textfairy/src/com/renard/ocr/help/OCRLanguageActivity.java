@@ -184,7 +184,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ocr_language_activity);
+        setContentView(R.layout.activity_ocr_language);
         mList = (ListView) findViewById(R.id.list_ocr_languages);
         mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher_language_list);
         initAppIcon(this, -1);

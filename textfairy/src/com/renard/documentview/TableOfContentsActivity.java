@@ -52,7 +52,7 @@ public class TableOfContentsActivity extends MonitoredActivity implements Loader
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.table_of_contents_activity);
+        setContentView(R.layout.activity_table_of_contents);
         if (getIntent() == null || getIntent().getData() == null) {
             finish();
             return;

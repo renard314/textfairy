@@ -19,7 +19,6 @@ package com.renard.documentview;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -63,7 +62,7 @@ public class TextOptionsActivity extends MonitoredActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setContentView(R.layout.text_options_activity);
+		this.setContentView(R.layout.activity_text_options);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initAppIcon(this,-1);
 

@@ -85,7 +85,7 @@ public class DocumentAdapter extends PagerAdapter {
 				}
 				mSpannedTexts.put(documentId, spanned);
 			}
-			view = mInflater.inflate(R.layout.document_fragment, null);
+			view = mInflater.inflate(R.layout.fragment_document, null);
 			EditText edit = (EditText) view.findViewById(R.id.editText_document);
 			edit.setText(spanned);
 			TextWatcher watcher = new TextWatcher() {

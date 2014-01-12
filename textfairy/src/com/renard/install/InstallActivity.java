@@ -96,7 +96,7 @@ public class InstallActivity extends Activity {
 	@SuppressWarnings("deprecation")
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.install_activity);
+		setContentView(R.layout.activity_install);
 		mImageViewFairy = (ImageView) findViewById(R.id.imageView_fairy);
 		mFairyContainer = findViewById(R.id.fairy_container);
 		mProgressBar = (ProgressBar) findViewById(R.id.installactivity_progressbar);

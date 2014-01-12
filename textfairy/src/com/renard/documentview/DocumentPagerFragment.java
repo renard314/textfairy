@@ -50,7 +50,7 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.document_pager_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_document_pager, container, false);
         mPager = (ViewPager) v.findViewById(R.id.document_pager);
         mTitleIndicator = (CirclePageIndicator) v.findViewById(R.id.titles);
         initPager();

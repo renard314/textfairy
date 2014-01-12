@@ -19,8 +19,6 @@ package com.renard.documentview;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Html;
-import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +39,7 @@ public class DocumentCurlFragment extends Fragment implements DocumentContainerF
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View v = inflater.inflate(R.layout.document_curl_fragment, container, false);
+        final View v = inflater.inflate(R.layout.fragment_document_curl, container, false);
         mCurlView = (CurlView) v.findViewById(R.id.curl);
         initCurlView();
         return v;

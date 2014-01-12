@@ -32,7 +32,7 @@ public class OCRResultDialog extends DialogFragment implements View.OnClickListe
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
         builder.setCancelable(true);
-        View view = getActivity().getLayoutInflater().inflate(R.layout.ocr_result_dialog, null);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_ocr_result, null);
         TextView speech = (TextView) view.findViewById(R.id.help_header);
         final int accuracy = getArguments().getInt(EXTRA_ACCURACY);
         if (accuracy <= 75) {

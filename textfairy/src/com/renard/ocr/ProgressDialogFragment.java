@@ -36,7 +36,7 @@ public class ProgressDialogFragment extends DialogFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.progress_dialog, container, false);
+		View view = inflater.inflate(R.layout.dialog_progress, container, false);
 
 		Bundle arguments = getArguments();
 		if (arguments != null) {
