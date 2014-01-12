@@ -150,7 +150,7 @@
     <string name="cannot_speak_language">Your phone cannot speak %s. Pick another language.</string>
     <string name="choose_language">Pick a language for text to speech.</string>
     <string name="share_text">share text</string>
-    <string name="help_to_improve">Improve the app</string>
+    <string name="help_to_improve">Feedback</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="product_tour">Product tour</string>
@@ -170,4 +170,10 @@
     <string name="beta_test_text_1">Try new features as soon as possible?</string>
     <string name="beta_test_text_2">Influence development of new features?</string>
     <string name="enroll_as_beta_tester">Enroll in beta test program.</string>
+    <string name="about">About</string>
+    <string name="feedback_subject">Text fairy feedback</string>
+    <string name="beta_test_body">Please inform me when a new version is available for beta testing.</string>
+    <string name="beta_test_subject">Text fairy beta test</string>
+    <string name="app_version">Version %s</string>
+    <string name="image_not_32_bit">Image needs to be 32 bit</string>
 </resources>
