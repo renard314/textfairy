@@ -46,7 +46,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -57,6 +56,7 @@ import com.renard.drawable.FastBitmapDrawable;
 import com.renard.install.InstallActivity;
 import com.renard.ocr.DocumentAdapter.DocumentViewHolder;
 import com.renard.ocr.DocumentAdapter.OnCheckedChangeListener;
+import com.renard.ocr.help.AboutActivity;
 import com.renard.ocr.help.AppOptionsActivity;
 import com.renard.ocr.help.ContributeActivity;
 import com.renard.ocr.help.HelpActivity;
@@ -103,7 +103,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.document_grid_activity);
+		setContentView(R.layout.activity_document_grid);
 
 		initAppIcon(this,HINT_DIALOG_ID);
         initNavigationDrawer();
@@ -207,6 +207,10 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
                     case 4:
+                        startActivity(new Intent(DocumentGridActivity.this,AboutActivity.class));
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        break;
+                    case 5:
                         //TODO start product tour
                         break;
 

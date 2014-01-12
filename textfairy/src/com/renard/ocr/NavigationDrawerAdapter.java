@@ -21,7 +21,7 @@ public class NavigationDrawerAdapter extends BaseAdapter implements ListAdapter 
 
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 
     @Override
@@ -56,8 +56,13 @@ public class NavigationDrawerAdapter extends BaseAdapter implements ListAdapter 
                 break;
             case 3:
                 textId = R.string.help_to_improve;
+                iconId = R.drawable.ic_action_feedback;
                 break;
             case 4:
+                textId = R.string.about;
+                iconId = R.drawable.ic_action_about;
+                break;
+            case 5:
                 textId = R.string.product_tour;
                 break;
         }
