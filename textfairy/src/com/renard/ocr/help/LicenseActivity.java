@@ -40,7 +40,14 @@ public class LicenseActivity extends MonitoredActivity {
 		hocr2pdf.setMovementMethod(new LinkMovementMethod());
 	}
 
-	@Override
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+
+    @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
@@ -48,12 +55,6 @@ public class LicenseActivity extends MonitoredActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 
 }

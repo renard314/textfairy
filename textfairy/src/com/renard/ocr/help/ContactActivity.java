@@ -22,58 +22,64 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 
 public class ContactActivity extends MonitoredActivity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_contact);
-		// Show the Up button in the action bar.
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		TextView email = (TextView) findViewById(R.id.textView_send_mail);
-		email.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-                Intent intent = getFeedbackIntent();
-				startActivity(intent);
-			}
-		});
-
-	}
-
-    public static Intent getFeedbackIntent(){
+    public static Intent getFeedbackIntent(String subject, String body) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
-        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "text fairy feedback");
-        intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { "renard.wellnitz+textfairy@googlemail.com" });
+        if (subject != null) {
+            intent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+        }
+        if (body != null) {
+            intent.putExtra(Intent.EXTRA_TEXT, body);
+        }
+        intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"renard.wellnitz+textfairy@googlemail.com"});
         return intent;
     }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_contact);
+        initAppIcon(this, -1);
+        // Show the Up button in the action bar.
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        TextView email = (TextView) findViewById(R.id.textView_send_mail);
+        email.setOnClickListener(new OnClickListener() {
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+            @Override
+            public void onClick(View v) {
+                Intent intent = getFeedbackIntent(getString(R.string.feedback_subject), null);
+                startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-	}
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // This ID represents the Home or Up button. In the case of this
+                // activity, the Up button is shown. Use NavUtils to allow users
+                // to navigate up one level in the application structure. For
+                // more details, see the Navigation pattern on Android Design:
+                //
+                // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+                //
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

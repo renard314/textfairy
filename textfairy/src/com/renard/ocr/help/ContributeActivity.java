@@ -35,9 +35,9 @@ public class ContributeActivity extends MonitoredActivity implements View.OnClic
         setContentView(R.layout.activity_contribute);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initAppIcon(this, -1);
-        TextView email = (TextView) findViewById(R.id.button_send_feedback);
-        email.setOnClickListener(this);
-
+        findViewById(R.id.layout_enroll_beta_test).setOnClickListener(this);
+        findViewById(R.id.layout_rate_app).setOnClickListener(this);
+        findViewById(R.id.layout_send_feedback).setOnClickListener(this);
     }
 
     @Override
@@ -62,14 +62,17 @@ public class ContributeActivity extends MonitoredActivity implements View.OnClic
         switch (v.getId()) {
             case R.id.layout_enroll_beta_test:
             case R.id.button_enroll_beta_test:
+                intent = ContactActivity.getFeedbackIntent(getString(R.string.beta_test_subject), getString(R.string.beta_test_body));
+                startActivity(intent);
                 break;
             case R.id.layout_send_feedback:
             case R.id.button_send_feedback:
-                intent = ContactActivity.getFeedbackIntent();
+                intent = ContactActivity.getFeedbackIntent(getString(R.string.feedback_subject), null);
                 startActivity(intent);
                 break;
             case R.id.layout_rate_app:
             case R.id.button_rate_app:
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 intent = new Intent(Intent.ACTION_VIEW);
                 Uri url = Uri.parse(MARKET_URL);
                 intent.setData(url);

@@ -16,11 +16,8 @@
 package com.renard.ocr.help;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,18 +37,17 @@ import com.renard.util.PreferencesUtils;
 public class AppOptionsActivity extends MonitoredActivity implements View.OnClickListener {
 
     protected static final int REQUEST_LOAD_FILE = 474;
+    private boolean slideOutLeft = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.application_settings);
+        setContentView(R.layout.activity_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initAppIcon(this, -1);
 
         findViewById(R.id.language_settings).setOnClickListener(this);
-        findViewById(R.id.show_licences).setOnClickListener(this);
-        findViewById(R.id.show_contact).setOnClickListener(this);
         findViewById(R.id.tessdata_directory).setOnClickListener(this);
     }
 
@@ -59,13 +55,8 @@ public class AppOptionsActivity extends MonitoredActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.language_settings:
+                slideOutLeft=true;
                 startActivity(new Intent(AppOptionsActivity.this, OCRLanguageActivity.class));
-                break;
-            case R.id.show_licences:
-                startActivity(new Intent(AppOptionsActivity.this, LicenseActivity.class));
-                break;
-            case R.id.show_contact:
-                startActivity(new Intent(AppOptionsActivity.this, ContactActivity.class));
                 break;
             case R.id.tessdata_directory: {
                 Intent intent = new Intent(getBaseContext(), FileDialog.class);
@@ -76,7 +67,7 @@ public class AppOptionsActivity extends MonitoredActivity implements View.OnClic
                 intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
                 //alternatively you can set file filter
                 intent.putExtra(FileDialog.FORMAT_FILTER, new String[]{""});
-
+                slideOutLeft=true;
                 startActivityForResult(intent, REQUEST_LOAD_FILE);
                 break;
             }
@@ -87,9 +78,12 @@ public class AppOptionsActivity extends MonitoredActivity implements View.OnClic
     @Override
     protected void onPause() {
         super.onPause();
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        if (slideOutLeft){
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        } else {
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        }
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
