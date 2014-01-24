@@ -48,10 +48,9 @@ public class ReadFile {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
             final int nativePix = nativeReadMem(encodedData, encodedData.length);
 
-            if (nativePix == 0)
-                throw new RuntimeException("Failed to read pix from memory");
-
-            return new Pix(nativePix);
+            if (nativePix != 0){
+                return new Pix(nativePix);
+            }
         }
 		final BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
