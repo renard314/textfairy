@@ -12,6 +12,9 @@
 *.o
 *.a
 *.d
+*.lo
+*.la
+
 
 # generated files
 bin/
@@ -48,3 +51,21 @@ build.xml
 # mac finder
 .DS_Store
 
+libjpeg/testoutt.jpg
+libjpeg/testoutp.ppm
+libjpeg/testoutp.jpg
+libjpeg/testout.ppm
+libjpeg/testout.jpg
+libjpeg/testout.bmp
+tesseract-ocr-read-only/autom4te.cache
+Makefile
+Makefile.in
+aclocal.m4
+libjpeg/libtool
+tesseract-ocr-read-only/libtool
+configure
+OCRTest/Default/codecs/subdir.mk
+OCRTest/Default/lib/subdir.mk
+OCRTest/Default/src/subdir.mk
+OCRTest/Default/utility/subdir.mk
+OCRTest/Default

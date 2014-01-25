@@ -104,7 +104,7 @@ else
 
   if test -f "$progdir/$program"; then
     # Add our own library path to DYLD_LIBRARY_PATH
-    DYLD_LIBRARY_PATH="/Users/renard/Desktop/devel/leptonica-1.68/src/.libs:$DYLD_LIBRARY_PATH"
+    DYLD_LIBRARY_PATH="/Users/renard/devel/textfairy/leptonica-1.68/src/.libs:$DYLD_LIBRARY_PATH"
 
     # Some systems cannot cope with colon-terminated DYLD_LIBRARY_PATH
     # The second colon is a workaround for a bug in BeOS R4 sed

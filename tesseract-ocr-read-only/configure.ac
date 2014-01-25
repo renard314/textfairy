@@ -13,7 +13,7 @@ AC_REVISION($Id: configure.ac,v 1.4 2007/02/02 22:38:17 theraysmith Exp $)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_SRCDIR(api/tesseractmain.cpp)
 AC_PREFIX_DEFAULT(/usr/local)
-
+AM_INIT_AUTOMAKE([subdir-objects])
 # Define date of package, etc. Could be useful in auto-generated
 # documentation.
 # TODO(luc) Generate good documentation using doxygen or equivalent
