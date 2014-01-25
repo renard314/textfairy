@@ -28,17 +28,22 @@
 		<link>
 			<name>codecs</name>
 			<type>2</type>
-			<location>/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/codecs</location>
+			<location>/Users/renard/devel/textfairy/hocr2pdf/src/codecs</location>
 		</link>
 		<link>
 			<name>lib</name>
 			<type>2</type>
-			<location>/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/lib</location>
+			<location>/Users/renard/devel/textfairy/hocr2pdf/src/lib</location>
+		</link>
+		<link>
+			<name>template</name>
+			<type>2</type>
+			<location>/Users/renard/devel/textfairy/hocr2pdf/src/utility/template</location>
 		</link>
 		<link>
 			<name>utility</name>
 			<type>2</type>
-			<location>/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/utility</location>
+			<location>/Users/renard/devel/textfairy/hocr2pdf/src/utility</location>
 		</link>
 	</linkedResources>
 </projectDescription>
