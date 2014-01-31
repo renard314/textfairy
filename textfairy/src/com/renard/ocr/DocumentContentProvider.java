@@ -179,7 +179,7 @@ public class DocumentContentProvider extends ContentProvider {
                 db.execSQL(query);
             }
             long rowId = db.insert(DBHelper.TABLE_NAME, null, values);
-            if (rowId > 0) {
+            if (rowId >= 0) {
                 Uri entryUri = ContentUris.withAppendedId(CONTENT_URI, rowId);
                 getContext().getContentResolver().notifyChange(CONTENT_URI, null);
                 db.setTransactionSuccessful();
@@ -189,7 +189,7 @@ public class DocumentContentProvider extends ContentProvider {
             db.endTransaction();
         }
 
-        throw new SQLException("Failed to insert row into " + uri);
+        throw new SQLException("Failed to insert values into" + uri);
     }
 
     @Override
