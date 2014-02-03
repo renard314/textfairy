@@ -17,10 +17,10 @@
 /* #undef HAVE_LIBGIF */
 
 /* Define to 1 if you have jpeg. */
-/* #undef HAVE_LIBJPEG */
+#define HAVE_LIBJPEG 1
 
 /* Define to 1 if you have libpng. */
-/* #undef HAVE_LIBPNG */
+#define HAVE_LIBPNG 1
 
 /* Define to 1 if you have libtiff. */
 /* #undef HAVE_LIBTIFF */

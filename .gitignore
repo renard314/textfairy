@@ -70,3 +70,6 @@ OCRTest/Default/src/subdir.mk
 OCRTest/Default/utility/subdir.mk
 OCRTest/Default
 signing.properties
+makefile.static
+config.status
+libjpeg.9.dylib

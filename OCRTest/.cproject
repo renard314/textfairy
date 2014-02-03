@@ -43,12 +43,12 @@
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.base.1490269732" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
 								<option id="gnu.both.asm.option.include.paths.856555804" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/opt/local/include/tesseract"/>
-									<listOptionValue builtIn="false" value="/opt/local/include"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/codecs"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/lib"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility/template"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/leptonica"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1843746662" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -56,24 +56,24 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.910672021" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base">
 								<option id="gnu.cpp.compiler.option.include.paths.1813295141" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/opt/local/include/tesseract"/>
-									<listOptionValue builtIn="false" value="/opt/local/include"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/codecs"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/lib"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility/template"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/leptonica"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1347573875" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.30322514" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base">
 								<option id="gnu.c.compiler.option.include.paths.1369368439" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/opt/local/include/tesseract"/>
-									<listOptionValue builtIn="false" value="/opt/local/include"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/codecs"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/lib"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility/template"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/leptonica"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.682742759" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
