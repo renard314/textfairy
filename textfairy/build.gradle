@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
+        classpath 'com.android.tools.build:gradle:0.7.3'
     }
 }
 
@@ -67,7 +67,7 @@ def getVersionCodeFromManifest(String prefix) {
 
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 17
     buildToolsVersion "19.0.1"
 
     signingConfigs {

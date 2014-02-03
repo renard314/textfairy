@@ -69,3 +69,4 @@ OCRTest/Default/lib/subdir.mk
 OCRTest/Default/src/subdir.mk
 OCRTest/Default/utility/subdir.mk
 OCRTest/Default
+signing.properties
