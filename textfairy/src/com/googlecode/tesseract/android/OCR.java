@@ -152,6 +152,15 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 		}
 	}
 
+    /**
+     * called from native with image dimensions
+     * @param w
+     * @param h
+     */
+    private void onImageSize(int w, int h){
+        mOriginalHeight = h;
+        mOriginalWidth = w;
+    }
 	/**
 	 * called from native
 	 * 

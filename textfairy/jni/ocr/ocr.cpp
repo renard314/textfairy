@@ -29,6 +29,7 @@
 #include "pageseg.h"
 #include "resultiterator.h"
 #include <util.h>
+#include "text_search.h"
 
 using namespace std;
 
@@ -36,7 +37,7 @@ using namespace std;
 extern "C" {
 #endif  /* __cplusplus */
 
-static jmethodID onFinalPix, onProgressImage, onProgressValues, onProgressText, onHOCRResult, onLayoutElements, onUTF8Result, onLayoutPix;
+static jmethodID onFinalPix, onProgressImage, onImageSize, onProgressValues, onProgressText, onHOCRResult, onLayoutElements, onUTF8Result, onLayoutPix;
 
 static JavaVM *g_jvm = NULL;
 static Box* currentTextBox = NULL;
@@ -65,6 +66,8 @@ void Java_com_googlecode_tesseract_android_OCR_nativeInit(JNIEnv *env, jobject _
 	onLayoutElements = env->GetMethodID(cls, "onLayoutElements", "(II)V");
 	onUTF8Result = env->GetMethodID(cls, "onUTF8Result", "(Ljava/lang/String;)V");
 	onLayoutPix = env->GetMethodID(cls, "onLayoutPix", "(I)V");
+	onImageSize = env->GetMethodID(cls, "onImageSize", "(II)V");
+
 }
 
 void JNI_OnUnload(JavaVM *vm, void *reserved) {
@@ -358,6 +361,7 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobjec
 	Pix* pixText;
 	ostringstream hocr;
 	ostringstream utf8text;
+	//TODO callback to java with size of pix with border
 
 	const char *tessDirNative = env->GetStringUTFChars(tessDir, 0);
 	const char *langNative = env->GetStringUTFChars(lang, 0);
@@ -372,6 +376,12 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobjec
 
 	int w = pixGetWidth(pixText);
 	int h = pixGetHeight(pixText);
+
+    if (isStateValid()) {
+        cachedEnv->CallVoidMethod(*cachedObject, onImageSize, w,h);
+    }
+
+
 	currentTextBox = boxCreate(0, 0, w, h);
 
 	messageJavaCallback(MESSAGE_OCR);

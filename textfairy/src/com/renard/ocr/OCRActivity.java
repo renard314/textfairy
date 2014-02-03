@@ -15,8 +15,11 @@
  */
 package com.renard.ocr;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -27,6 +30,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -232,12 +236,12 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
                     if (checkSd) {
                         imageFile = saveImage(pix);
                     }
+
                     documentUri = saveDocumentToDB(imageFile, hocrString, utf8String);
                     Util.createThumbnail(OCRActivity.this, imageFile, Integer.valueOf(documentUri.getLastPathSegment()));
                 } catch (RemoteException e) {
                     e.printStackTrace();
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
+
                     runOnUiThread(new Runnable() {
 
                         @Override
@@ -246,7 +250,6 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
                         }
                     });
                 } catch (IOException e) {
-                    e.printStackTrace();
                     Log.e(TAG, e.getMessage());
                     runOnUiThread(new Runnable() {
 
@@ -273,6 +276,25 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
         //	}
 
     }
+
+//    private void sendBugReport(Exception e) {
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        PrintStream ps = new PrintStream(baos);
+//
+//
+//        try {
+//            e.printStackTrace(ps);
+//            String content = baos.toString("UTF-8"); // e.g. ISO-8859-1
+//            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+//            sharingIntent.setType("text/plain");
+//            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, R.string.share_subject);
+//            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, content);
+//            sharingIntent.putExtra(Intent.EXTRA_EMAIL, "renard.wellnitz@googlemail.com");
+//            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_chooser_title)));
+//        } catch (UnsupportedEncodingException e1) {
+//            e1.printStackTrace();
+//        }
+//    }
 
     @Override
     public void onSdReady() {

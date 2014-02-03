@@ -42,7 +42,16 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
 
 	messageJavaCallback(MESSAGE_IMAGE_DETECTION);
 	Pix* pixsg;
-	extractImages(pixOrg, &pixhm, &pixsg);
+
+    l_int32 border = pixGetWidth(pixOrg)/25;
+    if (border < 20){
+        border = 20;
+    }
+
+    Pix* pixWithBorder = pixAddBorder(pixOrg,border,0xFFFFFFFF);
+
+
+	extractImages(pixWithBorder, &pixhm, &pixsg);
 	pixJavaCallback(pixsg, false, true);
 	binarize(pixsg, pixhm, &pixb);
 
@@ -96,17 +105,17 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
 
 		Pix* pixi = pixConvertTo32(pixtext);
 		pixInvert(pixhm, pixhm);
-		pixPaintThroughMask(pixOrg, pixhm, 0, 0, 0);
+		pixPaintThroughMask(pixWithBorder, pixhm, 0, 0, 0);
 		pixDestroy(&pixhm);
 		if (buildresult == 0) {
 			if (applyResult == 0) {
 				pixDestroy(&dew->pixd);
 			}
-			dewarpApplyDisparity(dew, pixOrg, 0);
+			dewarpApplyDisparity(dew, pixWithBorder, 0);
 			*pixFinal = pixClone(dew->pixd);
 			dewarpDestroy(&dew);
 		} else {
-			*pixFinal = pixClone(pixOrg);
+			*pixFinal = pixClone(pixWithBorder);
 		}
 		Pix* pixmask = pixConvertTo1(*pixFinal, 1);
 		pixCombineMasked(*pixFinal, pixi, pixmask);
@@ -127,7 +136,7 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
 		*pixFinal = pixConvertTo32(pixtext);
 		debugstring << "image restoration: " << stopTimer() << std::endl;
 	}
-
+    pixDestroy(&pixWithBorder);
 	return pixtext;
 }
 
