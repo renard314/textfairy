@@ -32,6 +32,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.text.Html;
@@ -60,6 +61,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -104,7 +106,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     private static int rotateXDegrees = 0;
 
     protected enum PixLoadStatus {
-        IMAGE_NOT_32_BIT,IMAGE_COULD_NOT_BE_READ, MEDIA_STORE_RETURNED_NULL, IMAGE_DOES_NOT_EXIST, SUCCESS, IO_ERROR, CAMERA_APP_NOT_FOUND, CAMERA_APP_ERROR, CAMERA_NO_IMAGE_RETURNED
+       IMAGE_FORMAT_UNSUPPORTED, IMAGE_NOT_32_BIT,IMAGE_COULD_NOT_BE_READ, MEDIA_STORE_RETURNED_NULL, IMAGE_DOES_NOT_EXIST, SUCCESS, IO_ERROR, CAMERA_APP_NOT_FOUND, CAMERA_APP_ERROR, CAMERA_NO_IMAGE_RETURNED
 
     }
 
@@ -141,12 +143,21 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             cameraPicUri = null;
             dateCameraIntentStarted = new Date();
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            String filename = System.currentTimeMillis() + ".jpg";
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.TITLE, filename);
-            cameraPicUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
-            startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
+            // Create an image file name
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "JPEG_" + timeStamp + "_";
+
+            File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File image = null;
+            try {
+                image = File.createTempFile(imageFileName, ".jpg", storageDir);
+                cameraPicUri = Uri.fromFile(image);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
+                startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
+            } catch (IOException e) {
+                showFileError(PixLoadStatus.IO_ERROR);
+            }
+
         } catch (ActivityNotFoundException e) {
             showFileError(PixLoadStatus.CAMERA_APP_NOT_FOUND);
         }
@@ -215,7 +226,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     Uri tempCameraPicUri = Uri.fromFile(new File(largeImagePath));
                     if (tempCameraPicUri != null) {
                         dateOfPicture = new Date(myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)));
-                        if (dateOfPicture != null && dateOfPicture.after(dateCameraIntentStarted)) {
+
+                        if (dateOfPicture.getTime()==0 || (dateOfPicture != null && dateOfPicture.after(dateCameraIntentStarted))) {
                             cameraPicUri = tempCameraPicUri;
                             rotateXDegrees = myCursor.getInt(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.ORIENTATION));
                         }
@@ -266,6 +278,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             protected void onPostExecute(Pair<Pix, PixLoadStatus> p) {
                 if (progressDialog != null) {
                     try {
+                        progressDialog.dismiss();
                         getSupportFragmentManager().beginTransaction().remove(progressDialog).commitAllowingStateLoss();
                     } catch (NullPointerException e) {
                         // workaround strange playstore crash
@@ -309,6 +322,9 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                         File imageFile = new File(pathForUri);
                         if (imageFile.exists()) {
                             p = ReadFile.readFile(imageFile);
+                            if (p==null){
+                                return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
+                            }
                         } else {
                             return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
                         }
@@ -372,6 +388,9 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         switch (second) {
             case IMAGE_NOT_32_BIT:
                 textId = R.string.image_not_32_bit;
+                break;
+            case IMAGE_FORMAT_UNSUPPORTED:
+                textId = R.string.image_format_unsupported;
                 break;
             case IMAGE_COULD_NOT_BE_READ:
                 textId = R.string.image_could_not_be_read;

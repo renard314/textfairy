@@ -177,11 +177,13 @@ public class ReadFile {
 		opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
 		final Bitmap bmp = BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
-		final Pix pix = readBitmap(bmp);
+        if (bmp!=null){
+            final Pix pix = readBitmap(bmp);
+            bmp.recycle();
+            return pix;
+        }
+        return null;
 
-		bmp.recycle();
-
-		return pix;
     }
 
     /**
