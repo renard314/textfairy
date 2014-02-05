@@ -379,6 +379,11 @@ public class Util {
 		}
 	}
 
+    public static String getDownloadTempDir(final Context appContext) {
+        String dir = new File(Environment.getExternalStorageDirectory(),EXTERNAL_APP_DIRECTORY).getPath() + "/";
+        return dir;
+    }
+
 	public static String getTessDir(final Context appContext) {
 		// String dir = new
 		// File(Environment.getExternalStorageDirectory(),EXTERNAL_APP_DIRECTORY

@@ -29,6 +29,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.util.Pair;
 import android.view.MenuItem;
@@ -84,13 +85,11 @@ public class OCRLanguageActivity extends MonitoredActivity {
                         Uri uri = Uri.parse(part1 + language.mValue + part2);
                         Request request = new Request(uri);
                         request.setTitle(language.mDisplayText);
-                        String tessDir = Util.getTessDir(OCRLanguageActivity.this);
+                        String tessDir = Util.getDownloadTempDir(OCRLanguageActivity.this);
                         File targetFile = new File(tessDir, DOWNLOADED_TRAINING_DATA);
                         request.setDestinationUri(Uri.fromFile(targetFile));
                         @SuppressWarnings("unused")
                         long downloadId = dm.enqueue(request);
-                        // PreferencesUtils.pushDownloadId(OCRLanguageActivity.this,
-                        // downloadId);
                         language.mDownloading = true;
                         mAdapter.notifyDataSetChanged();
 

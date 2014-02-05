@@ -115,6 +115,7 @@ public class OCRLanguageInstallService extends IntentService {
 					File tessDir = Util.getTrainingDataDir(this);
 					final String currentLangName = entry.getName().substring("tesseract-ocr/tessdata/".length());
 					File trainedData = new File(tessDir, currentLangName);
+                    trainedData.mkdirs();
 					FileOutputStream fout = new FileOutputStream(trainedData);
 					int len;
 					while ((len = tarIn.read(buffer)) != -1) {
@@ -132,7 +133,7 @@ public class OCRLanguageInstallService extends IntentService {
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
-				String tessDir = Util.getTessDir(this);
+				String tessDir = Util.getDownloadTempDir(this);
 				File targetFile = new File(tessDir, OCRLanguageActivity.DOWNLOADED_TRAINING_DATA);
 				if (targetFile.exists()) {
 					targetFile.delete();
