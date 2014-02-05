@@ -332,9 +332,9 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                         //TODO test
                         InputStream stream = getContentResolver().openInputStream(cameraPicUri);
                         p = ReadFile.readMem(Util.toByteArray(stream));
-                        //Bitmap b = BitmapFactory.decodeStream(stream);
-                        //p = ReadFile.readBitmap(b);
-                        //b.recycle();
+                        if (p==null){
+                            return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
+                        }
                     } else {
                         return Pair.create(null, PixLoadStatus.IO_ERROR);
                     }
