@@ -129,7 +129,7 @@ Pix* createEdgeMask(Pix* pixs) {
 
 	Pix* pixForeground = pixThresholdToBinary(pixConvEdges, thresh);
 	pixDestroy(&pixConvEdges);
-	pixCloseBrick(pixForeground,pixForeground,64,64);
+	pixCloseSafeBrick(pixForeground,pixForeground,64,64);
 
 	pixWrite("foreground.bmp", pixForeground, IFF_BMP);
 
@@ -215,6 +215,7 @@ void binarize(Pix* pixGrey, Pix* pixhm, Pix** pixb) {
 	ostringstream s;
 
 	pixEdgeMask = createEdgeMask(pixGrey);
+
 	pixSetMasked(pixGrey, pixEdgeMask, 255);
 	if (pixhm != NULL) {
 		//dont allow image mask to cover text
