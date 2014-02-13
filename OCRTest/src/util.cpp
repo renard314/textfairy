@@ -61,7 +61,7 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
 	}
 
     Pix* pixWithBorder = pixAddBorder(pixb,border,0x0);
-    Pix* pixOrgWithBorder = pixAddBorder(pixOrg,border,0xffffff);
+    Pix* pixOrgWithBorder = pixAddBorder(pixOrg,border,0x0);
     pixDestroy(&pixb);
     pixb =pixWithBorder;
 

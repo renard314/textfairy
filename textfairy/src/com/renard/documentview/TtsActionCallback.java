@@ -2,6 +2,8 @@ package com.renard.documentview;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
@@ -95,7 +97,14 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
         if (mTts == null) {
             Intent checkIntent = new Intent();
             checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-            activity.startActivityForResult(checkIntent, DocumentActivity.REQUEST_CODE_TTS_CHECK);
+            ResolveInfo resolveInfo = activity.getPackageManager().resolveActivity(checkIntent, PackageManager.MATCH_DEFAULT_ONLY);
+            if(resolveInfo!=null){
+                activity.startActivityForResult(checkIntent, DocumentActivity.REQUEST_CODE_TTS_CHECK);
+                return true;
+            } else {
+                Toast.makeText(activity,R.string.tts_not_available,Toast.LENGTH_LONG).show();
+                return false;
+            }
         }
         return true;
     }

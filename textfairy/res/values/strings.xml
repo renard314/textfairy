@@ -161,7 +161,7 @@
     <string name="contribute_title">Improve the app</string>
     <string name="contribute_text">Creating an OCR app is hard. But you can help me to improve the app.</string>
     <string name="rating_title">Rate the app</string>
-    <string name="rating_text">The app is useful to you? I\'m always happy about good reviews.</string>
+    <string name="rating_text">The app is useful to you? I\'m always happy about helpful reviews.</string>
     <string name="feedback_title">Send feedback</string>
     <string name="feedback_text_1">The app is not working as expected?</string>
     <string name="feedback_text_2">You have a feature suggestion?</string>
@@ -177,4 +177,5 @@
     <string name="app_version">Version %s</string>
     <string name="image_not_32_bit">Image needs to be 32 bit</string>
     <string name="image_format_unsupported">Image format not recognized. Only png, jpeg or bmp files are currently supported.</string>
+    <string name="tts_not_available">Text to Speech is not available on your phone.</string>
 </resources>

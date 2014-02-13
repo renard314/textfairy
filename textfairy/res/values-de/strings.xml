@@ -159,9 +159,9 @@
     <string name="empty_grid_gallery">Und hier tippen um Text auf einem Bild aus deiner Galerie zu erkennen.</string>
     <string name="empty_grid_fairy">PS: Tippe auf die Fee für noch mehr Infos.</string>
     <string name="contribute_title">Verbessere die App</string>
-    <string name="contribute_text">Eine OCR-App zu programmieren ist schwer. Aber Du kannst mir helfen die App zu verbessern</string>
+    <string name="contribute_text">Eine OCR-App zu programmieren nicht leicht. Aber Du kannst mir helfen, die App zu verbessern</string>
     <string name="rating_title">Bewerte die App</string>
-    <string name="rating_text">Du findest die App nützlich? Ich freue mich immer über gute Bewertungen.</string>
+    <string name="rating_text">Du findest die App nützlich? Ich freue mich immer über hilfreiche Bewertungen.</string>
     <string name="feedback_title">Sende Feedback</string>
     <string name="feedback_text_1">Die App funktioniert nicht wie erwartet?</string>
     <string name="feedback_text_2">Du hast einen Verbesserungsvorschlag?</string>
@@ -177,5 +177,6 @@
     <string name="app_version">Version %s</string>
     <string name="image_not_32_bit">Das Bild muss 32 Bit Farbtiefe haben.</string>
     <string name="image_format_unsupported">Das Bildformat wurde nicht erkannt. Bitte wähle ein Bild im Png, Jpeg or Bmp-Format.</string>
+    <string name="tts_not_available">Text zu Sprache ist nicht verfügbar.</string>
 
 </resources>
