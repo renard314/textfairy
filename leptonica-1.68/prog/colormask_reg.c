@@ -42,6 +42,7 @@ PIX          *pixr, *pixt1, *pixt2, *pixt3;
 PIXA         *pixa, *pixapk;
 PTA          *ptapk;
 L_REGPARAMS  *rp;
+	l_chooseDisplayProg(L_DISPLAY_WITH_XV);
 
     if (regTestSetup(argc, argv, &rp))
         return 1;

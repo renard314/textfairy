@@ -12,6 +12,15 @@
 #include <vector>
 
 Pix* pixTreshold(Pix* pix);
+Pix* pixTreshold2(Pix* pix);
 Boxa* pixFindTextRegions(Pix* pix,Pix** pixb);
+
+
+Pixa* pixFindTextBlocks(Pix* pix);
+Pix* pixCreateTextBlockMask(Pix* pixb);
+Pix* pixThresholdToBinary(Pix* pixg);
+Pixa* pixFindVerticalWhiteSpaceAtEdges(Pix* pixTextBlock);
+Numa* pixaFindTextBlockIndicator(Pixa* pixaText, l_int32 width, l_int32 height, Numa** numaEdgeCandidates);
+
 
 #endif /* TEXT_SEARCH_H_ */

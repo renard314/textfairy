@@ -22,24 +22,34 @@
  */
 
 #include <allheaders.h>
+#include <array.h>
 #include <baseapi.h>
+#include <bmf.h>
+#include <Codecs.hh>
 #include <environ.h>
+#include <gplot.h>
+#include <imageio.h>
+#include <Image.hh>
+#include <jpeg.hh>
+#include <leptprotos.h>
+#include <morph.h>
+#include <pdf.hh>
+#include <pix.h>
 #include <publictypes.h>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
+#include <hocr.hh>
 
 #include "binarize.h"
 #include "pageseg.h"
-#include "util.h"
-
-#include <Codecs.hh>
-#include <pdf.hh>
-#include <hocr.hh>
-#include <jpeg.hh>
 #include "text_search.h"
+#include "util.h"
+#include <unistd.h>
+#include "RunningTextlineStats.h"
 
 using namespace std;
 using namespace tesseract;
@@ -186,42 +196,62 @@ void onPictureOnlyBinarize(const char* filename, int index) {
 	pixDestroy(&pixOrg);
 
 }
-int analyseTile(Pix* pix, int x, int y) {
+int analyseTile(Pix* pix, int x, int y, l_float32 variance) {
+	//printf("%s\n", "analyseTile");
+
 	NUMA* histo = pixGetGrayHistogram(pix, 1);
 	NUMA* norm = numaNormalizeHistogram(histo, 1);
+	NUMA* closed = numaClose(norm, 7);
+//	//NUMA* eroded = numaErode(closed,7);
+	numaDestroy(&norm);
+	norm = closed;
 
 	/*
 	 *     (1) The returned na consists of sets of four numbers representing
 	 *         the peak, in the following order:
 	 *            left edge; peak center; right edge; normalized peak area
 	 */
-	NUMA* peaks = numaFindPeaks(norm, 2, 0.3, 0.1);
-	NUMA* peaksY = numaCreate(0);
-	NUMA* peaksX = numaCreate(0);
+	//numaFindExtrema(norm,)
+//	NUMA* peaks = numaFindPeaks(norm, num_peaks, 0.5, 0.3);
+//	NUMA* peaksY = numaCreate(0);
+//	NUMA* peaksX = numaCreate(0);
+//	NUMA* peak_areas = numaCreate(0);
+//	int peakCount = numaGetCount(peaks);
+//	int i = 0;
+//	while (i < peakCount) {
+//		l_int32 left, center, right;
+//		l_float32 area;
+//		numaGetIValue(peaks, i++, &left);
+//		numaGetIValue(peaks, i++, &center);
+//		numaGetIValue(peaks, i++, &right);
+//		numaGetFValue(peaks, i++, &area);
+//
+//		numaAddNumber(peak_areas,area);
+//
+//		l_float32 value;
+//		numaGetFValue(norm, left, &value);
+//		numaAddNumber(peaksX, left);
+//		numaAddNumber(peaksY, value);
+//
+//		numaGetFValue(norm, center, &value);
+//		numaAddNumber(peaksX, center);
+//		numaAddNumber(peaksY, value);
+//
+//		numaGetFValue(norm, right, &value);
+//		numaAddNumber(peaksX, right);
+//		numaAddNumber(peaksY, value);
+//
+//	}
+	//find the peak with the largest area
+	l_int32 thresh;
+	l_float32 p1, p2;
+	numaSplitDistribution(norm, 0.0, &thresh, NULL, NULL, &p1, &p2, NULL);
+	//printf(" p1 = %f,p2 =  %f\n",p1,p2);
 
-	int peakCount = numaGetCount(peaks);
-	int i = 0;
-	while (i < peakCount) {
-		l_int32 left, center, right;
-		l_float32 area;
-		numaGetIValue(peaks, i++, &left);
-		numaGetIValue(peaks, i++, &center);
-		numaGetIValue(peaks, i++, &right);
-		numaGetFValue(peaks, i++, &area);
-		l_float32 value;
-		numaGetFValue(norm, left, &value);
-		numaAddNumber(peaksX, left);
-		numaAddNumber(peaksY, value);
-
-		numaGetFValue(norm, center, &value);
-		numaAddNumber(peaksX, center);
-		numaAddNumber(peaksY, value);
-
-		numaGetFValue(norm, right, &value);
-		numaAddNumber(peaksX, right);
-		numaAddNumber(peaksY, value);
-
-	}
+	NUMA* tx = numaCreate(0);
+	NUMA* ty = numaCreate(0);
+	numaAddNumber(ty, 0.04);
+	numaAddNumber(tx, thresh);
 
 	GPLOT *gplot;
 	ostringstream name;
@@ -230,18 +260,28 @@ int analyseTile(Pix* pix, int x, int y) {
 	rootName << x << y;
 	gplot = gplotCreate(rootName.str().c_str(), GPLOT_X11, name.str().c_str(), "x", "y");
 	ostringstream title;
-	title << peakCount / 4 << " peaks";
+//	title << peakCount / 4 << " peaks";
 	gplotAddPlot(gplot, NULL, norm, GPLOT_LINES, "histogram");
-	gplotAddPlot(gplot, peaksX, peaksY, GPLOT_POINTS, title.str().c_str());
+//	gplotAddPlot(gplot, peaksX, peaksY, GPLOT_IMPULSES, title.str().c_str());
+	gplotAddPlot(gplot, tx, ty, GPLOT_IMPULSES, "thresh");
 	//gplotMakeOutput(gplot);
 	gplotDestroy(&gplot);
+	bool isVarianceLow = variance < 7;
+	l_float32 isP2gP1 = p2 / p1;
+	printf("p2/p1 =%f, p1=%f, p2=%f", isP2gP1, p1, p2);
+	if (isVarianceLow && isP2gP1 < 2) {
+		thresh = 0;
+	}
+//	if (x==9 && y == 2){
+//		pixDisplay(pix,0,0);
+//	}
 
-	numaDestroy(&peaks);
-	numaDestroy(&peaksX);
-	numaDestroy(&peaksY);
+//	numaDestroy(&peaks);
+//	numaDestroy(&peaksX);
+//	numaDestroy(&peaksY);
 	numaDestroy(&histo);
 	numaDestroy(&norm);
-	return 0;
+	return thresh;
 }
 Pix* pixAnnotate(Pix* pixb, const char* textstr) {
 	L_BMF *bmf;
@@ -259,16 +299,294 @@ void layoutDetect(const char* filename, int index) {
 	Pix* pixOrg = pixRead(filename);
 	Pix* pixg = pixConvertRGBToLuminance(pixOrg);
 	Pix* pixb;
-	Boxa* textRegions = pixFindTextRegions(pixg,&pixb);
+	Boxa* textRegions = pixFindTextRegions(pixg, &pixb);
 	renderTransformedBoxa(pixOrg, textRegions, 255);
-	Pix* pix32 = pixConvert1To32(NULL,pixb,0,0xffffffff);
-	pixDisplay(pix32,0,0);
+	Pix* pix32 = pixConvert1To32(NULL, pixb, 0, 0xffffffff);
+	pixDisplay(pix32, 0, 0);
 	pixDestroy(&pixg);
 	pixDestroy(&pix32);
 	pixDestroy(&pixb);
 	boxaDestroy(&textRegions);
 }
 
+Boxa* findEdgesInTile(Pix* pixbTile, Pix* pixt) {
+	Box* left, *right, *top, *bottom;
+	l_int32 w = pixGetWidth(pixbTile);
+	l_int32 h = pixGetWidth(pixbTile);
+	l_int32 thickness = 3;
+
+	left = boxCreate(0, thickness, thickness, h - thickness * 2);
+	right = boxCreate(w - thickness, thickness, thickness, h - thickness * 2);
+	top = boxCreate(thickness, 0, w - thickness * 2, thickness);
+	bottom = boxCreate(thickness, h - thickness, w - thickness * 2, thickness);
+	Boxa* edges = boxaCreate(0);
+	boxaAddBox(edges, left, L_CLONE);
+	boxaAddBox(edges, right, L_CLONE);
+	boxaAddBox(edges, top, L_CLONE);
+	boxaAddBox(edges, bottom, L_CLONE);
+
+	//Pix* pixWithBoxa = pixSetBlackOrWhiteBoxa(pixbTile,edges,L_SET_BLACK);
+
+	Pixa* pixaEdges = pixaCreateFromBoxa(pixbTile, edges, NULL);
+	//Numa* edgePixelCount = pixaFindAreaFraction(pixaEdges);
+	//l_float32* ec = numaGetFArray(edgePixelCount, L_NOCOPY);
+	//printf("top = %f, left = %f, bottom = %f, right = %f\n",ec[0],ec[1],ec[2],ec[3]);
+	Pixa* validEdges = pixaSelectByAreaFraction(pixaEdges, 0.3, L_SELECT_IF_GTE, NULL);
+	return pixaGetBoxa(validEdges, L_CLONE);
+}
+
+void tophat(const char* filename, int index) {
+	log("%s", filename);
+	Pix* pixOrg = pixRead(filename);
+	Pix* pixg = pixConvertRGBToGrayFast(pixOrg);
+	Pixa* pixaDisplay = pixaCreate(0);
+
+	Pix* reduced = pixScaleGrayRank2(pixg, 2);
+	pixg = reduced;
+	Pix* pixTopHat = pixFastTophat(pixg, 4, 4, L_TOPHAT_BLACK);
+	pixaAddPixWithTitle(pixaDisplay, pixTopHat, "tophat");
+
+	int thresh;
+	int nx = 0;
+	int ny = 0;
+
+	PIXTILING* pt = pixTilingCreate(pixTopHat, 0, 0, 15, 15, 0, 0);
+	pixTilingGetCount(pt, &nx, &ny);
+	Pix* pixth2 = pixCreate(nx, ny, 8);
+	for (int i = 0; i < ny; i++) {
+		for (int j = 0; j < nx; j++) {
+			Pix* pixt = pixTilingGetTile(pt, i, j);
+
+			NUMA* histo = pixGetGrayHistogram(pixt, 1);
+			NUMA* norm = numaNormalizeHistogram(histo, 1);
+			l_float32 sum, moment, var, y, variance, mean, countPixels;
+			l_int32 start = 0, end = 255, n, error;
+
+			error = numaGetNonzeroRange(histo, 0, &start, &end);
+			if (end == start || error == 1) {
+				numaDestroy(&histo);
+				numaDestroy(&norm);
+				return;
+			}
+
+			l_float32 iMulty;
+			for (sum = 0.0, moment = 0.0, var = 0.0, countPixels = 0, n = start; n < end; n++) {
+				numaGetFValue(norm, n, &y);
+				sum += y;
+				iMulty = n * y;
+				moment += iMulty;
+				var += n * iMulty;
+				numaGetFValue(histo, n, &y);
+				countPixels += y;
+			}
+			variance = sqrt(var / sum - moment * moment / (sum * sum));
+			mean = moment / sum;
+			thresh = analyseTile(pixt, i, j, variance);
+			pixSetPixel(pixth2, j, i, thresh);
+			printf("(%i,%i) mean =%f.2 var = %f.2, thresh = %i\n", j, i, mean, variance, thresh);
+			pixDestroy(&pixt);
+		}
+	}
+	int w = pixGetWidth(pixg);
+	int h = pixGetHeight(pixg);
+
+	Pix* pixb = pixCreate(w, h, 1);
+	l_int32 tw, th;
+	pixTilingGetSize(pt, &tw, &th);
+	for (int i = 0; i < ny; i++) {
+		for (int j = 0; j < nx; j++) {
+			l_uint32 t;
+			pixGetPixel(pixth2, j, i, &t);
+			Pix* pixt = pixTilingGetTile(pt, i, j);
+			if (t == 0) {
+				t = 255;
+			}
+			Pix* pixbTile = pixThresholdToBinary(pixt, t);
+			pixTilingPaintTile(pixb, i, j, pixbTile, pt);
+			pixDestroy(&pixt);
+			pixDestroy(&pixbTile);
+		}
+	}
+
+	pixaAddPixWithTitle(pixaDisplay, pixb, "binary");
+	ostringstream s;
+	s.str("");
+	s << "c1.3+e2.2"; //create vertical whitespace mask and solidify it
+	Pix* pixi = pixInvert(NULL, pixb);
+	Pix *pixvws = pixMorphCompSequence(pixi, s.str().c_str(), 0);
+	pixaAddPixWithTitle(pixaDisplay, pixvws, s.str().c_str());
+
+	Pix* pixd = pixaDisplayTiledAndScaled(pixaDisplay, 8, 288, 4, 0, 25, 2);
+	pixDisplay(pixd, 0, 0);
+
+}
+
+void analyseTiles(const char* filename, int index) {
+	log("%s", filename);
+	Pix* pixOrg = pixRead(filename);
+	Pix* pixg = pixConvertRGBToGrayFast(pixOrg);
+	Pixa* pixaDisplay = pixaCreate(0);
+	pixWrite("grey.bmp", pixg, IFF_BMP);
+
+	pixaAddPixWithTitle(pixaDisplay, pixOrg, "original");
+	Pix* pixTopHat = pixFastTophat(pixg, 4, 4, L_TOPHAT_BLACK);
+	pixaAddPixWithTitle(pixaDisplay, pixTopHat, "tophat");
+//	Pix* pixDome = pixHDome(pixTopHat,60,4);
+//	pixaAddPixWithTitle(pixaDisplay, pixDome, "hdome");
+//	Pix* pixbinary = pixThresholdToBinary(pixDome,6);
+//	pixaAddPixWithTitle(pixaDisplay, pixbinary, "binary");
+
+	int thresh;
+	int nx = 0;
+	int ny = 0;
+
+	PIXTILING* pt = pixTilingCreate(pixg, 0, 0, 15, 15, 0, 0);
+	pixTilingGetCount(pt, &nx, &ny);
+	Pix* pixth = pixCreate(nx, ny, 8);
+	Pix* pixth2 = pixCreate(nx, ny, 8);
+	//printf("nx = %i, ny = %i\n",nx,ny);
+	for (int i = 0; i < ny; i++) {
+		for (int j = 0; j < nx; j++) {
+			Pix* pixt = pixTilingGetTile(pt, i, j);
+
+			NUMA* histo = pixGetGrayHistogram(pixt, 1);
+			NUMA* norm = numaNormalizeHistogram(histo, 1);
+			l_float32 sum, moment, var, y, variance, mean, meanY, countPixels;
+			l_int32 start = 0, end = 255, n, error, closeSize = 0;
+
+			error = numaGetNonzeroRange(histo, 0, &start, &end);
+			if (end == start || error == 1) {
+				numaDestroy(&histo);
+				numaDestroy(&norm);
+				return;
+			}
+
+			l_float32 iMulty;
+			for (sum = 0.0, moment = 0.0, var = 0.0, countPixels = 0, n = start; n < end; n++) {
+				numaGetFValue(norm, n, &y);
+				sum += y;
+				iMulty = n * y;
+				moment += iMulty;
+				var += n * iMulty;
+				numaGetFValue(histo, n, &y);
+				countPixels += y;
+			}
+			variance = sqrt(var / sum - moment * moment / (sum * sum));
+			mean = moment / sum;
+			thresh = analyseTile(pixt, i, j, variance);
+			pixSetPixel(pixth2, j, i, thresh);
+			printf("(%i,%i) mean =%f.2 var = %f.2, thresh = %i\n", j, i, mean, variance, thresh);
+			pixDestroy(&pixt);
+		}
+	}
+
+	//pixth2 = pixBlockconv(pixth2,3,3);
+	int w = pixGetWidth(pixg);
+	int h = pixGetHeight(pixg);
+	Pix* pixb = pixCreate(w, h, 1);
+	l_int32 tw, th;
+	pixTilingGetSize(pt, &tw, &th);
+	for (int i = 0; i < ny; i++) {
+		for (int j = 0; j < nx; j++) {
+			l_uint32 pixel;
+			l_uint32 t;
+			pixGetPixel(pixth, j, i, &pixel);
+			pixGetPixel(pixth2, j, i, &t);
+			Pix* pixt = pixTilingGetTile(pt, i, j);
+			Pix* pixbTile = pixThresholdToBinary(pixt, t);
+
+//			if (i==9 && j == 2){
+//				pixWrite("debug.bmp",pixt,IFF_BMP);
+//				pixDisplay(pixbTile,0,0);
+//			}
+
+			Boxa* boxaEdges = findEdgesInTile(pixbTile, pixt);
+
+			Pix* pixWithBoxa = pixSetBlackOrWhiteBoxa(pixbTile, boxaEdges, L_SET_BLACK);
+
+			//pixDisplay(pixWithBoxa,0,0);
+
+			pixTilingPaintTile(pixb, i, j, pixbTile, pt);
+			l_int32 w = pixGetWidth(pixt);
+			l_int32 h = pixGetHeight(pixt);
+			Box* box = boxCreate(j * tw, i * th, w, h);
+			l_int32 px, py, pw, ph;
+			boxGetGeometry(box, &px, &py, &pw, &ph);
+			l_int32 error;
+			if (pixel == 127) {
+				error = pixRenderBoxBlend(pixOrg, box, 1, 0, 200, 0, 0.5);
+			} else {
+				error = pixRenderBoxBlend(pixOrg, box, 1, 200, 0, 0, 0.5);
+			}
+			//printf("box(%i,%i) px=%i, py=%i, error=%i\n",i,j,px,py,error);
+			pixDestroy(&pixt);
+			pixDestroy(&pixbTile);
+
+			boxDestroy(&box);
+		}
+	}
+
+	ostringstream s;
+	//pixaAddPixWithTitle(pixaDisplay, pixo, s.str().c_str());
+	pixaAddPixWithTitle(pixaDisplay, pixb, "binary");
+	pixWrite("binary.bmp", pixb, IFF_BMP);
+
+	s.str("");
+	s << "o1.20+d3.3"; //create vertical whitespace mask and solidify it
+	Pix* pixi = pixInvert(NULL, pixb);
+	Pix *pixvws = pixMorphCompSequence(pixi, s.str().c_str(), 0);
+	pixaAddPixWithTitle(pixaDisplay, pixvws, s.str().c_str());
+
+	//open up vertical whitespace again
+	s.str("");
+	//pixInvert(pixb,pixb);
+	s << "";
+
+	//Pix *pixb2 = pixMorphCompSequence(pixb, s.str().c_str(), 0);
+	const char *seltext = "o"
+			"xXxx"
+			"xxxxx";
+
+//	SEL* selsplit = selCreateFromString(seltext, 5, 3, "selsplit");
+//	Pix* pixSplit = pixHMT(NULL,pixb,selsplit);
+//	pixaAddPixWithTitle(pixaDisplay,pixSplit,"split");
+
+	//split up columns that are connected by thin lines
+	const char *selSplitVertically = "o"
+			"o"
+			"o"
+			"X"
+			"o"
+			"o"
+			"o";
+	SEL* selSplitColumns = selCreateFromString(selSplitVertically, 7, 1, "selsplit");
+	Pix* pixSplitColumns = pixHMT(NULL, pixb, selSplitColumns);
+	pixXor(pixSplitColumns, pixSplitColumns, pixb);
+	pixaAddPixWithTitle(pixaDisplay, pixSplitColumns, "split columns vertically");
+
+	//connect text lines
+	Pix *pixb2 = pixCloseBrickDwa(NULL, pixSplitColumns, 3, 5);
+	pixaAddPixWithTitle(pixaDisplay, pixb2, "connect");
+
+	//split columns horizontally
+	pixCloseBrickDwa(pixb2, pixb2, 1, 3);
+	pixaAddPixWithTitle(pixaDisplay, pixb2, "split columns horizontally");
+//	const char *selSplitHorizontally =
+//			"oooXooo";
+//	SEL* selSplitColumnsH= selCreateFromString(selSplitHorizontally, 1, 7, "selsplit");
+//	Pix* pixSplitColumns = pixHMT(NULL,pixb,selSplitColumns);
+
+	pixWrite("split.bmp", pixSplitColumns, IFF_BMP);
+
+	//pixRasterop(pixvws, 0, 0, w, h, PIX_NOT(PIX_SRC) & PIX_DST, pixb2, 0, 0);
+	//pixaAddPixWithTitle(pixaDisplay,pixvws,"PIX_NOT(PIX_SRC) & PIX_DST");
+	Pix* pixd = pixaDisplayTiledAndScaled(pixaDisplay, 8, 288, 4, 0, 25, 2);
+
+	pixDisplay(pixd, 0, 0);
+	pixDestroy(&pixth);
+	pixDestroy(&pixth2);
+	pixTilingDestroy(&pt);
+}
 void layoutDetectDebug(const char* filename, int index) {
 	log("%s", filename);
 	Pix* pixb;
@@ -288,8 +606,8 @@ void layoutDetectDebug(const char* filename, int index) {
 	int ny = 2;
 
 	PIXTILING* pt = pixTilingCreate(pix_edge, nx, ny, 0, 0, 0, 0);
-	pixTilingGetCount(pt,&nx,&ny);
-	pixaAddPixWithTitle(pixaDisplay,pix_edge,"edge");
+	pixTilingGetCount(pt, &nx, &ny);
+	pixaAddPixWithTitle(pixaDisplay, pix_edge, "edge");
 
 	Pix* pixth = pixCreate(nx, ny, 8);
 	for (int i = 0; i < ny; i++) {
@@ -297,7 +615,7 @@ void layoutDetectDebug(const char* filename, int index) {
 			Pix* pixt = pixTilingGetTile(pt, j, i);
 			int w = pixGetWidth(pixt);
 			int h = pixGetHeight(pixt);
-			printf("w=%i, h=%i",w,h);
+			printf("w=%i, h=%i", w, h);
 			pixSplitDistributionFgBg(pixt, scorefract, 1, &thresh, NULL, NULL, 1);
 			pixSetPixel(pixth, j, i, thresh);
 			pixDestroy(&pixt);
@@ -332,7 +650,7 @@ void layoutDetectDebug(const char* filename, int index) {
 	ostringstream s;
 	s << "o3.3";
 
-	Pix* pixo = pixMorphCompSequence(pixeh, s.str().c_str(), 0);
+	//Pix* pixo = pixMorphCompSequence(pixeh, s.str().c_str(), 0);
 
 	//pixaAddPixWithTitle(pixaDisplay, pixo, s.str().c_str());
 
@@ -390,31 +708,31 @@ void layoutDetectDebug(const char* filename, int index) {
 	//0. find boxes that have a minimum ratio of fg to area
 	//1. find boxed that touch the edges. those might be text areas
 	//2 find boxes that do not touch the edges and that have a minimum height
-	Boxa* filtered = boxaSelectBySize(tl, image_width / 6, image_height / 6, L_SELECT_IF_BOTH, L_SELECT_IF_GTE, NULL);
+	//Boxa* filtered = boxaSelectBySize(tl, image_width / 6, image_height / 6, L_SELECT_IF_BOTH, L_SELECT_IF_GTE, NULL);
 	renderTransformedBoxa(pixOrg, filtered_boxa, 255);
 	pixaAddPixWithTitle(pixaDisplay, pixOrg, "text areas");
 
 //	pixOpenBrick(pixo,pixo,4,4);
 //	pixaAddPix(pixaDisplay, pixo, L_INSERT);
-/*
-	float scorefract = 0.1;
-	int thresh;
-	int nx = 2;
-	int ny = 2;
+	/*
+	 float scorefract = 0.1;
+	 int thresh;
+	 int nx = 2;
+	 int ny = 2;
 
-	PIXTILING* pt = pixTilingCreate(pixg, nx, ny, 0, 0, 0, 0);
-	Pix* pixth = pixCreate(nx, ny, 8);
-	for (int i = 0; i < ny; i++) {
-		for (int j = 0; j < nx; j++) {
-			Pix* pixt = pixTilingGetTile(pt, j, i);
-			thresh = analyseTile(pixt, j, i);
-			pixSetPixel(pixth, j, i, thresh);
-			//pixaAddPix(pixaDisplay, pixt, L_CLONE);
-			pixDestroy(&pixt);
-		}
-	}
-	pixTilingDestroy(&pt);
-	*/
+	 PIXTILING* pt = pixTilingCreate(pixg, nx, ny, 0, 0, 0, 0);
+	 Pix* pixth = pixCreate(nx, ny, 8);
+	 for (int i = 0; i < ny; i++) {
+	 for (int j = 0; j < nx; j++) {
+	 Pix* pixt = pixTilingGetTile(pt, j, i);
+	 thresh = analyseTile(pixt, j, i);
+	 pixSetPixel(pixth, j, i, thresh);
+	 //pixaAddPix(pixaDisplay, pixt, L_CLONE);
+	 pixDestroy(&pixt);
+	 }
+	 }
+	 pixTilingDestroy(&pt);
+	 */
 
 	pixOtsuAdaptiveThreshold(pixg, 16, 16, 0, 0, 0.1, NULL, &pixb);
 	pixSplitDistributionFgBg(pixg, scorefract, 1, &thresh, NULL, NULL, 1);
@@ -452,6 +770,7 @@ void onePicture(const char* filename, int index) {
 	Pix* pixtext = bookpage(pixOrg, &pixFinal, messageCallback, pixCallBack, debug_level > 0, debug_level > 1);
 	if (debug_level > 1) {
 		printf("total time = %f", stopTimerNested(timer));
+		pixDisplay(pixtext, 0, 0);
 		pixWrite("binarized_dewarped.bmp", pixtext, IFF_BMP);
 	}
 	doOCR(pixtext, NULL, &s, debug_level);
@@ -462,6 +781,183 @@ void onePicture(const char* filename, int index) {
 	s.str("");
 }
 
+void plotNuma(Numa* numa, Numa* numaExtrema, Numa* numaDelta) {
+
+	l_int32 n = numaGetCount(numaExtrema);
+	printf("%i number of extrema", n);
+	Numa* numaYValues = numaCreate(0);
+	for (int i = 0; i < n; i++) {
+		l_int32 index;
+		l_float32 number;
+		numaGetIValue(numaExtrema, i, &index);
+		numaGetFValue(numa, index, &number);
+		numaAddNumber(numaYValues, number);
+	}
+	GPLOT *gplot;
+	ostringstream name;
+	ostringstream rootName;
+	gplot = gplotCreate("numaPLot", GPLOT_X11, name.str().c_str(), "x", "y");
+	ostringstream title;
+	gplotAddPlot(gplot, NULL, numa, GPLOT_LINES, "histogram");
+	gplotAddPlot(gplot, numaExtrema, numaYValues, GPLOT_IMPULSES, "extrema");
+	gplotMakeOutput(gplot);
+	gplotDestroy(&gplot);
+
+	gplot = gplotCreate("numaPLot2", GPLOT_X11, name.str().c_str(), "x", "y");
+	gplotAddPlot(gplot, NULL, numaDelta, GPLOT_IMPULSES, "delta");
+	gplotMakeOutput(gplot);
+	gplotDestroy(&gplot);
+
+	//sleep(1);
+	//return pixRead("numaPLot.png");
+}
+// groups the array of line heights
+void numaGroupTextLineHeights(Numa* numaTextHeights, Numa** numaMean, Numa** numaStdDev, Numa** numaCount){
+	l_int32 n = numaGetCount(numaTextHeights);
+	Numa* numaMeanResult = numaCreate(0);
+	Numa* numaStdDevResult = numaCreate(0);
+	Numa* numaCountResult = numaCreate(0);
+
+	RunningTextlineStats stats;
+	for (int x = 0; x < n - 1; x++) {
+		l_int32 ival;
+		numaGetIValue(numaTextHeights, x, &ival);
+		if(stats.Fits(ival)){
+			stats.Push(ival);
+		} else{
+			if (stats.Count()>2){
+				//printf("%i lines grouped, mean = %f\n",stats.Count(),stats.Mean());
+				numaAddNumber(numaCountResult,stats.Count());
+				numaAddNumber(numaMeanResult,stats.Mean());
+				numaAddNumber(numaStdDevResult,stats.StandardDeviation());
+			}
+			stats.Clear();
+			stats.Push(ival);
+		}
+	}
+	if(numaCount!=NULL){
+		*numaCount =  numaCountResult;
+	}
+	if(numaMean!=NULL){
+		*numaMean = numaMeanResult;
+	}
+	if (numaStdDev!=NULL){
+		*numaStdDev = numaStdDevResult;
+	}
+}
+
+l_float32 pixGetTextLineSpacing(Pix* pixb){
+	int nx = 1;
+	int ny = 10;
+	l_float32 tileWidth = pixGetWidth(pixb)/10;
+	if (tileWidth<48){
+		tileWidth = 48;
+	}
+
+	PIXTILING* pt = pixTilingCreate(pixb, 0, 0, tileWidth, pixGetHeight(pixb), 0, 0);
+	pixTilingGetCount(pt, &nx, &ny);
+	l_float32 sum=0;
+	l_float32 lineCount=0;
+
+	for (int i = 0; i < ny; i++) {
+		for (int j = 0; j < nx; j++) {
+			Pix* pixt = pixTilingGetTile(pt, i, j);
+			Numa* numaPixelSum = pixSumPixelsByRow(pixt, NULL);
+			Numa* extrema = numaFindExtrema(numaPixelSum, pixGetWidth(pixt)/3);
+			Numa* delta = numaMakeDelta(extrema);
+			Numa* numaMean;
+			Numa* numaStdDev;
+			Numa* numaCount;
+
+			numaGroupTextLineHeights(delta,&numaMean, &numaStdDev,&numaCount);
+			l_int32 n = numaGetCount(numaMean);
+
+			//printf("found %i groups of lines\n",n);
+			if(n>0){
+				//sort by line count
+				Numa* naindex = numaGetSortIndex(numaCount, L_SORT_DECREASING);
+				l_float32 fract = 0.75;
+				l_int32 start = (l_int32)(fract * (l_float32)(n - 1) + 0.5);
+				l_int32 end = numaGetCount(naindex);
+
+				//get average line spacing for the top 25% line groups (the ones with the most line numbers)
+				for(int x = start;x<end;x++){
+					l_int32 count;
+					l_float32 mean;
+					l_int32 index;
+					numaGetIValue(naindex,x,&index);
+					numaGetFValue(numaMean, index,&mean);
+					numaGetIValue(numaCount, index,&count);
+					//printf("taking into consideration %i lines %f mean\n",count, mean);
+					sum+=count*mean;
+					lineCount+=count;
+				}
+
+			}
+
+			//plotNuma(numaPixelSum, extrema, delta);
+			//pixaAddPixWithTitle(pixaDisplay, pixPlot, "plot");
+			//pixDestroy(&pixPlot);
+			numaDestroy(&numaMean);
+			numaDestroy(&numaStdDev);
+			numaDestroy(&numaPixelSum);
+			numaDestroy(&extrema);
+			numaDestroy(&delta);
+			pixDestroy(&pixt);
+		}
+	}
+	pixTilingDestroy(&pt);
+	l_float32 median;
+	median = sum/lineCount;
+	//printf("median text line height is = %f, sum=%f, lineCount=%f\n",median,sum, lineCount);
+
+	//numaGetMedian(numaTextHeights,&median);
+	return median;
+}
+
+void testbinary(const char* filename, int index) {
+	Pix* pixOrg = pixRead(filename);
+	Pix* pixg = pixConvertRGBToLuminance(pixOrg);
+	L_TIMER timer = startTimerNested();
+	//Pix* pixEdge = pixTwoSidedEdgeFilter(pixg,L_HORIZONTAL_EDGES);
+	Pix* pixEdge = pixSobelEdgeFilter(pixg, L_ALL_EDGES);
+	Pix* pixb;
+	l_int32 width = pixGetWidth(pixEdge);
+	l_int32 height = pixGetHeight(pixEdge);
+
+	Pixa* pixaDisplay = pixaCreate(0);
+
+	pixOtsuAdaptiveThreshold(pixEdge, width, height, 0, 0, 0.0, NULL, &pixb);
+	l_float32 textLineSpacing = pixGetTextLineSpacing(pixb);
+
+	printf("text line height = %f, total time = %f\n", textLineSpacing, stopTimerNested(timer));
+
+	ostringstream s;
+	s.str("");
+	s << "o"<<(int)(textLineSpacing/2)<<"."<<(int)(textLineSpacing*1.2);
+	printf("morphing %s",s.str().c_str());
+	Pix *pixmorph = pixMorphCompSequence(pixb, s.str().c_str(), 0);
+	pixInvert(pixmorph, pixmorph);
+	Boxa* boxa = pixConnCompBB(pixmorph, 4);
+
+
+	pixRenderBoxa(pixOrg, boxa, 2, L_SET_PIXELS);
+	pixaAddPixWithTitle(pixaDisplay, pixOrg, "original");
+	pixaAddPixWithTitle(pixaDisplay, pixb, "binary");
+	pixaAddPixWithTitle(pixaDisplay, pixmorph, "morph");
+
+	Pix* pixd = pixaDisplayTiledAndScaled(pixaDisplay, 32, 400, 3, 0, 25, 2);
+	pixDisplay(pixd, 0, 0);
+
+	pixWrite("otsu.bmp", pixb, IFF_BMP);
+	pixWrite("edge.bmp", pixEdge, IFF_BMP);
+
+	boxaDestroy(&boxa);
+	pixDestroy(&pixmorph);
+	pixDestroy(&pixd);
+	pixDestroy(&pixb);
+}
+
 int main(int argc, const char* argv[]) {
 	l_chooseDisplayProg(L_DISPLAY_WITH_XV);
 
@@ -469,7 +965,8 @@ int main(int argc, const char* argv[]) {
 	if (argc == 3) {
 
 		s << "/Users/renard/devel/textfairy/OCRTest/" << argv[1] << "/" << argv[2] << ".jpg";
-		layoutDetectDebug(s.str().c_str(), atoi(argv[1]));
+		testbinary(s.str().c_str(), atoi(argv[1]));
+
 		//onePictureWithColumns(s.str().c_str(), atoi(argv[1]));
 
 		//onePicture(s.str().c_str(), atoi(argv[1]));
