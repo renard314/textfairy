@@ -47,6 +47,7 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.googlecode.leptonica.android.Constants;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.WriteFile;
 import com.renard.drawable.FastBitmapDrawable;
@@ -345,15 +346,20 @@ public class Util {
 
 		File picdir = new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY);
 		if (!picdir.exists()) {
-			if (!picdir.mkdirs()) {
-				throw new IOException();
-			}
-			createNoMediaFile(picdir);
+			if (picdir.mkdirs() || picdir.isDirectory()) {
+                createNoMediaFile(picdir);
+			} else {
+                throw new IOException();
+            }
 		}
 		File image = new File(picdir, fileName);
-
+        image.createNewFile();
 		try {
-			WriteFile.writeImpliedFormat(pix, image, 85, true);
+            byte[] bytes = WriteFile.writeMem(pix, Constants.IFF_JFIF_JPEG);
+            FileOutputStream out = new FileOutputStream(image);
+            out.write(bytes);
+            out.close();
+            //WriteFile.writeImpliedFormat(pix, image, 85, true);
 		} catch (Exception e) {
 			throw new IOException(e);
 		}

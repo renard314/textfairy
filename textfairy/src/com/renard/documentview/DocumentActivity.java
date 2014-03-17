@@ -207,11 +207,21 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     String getPlainDocumentText() {
         final String htmlText = getDocumentContainer().getTextOfCurrentlyShownDocument();
-        return Html.fromHtml(htmlText).toString();
+        if (htmlText!=null){
+            return Html.fromHtml(htmlText).toString();
+        } else {
+            return null;
+        }
     }
 
     void shareText() {
         String shareBody = getPlainDocumentText();
+        if (shareBody==null){
+            Toast.makeText(DocumentActivity.this,R.string.empty_document,Toast.LENGTH_LONG).show();
+            Toast.makeText(this,3,Toast.LENGTH_LONG);
+            return;
+        }
+
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, R.string.share_subject);

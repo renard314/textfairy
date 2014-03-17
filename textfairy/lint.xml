@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
+    <!-- Ignore the UselessLeaf issue in the specified file -->
+    <issue id="Instantiatable">
+        <ignore path="src/com/renard/ocr/cropimage/CropImage.java" />
+    </issue>
 </lint>

@@ -4,7 +4,7 @@
     <facet type="android" name="Android">
       <configuration>
         <option name="SELECTED_BUILD_VARIANT" value="debug" />
-        <option name="ASSEMBLE_TASK_NAME" value="bundleDebug" />
+        <option name="ASSEMBLE_TASK_NAME" value="assembleDebug" />
         <option name="COMPILE_JAVA_TASK_NAME" value="compileDebugJava" />
         <option name="ASSEMBLE_TEST_TASK_NAME" value="assembleDebugTest" />
         <option name="SOURCE_GEN_TASK_NAME" value="generateDebugSources" />
@@ -28,30 +28,30 @@
       <sourceFolder url="file://$MODULE_DIR$/build/source/buildConfig/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/source/rs/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/res/rs/debug" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/source/r/test/debug" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/source/aidl/test/debug" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/source/buildConfig/test/debug" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/source/rs/test/debug" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/source/r/test/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/source/aidl/test/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/source/buildConfig/test/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/source/rs/test/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/res/rs/test/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build-types/debug/res" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build-types/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build-types/debug/aidl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/build-types/debug/assets" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/build-types/debug/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/build-types/debug/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/build-types/debug/rs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/build-types/debug/res" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build-types/debug/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/res" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/assets" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/jni" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/res" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/assets" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/apk" />
       <excludeFolder url="file://$MODULE_DIR$/build/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/bundles" />
