@@ -166,6 +166,7 @@ public class WriteFile {
         if (file == null)
             throw new IllegalArgumentException("File must be non-null");
 
+        int depth = pixs.getDepth();
         return nativeWriteImpliedFormat(
                 pixs.mNativePix, file.getAbsolutePath(), quality, progressive);
     }
