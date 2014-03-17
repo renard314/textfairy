@@ -70,7 +70,7 @@
     <string name="saving_document">Saving Document</string>
     <string name="button_column_pick_completed">start text recognition</string>
     <string name="export_as_pdf">create PDF</string>
-    <string name="delete_language_title">Delete language?</string>
+    <string name="delete_language_title">Delete %1$s?</string>
     <string name="delete_language_message">You\'ll free up %1$d kb.</string>
     <string name="delete_dialog_message">Deleting Documents..</string>
     <string name="progress_pfd_creation">Creating page %1$d/%2$d for %3$s.</string>
@@ -178,4 +178,5 @@
     <string name="image_not_32_bit">Image needs to be 32 bit</string>
     <string name="image_format_unsupported">Image format not recognized. Only png, jpeg or bmp files are currently supported.</string>
     <string name="tts_not_available">Text to Speech is not available on your phone.</string>
+    <string name="empty_document">Document contains no text.</string>
 </resources>
