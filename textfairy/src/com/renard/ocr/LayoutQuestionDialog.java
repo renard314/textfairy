@@ -48,9 +48,14 @@ public class LayoutQuestionDialog {
 			final LayoutChoseListener listener) {
 
 		mLayout = LayoutKind.SIMPLE;
-		Pair<String, String> language = PreferencesUtils
-				.getOCRLanguage(context);
-		mLanguage = language.first;
+		Pair<String, String> language = PreferencesUtils.getOCRLanguage(context);
+
+        if (!OCRLanguageActivity.isLanguageInstalled(language.first,context)){
+            final String defaultLanguage = context.getString(R.string.default_ocr_language);
+            final String defaultLanguageDisplay = context.getString(R.string.default_ocr_display_language);
+            language = Pair.create(defaultLanguage,defaultLanguageDisplay);
+        }
+        mLanguage = language.first;
 
 		AlertDialog.Builder builder;
 

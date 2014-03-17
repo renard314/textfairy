@@ -150,7 +150,13 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             File image = null;
             try {
-                image = File.createTempFile(imageFileName, ".jpg", storageDir);
+                if (!storageDir.exists()){
+                    storageDir.mkdirs();
+                }
+                image = new File(storageDir,imageFileName + ".jpg");
+                if (image.exists()){
+                    image.createNewFile();
+                }
                 cameraPicUri = Uri.fromFile(image);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
                 startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
@@ -212,6 +218,17 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             if (requestCode == REQUEST_CODE_MAKE_PHOTO) {
                 Cursor myCursor = null;
                 Date dateOfPicture = null;
+                //check if there is a file at the uri we specified
+                if (cameraPicUri!=null){
+                    File f = new File(cameraPicUri.getPath());
+                    if (f.isFile() && f.exists() && f.canRead()){
+                        //all is well
+                        loadBitmapFromContentUri(cameraPicUri);
+                        return;
+                    }
+
+                }
+                //try to look up the image by querying the media content provider
                 try {
                     // Create a Cursor to obtain the file Path for the large
                     // image
@@ -329,7 +346,6 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                             return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
                         }
                     } else if (cameraPicUri.toString().startsWith("content")) {
-                        //TODO test
                         InputStream stream = getContentResolver().openInputStream(cameraPicUri);
                         p = ReadFile.readMem(Util.toByteArray(stream));
                         if (p==null){

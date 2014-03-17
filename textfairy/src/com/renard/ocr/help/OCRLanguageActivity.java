@@ -46,6 +46,7 @@ import com.renard.ocr.help.OCRLanguageAdapter.OCRLanguage;
 import com.renard.util.Util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,28 +202,49 @@ public class OCRLanguageActivity extends MonitoredActivity {
         return adapter;
     }
 
-    private static final List<Pair<String, Long>> getInstalledLanguages(Context appContext) {
-        final List<Pair<String, Long>> result = new ArrayList<Pair<String, Long>>();
+    public static boolean isLanguageInstalled(final String ocrLang,Context appContext){
         final File tessDir = Util.getTrainingDataDir(appContext);
         if (!tessDir.exists()) {
-            return result;
+            return false;
         }
-        final String[] languageFiles = tessDir.list(new FilenameFilter() {
+        final File[] languageFiles = tessDir.listFiles(new FileFilter() {
+
 
             @Override
-            public boolean accept(File dir, String filename) {
-                if (filename.endsWith(".traineddata")) {
+            public boolean accept(File pathname) {
+                if (pathname.getName().equalsIgnoreCase(ocrLang + ".traineddata") && pathname.isFile()) {
                     return true;
                 }
                 return false;
             }
         });
 
-        for (final String val : languageFiles) {
-            final int dotIndex = val.indexOf('.');
+        return languageFiles!=null && languageFiles.length>=1;
+
+    }
+
+    private static final List<Pair<String, Long>> getInstalledLanguages(Context appContext) {
+        final List<Pair<String, Long>> result = new ArrayList<Pair<String, Long>>();
+        final File tessDir = Util.getTrainingDataDir(appContext);
+        if (!tessDir.exists()) {
+            return result;
+        }
+        final File[] languageFiles = tessDir.listFiles(new FileFilter() {
+
+
+            @Override
+            public boolean accept(File pathname) {
+                if (pathname.getName().endsWith(".traineddata") && pathname.isFile()) {
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        for (final File val : languageFiles) {
+            final int dotIndex = val.getName().indexOf('.');
             if (dotIndex > -1) {
-                File f = new File(tessDir, val);
-                result.add(Pair.create(val.substring(0, dotIndex), f.length()));
+                result.add(Pair.create(val.getName().substring(0, dotIndex), val.length()));
             }
         }
         return result;

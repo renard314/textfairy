@@ -232,10 +232,20 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
             public void run() {
                 File imageFile = null;
                 Uri documentUri = null;
+
                 try {
-                    if (checkSd) {
-                        imageFile = saveImage(pix);
-                    }
+                    imageFile = saveImage(pix);
+                } catch (IOException ignore) {
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), getText(R.string.error_create_file), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
+                try {
 
                     documentUri = saveDocumentToDB(imageFile, hocrString, utf8String);
                     Util.createThumbnail(OCRActivity.this, imageFile, Integer.valueOf(documentUri.getLastPathSegment()));
@@ -249,16 +259,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
                             Toast.makeText(getApplicationContext(), getText(R.string.error_create_file), Toast.LENGTH_LONG).show();
                         }
                     });
-                } catch (IOException e) {
-                    Log.e(TAG, e.getMessage());
-                    runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), getText(R.string.error_create_file), Toast.LENGTH_LONG).show();
-                        }
-                    });
-                } finally {
+                }  finally {
                     if (pix != null) {
                         pix.recycle();
                     }
