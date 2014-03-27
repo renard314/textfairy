@@ -208,7 +208,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     }
 
     String getPlainDocumentText() {
-        final String htmlText = getDocumentContainer().getTextOfCurrentlyShownDocument();
+        //final String htmlText = getDocumentContainer().getTextOfCurrentlyShownDocument();
+        final String htmlText = getDocumentContainer().getTextOfAllDocuments();
         if (htmlText!=null){
             return Html.fromHtml(htmlText).toString();
         } else {
