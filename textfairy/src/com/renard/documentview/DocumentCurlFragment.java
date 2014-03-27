@@ -104,6 +104,27 @@ public class DocumentCurlFragment extends Fragment implements DocumentContainerF
     }
 
     @Override
+    public String getTextOfAllDocuments(){
+        final Cursor cursor = mBitmapProvider.getCursor();
+        final int columIndex = cursor.getColumnIndex(DocumentContentProvider.Columns.OCR_TEXT);
+        final int count = cursor.getCount();
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0 ; i < count; i++){
+            boolean success = mCursor.moveToPosition(i);
+            if (success) {
+                String text = mCursor.getString(columIndex);
+                if(text!=null){
+                    if(sb.length()>0){
+                        sb.append("\n");
+                    }
+                    sb.append(text);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    @Override
     public String getTextOfCurrentlyShownDocument() {
         int index = mCurlView.getCurrentIndex();
         Cursor cursor = mBitmapProvider.getCursor();

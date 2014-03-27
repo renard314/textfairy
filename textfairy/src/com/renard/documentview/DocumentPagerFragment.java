@@ -152,6 +152,23 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     }
 
     @Override
+    public String getTextOfAllDocuments(){
+        DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
+        final int count = adapter.getCount();
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0 ; i < count; i++){
+            String text = adapter.getText(i);
+            if(text!=null){
+                if(sb.length()>0){
+                    sb.append("\n");
+                }
+                sb.append(text);
+            }
+        }
+        return sb.toString();
+    }
+
+    @Override
     public String getTextOfCurrentlyShownDocument() {
         DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
         int currentItem = mPager.getCurrentItem();

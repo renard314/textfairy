@@ -64,6 +64,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         public void setCursor(final Cursor cursor);
 
         public String getTextOfCurrentlyShownDocument();
+
+        public String getTextOfAllDocuments();
     }
 
     static final int REQUEST_CODE_TTS_CHECK = 6;
