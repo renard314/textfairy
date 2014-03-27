@@ -28,12 +28,12 @@ import android.widget.EditText;
 import com.renard.ocr.R;
 import com.renard.util.PreferencesUtils;
 
-public class DocumentFragment extends Fragment {
+public class DocumentTextFragment extends Fragment {
     private Spanned mSpanned;
     private EditText mEditText;
 
-    public static DocumentFragment newInstance(final String text) {
-        DocumentFragment f = new DocumentFragment();
+    public static DocumentTextFragment newInstance(final String text) {
+        DocumentTextFragment f = new DocumentTextFragment();
         // Supply text input as an argument.
         Bundle args = new Bundle();
         args.putString("text", text);
