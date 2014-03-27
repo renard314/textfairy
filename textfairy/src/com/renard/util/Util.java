@@ -40,6 +40,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StatFs;
@@ -355,13 +356,24 @@ public class Util {
 		File image = new File(picdir, fileName);
         image.createNewFile();
 		try {
-            byte[] bytes = WriteFile.writeMem(pix, Constants.IFF_JFIF_JPEG);
-            FileOutputStream out = new FileOutputStream(image);
-            out.write(bytes);
-            out.close();
-            //WriteFile.writeImpliedFormat(pix, image, 85, true);
-		} catch (Exception e) {
-			throw new IOException(e);
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                WriteFile.writeImpliedFormat(pix, image, 85, true);
+            } else {
+                byte[] bytes = WriteFile.writeMem(pix, Constants.IFF_JFIF_JPEG);
+                FileOutputStream out = new FileOutputStream(image);
+                out.write(bytes);
+                out.close();
+            }
+        } catch (Exception e) {
+            final Bitmap bitmap = WriteFile.writeBitmap(pix);
+            if (bitmap!=null){
+                FileOutputStream out = new FileOutputStream(image);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,85,out);
+                bitmap.recycle();
+                out.close();
+            } else {
+                throw new IOException(e);
+            }
 		}
 
 		return image;

@@ -323,9 +323,8 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
     private Uri saveDocumentToDB(File imageFile, String hocr, String plainText) throws RemoteException {
         ContentProviderClient client = null;
         try {
-            ContentValues v = null;
+            ContentValues v = new ContentValues();
             if (imageFile != null) {
-                v = new ContentValues();
                 v.put(com.renard.ocr.DocumentContentProvider.Columns.PHOTO_PATH, imageFile.getPath());
             }
             if (hocr != null) {
