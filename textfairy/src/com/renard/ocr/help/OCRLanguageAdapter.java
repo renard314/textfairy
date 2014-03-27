@@ -84,7 +84,7 @@ public class OCRLanguageAdapter extends BaseAdapter implements ListAdapter {
 			mValue = value;
 			mDisplayText = displayText;
 			this.mSize = size;
-            if ("ara".equalsIgnoreCase(value) || "hin".equalsIgnoreCase(value)|| "tha".equalsIgnoreCase(value)){
+            if ("ara".equalsIgnoreCase(value) || "hin".equalsIgnoreCase(value)){
                 needsCubeData = true;
             }
 		}

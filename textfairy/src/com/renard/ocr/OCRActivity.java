@@ -421,6 +421,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
     //but adding english will improve overall accuracy for the other languages
     private static boolean addEnglishData(String mLanguage) {
         if (mLanguage.startsWith("chi")||
+                mLanguage.equalsIgnoreCase("tha")||
                 mLanguage.equalsIgnoreCase("kor")||
                 mLanguage.equalsIgnoreCase("hin")||
                 mLanguage.equalsIgnoreCase("heb")||
