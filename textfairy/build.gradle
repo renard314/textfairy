@@ -50,8 +50,6 @@ nativeArmV5LibsToJar.dependsOn 'ndkBuild'
 nativeArmV7LibsToJar.dependsOn 'ndkBuild'
 nativeX86LibsToJar.dependsOn 'ndkBuild'
 
-clean.dependsOn 'nativeArmV5LibsToJar'
-
 def getVersionCodeFromManifest(String prefix) {
     def manifestFile = file("AndroidManifest.xml")
     def pattern = Pattern.compile("versionCode=\"(\\d+)\"")
