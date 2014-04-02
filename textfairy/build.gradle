@@ -18,9 +18,14 @@ android {
     }
 }
 
-// Task to run ndk-build
-task ndkBuild(type: Exec) {
-    commandLine "$ndkDir/ndk-build", '-j', Runtime.runtime.availableProcessors()
+import org.apache.tools.ant.taskdefs.condition.Os
+
+task ndkBuild(type: Exec,description: 'run ndk-build') {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'ndk-build.cmd', '-j' , Runtime.runtime.availableProcessors()
+    } else {
+        commandLine "$ndkDir/ndk-build", '-j', Runtime.runtime.availableProcessors()
+    }
 }
 
 // Task to put native libs into a jar file
@@ -45,10 +50,16 @@ task nativeX86LibsToJar(type: Zip, description: 'create a jar archive of the nat
     from fileTree(dir: 'libs', include: 'x86/*.so')
     into 'lib/'
 }
-tasks.withType(JavaCompile) { compileTask -> compileTask.dependsOn(nativeArmV5LibsToJar, nativeArmV7LibsToJar, nativeX86LibsToJar) }
-nativeArmV5LibsToJar.dependsOn 'ndkBuild'
-nativeArmV7LibsToJar.dependsOn 'ndkBuild'
-nativeX86LibsToJar.dependsOn 'ndkBuild'
+
+
+nativeArmV5LibsToJar.dependsOn(ndkBuild)
+nativeArmV7LibsToJar.dependsOn(ndkBuild)
+nativeX86LibsToJar.dependsOn(ndkBuild)
+
+tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn(nativeArmV5LibsToJar, nativeArmV7LibsToJar, nativeX86LibsToJar)
+}
+
 
 def getVersionCodeFromManifest(String prefix) {
     def manifestFile = file("AndroidManifest.xml")
@@ -153,5 +164,5 @@ dependencies {
     compile 'org.apache.commons:commons-compress:1.5'
     compile project(":Android-ViewPagerIndicator:library")
     compile project(":FileExplorer")
-    compile project(":ViewPager3d:ViewPager3d")
+    compile project(":ViewPager3D:ViewPager3D")
 }
