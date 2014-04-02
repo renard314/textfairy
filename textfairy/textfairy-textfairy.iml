@@ -94,7 +94,7 @@
     <orderEntry type="library" exported="" name="support-v4-19.0.1" level="project" />
     <orderEntry type="library" exported="" name="library-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="commons-compress-1.5" level="project" />
-    <orderEntry type="module" module-name="ViewPager3d-ViewPager3d" exported="" />
+    <orderEntry type="module" module-name="ViewPager3D-ViewPager3D" exported="" />
     <orderEntry type="module" module-name="FileExplorer" exported="" />
     <orderEntry type="module" module-name="library" exported="" />
   </component>
