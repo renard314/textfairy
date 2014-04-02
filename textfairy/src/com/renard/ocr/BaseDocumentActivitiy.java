@@ -23,6 +23,7 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -576,7 +577,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             uri = getIntent().getData();
         }
         if (uri != null) {
-            SaveDocumentTask saveTask = new SaveDocumentTask(documentUri, newTitle);
+            SaveDocumentTask saveTask = new SaveDocumentTask(this, documentUri, newTitle);
             saveTask.execute();
         }
 
@@ -807,28 +808,31 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
     }
 
-    protected class SaveDocumentTask extends AsyncTask<Void, Integer, Integer> {
+    public static class SaveDocumentTask extends AsyncTask<Void, Integer, Integer> {
 
+        private final Context mContext;
         private ContentValues values = new ContentValues();
         private ArrayList<Uri> mDocumentUri = new ArrayList<Uri>();
         private String mTitle;
         private ArrayList<Spanned> mOcrText = new ArrayList<Spanned>();
         private Toast mSaveToast;
 
-        public SaveDocumentTask(List<Uri> documentUri, List<Spanned> ocrText) {
+        public SaveDocumentTask(Context context, List<Uri> documentUri, List<Spanned> ocrText) {
+            mContext = context;
             this.mDocumentUri.addAll(documentUri);
             this.mTitle = null;
             this.mOcrText.addAll(ocrText);
         }
 
-        public SaveDocumentTask(Uri documentUri, String title) {
+        public SaveDocumentTask(Context context, Uri documentUri, String title) {
+            mContext = context;
             this.mDocumentUri.add(documentUri);
             this.mTitle = title;
         }
 
         @Override
         protected void onPreExecute() {
-            mSaveToast = Toast.makeText(BaseDocumentActivitiy.this, getText(R.string.saving_document), Toast.LENGTH_LONG);
+            mSaveToast = Toast.makeText(mContext, mContext.getText(R.string.saving_document), Toast.LENGTH_LONG);
         }
 
         @Override
@@ -838,7 +842,6 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             } else {
                 mSaveToast.setText(R.string.save_fail);
             }
-            super.onPostExecute(result);
         }
 
         @Override
@@ -858,7 +861,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                 }
 
                 onProgressUpdate(i);
-                result += getContentResolver().update(uri, values, null, null);
+                result += mContext.getContentResolver().update(uri, values, null, null);
             }
             return result;
         }

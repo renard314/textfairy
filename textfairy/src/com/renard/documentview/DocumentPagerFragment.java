@@ -18,16 +18,11 @@ package com.renard.documentview;
 
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Spanned;
-import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,8 +33,6 @@ import com.renard.ocr.R;
 import com.renard.util.PreferencesUtils;
 import com.viewpagerindicator.CirclePageIndicator;
 
-import java.util.List;
-
 public class DocumentPagerFragment extends Fragment implements DocumentContainerFragment {
 
     private ViewPager mPager;
@@ -47,12 +40,15 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     private boolean mIsTitleIndicatorVisible = false;
     private boolean mIsNewCursor;
     private Cursor mCursor;
+    DocumentAdapter mAdapter;
+    private int mLastPosition = -1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_document_pager, container, false);
         mPager = (ViewPager) v.findViewById(R.id.document_pager);
         mTitleIndicator = (CirclePageIndicator) v.findViewById(R.id.titles);
+        mLastPosition = -1;
         initPager();
         return v;
     }
@@ -96,12 +92,16 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     private void initPager() {
 
         if (mIsNewCursor && mPager != null) {
-            final DocumentAdapter adapter = new DocumentAdapter(getActivity(), mCursor);
 
-            Log.i(DocumentPagerFragment.class.getSimpleName(), mCursor.getCount() + "");
-            mPager.setAdapter(adapter);
-            // mTitleIndicator.setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_bg_black));
-            if (adapter.getCount() > 1) {
+
+            if (mAdapter != null) {
+                mAdapter.setCursor(mCursor);
+            } else {
+                mAdapter = new DocumentAdapter(getFragmentManager(), mCursor);
+                mPager.setAdapter(mAdapter);
+            }
+
+            if (mAdapter.getCount() > 1) {
                 mTitleIndicator.setViewPager(mPager);
                 mIsTitleIndicatorVisible = true;
             } else {
@@ -112,9 +112,13 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 
                 @Override
                 public void onPageSelected(int position) {
-                    final String title = adapter.getLongTitle(position);
-                    ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle(title);
-                    ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+                    if (mLastPosition != -1) {
+                        mAdapter.getFragment(mLastPosition).saveIfTextHasChanged();
+                    }
+                    mLastPosition = position;
+                    final String title = mAdapter.getLongTitle(position);
+                    ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(title);
+                    ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
                 }
 
                 @Override
@@ -127,14 +131,6 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
             });
             mIsNewCursor = false;
         }
-    }
-
-    public Pair<List<Uri>, List<Spanned>> getTextsToSave() {
-        PagerAdapter adapter = mPager.getAdapter();
-        if (adapter instanceof DocumentAdapter) {
-            return ((DocumentAdapter) adapter).getTextsToSave();
-        }
-        return null;
     }
 
     @Override
@@ -152,14 +148,14 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     }
 
     @Override
-    public String getTextOfAllDocuments(){
+    public String getTextOfAllDocuments() {
         DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
         final int count = adapter.getCount();
         StringBuilder sb = new StringBuilder();
-        for(int i = 0 ; i < count; i++){
+        for (int i = 0; i < count; i++) {
             String text = adapter.getText(i);
-            if(text!=null){
-                if(sb.length()>0){
+            if (text != null) {
+                if (sb.length() > 0) {
                     sb.append("\n");
                 }
                 sb.append(text);

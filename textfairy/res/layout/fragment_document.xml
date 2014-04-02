@@ -1,26 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:background="@android:color/background_light"    
-    android:layout_height="wrap_content" >
 
-    <LinearLayout
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/background_light"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out"
+    android:id="@+id/viewSwitcher"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ProgressBar
+        android:layout_margin="75dp"
+        android:layout_gravity="center"
+        style="?android:attr/progressBarStyleLarge"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:orientation="vertical">
+        android:layout_height="match_parent" />
+
+
+    <ScrollView
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:background="@null"
+        android:layout_height="wrap_content">
 
         <EditText
+            android:layout_gravity="top"
             android:id="@+id/editText_document"
             android:textColor="@android:color/primary_text_light"
             android:background="@android:color/background_light"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:ems="10"
             android:inputType="textMultiLine"
             android:singleLine="false"
             android:paddingLeft="8dp"
-            android:paddingRight="5dp" >
-        </EditText>
-    </LinearLayout>
+            android:paddingRight="5dp"></EditText>
 
-</ScrollView>
+    </ScrollView>
+</ViewSwitcher>

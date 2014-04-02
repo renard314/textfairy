@@ -221,7 +221,6 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         String shareBody = getPlainDocumentText();
         if (shareBody==null){
             Toast.makeText(DocumentActivity.this,R.string.empty_document,Toast.LENGTH_LONG).show();
-            Toast.makeText(this,3,Toast.LENGTH_LONG);
             return;
         }
 
@@ -304,7 +303,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         } else {
             mParentId = parentId;
         }
-        getSupportLoaderManager().initLoader(0, null, this).forceLoad();
+        getSupportLoaderManager().initLoader(0, null, this);
 
     }
 
@@ -379,20 +378,20 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
                 String.valueOf(mParentId)}, "created ASC");
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        DocumentContainerFragment frag = getDocumentContainer();
-        if (frag instanceof DocumentPagerFragment) {
-            DocumentPagerFragment pagerFrag = (DocumentPagerFragment) frag;
-
-            Pair<List<Uri>, List<Spanned>> documents = pagerFrag.getTextsToSave();
-
-            if (documents != null && documents.first.size() > 0) {
-                SaveDocumentTask saveTask = new SaveDocumentTask(documents.first, documents.second);
-                saveTask.execute();
-            }
-        }
-
-    }
+//    @Override
+//    public void onBackPressed() {
+//        super.onBackPressed();
+//        DocumentContainerFragment frag = getDocumentContainer();
+//        if (frag instanceof DocumentPagerFragment) {
+//            DocumentPagerFragment pagerFrag = (DocumentPagerFragment) frag;
+//
+//            Pair<List<Uri>, List<Spanned>> documents = pagerFrag.getTextsToSave();
+//
+//            if (documents != null && documents.first.size() > 0) {
+//                SaveDocumentTask saveTask = new SaveDocumentTask(documents.first, documents.second);
+//                saveTask.execute();
+//            }
+//        }
+//
+//    }
 }
