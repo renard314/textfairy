@@ -358,22 +358,25 @@ public class Util {
 		try {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WriteFile.writeImpliedFormat(pix, image, 85, true);
+
+//                final byte[] bytes = WriteFile.writeMem(pix, Constants.IFF_JFIF_JPEG);
+//                FileOutputStream out = new FileOutputStream(image);
+//                out.write(bytes);
+//                out.close();
             } else {
-                byte[] bytes = WriteFile.writeMem(pix, Constants.IFF_JFIF_JPEG);
-                FileOutputStream out = new FileOutputStream(image);
-                out.write(bytes);
-                out.close();
+
+                final Bitmap bitmap = WriteFile.writeBitmap(pix);
+                if (bitmap!=null) {
+                    FileOutputStream out = new FileOutputStream(image);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
+                    bitmap.recycle();
+                    out.close();
+                } else {
+                    throw new IOException();
+                }
             }
         } catch (Exception e) {
-            final Bitmap bitmap = WriteFile.writeBitmap(pix);
-            if (bitmap!=null){
-                FileOutputStream out = new FileOutputStream(image);
-                bitmap.compress(Bitmap.CompressFormat.JPEG,85,out);
-                bitmap.recycle();
-                out.close();
-            } else {
-                throw new IOException(e);
-            }
+            throw new IOException(e);
 		}
 
 		return image;

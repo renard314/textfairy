@@ -66,6 +66,10 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         public String getTextOfCurrentlyShownDocument();
 
         public String getTextOfAllDocuments();
+
+        void setShowText(boolean text);
+
+        boolean getShowText();
     }
 
     static final int REQUEST_CODE_TTS_CHECK = 6;
@@ -98,7 +102,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         if (accuracy == 0) {
             mResultDialogShown = true;
         }
-        setDocumentFragmentType(true);
+        setDocumentFragmentType();
         initAppIcon(this, HINT_DIALOG_ID);
         mActionCallback = new TtsActionCallback(this);
 
@@ -143,12 +147,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         }
 
         if (itemId == R.id.item_view_mode) {
-            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
-            if (fragment instanceof DocumentCurlFragment) {
-                setDocumentFragmentType(true);
-            } else if (fragment instanceof DocumentPagerFragment) {
-                setDocumentFragmentType(false);
-            }
+            DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
+             fragment.setShowText(!fragment.getShowText());
             return true;
         } else if (itemId == R.id.item_text_options) {
             Intent i = new Intent(this, TextOptionsActivity.class);
@@ -274,11 +274,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
                     int documentPos = data.getIntExtra(TableOfContentsActivity.EXTRA_DOCUMENT_POS, -1);
                     DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
                     if (fragment != null) {
-                        if (fragment instanceof DocumentCurlFragment) {
-                            ((DocumentCurlFragment) fragment).setDisplayedPage(documentPos);
-                        } else {
-                            ((DocumentPagerFragment) fragment).setDisplayedPage(documentPos);
-                        }
+                        ((DocumentPagerFragment) fragment).setDisplayedPage(documentPos);
                     }
                     break;
             }
@@ -331,18 +327,12 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         return fragment;
     }
 
-    private void setDocumentFragmentType(final boolean text) {
+    private void setDocumentFragmentType() {
         // Check what fragment is shown, replace if needed.
         DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
         DocumentContainerFragment newFragment = null;
-        if (text) {
-            if ((fragment != null && fragment instanceof DocumentCurlFragment) || fragment == null) {
-                newFragment = new DocumentPagerFragment();
-            }
-        } else if (!text) {
-            if ((fragment != null && fragment instanceof DocumentPagerFragment) || fragment == null) {
-                newFragment = new DocumentCurlFragment();
-            }
+        if (fragment == null) {
+            newFragment = new DocumentPagerFragment();
         }
         if (newFragment != null) {
             if (mCursor != null) {
@@ -353,11 +343,10 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
                 ft.remove((Fragment) fragment);
             }
             ft.add(R.id.document_fragment_container, (Fragment) newFragment);
-            // ft.replace(R.id.document_fragment_container, (Fragment)
-            // newFragment);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.commit();
         }
+        
     }
 
     @Override

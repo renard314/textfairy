@@ -51,17 +51,20 @@ import com.renard.util.PreferencesUtils;
 
 public class DocumentAdapter extends FragmentStatePagerAdapter {
     private int mIndexLanguage;
+    private int mIndexImagePath;
 	private int mIndexTitle;
 	private int mIndexOCRText;
 	private int mIndexId;
 
 	Cursor mCursor;
     private Map<Integer, DocumentTextFragment> mPageReferenceMap = new HashMap<Integer, DocumentTextFragment>();
+    private boolean mShowText = true;
 
     public DocumentAdapter(FragmentManager fm, final Cursor cursor) {
         super(fm);
         mCursor = cursor;
         mIndexOCRText = mCursor.getColumnIndex(Columns.OCR_TEXT);
+        mIndexImagePath = mCursor.getColumnIndex(Columns.PHOTO_PATH);
         // mIndexCreated = mCursor.getColumnIndex(Columns.CREATED);
         mIndexTitle = mCursor.getColumnIndex(Columns.TITLE);
         mIndexId = mCursor.getColumnIndex(Columns.ID);
@@ -71,8 +74,18 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         final Object o = super.instantiateItem(container, position);
-        mPageReferenceMap.put(position, (DocumentTextFragment) o);
+        if (o instanceof  DocumentTextFragment) {
+            mPageReferenceMap.put(position, (DocumentTextFragment) o);
+        } else {
+            mPageReferenceMap.put(position,null);
+        }
         return o;
+
+    }
+
+    public void setShowText(boolean text) {
+        mShowText = text;
+        notifyDataSetChanged();
 
     }
 
@@ -80,12 +93,18 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         String text = null;
         Integer documentId = -1;
+        String imagePath = null;
         if (mCursor.moveToPosition(position)) {
             text = mCursor.getString(mIndexOCRText);
             documentId = mCursor.getInt(mIndexId);
+            imagePath = mCursor.getString(mIndexImagePath);
         }
-        final DocumentTextFragment documentTextFragment = DocumentTextFragment.newInstance(text, documentId);
-        return documentTextFragment;
+        if (mShowText) {
+            return DocumentTextFragment.newInstance(text, documentId, imagePath);
+        }else {
+            return DocumentImageFragment.newInstance(imagePath);
+
+        }
     }
 
     public DocumentTextFragment getFragment(int key) {
@@ -114,16 +133,30 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
 		return null;
 	}
 
-	public String getText(int position){
-		boolean success = mCursor.moveToPosition(position);
-		if (success) {
-			return mCursor.getString(mIndexOCRText);
-		}
-		return null;
-	}
+    public String getText(int position){
+        boolean success = mCursor.moveToPosition(position);
+        if (success) {
+            return mCursor.getString(mIndexOCRText);
+        }
+        return null;
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        if(object instanceof  DocumentTextFragment && !mShowText){
+            return POSITION_NONE;
+        }else if(object instanceof  DocumentImageFragment && mShowText){
+            return POSITION_NONE;
+        }
+        return POSITION_UNCHANGED;
+    }
 
     public void setCursor(Cursor cursor) {
         mCursor = cursor;
         notifyDataSetChanged();
+    }
+
+    public boolean getShowText() {
+        return mShowText;
     }
 }

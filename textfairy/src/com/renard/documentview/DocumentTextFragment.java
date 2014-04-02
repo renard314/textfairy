@@ -16,6 +16,7 @@
 
 package com.renard.documentview;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,12 +30,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ViewSwitcher;
 
 import com.renard.ocr.BaseDocumentActivitiy;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.R;
 import com.renard.util.PreferencesUtils;
+import com.renard.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +52,13 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
     private ViewSwitcher mViewSwitcher;
     private HtmlToSpannedAsyncTask mHtmlTask;
 
-    public static DocumentTextFragment newInstance(final String text, Integer documentId) {
+    public static DocumentTextFragment newInstance(final String text, Integer documentId, final String imagePath) {
         DocumentTextFragment f = new DocumentTextFragment();
         // Supply text input as an argument.
         Bundle args = new Bundle();
         args.putString("text", text);
         args.putInt("id", documentId);
+        args.putString("image_path", imagePath);
         f.setArguments(args);
         return f;
     }
@@ -74,7 +78,6 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mEditText.setText(R.string.loading_text);
             mViewSwitcher.setDisplayedChild(0);
         }
 
@@ -99,6 +102,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final String text = getArguments().getString("text");
+        final String imagePath= getArguments().getString("image_path");
         mDocumentId = getArguments().getInt("id");
         View view = inflater.inflate(R.layout.fragment_document, container, false);
         mEditText = (EditText) view.findViewById(R.id.editText_document);
@@ -106,9 +110,11 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
         if (mHtmlTask!=null){
             mHtmlTask.cancel(true);
         }
+            mHtmlTask = new HtmlToSpannedAsyncTask(mEditText,mViewSwitcher,this);
+            mHtmlTask.execute(text);
+
         PreferencesUtils.applyTextPreferences(mEditText, getActivity());
-        mHtmlTask = new HtmlToSpannedAsyncTask(mEditText,mViewSwitcher,this);
-        mHtmlTask.execute(text);
+
         return view;
     }
 
@@ -124,19 +130,6 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
             saveTask.execute();
         }
     }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        mEditText.removeTextChangedListener(this);
-//        saveIfTextHasChanged();
-//    }
-//
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        mEditText.addTextChangedListener(this);
-//    }
 
     @Override
     public void onStart() {
@@ -151,7 +144,6 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        Log.i(LOG_TAG, "onTextChanged");
         mHasTextChanged = true;
     }
 

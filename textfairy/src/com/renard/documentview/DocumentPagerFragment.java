@@ -113,7 +113,10 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
                 @Override
                 public void onPageSelected(int position) {
                     if (mLastPosition != -1) {
-                        mAdapter.getFragment(mLastPosition).saveIfTextHasChanged();
+                        final DocumentTextFragment fragment = mAdapter.getFragment(mLastPosition);
+                        if(fragment!=null) {
+                            fragment.saveIfTextHasChanged();
+                        }
                     }
                     mLastPosition = position;
                     final String title = mAdapter.getLongTitle(position);
@@ -162,6 +165,16 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
             }
         }
         return sb.toString();
+    }
+
+    @Override
+    public void setShowText(boolean text) {
+        mAdapter.setShowText(text);
+    }
+
+    @Override
+    public boolean getShowText() {
+        return mAdapter.getShowText();
     }
 
     @Override
