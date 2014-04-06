@@ -164,5 +164,6 @@ dependencies {
     compile 'org.apache.commons:commons-compress:1.5'
     compile project(":Android-ViewPagerIndicator:library")
     compile project(":FileExplorer")
+    compile project(":PhotoView:library")
     compile project(":ViewPager3D:ViewPager3D")
 }

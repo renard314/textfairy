@@ -1,4 +1,6 @@
 include ':FileExplorer'
 include ':ViewPager3D:ViewPager3D'
-include ':textfairy'
 include ':Android-ViewPagerIndicator:library'
+include ':PhotoView:library'
+include ':textfairy'
+
