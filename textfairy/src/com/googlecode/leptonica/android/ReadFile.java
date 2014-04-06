@@ -29,7 +29,7 @@ import android.os.Build;
  */
 public class ReadFile {
     static {
-		System.loadLibrary("gnustl_shared");		
+		System.loadLibrary("gnustl_shared");
         System.loadLibrary("lept");
     }
 

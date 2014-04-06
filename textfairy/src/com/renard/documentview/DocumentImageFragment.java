@@ -1,7 +1,9 @@
 package com.renard.documentview;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -49,13 +51,18 @@ public class DocumentImageFragment extends Fragment {
 				new ViewTreeObserver.OnGlobalLayoutListener(){
 
 					@Override
+					@TargetApi(16)
 					public void onGlobalLayout() {
 						if (mImageTask != null) {
 							mImageTask.cancel(true);
 						}
 						mImageTask = new LoadImageAsyncTask(mImageView, mViewSwitcher);
 						mImageTask.execute(imagePath);
-						mImageView.getViewTreeObserver().removeOnGlobalLayoutListener( this );
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+							mImageView.getViewTreeObserver().removeOnGlobalLayoutListener( this );
+						} else {
+							mImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+						}
 					}
 
 				});
@@ -77,7 +84,7 @@ public class DocumentImageFragment extends Fragment {
 		@Override
 		protected Bitmap doInBackground(String... params) {
 			final String imagePath = params[0];
-			final Bitmap bitmap = Util.decodeFile(imagePath, mImageView.getWidth(), mImageView.getHeight());
+			final Bitmap bitmap = Util.decodeFile(imagePath, mViewSwitcher.getWidth(), mViewSwitcher.getHeight());
 			return bitmap;
 		}
 

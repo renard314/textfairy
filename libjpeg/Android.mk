@@ -20,7 +20,7 @@ ANDROID_JPEG_NO_ASSEMBLER := true
 endif
 
 # temp fix until we understand why this broke cnn.com
-#ANDROID_JPEG_NO_ASSEMBLER := true
+ANDROID_JPEG_NO_ASSEMBLER := true
 
 ifeq ($(strip $(ANDROID_JPEG_NO_ASSEMBLER)),true)
 LOCAL_SRC_FILES += jidctint.c jidctfst.c

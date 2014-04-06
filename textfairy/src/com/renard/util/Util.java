@@ -343,7 +343,7 @@ public class Util {
 	}
 
 	public static File savePixToSD(final Pix pix, final String name) throws IOException {
-		final String fileName = name + ".jpg";
+		final String fileName = name + ".png";
 
 		File picdir = new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY);
 		if (!picdir.exists()) {
@@ -356,25 +356,22 @@ public class Util {
 		File image = new File(picdir, fileName);
         image.createNewFile();
 		try {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                WriteFile.writeImpliedFormat(pix, image, 85, true);
-
-//                final byte[] bytes = WriteFile.writeMem(pix, Constants.IFF_JFIF_JPEG);
-//                FileOutputStream out = new FileOutputStream(image);
-//                out.write(bytes);
-//                out.close();
-            } else {
-
-                final Bitmap bitmap = WriteFile.writeBitmap(pix);
-                if (bitmap!=null) {
-                    FileOutputStream out = new FileOutputStream(image);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
-                    bitmap.recycle();
-                    out.close();
-                } else {
-                    throw new IOException();
-                }
-            }
+			WriteFile.writeImpliedFormat(pix, image, 85, true);
+//            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                WriteFile.writeImpliedFormat(pix, image, 85, true);
+//
+//            } else {
+//
+//                final Bitmap bitmap = WriteFile.writeBitmap(pix);
+//                if (bitmap!=null) {
+//                    FileOutputStream out = new FileOutputStream(image);
+//                    bitmap.compress(Bitmap.CompressFormat.PNG, 85, out);
+//                    bitmap.recycle();
+//                    out.close();
+//                } else {
+//                    throw new IOException();
+//                }
+//            }
         } catch (Exception e) {
             throw new IOException(e);
 		}

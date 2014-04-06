@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@android:color/background_light"
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out"
     android:id="@+id/viewSwitcher"

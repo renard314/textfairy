@@ -6,7 +6,12 @@ TESSERACT_PATH := $(MY_DIR)/../tesseract-ocr-read-only
 TESSERACT_CHANGE_PATH := $(MY_DIR)/../tesseract-changeset
 LEPTONICA_PATH := $(MY_DIR)/../leptonica-1.68
 LIBJPEG_PATH := $(MY_DIR)/../libjpeg
+LIBPNG_PATH := $(MY_DIR)/../libpng-android/jni
 
+ifeq "$(LIBPNG_PATH)" ""
+  $(error You must set the LIBPNG_PATH variable to the libpng source \
+          directory. See README and jni/Android.mk for details)
+endif
 
 ifeq "$(HOCR2PDF_PATH)" ""
   $(error You must set the HOCR2PDF_PATH variable to the hocr2pdf source \
@@ -28,4 +33,4 @@ ifeq "$(TESSERACT_PATH)" ""
           source directory. See README and jni/Android.mk for details)
 endif
 # Just build the Android.mk files in the subdirs
-include $(call all-subdir-makefiles) $(LIBJPEG_PATH)/Android.mk $(IMAGE_PROCESSING_PATH)/Android.mk $(HOCR2PDF_PATH)/Android.mk
+include $(call all-subdir-makefiles) $(LIBJPEG_PATH)/Android.mk $(LIBPNG_PATH)/Android.mk $(IMAGE_PROCESSING_PATH)/Android.mk $(HOCR2PDF_PATH)/Android.mk
