@@ -97,6 +97,7 @@
     <orderEntry type="module" module-name="ViewPager3D-ViewPager3D" exported="" />
     <orderEntry type="module" module-name="FileExplorer" exported="" />
     <orderEntry type="module" module-name="library" exported="" />
+    <orderEntry type="module" module-name="PhotoView-library" exported="" />
   </component>
 </module>
 
