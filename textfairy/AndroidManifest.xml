@@ -148,6 +148,14 @@
         </activity>
         <activity
             android:logo="@drawable/textfairy_title"
+            android:name="com.renard.ocr.help.BetaTestActivity"
+            android:label="@string/beta_test_title" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.renard.ocr.help.ContributeActivity" />
+        </activity>
+        <activity
+            android:logo="@drawable/textfairy_title"
             android:name="com.renard.ocr.help.AboutActivity"
             android:label="@string/about" >
             <meta-data

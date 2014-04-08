@@ -15,6 +15,7 @@
  */
 package com.renard.ocr.help;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -28,6 +29,10 @@ import com.renard.ocr.cropimage.MonitoredActivity;
 
 public class ContactActivity extends MonitoredActivity {
 
+	public static Intent getFeedbackIntent(Context context) {
+		Intent intent = new Intent(context,BetaTestActivity.class);
+		return intent;
+	}
     public static Intent getFeedbackIntent(String subject, String body) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
@@ -53,7 +58,7 @@ public class ContactActivity extends MonitoredActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = getFeedbackIntent(getString(R.string.feedback_subject), null);
+				Intent intent = getFeedbackIntent(getString(R.string.feedback_subject), null);
                 startActivity(intent);
             }
         });

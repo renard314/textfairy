@@ -179,5 +179,9 @@
     <string name="image_format_unsupported">Das Bildformat wurde nicht erkannt. Bitte wähle ein Bild im Png, Jpeg or Bmp-Format.</string>
     <string name="tts_not_available">Text zu Sprache ist nicht verfügbar.</string>
     <string name="empty_document">Das Dokument enthält keinen Text.</string>
+    <string name="join_beta_test_community">Werde Mitglied der Gruppe der Betatester.</string>
+    <string name="join_beta_program">Werde Betatester.</string>
+    <string name="follow_steps">Führe folgende Schritte durch:</string>
+    <string name="click_image_below">Bist du Mitglied? Dann tappe auf das untere Bild.</string>
 
 </resources>

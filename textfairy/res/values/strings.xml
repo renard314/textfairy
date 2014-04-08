@@ -179,4 +179,8 @@
     <string name="image_format_unsupported">Image format not recognized. Only png, jpeg or bmp files are currently supported.</string>
     <string name="tts_not_available">Text to Speech is not available on your phone.</string>
     <string name="empty_document">Document contains no text.</string>
+    <string name="join_beta_test_community">Join the beta testers community.</string>
+    <string name="join_beta_program">Become a beta tester</string>
+    <string name="follow_steps">Please follow these steps</string>
+    <string name="click_image_below">Once you are a member click on the image below</string>
 </resources>

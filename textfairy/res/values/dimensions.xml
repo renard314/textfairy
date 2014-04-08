@@ -12,6 +12,7 @@
     <dimen name="min_grid_size">20mm</dimen>
     <dimen name="default_element_padding">16dp</dimen>
     <dimen name="grid_spacing">9dip</dimen>
+    <dimen name="google_play_icon_padding">33dp</dimen>
     <dimen name="caption_text_size">16sp</dimen>
     <dimen name="dropshadow_padding_left">5px</dimen>
     <dimen name="dropshadow_padding_right">9px</dimen>

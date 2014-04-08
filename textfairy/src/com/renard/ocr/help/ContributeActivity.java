@@ -28,6 +28,7 @@ import com.renard.ocr.cropimage.MonitoredActivity;
 
 public class ContributeActivity extends MonitoredActivity implements View.OnClickListener {
     private static final String MARKET_URL = "market://details?id=com.renard.ocr";
+	private boolean slideOutLeft = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,11 @@ public class ContributeActivity extends MonitoredActivity implements View.OnClic
     @Override
     protected void onPause() {
         super.onPause();
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+		if (slideOutLeft){
+			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+		} else {
+			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+		}
     }
 
     @Override
@@ -62,17 +67,20 @@ public class ContributeActivity extends MonitoredActivity implements View.OnClic
         switch (v.getId()) {
             case R.id.layout_enroll_beta_test:
             case R.id.button_enroll_beta_test:
-                intent = ContactActivity.getFeedbackIntent(getString(R.string.beta_test_subject), getString(R.string.beta_test_body));
+				slideOutLeft = true;
+				intent = ContactActivity.getFeedbackIntent(this);
                 startActivity(intent);
                 break;
             case R.id.layout_send_feedback:
             case R.id.button_send_feedback:
-                intent = ContactActivity.getFeedbackIntent(getString(R.string.feedback_subject), null);
+				slideOutLeft = true;
+				intent = ContactActivity.getFeedbackIntent(getString(R.string.feedback_subject), null);
                 startActivity(intent);
                 break;
             case R.id.layout_rate_app:
             case R.id.button_rate_app:
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+				slideOutLeft = true;
+				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 intent = new Intent(Intent.ACTION_VIEW);
                 Uri url = Uri.parse(MARKET_URL);
                 intent.setData(url);

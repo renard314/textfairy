@@ -175,7 +175,7 @@ public class ReadFile {
         }
 		final BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
+		opts.inDither = false; //force argb888
 		final Bitmap bmp = BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
         if (bmp!=null){
             final Pix pix = readBitmap(bmp);
