@@ -183,5 +183,7 @@
     <string name="join_beta_program">Werde Betatester.</string>
     <string name="follow_steps">Führe folgende Schritte durch:</string>
     <string name="click_image_below">Bist du Mitglied? Dann tappe auf das untere Bild.</string>
+    <string name="first_step">1. Schritt</string>
+    <string name="second_step">2. Schritt</string>
 
 </resources>

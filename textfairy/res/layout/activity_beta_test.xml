@@ -19,7 +19,19 @@
             android:layout_height="wrap_content"
             android:text="@string/follow_steps"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
+\
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/first_step"
+            android:textStyle="bold"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:background="@color/grey2"/>
 
         <TextView
             android:id="@+id/textView_join_community"
@@ -30,14 +42,8 @@
             android:gravity="left|center_vertical"
             android:drawableLeft="@drawable/gplus"
             android:text="@string/join_beta_test_community"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/click_image_below"
-            style="@style/contribute_bullet_point"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -45,13 +51,18 @@
             android:text="If you are not a member the link below won't work"
             style="@style/contribute_bullet_point"/>
 
+        <TextView
+            android:layout_marginTop="@dimen/default_element_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/second_step"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="@dimen/default_element_padding"
             android:layout_marginBottom="@dimen/activity_horizontal_margin"
             android:background="@color/grey2"/>
-
 
         <TextView
             android:id="@+id/textView_become_tester"
@@ -62,7 +73,7 @@
             android:layout_marginBottom="@dimen/default_element_padding"
             android:gravity="left|center_vertical"
             android:text="@string/join_beta_program"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <TextView
             android:layout_width="match_parent"
