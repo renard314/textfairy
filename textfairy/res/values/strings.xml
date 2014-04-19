@@ -185,4 +185,5 @@
     <string name="click_image_below">Once you are a member click on the image below</string>
     <string name="first_step">First step</string>
     <string name="second_step">Second step</string>
+    <string name="second_step_detail">If you are not a member the second step won\'t work</string>
 </resources>

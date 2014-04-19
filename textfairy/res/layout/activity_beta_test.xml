@@ -5,20 +5,10 @@
             android:fillViewport="true">
 
     <LinearLayout
-        android:clickable="true"
-        android:background="@drawable/btn_start_activity2"
+        android:paddingTop="32dp"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="vertical">
-
-        <TextView
-            android:drawablePadding="@dimen/default_element_padding"
-            android:layout_marginBottom="32dp"
-            android:layout_marginTop="@dimen/default_element_padding"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/follow_steps"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
 \
         <TextView
             android:layout_width="match_parent"
@@ -34,6 +24,8 @@
             android:background="@color/grey2"/>
 
         <TextView
+            android:background="@drawable/btn_start_activity2"
+            android:clickable="true"
             android:id="@+id/textView_join_community"
             android:layout_width="wrap_content"
             android:drawablePadding="@dimen/default_element_padding"
@@ -48,7 +40,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="If you are not a member the link below won't work"
+            android:text="@string/second_step_detail"
             style="@style/contribute_bullet_point"/>
 
         <TextView
@@ -65,6 +57,8 @@
             android:background="@color/grey2"/>
 
         <TextView
+            android:background="@drawable/btn_start_activity2"
+            android:clickable="true"
             android:id="@+id/textView_become_tester"
             android:drawablePadding="@dimen/google_play_icon_padding"
             android:drawableLeft="@drawable/google_play_logo"
