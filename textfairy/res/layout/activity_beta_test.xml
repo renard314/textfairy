@@ -40,7 +40,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/second_step_detail"
+            android:text="@string/first_step_detail"
             style="@style/contribute_bullet_point"/>
 
         <TextView
@@ -72,13 +72,13 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="You can opt out of the beta program anytime"
+            android:text="@string/second_step_first_detail"
             style="@style/contribute_bullet_point"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Please drop me a mail if you find a bug"
+            android:text="@string/second_step_second_detail"
             style="@style/contribute_bullet_point"/>
     </LinearLayout>
 
