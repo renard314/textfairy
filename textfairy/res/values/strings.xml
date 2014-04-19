@@ -185,5 +185,7 @@
     <string name="click_image_below">Once you are a member click on the image below</string>
     <string name="first_step">First step</string>
     <string name="second_step">Second step</string>
-    <string name="second_step_detail">If you are not a member the second step won\'t work</string>
+    <string name="first_step_detail">If you are not a member the second step won\'t work</string>
+    <string name="second_step_first_detail">You can opt out of the beta program anytime</string>
+    <string name="second_step_second_detail">Please drop me a mail if you find a bug</string>
 </resources>

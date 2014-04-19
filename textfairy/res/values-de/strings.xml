@@ -185,6 +185,8 @@
     <string name="click_image_below">Bist du Mitglied? Dann tappe auf das untere Bild.</string>
     <string name="first_step">1. Schritt</string>
     <string name="second_step">2. Schritt</string>
-    <string name="second_step_detail">Du musst Mitglied dieser Gruppe sein damit der zweite Schritt funktioniert.</string>
+    <string name="first_step_detail">Du musst Mitglied dieser Gruppe sein damit der zweite Schritt funktioniert.</string>
+    <string name="second_step_first_detail">Sie können jederzeit das Betaprogramm jederzeit verlassen.</string>
+    <string name="second_step_second_detail">Schreib mir eine Mail wenn du einen Fehler findes.</string>
 
 </resources>
