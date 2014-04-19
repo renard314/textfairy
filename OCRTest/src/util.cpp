@@ -60,11 +60,13 @@ Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
 		pixWrite("binarized.bmp", pixb, IFF_BMP);
 	}
 
+    Pix* pixHmWithBorder = pixAddBorder(pixhm,border,0x0);
     Pix* pixWithBorder = pixAddBorder(pixb,border,0x0);
     Pix* pixOrgWithBorder = pixAddBorder(pixOrg,border,0x0);
     pixDestroy(&pixb);
+    pixDestroy(&pixhm);
     pixb =pixWithBorder;
-
+    pixhm = pixHmWithBorder;
 
 	if (debug>0){
 		pixDisplay(pixWithBorder,0,0);
