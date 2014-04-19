@@ -225,7 +225,9 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
             mTts = null;
         }
         mTtsReady=false;
-        mActionMode.finish();
+		if(mActionMode!=null) {
+			mActionMode.finish();
+		}
     }
 
     public boolean isLanguageAvailable(OCRLanguageAdapter.OCRLanguage lang) {
