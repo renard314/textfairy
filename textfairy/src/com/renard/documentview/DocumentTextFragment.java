@@ -24,6 +24,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,9 @@ import com.renard.util.PreferencesUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class DocumentTextFragment extends Fragment implements TextWatcher {
 
@@ -47,6 +51,13 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 	private boolean mHasTextChanged;
 	private ViewSwitcher mViewSwitcher;
 	private HtmlToSpannedAsyncTask mHtmlTask;
+	private BaseDocumentActivitiy.SaveDocumentTask saveTask;
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("text",mEditText.getText().toString());
+	}
 
 	public static DocumentTextFragment newInstance(final String text, Integer documentId, final String imagePath) {
 		DocumentTextFragment f = new DocumentTextFragment();
@@ -94,10 +105,26 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 		}
 	}
 
+	@Override
+	public void onPause() {
+		super.onPause();
+		saveIfTextHasChanged(false);
+
+	}
+
+//	@Override
+//	public void onDestroy() {
+//		super.onDestroy();
+//		saveIfTextHasChanged(true);
+//	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final String text = getArguments().getString("text");
+
+		String text = getArguments().getString("text");
+		if (savedInstanceState!=null && savedInstanceState.containsKey("text")){
+			text = savedInstanceState.getString("text");
+		}
 		final String imagePath = getArguments().getString("image_path");
 		mDocumentId = getArguments().getInt("id");
 		View view = inflater.inflate(R.layout.fragment_document, container, false);
@@ -114,7 +141,14 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 		return view;
 	}
 
-	void saveIfTextHasChanged() {
+
+	void saveIfTextHasChanged(boolean block) {
+		if (saveTask!=null && block && saveTask.getStatus()!= AsyncTask.Status.FINISHED){
+			//block currently running task
+			waitForTask(saveTask);
+			saveTask = null;
+		}
+
 		if (mHasTextChanged) {
 			mHasTextChanged = false;
 			final Uri uri = Uri.withAppendedPath(DocumentContentProvider.CONTENT_URI, String.valueOf(mDocumentId));
@@ -122,9 +156,24 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 			List<Spanned> texts = new ArrayList<Spanned>();
 			ids.add(uri);
 			texts.add(mEditText.getText());
-			BaseDocumentActivitiy.SaveDocumentTask saveTask = new BaseDocumentActivitiy.SaveDocumentTask(getActivity(), ids, texts);
+			saveTask = new BaseDocumentActivitiy.SaveDocumentTask(getActivity(), ids, texts);
 			saveTask.execute();
+			if (block){
+				waitForTask(saveTask);
+			}
 		}
+	}
+
+	private void waitForTask(BaseDocumentActivitiy.SaveDocumentTask saveTask) {
+		try {
+			Log.i(LOG_TAG,"Blocking saving");
+			saveTask.get(3000, TimeUnit.MILLISECONDS);
+			saveTask=null;
+		} catch (InterruptedException ignore) {
+		} catch (ExecutionException ignore) {
+		} catch (TimeoutException ignore) {
+		}
+		return;
 	}
 
 	@Override
@@ -133,11 +182,11 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 		PreferencesUtils.applyTextPreferences(mEditText, getActivity());
 	}
 
+
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
 	}
-
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
 		mHasTextChanged = true;

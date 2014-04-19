@@ -66,6 +66,7 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
         }
     }
 
+
     private void showTitleIndicator(final boolean show) {
         if (mIsTitleIndicatorVisible == true) {
             if (show) {
@@ -115,7 +116,7 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
                     if (mLastPosition != -1) {
                         final DocumentTextFragment fragment = mAdapter.getFragment(mLastPosition);
                         if(fragment!=null) {
-                            fragment.saveIfTextHasChanged();
+                            fragment.saveIfTextHasChanged(false);
                         }
                     }
                     mLastPosition = position;
