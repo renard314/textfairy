@@ -31,7 +31,9 @@ public class FastBitmapDrawable extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(mBitmap, 0.0f, 0.0f, null);
+		if(!mBitmap.isRecycled()) {
+			canvas.drawBitmap(mBitmap, 0.0f, 0.0f, null);
+		}
     }
 
     @Override
