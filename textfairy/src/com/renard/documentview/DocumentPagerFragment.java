@@ -153,6 +153,15 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 
     @Override
     public String getTextOfAllDocuments() {
+		int position =0 ;
+		if (mLastPosition!=-1){
+			position = mLastPosition;
+		}
+
+		final DocumentTextFragment fragment = mAdapter.getFragment(position);
+		if(fragment!=null) {
+			fragment.saveIfTextHasChanged(true);
+		}
         DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
         final int count = adapter.getCount();
         StringBuilder sb = new StringBuilder();

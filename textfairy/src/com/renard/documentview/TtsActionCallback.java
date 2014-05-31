@@ -1,6 +1,7 @@
 package com.renard.documentview;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -36,11 +37,12 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     private ActionMode mActionMode;
     final Map<String, String> hashMapResource;
 
-    TtsActionCallback(DocumentActivity activity) {
+	TtsActionCallback(DocumentActivity activity) {
         hashMapResource = ResourceUtils.getHashMapResource(activity, R.xml.iso_639_mapping);
         this.activity = activity;
         this.activity.addLifeCycleListener(this);
-    }
+
+	}
 
     @Override
     public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
@@ -93,7 +95,8 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     @Override
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
         mActionMode = actionMode;
-        activity.getMenuInflater().inflate(R.menu.tts_action_mode, menu);
+
+		activity.getMenuInflater().inflate(R.menu.tts_action_mode, menu);
         if (mTts == null) {
             Intent checkIntent = new Intent();
             checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -114,10 +117,14 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
         if (mTtsReady && mTts != null) {
             mTts.stop();
         }
-    }
+
+	}
 
     @Override
     public void onInit(int status) {
+		if(mActionMode==null){
+			return;
+		}
         activity.setSupportProgressBarIndeterminateVisibility(false);
         // status can be either TextToSpeech.SUCCESS or TextToSpeech.ERROR.
         if (status == TextToSpeech.ERROR) {
