@@ -20,6 +20,7 @@ LOCAL_SRC_FILES := \
   lib/hocr.cc \
   codecs/Codecs.cc \
   codecs/pdf.cc \
+  codecs/png.cc \
   codecs/jpeg.cc \
   codecs/transupp.c
 
@@ -27,11 +28,13 @@ LOCAL_C_INCLUDES := \
   codecs \
   utility \
   lib \
-  $(LIBJPEG_PATH)
-  
+  $(LIBJPEG_PATH) \
+  $(LIBPNG_PATH)
+
 
 #common
 LOCAL_SHARED_LIBRARIES:= libjpeg
+LOCAL_STATIC_LIBRARIES:= libpng
 LOCAL_PRELINK_MODULE:= false
 
 include $(BUILD_SHARED_LIBRARY)
