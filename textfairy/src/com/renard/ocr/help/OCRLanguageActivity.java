@@ -62,8 +62,9 @@ public class OCRLanguageActivity extends MonitoredActivity {
     private OCRLanguageAdapter mAdapter;
     private ViewSwitcher mSwitcher;
     private BroadcastReceiver mFailedReceiver;
+	private boolean mReceiverRegistered;
 
-    private class LoadListAsyncTask extends AsyncTask<Void, Void, OCRLanguageAdapter> {
+	private class LoadListAsyncTask extends AsyncTask<Void, Void, OCRLanguageAdapter> {
 
 
         @Override
@@ -298,8 +299,11 @@ public class OCRLanguageActivity extends MonitoredActivity {
     @Override
     protected synchronized void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mDownloadReceiver);
-        unregisterReceiver(mFailedReceiver);
+		if(mReceiverRegistered) {
+			unregisterReceiver(mDownloadReceiver);
+			unregisterReceiver(mFailedReceiver);
+			mReceiverRegistered = false;
+		}
     }
 
     // @Override
@@ -348,6 +352,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
         };
         registerReceiver(mFailedReceiver, new IntentFilter(OCRLanguageInstallService.ACTION_INSTALL_FAILED));
         registerReceiver(mDownloadReceiver, new IntentFilter(OCRLanguageInstallService.ACTION_INSTALL_COMPLETED));
+		mReceiverRegistered = true;
     }
 
     protected void updateLanguageListByDisplayValue(String displayValue, int status) {
