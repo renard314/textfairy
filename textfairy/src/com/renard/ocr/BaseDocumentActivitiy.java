@@ -29,11 +29,11 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.text.Html;
@@ -589,7 +589,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
      * ASYNC TASKS
      */
 
-    protected class CreatePDFTask extends AsyncTask<Void, Integer, ArrayList<Uri>> implements PDFProgressListener {
+    protected class CreatePDFTask extends AsyncTask<Void, Integer, Pair<ArrayList<Uri>,ArrayList<Uri>>> implements PDFProgressListener {
 
         private Set<Integer> mIds = new HashSet<Integer>();
         private int mCurrentPageCount;
@@ -631,24 +631,49 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Uri> pdfFiles) {
+        protected void onPostExecute(Pair<ArrayList<Uri>,ArrayList<Uri>> files) {
             dismissDialog(PDF_PROGRESS_DIALOG_ID);
-            if (pdfFiles != null) {
-                Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
-                shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getText(R.string.share_subject));
-                CharSequence seq = Html.fromHtml(mOCRText.toString());
-                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, seq);
-                // shareIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-                // mHOCRText.toString());
-                shareIntent.setType("application/pdf");
-                shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, pdfFiles);
-                startActivity(Intent.createChooser(shareIntent, getText(R.string.share_chooser_title)));
+            if (files!= null && files.first.size()>0) {
+				if(files.first.size()>1){
+					//we have more than one pdf file
+					//share by sending them
+					sharePDFBySending(files);
+				} else {
+					// single pdf file
+					// share by opening pdf viewer
+					Intent target = new Intent(Intent.ACTION_VIEW);
+					target.setDataAndType(files.first.get(0),"application/pdf");
+					target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+					Intent intent = Intent.createChooser(target, "Open File");
+					try {
+						startActivity(intent);
+					} catch (ActivityNotFoundException e) {
+						sharePDFBySending(files);
+					}
+
+				}
+
+
             } else {
                 Toast.makeText(getApplicationContext(), getText(R.string.error_create_file), Toast.LENGTH_LONG).show();
             }
         }
 
-        private Pair<File, File> createPDF(File dir, long documentId) {
+		private void sharePDFBySending(Pair<ArrayList<Uri>,ArrayList<Uri>> files) {
+			Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
+			shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getText(R.string.share_subject));
+			CharSequence seq = Html.fromHtml(mOCRText.toString());
+			shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, seq);
+			shareIntent.setType("application/pdf");
+			ArrayList<Uri> allFiles = new ArrayList<Uri>();
+			allFiles.addAll(files.first);
+			allFiles.addAll(files.second);
+			shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, allFiles);
+			startActivity(Intent.createChooser(shareIntent, getText(R.string.share_chooser_title)));
+		}
+
+		private Pair<File, File> createPDF(File dir, long documentId) {
 
             Cursor cursor = getContentResolver().query(DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?",
                     new String[]{String.valueOf(documentId), String.valueOf(documentId)}, "created ASC");
@@ -698,7 +723,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
 
         @Override
-        protected ArrayList<Uri> doInBackground(Void... params) {
+        protected Pair<ArrayList<Uri>,ArrayList<Uri>> doInBackground(Void... params) {
             File dir = Util.getPDFDir();
             if (!dir.exists()) {
                 if (!dir.mkdir()) {
@@ -706,26 +731,22 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                 }
             }
 
-            ArrayList<File> files = new ArrayList<File>();
+            ArrayList<Uri> pdfFiles = new ArrayList<Uri>();
+			ArrayList<Uri> txtFiles = new ArrayList<Uri>();
             mCurrentDocumentIndex = 0;
             for (long id : mIds) {
                 final Pair<File, File> pair = createPDF(dir, id);
                 final File pdf = pair.first;
                 final File text = pair.second;
                 if (pdf != null) {
-                    files.add(pdf);
+                    pdfFiles.add(Uri.fromFile(pdf));
                 }
                 if (text != null) {
-                    files.add(text);
+                    txtFiles.add(Uri.fromFile(text));
                 }
                 mCurrentDocumentIndex++;
             }
-            ArrayList<Uri> uris = new ArrayList<Uri>();
-            for (File file : files) {
-                Uri u = Uri.fromFile(file);
-                uris.add(u);
-            }
-            return uris;
+			return Pair.create(pdfFiles, txtFiles);
         }
     }
 
