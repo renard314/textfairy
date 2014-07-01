@@ -8,6 +8,7 @@
 #include <allheaders.h>
 #include <sstream>
 #include <iostream>
+#include "RunningTextlineStats.h"
 
 using namespace std;
 
@@ -590,3 +591,283 @@ Boxa* pixFindTextRegions(Pix* pix, Pix** pixb) {
 
 	return filtered_boxa;
 }
+
+
+void plotNuma2(Numa* numa, Numa* numaExtrema, Numa* numaDelta, int tag) {
+
+	l_int32 n = numaGetCount(numaExtrema);
+	printf("%i number of extrema\n", n);
+	Numa* numaYValues = numaCreate(0);
+	for (int i = 0; i < n; i++) {
+		l_int32 index;
+		l_float32 number;
+		numaGetIValue(numaExtrema, i, &index);
+		numaGetFValue(numa, index, &number);
+		numaAddNumber(numaYValues, number);
+	}
+	GPLOT *gplot;
+	ostringstream name;
+	name<<"numaPlot"<<tag;
+	ostringstream rootName;
+	gplot = gplotCreate(name.str().c_str(), GPLOT_X11, name.str().c_str(), "x", "y");
+	ostringstream title;
+	gplotAddPlot(gplot, NULL, numa, GPLOT_LINES, "histogram");
+	gplotAddPlot(gplot, numaExtrema, numaYValues, GPLOT_IMPULSES, "extrema");
+	gplotMakeOutput(gplot);
+	gplotDestroy(&gplot);
+
+	name.str("");
+	name<<"numaPlot2"<<tag;
+	gplot = gplotCreate(name.str().c_str(), GPLOT_X11, name.str().c_str(), "x", "y");
+	gplotAddPlot(gplot, NULL, numaDelta, GPLOT_IMPULSES, "delta");
+	gplotMakeOutput(gplot);
+	gplotDestroy(&gplot);
+
+	//sleep(1);
+	//return pixRead("numaPLot.png");
+}
+
+
+// groups the array of line heights
+void numaGroupTextLineHeights(Numa* numaTextHeights, Numa** numaMean, Numa** numaStdDev, Numa** numaCount){
+	l_int32 n = numaGetCount(numaTextHeights);
+	Numa* numaMeanResult = numaCreate(0);
+	Numa* numaStdDevResult = numaCreate(0);
+	Numa* numaCountResult = numaCreate(0);
+
+
+	RunningTextlineStats stats;
+	for (int x = 0; x < n - 1; x++) {
+		l_int32 ival;
+		numaGetIValue(numaTextHeights, x, &ival);
+		if(stats.Fits(ival)){
+			stats.Push(ival);
+		} else{
+			if (stats.Count()>2){
+				printf("%i lines grouped, mean = %f\n",stats.Count(),stats.Mean());
+				numaAddNumber(numaCountResult,stats.Count());
+				numaAddNumber(numaMeanResult,stats.Mean());
+				numaAddNumber(numaStdDevResult,stats.StandardDeviation());
+			}
+			stats.Clear();
+			stats.Push(ival);
+		}
+	}
+
+	if (stats.Count()>2){
+		printf("%i lines grouped, mean = %f\n",stats.Count(),stats.Mean());
+		numaAddNumber(numaCountResult,stats.Count());
+		numaAddNumber(numaMeanResult,stats.Mean());
+		numaAddNumber(numaStdDevResult,stats.StandardDeviation());
+	}
+	if(numaCount!=NULL){
+		*numaCount =  numaCountResult;
+	}
+	if(numaMean!=NULL){
+		*numaMean = numaMeanResult;
+	}
+	if (numaStdDev!=NULL){
+		*numaStdDev = numaStdDevResult;
+	}
+}
+
+Numa* extractPeaks(l_int32 lineWidth,Numa* numaPixelSum, Numa* peaks){
+	l_int32 n = numaGetCount(peaks);
+	l_int32 size = n/4;
+	l_int32 val;
+	l_int32 index;
+	Numa* na = numaCreate(size);
+	if (n<2){
+		return na;
+	}
+
+	for (int i = 1; i < n; i+=4) {
+		numaGetIValue(peaks,i,&index);
+		numaAddNumber(na, index);
+	}
+	numaSort(na,na,L_SORT_INCREASING);
+	return na;
+}
+
+NUMA * numaMakeDelta2(NUMA  *nas) {
+	l_int32  i, n, prev, cur;
+	NUMA    *nad;
+    n = numaGetCount(nas);
+    nad = numaCreate(n - 1);
+    numaGetIValue(nas,0,&prev);
+    for (i = 1; i < n; i++) {
+        numaGetIValue(nas, i, &cur);
+        numaAddNumber(nad, cur - prev);
+        prev = cur;
+    }
+    return nad;
+}
+
+l_float32 pixGetTextLineSpacing(Pix* pixb){
+	int nx = 1;
+	int ny = 10;
+	l_float32 tileWidth = pixGetWidth(pixb)/3;
+	if (tileWidth<144){
+		tileWidth = 144;
+	}
+
+	PIXTILING* pt = pixTilingCreate(pixb, 0, 0, tileWidth, pixGetHeight(pixb), 0, 0);
+	pixTilingGetCount(pt, &nx, &ny);
+	l_float32 sum=0;
+	l_float32 lineCount=0;
+
+	for (int i = 0; i < ny; i++) {
+		for (int j = 0; j < nx; j++) {
+			Pix* pixt = pixTilingGetTile(pt, i, j);
+			const l_int32 lineWidth = pixGetWidth(pixt);
+			Numa* numaPixelSum = pixSumPixelsByRow(pixt, NULL);
+			Numa* allPeaks = numaFindPeaks(numaPixelSum,30,0.8,0.01);
+			Numa* extrema = numaFindExtrema(numaPixelSum, lineWidth*.3);
+			Numa* peaks = extractPeaks(lineWidth, numaPixelSum, allPeaks);
+			Numa* delta = numaMakeDelta2(peaks);
+			Numa* numaMean;
+			Numa* numaStdDev;
+			Numa* numaCount;
+			//plotNuma2(numaPixelSum,peaks,delta,j);
+			numaGroupTextLineHeights(delta,&numaMean, &numaStdDev,&numaCount);
+			l_int32 n = numaGetCount(numaMean);
+
+			if(n>0){
+				//sort by line count
+				Numa* naindex = numaGetSortIndex(numaCount, L_SORT_INCREASING);
+				l_float32 fract = 0.75;
+				l_int32 start = (l_int32)(fract * (l_float32)(n - 1) + 0.5);
+				l_int32 end = numaGetCount(naindex);
+
+				//get average line spacing for the top 25% line groups (the ones with the most line numbers)
+				for(int x = start;x<end;x++){
+					l_int32 count;
+					l_float32 mean;
+					l_int32 index;
+					numaGetIValue(naindex,x,&index);
+					numaGetFValue(numaMean, index,&mean);
+					numaGetIValue(numaCount, index,&count);
+					sum+=count*mean;
+					lineCount+=count;
+				}
+			}
+
+			numaDestroy(&numaMean);
+			numaDestroy(&numaStdDev);
+			numaDestroy(&numaPixelSum);
+			numaDestroy(&extrema);
+			numaDestroy(&peaks);
+			numaDestroy(&allPeaks);
+			numaDestroy(&delta);
+			pixDestroy(&pixt);
+		}
+	}
+	pixTilingDestroy(&pt);
+
+	if(sum==0){
+		return 0;
+	}
+
+	l_float32 avg;
+	avg = sum/lineCount;
+	return avg;
+}
+
+Pixa* pixGetTextBlocks(l_float32 textLineSpacing, Pix* pixb, Pix** pixmorphout){
+	Pixa* pixaComp;
+	Pix *pixmorph;
+	Numa* naw;
+	Numa* nah;
+	Numa* nawhr;
+	Numa* nafr, *nafrOrg;
+	Numa *na1, *na2, *na3,*na4,*na5, *nad;
+	ostringstream s;
+
+	if (textLineSpacing==0) {
+		return NULL;
+	}
+	l_int32 w = pixGetWidth(pixb);
+	l_int32 h = pixGetHeight(pixb);
+
+	s.str("");
+	//remove pure black vertical areas
+	//Pix* pixVertical = pixOpenBrickDwa(NULL,pixb,textLineSpacing*.5,textLineSpacing*.5);
+	//Pix* pixHorizontal = pixOpenBrickDwa(NULL,pixb,textLineSpacing*.5,textLineSpacing*3);
+//	pixRasterop(pixb, 0, 0, w, h, PIX_NOT(PIX_SRC) & PIX_DST, pixVertical, 0, 0);
+//	pixRasterop(pixb, 0, 0, w, h, PIX_NOT(PIX_SRC) & PIX_DST, pixHorizontal, 0, 0);
+//	pixDisplay(pixVertical,0,0);
+
+	/* connect paragraphs candidates*/
+	s << "c"<<(int)(textLineSpacing*.8)<<"."<<(int)(textLineSpacing*.85);
+	pixmorph = pixMorphCompSequence(pixb, s.str().c_str(), 0);
+	if (pixmorphout!=NULL){
+		*pixmorphout = pixClone(pixmorph);
+	}
+
+	/* get bounding boxes of paragraphs candidates*/
+	//pixInvert(pixmorph, pixmorph);
+	pixConnCompPixa(pixmorph, &pixaComp, 4);
+	l_int32 boxCount = pixaGetCount(pixaComp);
+	if (boxCount==0){
+		pixDestroy(&pixmorph);
+		return pixaComp;
+	}
+
+	/*
+	 	remove candidates that are unlikely to contain text.
+		selection criteria:
+		1. minimum height
+		2. minimum width
+		3. areafraction > 10-40%
+		4. areafraction of morphed image > 30%
+	*/
+	pixaFindDimensions(pixaComp, &naw, &nah);
+	Boxa* boxa = pixaGetBoxa(pixaComp,L_CLONE);
+	Pixa* pixaOrg = pixaCreateFromBoxa(pixb,boxa,NULL);
+	nafrOrg = pixaFindAreaFraction(pixaOrg);
+	nafr = pixaFindAreaFraction(pixaComp);
+//	l_int32 count = boxaGetCount(boxa);
+//	printf("\n");
+//	for(int i =  0; i < count; i++){
+//		l_int32 x,y,w,h;
+//		l_float32 afr;
+//		boxaGetBoxGeometry(boxa,i,&x,&y,&w,&h);
+//		numaGetFValue(nafrOrg,i,&afr);
+//		printf("(%i/%i - %ix%i) -> %f\n",x,y,w,h,afr);
+//	}
+
+	nawhr = pixaFindWidthHeightRatio(pixaComp);
+	// Build the indicator arrays for the set of components,
+	// based on thresholds and selection criteria.
+	na1 = numaMakeThresholdIndicator(nah, textLineSpacing*.85, L_SELECT_IF_GTE);
+	na2 = numaMakeThresholdIndicator(naw, textLineSpacing*2, L_SELECT_IF_GTE);
+	na3 = numaMakeThresholdIndicator(nafrOrg, 0.10, L_SELECT_IF_GTE);
+	na4 = numaMakeThresholdIndicator(nafrOrg, 0.40, L_SELECT_IF_LTE);
+	na5 = numaMakeThresholdIndicator(nafr, 0.30, L_SELECT_IF_GTE);
+	// Combine the indicator arrays logically to find
+	// the components that will be retained.
+	nad = numaLogicalOp(NULL, na1, na2, L_INTERSECTION);
+	numaLogicalOp(nad, nad, na3, L_INTERSECTION);
+	numaLogicalOp(nad, nad, na4, L_INTERSECTION);
+	numaLogicalOp(nad, nad, na5, L_INTERSECTION);
+	Pixa* pixaFiltered = pixaSelectWithIndicator(pixaComp,nad,NULL);
+
+	numaDestroy(&naw);
+	numaDestroy(&nah);
+	numaDestroy(&nawhr);
+	numaDestroy(&nafr);
+	numaDestroy(&nafrOrg);
+	numaDestroy(&na1);
+	numaDestroy(&na2);
+	numaDestroy(&na3);
+	numaDestroy(&na4);
+	numaDestroy(&na5);
+	numaDestroy(&nad);
+	pixaDestroy(&pixaComp);
+	pixDestroy(&pixmorph);
+//	pixDestroy(&pixVertical);
+//	pixDestroy(&pixHorizontal);
+	return pixaFiltered;
+}
+
+

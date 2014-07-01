@@ -30,7 +30,9 @@ double RunningTextlineStats::StandardDeviation() const {
 }
 
 bool RunningTextlineStats::Fits(double lineHeight) const {
+	//printf("testing: %f",lineHeight);
 	if (stats.NumDataValues() == 0) {
+		//printf(" fits because its the first line\n");
 		return true;
 	}
 	RunningStats nextStats;

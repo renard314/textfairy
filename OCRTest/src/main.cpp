@@ -49,7 +49,6 @@
 #include "text_search.h"
 #include "util.h"
 #include <unistd.h>
-#include "RunningTextlineStats.h"
 
 using namespace std;
 using namespace tesseract;
@@ -811,149 +810,102 @@ void plotNuma(Numa* numa, Numa* numaExtrema, Numa* numaDelta) {
 	//sleep(1);
 	//return pixRead("numaPLot.png");
 }
-// groups the array of line heights
-void numaGroupTextLineHeights(Numa* numaTextHeights, Numa** numaMean, Numa** numaStdDev, Numa** numaCount){
-	l_int32 n = numaGetCount(numaTextHeights);
-	Numa* numaMeanResult = numaCreate(0);
-	Numa* numaStdDevResult = numaCreate(0);
-	Numa* numaCountResult = numaCreate(0);
 
-	RunningTextlineStats stats;
-	for (int x = 0; x < n - 1; x++) {
-		l_int32 ival;
-		numaGetIValue(numaTextHeights, x, &ival);
-		if(stats.Fits(ival)){
-			stats.Push(ival);
-		} else{
-			if (stats.Count()>2){
-				//printf("%i lines grouped, mean = %f\n",stats.Count(),stats.Mean());
-				numaAddNumber(numaCountResult,stats.Count());
-				numaAddNumber(numaMeanResult,stats.Mean());
-				numaAddNumber(numaStdDevResult,stats.StandardDeviation());
-			}
-			stats.Clear();
-			stats.Push(ival);
-		}
+
+void testSkew(const char* filename, int index) {
+	Pix* pixOrg = pixRead(filename);
+	Pix* pixb;
+	L_TIMER timer = startTimerNested();
+	if (pixGetDepth(pixOrg)>1){
+		Pix* pixg = pixConvertRGBToLuminance(pixOrg);
+		//Pix* pixEdge = pixTwoSidedEdgeFilter(pixg,L_HORIZONTAL_EDGES);
+		Pix* pixEdge = pixSobelEdgeFilter(pixg, L_ALL_EDGES);
+		l_int32 width = pixGetWidth(pixEdge);
+		l_int32 height = pixGetHeight(pixEdge);
+		pixOtsuAdaptiveThreshold(pixEdge, width, height, 0, 0, 0, NULL, &pixb);
+		pixDestroy(&pixg);
+		pixDestroy(&pixEdge);
+		pixWrite("binary.bmp",pixb,IFF_BMP);
+	} else {
+		pixb = pixClone(pixOrg);
 	}
-	if(numaCount!=NULL){
-		*numaCount =  numaCountResult;
-	}
-	if(numaMean!=NULL){
-		*numaMean = numaMeanResult;
-	}
-	if (numaStdDev!=NULL){
-		*numaStdDev = numaStdDevResult;
+
+	l_float32 angle;
+	pixFindSkewSweep(pixb,&angle,1,15.,1.);
+	printf("angle = %f, total time = %f\n", angle, stopTimerNested(timer));
+
+	l_float32 deg2rad = 3.1415926535 / 180.;
+	Pix* pixd = pixRotate(pixb, deg2rad * angle, L_ROTATE_AREA_MAP, L_BRING_IN_BLACK, 0, 0);
+
+	pixDisplay(pixb,0,0);
+	pixDisplay(pixd,0,0);
+
+	pixDestroy(&pixb);
+	pixDestroy(&pixd);
+	pixDestroy(&pixOrg);
+}
+
+void numaPrint(Numa* nad){
+	l_int32 count = numaGetCount(nad);
+	printf("\n");
+	for(int i = 0; i< count; i++){
+		l_float32 val;
+		numaGetFValue(nad,i,&val);
+		printf("%i: %f\n",i,val);
 	}
 }
 
-l_float32 pixGetTextLineSpacing(Pix* pixb){
-	int nx = 1;
-	int ny = 10;
-	l_float32 tileWidth = pixGetWidth(pixb)/10;
-	if (tileWidth<48){
-		tileWidth = 48;
-	}
-
-	PIXTILING* pt = pixTilingCreate(pixb, 0, 0, tileWidth, pixGetHeight(pixb), 0, 0);
-	pixTilingGetCount(pt, &nx, &ny);
-	l_float32 sum=0;
-	l_float32 lineCount=0;
-
-	for (int i = 0; i < ny; i++) {
-		for (int j = 0; j < nx; j++) {
-			Pix* pixt = pixTilingGetTile(pt, i, j);
-			Numa* numaPixelSum = pixSumPixelsByRow(pixt, NULL);
-			Numa* extrema = numaFindExtrema(numaPixelSum, pixGetWidth(pixt)/3);
-			Numa* delta = numaMakeDelta(extrema);
-			Numa* numaMean;
-			Numa* numaStdDev;
-			Numa* numaCount;
-
-			numaGroupTextLineHeights(delta,&numaMean, &numaStdDev,&numaCount);
-			l_int32 n = numaGetCount(numaMean);
-
-			//printf("found %i groups of lines\n",n);
-			if(n>0){
-				//sort by line count
-				Numa* naindex = numaGetSortIndex(numaCount, L_SORT_DECREASING);
-				l_float32 fract = 0.75;
-				l_int32 start = (l_int32)(fract * (l_float32)(n - 1) + 0.5);
-				l_int32 end = numaGetCount(naindex);
-
-				//get average line spacing for the top 25% line groups (the ones with the most line numbers)
-				for(int x = start;x<end;x++){
-					l_int32 count;
-					l_float32 mean;
-					l_int32 index;
-					numaGetIValue(naindex,x,&index);
-					numaGetFValue(numaMean, index,&mean);
-					numaGetIValue(numaCount, index,&count);
-					//printf("taking into consideration %i lines %f mean\n",count, mean);
-					sum+=count*mean;
-					lineCount+=count;
-				}
-
-			}
-
-			//plotNuma(numaPixelSum, extrema, delta);
-			//pixaAddPixWithTitle(pixaDisplay, pixPlot, "plot");
-			//pixDestroy(&pixPlot);
-			numaDestroy(&numaMean);
-			numaDestroy(&numaStdDev);
-			numaDestroy(&numaPixelSum);
-			numaDestroy(&extrema);
-			numaDestroy(&delta);
-			pixDestroy(&pixt);
-		}
-	}
-	pixTilingDestroy(&pt);
-	l_float32 median;
-	median = sum/lineCount;
-	//printf("median text line height is = %f, sum=%f, lineCount=%f\n",median,sum, lineCount);
-
-	//numaGetMedian(numaTextHeights,&median);
-	return median;
+Pix* pixGreyToBinary(Pix* pixg) {
+	Pix* pixb;
+	Pix* pixEdge = pixSobelEdgeFilter(pixg, L_ALL_EDGES);
+    /* Do combination of contrast norm and sauvola */
+	Pix* pixt1 = pixContrastNorm(NULL, pixg, 100, 100, 55, 1, 1);
+	pixSauvolaBinarizeTiled(pixt1, 9, 0.15, 1, 1, NULL, &pixb);
+	//pixOtsuAdaptiveThreshold(pixEdge, width, height, 0, 0, 0, NULL, &pixb);
+	pixDestroy(&pixEdge);
+	return pixb;
 }
 
 void testbinary(const char* filename, int index) {
 	Pix* pixOrg = pixRead(filename);
 	Pix* pixg = pixConvertRGBToLuminance(pixOrg);
-	L_TIMER timer = startTimerNested();
 	//Pix* pixEdge = pixTwoSidedEdgeFilter(pixg,L_HORIZONTAL_EDGES);
-	Pix* pixEdge = pixSobelEdgeFilter(pixg, L_ALL_EDGES);
-	Pix* pixb;
-	l_int32 width = pixGetWidth(pixEdge);
-	l_int32 height = pixGetHeight(pixEdge);
-
+	Pix* pixmorph;
 	Pixa* pixaDisplay = pixaCreate(0);
+	Pix* pixb = pixGreyToBinary(pixg);
 
-	pixOtsuAdaptiveThreshold(pixEdge, width, height, 0, 0, 0.0, NULL, &pixb);
+	l_float32 angle;
+    l_int32 error = pixFindSkewSweep(pixb,&angle,1,47.,1.);
+    if (error==1){
+    	angle = 0;
+    } else {
+    	//rotate binary image
+		l_float32 deg2rad = 3.1415926535 / 180.;
+		Pix* pixd = pixRotate(pixb, deg2rad * angle, L_ROTATE_AREA_MAP, L_BRING_IN_WHITE, 0, 0);
+    	if (pixd!=NULL){
+			pixDestroy(&pixb);
+			pixb = pixd;
+    	 }
+    }
+
+
 	l_float32 textLineSpacing = pixGetTextLineSpacing(pixb);
+	printf("linespacing = %f\n",textLineSpacing);
 
-	printf("text line height = %f, total time = %f\n", textLineSpacing, stopTimerNested(timer));
-
-	ostringstream s;
-	s.str("");
-	s << "o"<<(int)(textLineSpacing/2)<<"."<<(int)(textLineSpacing*1.2);
-	printf("morphing %s",s.str().c_str());
-	Pix *pixmorph = pixMorphCompSequence(pixb, s.str().c_str(), 0);
-	pixInvert(pixmorph, pixmorph);
-	Boxa* boxa = pixConnCompBB(pixmorph, 4);
-
-
-	pixRenderBoxa(pixOrg, boxa, 2, L_SET_PIXELS);
+	Pixa* pixaFiltered = pixGetTextBlocks(textLineSpacing,pixb,&pixmorph);
+	Boxa* boxa = pixaGetBoxa(pixaFiltered,L_CLONE);
+	pixRenderBoxa(pixOrg, boxa, 2, L_CLEAR_PIXELS);
 	pixaAddPixWithTitle(pixaDisplay, pixOrg, "original");
 	pixaAddPixWithTitle(pixaDisplay, pixb, "binary");
-	pixaAddPixWithTitle(pixaDisplay, pixmorph, "morph");
+	pixaAddPixWithTitle(pixaDisplay, pixmorph, "pixmorph");
 
 	Pix* pixd = pixaDisplayTiledAndScaled(pixaDisplay, 32, 400, 3, 0, 25, 2);
 	pixDisplay(pixd, 0, 0);
 
 	pixWrite("otsu.bmp", pixb, IFF_BMP);
-	pixWrite("edge.bmp", pixEdge, IFF_BMP);
-
+	pixaDestroy(&pixaFiltered);
+	pixaDestroy(&pixaDisplay);
 	boxaDestroy(&boxa);
-	pixDestroy(&pixmorph);
 	pixDestroy(&pixd);
 	pixDestroy(&pixb);
 }
@@ -966,6 +918,7 @@ int main(int argc, const char* argv[]) {
 
 		s << "/Users/renard/devel/textfairy/OCRTest/" << argv[1] << "/" << argv[2] << ".jpg";
 		testbinary(s.str().c_str(), atoi(argv[1]));
+		//testSkew(s.str().c_str(), atoi(argv[1]));
 
 		//onePictureWithColumns(s.str().c_str(), atoi(argv[1]));
 

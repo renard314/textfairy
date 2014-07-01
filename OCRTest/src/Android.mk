@@ -4,7 +4,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE:= libimage_processing
 
-LOCAL_SRC_FILES := binarize.cpp pageseg.cpp util.cpp text_search.cpp
+LOCAL_SRC_FILES := binarize.cpp pageseg.cpp util.cpp RunningTextlineStats.cpp text_search.cpp RunningStats.cpp
 
 LOCAL_C_INCLUDES := $(LEPTONICA_PATH)/src
 
