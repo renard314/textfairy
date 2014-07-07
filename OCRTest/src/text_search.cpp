@@ -593,53 +593,20 @@ Boxa* pixFindTextRegions(Pix* pix, Pix** pixb) {
 }
 
 
-void plotNuma2(Numa* numa, Numa* numaExtrema, Numa* numaDelta, int tag) {
 
-	l_int32 n = numaGetCount(numaExtrema);
-	printf("%i number of extrema\n", n);
-	Numa* numaYValues = numaCreate(0);
-	for (int i = 0; i < n; i++) {
-		l_int32 index;
-		l_float32 number;
-		numaGetIValue(numaExtrema, i, &index);
-		numaGetFValue(numa, index, &number);
-		numaAddNumber(numaYValues, number);
-	}
-	GPLOT *gplot;
-	ostringstream name;
-	name<<"numaPlot"<<tag;
-	ostringstream rootName;
-	gplot = gplotCreate(name.str().c_str(), GPLOT_X11, name.str().c_str(), "x", "y");
-	ostringstream title;
-	gplotAddPlot(gplot, NULL, numa, GPLOT_LINES, "histogram");
-	gplotAddPlot(gplot, numaExtrema, numaYValues, GPLOT_IMPULSES, "extrema");
-	gplotMakeOutput(gplot);
-	gplotDestroy(&gplot);
-
-	name.str("");
-	name<<"numaPlot2"<<tag;
-	gplot = gplotCreate(name.str().c_str(), GPLOT_X11, name.str().c_str(), "x", "y");
-	gplotAddPlot(gplot, NULL, numaDelta, GPLOT_IMPULSES, "delta");
-	gplotMakeOutput(gplot);
-	gplotDestroy(&gplot);
-
-	//sleep(1);
-	//return pixRead("numaPLot.png");
-}
 
 
 // groups the array of line heights
-void numaGroupTextLineHeights(Numa* numaTextHeights, Numa** numaMean, Numa** numaStdDev, Numa** numaCount){
+void numaGroupTextLineHeights(Numa* numaTextHeights,Numa** numaMean, Numa** numaStdDev, Numa** numaCount){
 	l_int32 n = numaGetCount(numaTextHeights);
 	Numa* numaMeanResult = numaCreate(0);
 	Numa* numaStdDevResult = numaCreate(0);
 	Numa* numaCountResult = numaCreate(0);
-
-
 	RunningTextlineStats stats;
-	for (int x = 0; x < n - 1; x++) {
+	for (int x = 0; x < n; x++) {
 		l_int32 ival;
 		numaGetIValue(numaTextHeights, x, &ival);
+		//printf("text height = %i\n",ival);
 		if(stats.Fits(ival)){
 			stats.Push(ival);
 		} else{
@@ -671,22 +638,95 @@ void numaGroupTextLineHeights(Numa* numaTextHeights, Numa** numaMean, Numa** num
 	}
 }
 
-Numa* extractPeaks(l_int32 lineWidth,Numa* numaPixelSum, Numa* peaks){
+Numa* findLineSpacingFromPeaks(Numa* numaPixelSum, Numa* peaks){
+	/*
+	 *     (1) The returned na consists of sets of four numbers representing
+	 *         the peak, in the following order:
+	 *            left edge; peak center; right edge; normalized peak area
+	 */
 	l_int32 n = numaGetCount(peaks);
 	l_int32 size = n/4;
-	l_int32 val;
-	l_int32 index;
+	l_int32 leftIndex,rightIndex;
+	l_float32 peakArea;
 	Numa* na = numaCreate(size);
-	if (n<2){
+
+	if (n==0){
 		return na;
 	}
 
-	for (int i = 1; i < n; i+=4) {
-		numaGetIValue(peaks,i,&index);
-		numaAddNumber(na, index);
+	for (int i = 0; i < n; i+=4) {
+		numaGetIValue(peaks,i,&leftIndex);
+		numaGetIValue(peaks,i+2,&rightIndex);
+		numaGetFValue(peaks,i+3,&peakArea);
+		numaAddNumber(na, rightIndex-leftIndex);
+		numaAddNumber(na, peakArea);
 	}
-	numaSort(na,na,L_SORT_INCREASING);
+
 	return na;
+}
+
+void extractPeaks(l_int32 width, Numa* numaPixelSum, Numa* peaks, Numa** resultPeaks){
+	l_int32 n = numaGetCount(peaks);
+	l_int32 size = n/4;
+	l_float32 peakArea;
+	l_int32 index,peakHeight,left,right;
+	Numa* na = numaCreate(size);
+	Numa* nArea = numaCreate(size);
+	Numa* nLineWidths = numaCreate(size);
+	Numa* numaResult = numaCreate(0);
+	if (n<1){
+		return;
+	}
+
+	//filter peaks based on a minimum area and minimum height
+	l_int32 minimumHeight = width*0.05;
+	l_float32 minimumArea = (1./n)*0.3;
+
+	for (int i = 0; i < n; i+=4) {
+		numaGetIValue(peaks,i,&left);
+		numaGetIValue(peaks,i+1,&index);
+		numaGetIValue(peaks,i+2,&right);
+		numaGetFValue(peaks,i+3,&peakArea);
+		numaAddNumber(nArea, peakArea);
+		numaAddNumber(na, index);
+
+		l_int32 leftHeight, rightHeight, centerHeight;
+		numaGetIValue(numaPixelSum,left,&leftHeight);
+		numaGetIValue(numaPixelSum,right,&rightHeight);
+		numaGetIValue(numaPixelSum,index,&centerHeight);
+		l_float32 lineHeight =centerHeight - (leftHeight+rightHeight)/2;
+		//printf("%i index = %i, height = %f, area = %f\n",i,index,lineHeight, peakArea);
+		numaAddNumber(nLineWidths, lineHeight );
+	}
+	Numa* naindex = numaGetSortIndex(na, L_SORT_INCREASING);
+	Numa* naSorted = naSorted = numaSortByIndex(na,naindex);
+	Numa* nAreaSorted  = numaSortByIndex(nArea,naindex);
+	Numa* nLineWidthsSorted  = numaSortByIndex(nLineWidths,naindex);
+	numaDestroy(&naindex);
+	numaDestroy(&nArea);
+	numaDestroy(&nLineWidths);
+	numaDestroy(&na);
+
+
+	for (int i = 0; i < size; i++) {
+		numaGetIValue(naSorted,i,&index);
+		numaGetIValue(nLineWidthsSorted,i,&peakHeight);
+		numaGetFValue(nAreaSorted,i,&peakArea);
+		if ( peakArea > minimumArea){
+			numaAddNumber(numaResult,index);
+			//printf("%i index = %i, peakHeight = %i, area = %f\n",i,index,peakHeight, peakArea);
+		}
+	}
+
+	if(resultPeaks!=NULL){
+		*resultPeaks = numaResult;
+	} else {
+		numaDestroy(&numaResult);
+	}
+	numaDestroy(&naSorted);
+	numaDestroy(&nAreaSorted);
+	numaDestroy(&nLineWidths);
+
 }
 
 NUMA * numaMakeDelta2(NUMA  *nas) {
@@ -703,15 +743,18 @@ NUMA * numaMakeDelta2(NUMA  *nas) {
     return nad;
 }
 
+
+
 l_float32 pixGetTextLineSpacing(Pix* pixb){
 	int nx = 1;
 	int ny = 10;
-	l_float32 tileWidth = pixGetWidth(pixb)/3;
-	if (tileWidth<144){
-		tileWidth = 144;
+	l_float32 tileWidth = pixGetWidth(pixb)/6;
+	l_float32 tileHeight = pixGetWidth(pixb)/6;
+	if (tileWidth<24){
+		tileWidth = 24;
 	}
 
-	PIXTILING* pt = pixTilingCreate(pixb, 0, 0, tileWidth, pixGetHeight(pixb), 0, 0);
+	PIXTILING* pt = pixTilingCreate(pixb, 0, 0, tileWidth, tileHeight, tileWidth/3, tileHeight/3);
 	pixTilingGetCount(pt, &nx, &ny);
 	l_float32 sum=0;
 	l_float32 lineCount=0;
@@ -719,17 +762,21 @@ l_float32 pixGetTextLineSpacing(Pix* pixb){
 	for (int i = 0; i < ny; i++) {
 		for (int j = 0; j < nx; j++) {
 			Pix* pixt = pixTilingGetTile(pt, i, j);
-			const l_int32 lineWidth = pixGetWidth(pixt);
+			l_int32 tileWidth = pixGetWidth(pixt);
+			l_float32 tileHeight = pixGetHeight(pixt);
 			Numa* numaPixelSum = pixSumPixelsByRow(pixt, NULL);
-			Numa* allPeaks = numaFindPeaks(numaPixelSum,30,0.8,0.01);
-			Numa* extrema = numaFindExtrema(numaPixelSum, lineWidth*.3);
-			Numa* peaks = extractPeaks(lineWidth, numaPixelSum, allPeaks);
+			//Numa* closed = numaOpen(numaPixelSum,4);
+			//numaPixelSum = closed;
+			Numa* allPeaks = numaFindPeaks(numaPixelSum,30,0.9,0.01);
+			Numa* peaks = NULL;
+			extractPeaks(tileWidth, numaPixelSum, allPeaks,&peaks);
 			Numa* delta = numaMakeDelta2(peaks);
+			//Numa* delta = findLineSpacingFromPeaks(numaPixelSum,allPeaks);
 			Numa* numaMean;
 			Numa* numaStdDev;
 			Numa* numaCount;
-			//plotNuma2(numaPixelSum,peaks,delta,j);
-			numaGroupTextLineHeights(delta,&numaMean, &numaStdDev,&numaCount);
+			//numaPlotToPix(numaPixelSum,peaks);
+			numaGroupTextLineHeights(delta, &numaMean, &numaStdDev,&numaCount);
 			l_int32 n = numaGetCount(numaMean);
 
 			if(n>0){
@@ -755,7 +802,7 @@ l_float32 pixGetTextLineSpacing(Pix* pixb){
 			numaDestroy(&numaMean);
 			numaDestroy(&numaStdDev);
 			numaDestroy(&numaPixelSum);
-			numaDestroy(&extrema);
+			//numaDestroy(&extrema);
 			numaDestroy(&peaks);
 			numaDestroy(&allPeaks);
 			numaDestroy(&delta);
@@ -842,7 +889,7 @@ Pixa* pixGetTextBlocks(l_float32 textLineSpacing, Pix* pixb, Pix** pixmorphout){
 	na1 = numaMakeThresholdIndicator(nah, textLineSpacing*.85, L_SELECT_IF_GTE);
 	na2 = numaMakeThresholdIndicator(naw, textLineSpacing*2, L_SELECT_IF_GTE);
 	na3 = numaMakeThresholdIndicator(nafrOrg, 0.10, L_SELECT_IF_GTE);
-	na4 = numaMakeThresholdIndicator(nafrOrg, 0.40, L_SELECT_IF_LTE);
+	na4 = numaMakeThresholdIndicator(nafrOrg, 0.50, L_SELECT_IF_LTE);
 	na5 = numaMakeThresholdIndicator(nafr, 0.30, L_SELECT_IF_GTE);
 	// Combine the indicator arrays logically to find
 	// the components that will be retained.

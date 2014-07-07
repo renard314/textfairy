@@ -41,8 +41,8 @@ bool RunningTextlineStats::Fits(double lineHeight) const {
 
 	double mean = stats.Mean();
 	double nextMean = nextStats.Mean();
-	double maxMean = mean * 1.2;
-	double minMean = mean * 0.8;
+	double maxMean = mean * 1.3;
+	double minMean = mean * 0.7;
 	double stddev = (stats.NumDataValues() == 1) ? 0 : stats.StandardDeviation();
 	double maxStddev = stddev + 0.5;
 	double nextStddev = nextStats.StandardDeviation();
