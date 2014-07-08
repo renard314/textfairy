@@ -786,6 +786,29 @@ void onePicture(const char* filename, int index) {
 	s.str("");
 }
 
+void plotNumaAndPoint(Numa* numa, l_int32 pointIndex){
+	GPLOT *gplot;
+	ostringstream name;
+	ostringstream rootName;
+	gplot = gplotCreate("numaPLotPoint", GPLOT_X11, name.str().c_str(), "x", "y");
+	ostringstream title;
+
+	l_float32 yval;
+	Numa* nax = numaCreate(1);
+	Numa* nay = numaCreate(1);
+	numaAddNumber(nax, pointIndex);
+	numaGetFValue(numa,pointIndex,&yval);
+	numaAddNumber(nay,yval);
+
+	gplotAddPlot(gplot, NULL, numa, GPLOT_LINES, "numa");
+	gplotAddPlot(gplot, nax, nay, GPLOT_IMPULSES, "point");
+	gplotMakeOutput(gplot);
+	gplotDestroy(&gplot);
+
+	gplotMakeOutput(gplot);
+	gplotDestroy(&gplot);
+}
+
 void plotNuma(Numa* numa, Numa* numaExtrema, Numa* numaDelta) {
 
 	l_int32 n = numaGetCount(numaExtrema);
@@ -1316,7 +1339,7 @@ l_float32 numaGetMeanHorizontalCrossingWidths(Numa* nay){
 	return stats.Mean();
 }
 
-bool calculateTextProbability(Pix* pix, l_int32 i, l_int32 j, l_float32* textPropability, l_float32* textSize, bool debug) {
+bool calculateTextProbability(Pix* pix, l_int32 i, l_int32 j, l_float32* textPropability, l_float32* textSize, l_float32* lineSpacing, bool debug) {
 	Numa* extrema;
 	Numa* numaPixelSum;
 	Numa* numaClosedPixelSum;
@@ -1332,6 +1355,7 @@ bool calculateTextProbability(Pix* pix, l_int32 i, l_int32 j, l_float32* textPro
 	numaPixelSum = pixSumPixelsByRow(pixBorder, NULL);
 	//get width of white area
 	l_float32 meanSpacing = numaGetMeanHorizontalCrossingWidths(numaPixelSum);
+	*lineSpacing = meanSpacing;
 	if(debug){
 		printf("mean spacing = %f\n", meanSpacing);
 	}
@@ -1375,7 +1399,8 @@ void debugTextFindingTile(const char* filename, int index) {
 	Pix* pixOrg = pixRead(filename);
 	l_float32 textPropability = 0;
 	l_float32 textSize = 0;
-	bool success = calculateTextProbability(pixOrg, 0, 0, &textPropability,&textSize, true);
+	l_float32 lineSpacing = 0;
+	bool success = calculateTextProbability(pixOrg, 0, 0, &textPropability,&textSize,&lineSpacing, true);
 	printf("text finding result = %f, %i\n", textPropability, success);
 	pixDestroy(&pixOrg);
 
@@ -1385,6 +1410,9 @@ void debugTextFinding(const char* filename, int index) {
 	Pix* pixOrg = pixRead(filename);
 	Pix* pixg = pixConvertRGBToLuminance(pixOrg);
 	Pix* pixb = pixGreyToBinary(pixg);
+
+	Numa* naTextSize = numaCreate(0);
+	Numa* naLineSpacing = numaCreate(0);
 
 	l_float32 angle;
 	l_int32 error = pixFindSkewSweep(pixb, &angle, 1, 47., 1.);
@@ -1415,15 +1443,16 @@ void debugTextFinding(const char* filename, int index) {
 	for (int i = 0; i < ny; i++) {
 		for (int j = 0; j < nx; j++) {
 			Pix* pixt = pixTilingGetTile(pt, i, j);
-			l_float32 textPropability;
-			l_float32 textSize;
-			bool success = calculateTextProbability(pixt, i, j, &textPropability,&textSize,false);
+			l_float32 textPropability,textSize, lineSpacing;
+			bool success = calculateTextProbability(pixt, i, j, &textPropability,&textSize, &lineSpacing, false);
 			if (success) {
 				printf("(%i,%i) - %f",i,j,textPropability);
 				l_int32 color = 0x00ff0088;
 				if(textPropability>.3){
 					color = 0xff000088;
 				} else {
+					numaAddNumber(naLineSpacing, lineSpacing);
+					numaAddNumber(naTextSize, textSize);
 					printf(" size = %f",textSize);
 				}
 				printf("\n");
@@ -1444,6 +1473,18 @@ void debugTextFinding(const char* filename, int index) {
 			pixDestroy(&pixt);
 		}
 	}
+	Numa* sortIndex = numaGetSortIndex(naTextSize,L_SORT_INCREASING);
+	Numa* sortedLineSpacing = numaSortByIndex(naLineSpacing,sortIndex);
+	Numa* sortedTextSize = numaSortByIndex(naTextSize,sortIndex);
+//	gplotSimple1(sortedLineSpacing,GPLOT_X11,"spacing","spacing");
+//	gplotSimple1(sortedTextSize,GPLOT_X11,"textsize","text size");
+
+	l_int32 splitIndex;
+	l_float32 ave1, ave2;
+	numaSplitDistribution(sortedTextSize,0,&splitIndex,&ave1, &ave2, NULL, NULL, NULL);
+	plotNumaAndPoint(sortedTextSize,splitIndex);
+	printf("textsize 1 = %f, textsize2 = %f\n", ave1, ave2);
+
 
 	//pixaAddPixWithTitle(pixaDisplay, pixBorder, s.str().c_str());
 	Pix* pixd = pixaDisplayTiledAndScaled(pixaDisplay, 32, 200, 6, 0, 30, 3);
