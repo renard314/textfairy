@@ -9,7 +9,8 @@
 
 l_float32 const SkewCorrector::DEG_2_RAD = 3.1415926535 / 180.;
 
-SkewCorrector::SkewCorrector() {
+SkewCorrector::SkewCorrector(bool debug) {
+	mDebug = debug;
 }
 
 
@@ -31,6 +32,9 @@ Pix* SkewCorrector::correctSkew(Pix* pix){
 	if (error == 1) {
 		pixRotated = pixClone(pix);
 	} else {
+		if(mDebug){
+			printf("rotating image by %f degrees\n", angle);
+		}
 		//rotate binary image
 		pixRotated = pixRotate(pix, DEG_2_RAD * angle, L_ROTATE_AREA_MAP, L_BRING_IN_WHITE, 0, 0);
 	}

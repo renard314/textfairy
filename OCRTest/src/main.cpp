@@ -50,6 +50,9 @@
 #include "util.h"
 #include <unistd.h>
 #include <cfloat>
+#include "SkewCorrector.h"
+#include "PixBinarizer.h"
+#include "TextStatFinder.h"
 
 using namespace std;
 using namespace tesseract;
@@ -786,28 +789,7 @@ void onePicture(const char* filename, int index) {
 	s.str("");
 }
 
-void plotNumaAndPoint(Numa* numa, l_int32 pointIndex){
-	GPLOT *gplot;
-	ostringstream name;
-	ostringstream rootName;
-	gplot = gplotCreate("numaPLotPoint", GPLOT_X11, name.str().c_str(), "x", "y");
-	ostringstream title;
 
-	l_float32 yval;
-	Numa* nax = numaCreate(1);
-	Numa* nay = numaCreate(1);
-	numaAddNumber(nax, pointIndex);
-	numaGetFValue(numa,pointIndex,&yval);
-	numaAddNumber(nay,yval);
-
-	gplotAddPlot(gplot, NULL, numa, GPLOT_LINES, "numa");
-	gplotAddPlot(gplot, nax, nay, GPLOT_IMPULSES, "point");
-	gplotMakeOutput(gplot);
-	gplotDestroy(&gplot);
-
-	gplotMakeOutput(gplot);
-	gplotDestroy(&gplot);
-}
 
 void plotNuma(Numa* numa, Numa* numaExtrema, Numa* numaDelta) {
 
@@ -963,48 +945,9 @@ void printNuma(Numa* na, const char* tag) {
 	printf("\n");
 }
 
-Numa* numaMakeYNuma(Numa* nax, Numa* nay) {
-	l_int32 n = numaGetCount(nax);
-	Numa* numaYValues = numaCreate(0);
-	for (int i = 0; i < n; i++) {
-		l_int32 index;
-		l_float32 number;
-		numaGetIValue(nax, i, &index);
-		numaGetFValue(nay, index, &number);
-		numaAddNumber(numaYValues, number);
-	}
-	return numaYValues;
-}
 
-void numaPlot(Numa* numa, Numa* numaExtrema, Numa* crossings1, Numa* crossings2, l_int32 outformat) {
-	Numa* numaYValues = numaMakeYNuma(numaExtrema, numa);
-	GPLOT *gplot;
-	ostringstream name;
-	ostringstream rootName;
-	gplot = gplotCreate("numaPLot", outformat, name.str().c_str(), "x", "y");
-	ostringstream title;
-	gplotAddPlot(gplot, NULL, numa, GPLOT_LINES, "histogram");
-	if (crossings1 != NULL) {
-		Numa* numaCrossingY1 = numaMakeYNuma(crossings1, numa);
-		gplotAddPlot(gplot, crossings1, numaCrossingY1, GPLOT_LINES, "crossing1");
-		numaDestroy(&numaCrossingY1);
-	}
-//	if (crossings2!=NULL){
-//		Numa* numaCrossingY2 = numaMakeYNuma(crossings2,numa);
-//		gplotAddPlot(gplot, crossings2, numaCrossingY2, GPLOT_IMPULSES, "crossing2");
-//		numaDestroy(&numaCrossingY2);
-//	}
 
-	gplotAddPlot(gplot, numaExtrema, numaYValues, GPLOT_IMPULSES, "extrema");
-	gplotMakeOutput(gplot);
-	gplotDestroy(&gplot);
-}
 
-Pix* numaPlotToPix(Numa* numa, Numa* numaExtrema, Numa* crossings1, Numa* crossings2) {
-	numaPlot(numa, numaExtrema, crossings1, crossings2, GPLOT_PNG);
-	usleep(500000);
-	return pixRead("numaPLot.png");
-}
 
 //void numaGetMinValue(Numa* nax,Numa* nay, l_float32* px, l_float32* py){
 //	l_int32 n = numaGetCount(nax);
@@ -1016,154 +959,8 @@ Pix* numaPlotToPix(Numa* numa, Numa* numaExtrema, Numa* crossings1, Numa* crossi
 //	}
 //}
 
-bool numaGetStdDeviation(Numa* na, l_float32* stdDev, l_float32* errorPercentage, l_float32* mean) {
-	l_int32 n = numaGetCount(na);
-	if (n < 2) {
-		return false;
-	}
-	l_int32 val;
-	RunningStats stats;
-	for (int i = 0; i < n; i++) {
-		numaGetIValue(na, i, &val);
-		stats.Push(val);
-	}
-	if (stdDev != NULL) {
-		*stdDev = stats.PopulationStandardDeviation();
-	}
-	if(errorPercentage!=NULL){
-		if(stats.Mean()>0){
-			*errorPercentage = stats.PopulationStandardDeviation() / fabs(stats.Mean());
-		} else {
-			*errorPercentage = 0;
-		}
 
-	}
-	if(mean!=NULL){
-		*mean = stats.Mean();
-	}
 
-	return true;
-}
-
-void numaSplitExtrema(Numa* nax, Numa* nay, Numa** peaksX, Numa** peaksY, Numa** valleysX, Numa** valleysY, Numa** peakAreas, Numa** peakAreaWidths, bool debug) {
-	Numa* navx;
-	Numa* napx;
-	Numa* navy;
-	Numa* napy;
-	Numa* napa;
-	Numa* napaw;
-	bool isPeakFirst = false, b;
-	l_int32 n = numaGetCount(nax);
-	l_int32 first, second, peak_count, valley_count, index;
-	l_int32 start = 0, end = 0;
-	l_float32 valX, valY, sum;
-
-	if (n < 2) {
-		return;
-	}
-	peak_count = n / 2;
-	valley_count = peak_count;
-	if (n % 2 != 0) {
-		numaGetIValue(nax, 0, &index);
-		numaGetIValue(nay, index, &first);
-		numaGetIValue(nax, 1, &index);
-		numaGetIValue(nay, index, &second);
-		isPeakFirst = first > second;
-		if (isPeakFirst) {
-			valley_count--;
-		} else {
-			peak_count--;
-		}
-	}
-	b = isPeakFirst;
-	navx = numaCreate(valley_count);
-	napx = numaCreate(peak_count);
-	navy = numaCreate(valley_count);
-	napy = numaCreate(peak_count);
-	napa = numaCreate(peak_count);
-	napaw = numaCreate(0);
-
-	for (int i = 0; i < n; i++) {
-		numaGetFValue(nax, i, &valX);
-		numaGetFValue(nay, valX, &valY);
-		if (b) {
-			numaAddNumber(napx, valX);
-			numaAddNumber(napy, valY);
-		} else {
-			numaAddNumber(navx, valX);
-			numaAddNumber(navy, valY);
-		}
-		b = !b;
-	}
-
-	//calculate the area under the peaks
-	n = numaGetCount(nax);
-	RunningStats stats;
-	l_int32 i = 0;
-	while(i<n){
-
-		if(i==0 && isPeakFirst){
-			start = 0;
-		} else {
-			numaGetIValue(nax, i++, &start);
-		}
-		l_int32 peak;
-		numaGetIValue(nax,i,&index);
-		numaGetIValue(nay, index, &peak);
-		i++;
-		if(i==n){
-			end = numaGetCount(nay);;
-		} else {
-			numaGetIValue(nax, i, &end);
-		}
-		//printf("integrating %i to %i\n",start, end);
-		l_int32 error = numaGetSumOnInterval(nay,start,end,&sum);
-		if(!error){
-			numaAddNumber(napa, sum);
-			if(debug){
-				printf("sum = %f, peak = %i, width = %f\n",sum, peak, sum/peak);
-			}
-			numaAddNumber(napaw, rintf(sum/peak));
-			if(i>0 && i<n-1){
-				stats.Push(sum);
-			}
-		}
-	}
-	//remove first or last peak area if it differs significantly from the rest (remove  text lines that are cut off)
-	l_float32 mean = stats.Mean();
-	if(numaGetCount(napa)>1){
-		numaGetFValue(napa,0,&sum);
-		l_int32 diff = mean-sum;
-		//if peak area differs from mean by at least 50% remove it
-		if((diff/mean)>.3){
-			if(debug){
-				printf("removing first peak area diff=%i mean = %f\n",diff,mean);
-			}
-			numaRemoveNumber(napa,0);
-			numaRemoveNumber(napaw,0);
-		}
-	}
-	n = numaGetCount(napa);
-	if(n>1){
-		numaGetFValue(napa,n-1,&sum);
-		l_int32 diff = mean-sum;
-		//if peak area differs from mean by at least 50% remove it
-		if((diff/mean)>.3){
-			if(debug){
-				printf("removing last peak area diff=%i mean = %f\n",diff,mean);
-			}
-			numaRemoveNumber(napa,n-1);
-			numaRemoveNumber(napaw,n-1);
-		}
-	}
-
-	*peakAreas = napa;
-	*peaksX = napx;
-	*peaksY = napy;
-	*valleysX = navx;
-	*valleysY = navy;
-	*peakAreaWidths = napaw;
-}
 
 NUMA * numaMakeDelta3(NUMA *nas) {
 	l_int32 i, n, prev, cur;
@@ -1180,227 +977,17 @@ NUMA * numaMakeDelta3(NUMA *nas) {
 }
 
 
-bool checkTextConditions(Numa* extrema, Numa* numaPixelSum, l_float32* textPropability, l_float32* textSize, bool debug) {
-	//1 group of similar line lengths (peak height)
-	//2 group of similar white space lengths (valley height)
-	//3 group of similar line heights (area under peak -> line thickness)
-	//4 number of crossings is around double the number of peaks
-	//5 similar distance between crossings
-
-	bool success = false;
-	//split extrema into peaks and valleys
-	Numa *px, *py, *vx, *vy, *pa, *errors, *paw;
-	numaSplitExtrema(extrema, numaPixelSum, &px, &py, &vx, &vy, &pa, &paw, debug);
-	errors = numaCreate(5);
-	RunningStats stats;
-
-	//check point 1
-	//height of peaks corresponds to height of text lines. they should be similar
-	l_float32 lineLengthDeviation, lineLengthError = 0;
-	l_float32 lineLengthMean;
-	success = numaGetStdDeviation(py, &lineLengthDeviation, &lineLengthError,&lineLengthMean);
-	if (!success) {
-		return false;
-	}
-	numaAddNumber(errors, lineLengthError);
-	stats.Push(lineLengthError);
-
-	//check point 2
-	//height valleys should be similar
-	l_float32 spacingLengthDeviation, spacingLengthError = 0;
-	success = numaGetStdDeviation(vy, &spacingLengthDeviation, &spacingLengthError,NULL);
-	if (!success) {
-		return false;
-	}
-	if(lineLengthMean>0){
-		spacingLengthError = spacingLengthDeviation/lineLengthMean;
-	}
-	numaAddNumber(errors, spacingLengthError);
-	stats.Push(spacingLengthError);
 
 
-	//check point 3
-	//the distance between lines is indicated by the distance of the peaks which is the delta
-	Numa* peakDelta = numaMakeDelta3(px);
-	l_float32 lineHeightDeviation, lineHeightError;
-	success = numaGetStdDeviation(peakDelta, &lineHeightDeviation, &lineHeightError,NULL);
-	if (!success) {
-		return false;
-	}
-	numaAddNumber(errors, lineHeightError);
-	stats.Push(lineHeightError);
 
 
-	//still checking point 3
-	l_float32 peakAreaDeviation, peakAreaError;
-	success = numaGetStdDeviation(pa, &peakAreaDeviation, &peakAreaError,NULL);
-	if (!success) {
-		return false;
-	}
-	//printNuma(pa,"peak areas");
-	numaAddNumber(errors, peakAreaError);
-	stats.Push(peakAreaError);
-
-
-	//check point 4
-	//first find the max valley and min peak
-	l_float32 maxValleyY, minPeakY;
-	l_int32 maxValleyX, minPeakX;
-	numaGetMax(vy, &maxValleyY, &maxValleyX);
-	numaGetMin(py, &minPeakY, &minPeakX);
-	//printf("min peak = %f\nmax valley = %f\n", minPeakY, maxValleyY);
-	l_int32 firstCrossingY = maxValleyY + (minPeakY - maxValleyY) / 3;
-	l_int32 secondCrossingY = minPeakY - (minPeakY - maxValleyY) / 3;
-	//get the crossings
-	Numa* crossings1 = numaCrossingsByThreshold(NULL, numaPixelSum, firstCrossingY);
-	Numa* crossings2 = numaCrossingsByThreshold(NULL, numaPixelSum, secondCrossingY);
-	//number of crossings should be around double the number of peaks
-	l_int32 p2 = numaGetCount(px) * 2;
-	l_int32 c1n = numaGetCount(crossings1);
-	l_int32 c2n = numaGetCount(crossings1);
-	l_float32 thresholdCrossingDeviation = sqrt(((p2 - c1n) * (p2 - c1n) + (p2 - c2n) * (p2 - c2n)) / 2);
-	l_float32 thresholdCrossingError = thresholdCrossingDeviation/((c1n+c2n)/2);
-	numaAddNumber(errors, thresholdCrossingError);
-	stats.Push(thresholdCrossingError);
-
-
-	//check point 6 maybe later
-	if(debug) {
-		printf("threshold deviation = %f\t\terror = %f\n", thresholdCrossingDeviation,thresholdCrossingError);
-		printf("peak area deviation = %f\t\terror = %f\n", peakAreaDeviation,peakAreaError);
-		printf("line distance deviation = %f\terror = %f\n", lineHeightDeviation,lineHeightError);
-		printf("spacing length deviation = %f\terror = %f\n", spacingLengthDeviation,spacingLengthError);
-		printf("line length deviation = %f\terror = %f\n", lineLengthDeviation,lineLengthError);
-
-	}
-
-	//calculate deviation from optimum values
-	//	l_float32 prob = sqrt(((lineLengthError * lineLengthError)*.15 + (spacingLengthError*spacingLengthError)*.15 + (lineHeightError * lineHeightError)*.15 + (peakAreaError * peakAreaError)*35
-	//					+ (thresholdCrossingError * thresholdCrossingError)*.2));
-
-	l_float32 totalError = 0;
-	for(int i = 0; i < 5; i++){
-		l_float32 error;
-		numaGetFValue(errors, i,&error);
-		error = 1 - error;
-		totalError+= (1 - error)*(1 - error);
-	}
-	totalError=sqrt(totalError/5);
-
-	if (textPropability != NULL) {
-		*textPropability = totalError;
-	}
-	if(textSize!=NULL){
-		RunningStats stats;
-		l_int32 w;
-		l_int32 n = numaGetCount(paw);
-		for(int i = 0; i<n; i++){
-			numaGetIValue(paw,i,&w);
-			stats.Push(w);
-		}
-		*textSize = stats.Mean();
-	}
-	numaDestroy(&crossings1);
-	numaDestroy(&crossings2);
-	numaDestroy(&px);
-	numaDestroy(&py);
-	numaDestroy(&vx);
-	numaDestroy(&vy);
-	numaDestroy(&pa);
-	numaDestroy(&errors);
-	numaDestroy(&paw);
-
-//	if(debug) {
-//		printf("spacing dv = %f\nline dv = %f\nspacing height dv = %f\nline height dv = %f\ncrossing deviation = %f\npeak area deviation = %f\ntext propability = %f\n", spacingLengthDeviation, lineLengthDeviation, spaceHeightDeviation, lineHeightDeviation, thresholdCrossingDeviation,peakAreaDeviation, *textPropability);
-//	}
-	return true;
-}
-
-l_float32 numaGetMeanHorizontalCrossingWidths(Numa* nay){
-	l_int32 first, last;
-	RunningStats stats;
-	numaGetNonzeroRange(nay,0,&first, &last);
-
-	l_int32 val;
-	l_int32 count = 0;
-	for(int i = first; i<last;i++){
-		numaGetIValue(nay,i,&val);
-		if(val==0){
-			count++;
-		}
-		if(count>0 && val>0){
-			stats.Push(count);
-			count = 0;
-		}
-	}
-	if(count>0){
-		stats.Push(count);
-	}
-	return stats.Mean();
-}
-
-bool calculateTextProbability(Pix* pix, l_int32 i, l_int32 j, l_float32* textPropability, l_float32* textSize, l_float32* lineSpacing, bool debug) {
-	Numa* extrema;
-	Numa* numaPixelSum;
-	Numa* numaClosedPixelSum;
-	Pix* pixBorder;
-	bool result = false;
-	l_int32 extremaCount = 0;
-	Pixa* pixaDisplay = pixaCreate(0);
-
-	pixBorder = pixAddBorder(pix, 1, 0);
-
-	l_int32 tileWidth = pixGetWidth(pixBorder);
-	//l_int32 tileHeight = pixGetHeight(pixBorder);
-	numaPixelSum = pixSumPixelsByRow(pixBorder, NULL);
-	//get width of white area
-	l_float32 meanSpacing = numaGetMeanHorizontalCrossingWidths(numaPixelSum);
-	*lineSpacing = meanSpacing;
-	if(debug){
-		printf("mean spacing = %f\n", meanSpacing);
-	}
-	//numaClosedPixelSum = numaClose(numaPixelSum, floor(meanSpacing/2));
-	numaClosedPixelSum = numaClone(numaPixelSum);
-
-	extrema = numaFindExtrema(numaClosedPixelSum, tileWidth / 4);
-	extremaCount = numaGetCount(extrema);
-	if (extremaCount > 1) {
-		l_float32 prob;
-		result = checkTextConditions(extrema, numaClosedPixelSum, &prob, textSize, debug);
-		if (textPropability != NULL) {
-			*textPropability = prob;
-		}
-
-		ostringstream s;
-		s << "tile" << i << j << ".bmp";
-		pixWrite(s.str().c_str(), pix, IFF_BMP);
-		if(debug){
-			s.str("");
-			s << "chart" << i << j << ".bmp";
-			//numaPlot(numaPixelSum,extrema, GPLOT_X11);
-			Pix* pixt1 = numaPlotToPix(numaClosedPixelSum, extrema, NULL, NULL);
-			pixWrite(s.str().c_str(), pixt1, IFF_BMP);
-			s.str("");
-			s << result<<" "<<*textSize;
-			pixaAddPixWithTitle(pixaDisplay, pixBorder, s.str().c_str());
-			pixaAddPixWithTitle(pixaDisplay, pixt1, "row sums");
-			Pix* pixd = pixaDisplayTiledAndScaled(pixaDisplay, 32, 800, 2, 0, 30, 3);
-			pixDisplay(pixd, 0, 0);
-		}
-	}
-	pixDestroy(&pixBorder);
-	numaDestroy(&extrema);
-	numaDestroy(&numaPixelSum);
-	numaDestroy(&numaClosedPixelSum);
-	return result;
-}
 
 void debugTextFindingTile(const char* filename, int index) {
+	TextStatFinder textFinder(true);
 	Pix* pixOrg = pixRead(filename);
 	l_float32 textPropability = 0;
 	l_float32 textSize = 0;
-	l_float32 lineSpacing = 0;
-	bool success = calculateTextProbability(pixOrg, 0, 0, &textPropability,&textSize,&lineSpacing, true);
+	bool success = textFinder.getTextStats(pixOrg,&textSize,&textPropability);
 	printf("text finding result = %f, %i\n", textPropability, success);
 	pixDestroy(&pixOrg);
 
@@ -1408,90 +995,21 @@ void debugTextFindingTile(const char* filename, int index) {
 
 void debugTextFinding(const char* filename, int index) {
 	Pix* pixOrg = pixRead(filename);
-	Pix* pixg = pixConvertRGBToLuminance(pixOrg);
-	Pix* pixb = pixGreyToBinary(pixg);
 
-	Numa* naTextSize = numaCreate(0);
-	Numa* naLineSpacing = numaCreate(0);
+	PixBinarizer binarizer;
+	SkewCorrector skewCorrector(true);
+	TextStatFinder textFinder(true);
+	Numa* naTextSizes = NULL;
 
-	l_float32 angle;
-	l_int32 error = pixFindSkewSweep(pixb, &angle, 1, 47., 1.);
-	if (error == 1) {
-		angle = 0;
-	} else {
-		//rotate binary image
-		l_float32 deg2rad = 3.1415926535 / 180.;
-		Pix* pixd = pixRotate(pixb, deg2rad * angle, L_ROTATE_AREA_MAP, L_BRING_IN_WHITE, 0, 0);
-		if (pixd != NULL) {
-			pixDestroy(&pixb);
-			pixb = pixd;
-		}
-	}
+	Pix* pixBinarySkewed = binarizer.binarize(pixOrg);
+	Pix* pixBinary= skewCorrector.correctSkew(pixBinarySkewed);
+	textFinder.getTextStatsTiled(pixBinary,&naTextSizes);
 
-	int nx = 1;
-	int ny = 10;
-	l_float32 tileWidth = pixGetWidth(pixb) / 6;
-	l_float32 tileHeight = pixGetWidth(pixb) / 6;
-	if (tileWidth < 24) {
-		tileWidth = 24;
-	}
+	pixDestroy(&pixBinarySkewed);
+	pixDestroy(&pixBinary);
+	pixDestroy(&pixOrg);
+	numaDestroy(&naTextSizes);
 
-	PIXTILING* pt = pixTilingCreate(pixb, 0, 0, tileWidth, tileHeight, tileWidth / 2, tileHeight / 2);
-	pixTilingGetCount(pt, &nx, &ny);
-	Pixa* pixaDisplay = pixaCreate(0);
-
-	for (int i = 0; i < ny; i++) {
-		for (int j = 0; j < nx; j++) {
-			Pix* pixt = pixTilingGetTile(pt, i, j);
-			l_float32 textPropability,textSize, lineSpacing;
-			bool success = calculateTextProbability(pixt, i, j, &textPropability,&textSize, &lineSpacing, false);
-			if (success) {
-				printf("(%i,%i) - %f",i,j,textPropability);
-				l_int32 color = 0x00ff0088;
-				if(textPropability>.3){
-					color = 0xff000088;
-				} else {
-					numaAddNumber(naLineSpacing, lineSpacing);
-					numaAddNumber(naTextSize, textSize);
-					printf(" size = %f",textSize);
-				}
-				printf("\n");
-				l_int32 h = pixGetHeight(pixt);
-				l_int32 w = pixGetWidth(pixt);
-				Box* b = boxCreate(j*w, i*h, w, h);
-				pixBlendInRect(pixOrg, b, color, .5f);
-				boxSetGeometry(b,0,0,w,h);
-				ostringstream s;
-				s<<"("<<i<<","<<j<<") "<<textPropability;
-				Pix* pix32  = pixConvert1To32(NULL,pixt,0,0xffffff);
-				pixBlendInRect(pix32, b, color, .5f);
-				Pix* pixScaled = pixScale(pix32,5,5);
-				pixaAddPixWithTitle(pixaDisplay, pixScaled, s.str().c_str());
-
-				boxDestroy(&b);
-			}
-			pixDestroy(&pixt);
-		}
-	}
-	Numa* sortIndex = numaGetSortIndex(naTextSize,L_SORT_INCREASING);
-	Numa* sortedLineSpacing = numaSortByIndex(naLineSpacing,sortIndex);
-	Numa* sortedTextSize = numaSortByIndex(naTextSize,sortIndex);
-//	gplotSimple1(sortedLineSpacing,GPLOT_X11,"spacing","spacing");
-//	gplotSimple1(sortedTextSize,GPLOT_X11,"textsize","text size");
-
-	l_int32 splitIndex;
-	l_float32 ave1, ave2;
-	numaSplitDistribution(sortedTextSize,0,&splitIndex,&ave1, &ave2, NULL, NULL, NULL);
-	plotNumaAndPoint(sortedTextSize,splitIndex);
-	printf("textsize 1 = %f, textsize2 = %f\n", ave1, ave2);
-
-
-	//pixaAddPixWithTitle(pixaDisplay, pixBorder, s.str().c_str());
-	Pix* pixd = pixaDisplayTiledAndScaled(pixaDisplay, 32, 200, 6, 0, 30, 3);
-	pixDisplay(pixd, 0, 0);
-
-	pixTilingDestroy(&pt);
-	pixDisplay(pixOrg,0,0);
 }
 
 int main(int argc, const char* argv[]) {
@@ -1500,9 +1018,9 @@ int main(int argc, const char* argv[]) {
 	ostringstream s;
 	if (argc == 3) {
 
-		s << "/Users/renard/devel/textfairy/OCRTest/" << argv[1] << "/" << argv[2] << ".jpg";
-		//debugTextFindingTile(s.str().c_str(), atoi(argv[1]));
-		debugTextFinding(s.str().c_str(), atoi(argv[1]));
+		s << "/Users/renard/devel/textfairy/OCRTest/" << argv[1] << "/" << argv[2] << ".bmp";
+		debugTextFindingTile(s.str().c_str(), atoi(argv[1]));
+		//debugTextFinding(s.str().c_str(), atoi(argv[1]));
 		//testbinary(s.str().c_str(), atoi(argv[1]));
 		//testSkew(s.str().c_str(), atoi(argv[1]));
 

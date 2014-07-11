@@ -11,12 +11,13 @@
 
 class SkewCorrector {
 public:
-	SkewCorrector();
+	SkewCorrector(bool debug);
 	Pix* correctSkew(Pix* pix);
 	virtual ~SkewCorrector();
 
 private:
 	static l_float32 const DEG_2_RAD;
+	bool mDebug;
 };
 
 #endif /* SKEWCORRECTOR_H_ */

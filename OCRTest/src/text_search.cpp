@@ -602,7 +602,7 @@ void numaGroupTextLineHeights(Numa* numaTextHeights,Numa** numaMean, Numa** numa
 	Numa* numaMeanResult = numaCreate(0);
 	Numa* numaStdDevResult = numaCreate(0);
 	Numa* numaCountResult = numaCreate(0);
-	RunningTextlineStats stats;
+	RunningTextlineStats stats(true);
 	for (int x = 0; x < n; x++) {
 		l_int32 ival;
 		numaGetIValue(numaTextHeights, x, &ival);
