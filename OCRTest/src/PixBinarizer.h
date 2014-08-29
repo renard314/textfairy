@@ -12,10 +12,21 @@
 
 class PixBinarizer {
 public:
-	PixBinarizer();
+	PixBinarizer(bool debug);
 	Pix* binarize(Pix* pix);
 
 	virtual ~PixBinarizer();
+
+private:
+	void binarizeInternal(Pix* pixGrey, Pix* pixhm, Pix** pixb);
+	Pix* binarizeTiled(Pix* pixs, const l_uint32 tileSize);
+	Pix* createEdgeMask(Pix* pixs);
+	int determineThresholdForTile(Pix* pixt, bool debug);
+
+
+
+
+	bool mDebug;
 };
 
 #endif /* PIXBINARIZER_H_ */

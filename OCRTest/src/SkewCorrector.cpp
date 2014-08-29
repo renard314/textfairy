@@ -13,8 +13,12 @@ SkewCorrector::SkewCorrector(bool debug) {
 	mDebug = debug;
 }
 
+Pix* SkewCorrector::rotate(Pix* pix, l_float32 angle) {
+	return pixRotate(pix, DEG_2_RAD * angle, L_ROTATE_AREA_MAP, L_BRING_IN_WHITE, 0, 0);
+}
 
-Pix* SkewCorrector::correctSkew(Pix* pix){
+
+Pix* SkewCorrector::correctSkew(Pix* pix, l_float32* angle_out){
     PROCNAME("SkewCorrector::correctSkew");
 	if(pix==NULL){
 		l_warning("pixs not defined",procName);
@@ -27,7 +31,7 @@ Pix* SkewCorrector::correctSkew(Pix* pix){
 	}
 
 	Pix* pixRotated;
-	l_float32 angle;
+	l_float32 angle =  0;
 	l_int32 error = pixFindSkewSweep(pix, &angle, 1, 47., 1.);
 	if (error == 1) {
 		pixRotated = pixClone(pix);
@@ -37,6 +41,9 @@ Pix* SkewCorrector::correctSkew(Pix* pix){
 		}
 		//rotate binary image
 		pixRotated = pixRotate(pix, DEG_2_RAD * angle, L_ROTATE_AREA_MAP, L_BRING_IN_WHITE, 0, 0);
+	}
+	if(angle_out!=NULL){
+		*angle_out = angle;
 	}
 	return pixRotated;
 }

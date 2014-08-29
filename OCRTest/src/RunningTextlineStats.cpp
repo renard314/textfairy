@@ -1,6 +1,7 @@
 #include "RunningTextlineStats.h"
 #include <cmath>
 #include <vector>
+#include <stdio.h>
 
 RunningTextlineStats::RunningTextlineStats(bool debug) {
 	mDebug = debug;

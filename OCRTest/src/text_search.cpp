@@ -822,12 +822,15 @@ l_float32 pixGetTextLineSpacing(Pix* pixb){
 
 Pixa* pixGetTextBlocks(l_float32 textLineSpacing, Pix* pixb, Pix** pixmorphout){
 	Pixa* pixaComp;
+	Pixa* pixaOrg;
+	Pixa* pixaFiltered;
 	Pix *pixmorph;
 	Numa* naw;
 	Numa* nah;
 	Numa* nawhr;
 	Numa* nafr, *nafrOrg;
 	Numa *na1, *na2, *na3,*na4,*na5, *nad;
+	Boxa* boxa;
 	ostringstream s;
 
 	if (textLineSpacing==0) {
@@ -869,8 +872,8 @@ Pixa* pixGetTextBlocks(l_float32 textLineSpacing, Pix* pixb, Pix** pixmorphout){
 		4. areafraction of morphed image > 30%
 	*/
 	pixaFindDimensions(pixaComp, &naw, &nah);
-	Boxa* boxa = pixaGetBoxa(pixaComp,L_CLONE);
-	Pixa* pixaOrg = pixaCreateFromBoxa(pixb,boxa,NULL);
+	boxa = pixaGetBoxa(pixaComp,L_CLONE);
+	pixaOrg = pixaCreateFromBoxa(pixb,boxa,NULL);
 	nafrOrg = pixaFindAreaFraction(pixaOrg);
 	nafr = pixaFindAreaFraction(pixaComp);
 //	l_int32 count = boxaGetCount(boxa);
@@ -897,7 +900,7 @@ Pixa* pixGetTextBlocks(l_float32 textLineSpacing, Pix* pixb, Pix** pixmorphout){
 	numaLogicalOp(nad, nad, na3, L_INTERSECTION);
 	numaLogicalOp(nad, nad, na4, L_INTERSECTION);
 	numaLogicalOp(nad, nad, na5, L_INTERSECTION);
-	Pixa* pixaFiltered = pixaSelectWithIndicator(pixaComp,nad,NULL);
+	pixaFiltered = pixaSelectWithIndicator(pixaComp,nad,NULL);
 
 	numaDestroy(&naw);
 	numaDestroy(&nah);
@@ -911,7 +914,9 @@ Pixa* pixGetTextBlocks(l_float32 textLineSpacing, Pix* pixb, Pix** pixmorphout){
 	numaDestroy(&na5);
 	numaDestroy(&nad);
 	pixaDestroy(&pixaComp);
+	pixaDestroy(&pixaOrg);
 	pixDestroy(&pixmorph);
+
 //	pixDestroy(&pixVertical);
 //	pixDestroy(&pixHorizontal);
 	return pixaFiltered;

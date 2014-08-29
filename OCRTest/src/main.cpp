@@ -53,6 +53,7 @@
 #include "SkewCorrector.h"
 #include "PixBinarizer.h"
 #include "TextStatFinder.h"
+#include "TextBlockFinder.h"
 
 using namespace std;
 using namespace tesseract;
@@ -988,7 +989,7 @@ void debugTextFindingTile(const char* filename, int index) {
 	l_float32 textPropability = 0;
 	l_float32 textSize = 0;
 	bool success = textFinder.getTextStats(pixOrg,&textSize,&textPropability);
-	printf("text finding result = %f, %i\n", textPropability, success);
+	printf("text finding success = %s, text probability = %f\n", success==true?"true":"false",textPropability);
 	pixDestroy(&pixOrg);
 
 }
@@ -996,20 +997,75 @@ void debugTextFindingTile(const char* filename, int index) {
 void debugTextFinding(const char* filename, int index) {
 	Pix* pixOrg = pixRead(filename);
 
-	PixBinarizer binarizer;
-	SkewCorrector skewCorrector(true);
-	TextStatFinder textFinder(true);
+	PixBinarizer binarizer(false);
+	SkewCorrector skewCorrector(false);
+	TextStatFinder textStatFinder(false);
+	TextBlockFinder textBlockFinder(true);
 	Numa* naTextSizes = NULL;
-
+	l_float32 angle;
+	Pixa* pixaTextBlocks;
+	Pix* pixTextProbability;
+	Pix* pixRotatedOrg;
 	Pix* pixBinarySkewed = binarizer.binarize(pixOrg);
-	Pix* pixBinary= skewCorrector.correctSkew(pixBinarySkewed);
-	textFinder.getTextStatsTiled(pixBinary,&naTextSizes);
+	pixDisplay(pixBinarySkewed,0,0);
+	Pix* pixBinary= skewCorrector.correctSkew(pixBinarySkewed, &angle);
+	L_TIMER timer = startTimerNested();
+	textStatFinder.getTextStatsTiled(pixBinary,&naTextSizes, &pixTextProbability);
+	printf("time for text stats = %f\n", stopTimerNested(timer));
 
+
+	l_float32 textSize=0;
+	numaGetFValue(naTextSizes,0,&textSize);
+	timer = startTimerNested();
+	pixaTextBlocks = textBlockFinder.findTextBlocks(pixBinary,pixTextProbability,naTextSizes,NULL);
+	l_int32 pixaCount = pixaGetCount(pixaTextBlocks);
+	printf("time for %i text blocks = %f\n", pixaCount,stopTimerNested(timer));
+
+	Boxa* boxa = pixaGetBoxa(pixaTextBlocks, L_CLONE);
+	pixRotatedOrg = skewCorrector.rotate(pixOrg,angle);
+
+	pixRenderBoxa(pixRotatedOrg, boxa, 2, L_CLEAR_PIXELS);
+	pixDisplay(pixRotatedOrg,0,0);
+
+
+	pixaDestroy(&pixaTextBlocks);
 	pixDestroy(&pixBinarySkewed);
 	pixDestroy(&pixBinary);
+	pixDestroy(&pixTextProbability);
+	pixDestroy(&pixRotatedOrg);
 	pixDestroy(&pixOrg);
+	boxaDestroy(&boxa);
 	numaDestroy(&naTextSizes);
+}
 
+void testDFT(const char* filename, int index) {
+	TextStatFinder textFinder(true);
+	Pix* pix = pixRead(filename);
+	Pix* pixBorder = pixAddBorder(pix, 1, 0);
+	Numa* numaPixelSum = pixSumPixelsByRow(pixBorder, NULL);
+
+
+	l_int32 n = numaGetCount(numaPixelSum);
+	double *a = new double [n/2 + 1];
+	double *b = new double [n/2 + 1];
+	double *sig_out = new double [n];
+//TODO test
+//	    forwardDFT(sig_in, w, a, b);  // forward DFT
+}
+
+void forwardDFT(const double *s, const int &N, double *&a, double *&b)
+{
+    // note: this code is not optimised at all, written for clarity not speed.
+    for (int k = 0; k <= N / 2; ++k) {
+        a[k] = b[k] = 0;
+        for (int x = 0; x < N; ++x) {
+            a[k] += s[x] * cos(2 * M_PI / N * k * x);
+            b[k] += s[x] * sin(2 * M_PI / N * k * x);
+        }
+        // normalization
+        a[k] *= (k == 0 || k == N / 2) ? 1. / N : 2. / N;
+        b[k] *= 2. / N;
+    }
 }
 
 int main(int argc, const char* argv[]) {
@@ -1023,6 +1079,7 @@ int main(int argc, const char* argv[]) {
 		//debugTextFinding(s.str().c_str(), atoi(argv[1]));
 		//testbinary(s.str().c_str(), atoi(argv[1]));
 		//testSkew(s.str().c_str(), atoi(argv[1]));
+		//testDFT(s.str().c_str(),atoi(argv[1]));
 
 		//onePictureWithColumns(s.str().c_str(), atoi(argv[1]));
 

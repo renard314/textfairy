@@ -12,7 +12,8 @@
 class SkewCorrector {
 public:
 	SkewCorrector(bool debug);
-	Pix* correctSkew(Pix* pix);
+	Pix* correctSkew(Pix* pix, l_float32* angle);
+	Pix* rotate(Pix* pix, l_float32 angle);
 	virtual ~SkewCorrector();
 
 private:
