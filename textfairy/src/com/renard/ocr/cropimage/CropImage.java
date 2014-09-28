@@ -89,7 +89,9 @@ public class CropImage extends MonitoredActivity {
 					// mImagePath = extras.getString("image-path");
 					// mSaveUri = Uri.fromFile(new File(mImagePath));
 					// mBitmap = getBitmap(mImagePath);
-					mPix = new Pix(extras.getInt(DocumentGridActivity.EXTRA_NATIVE_PIX));
+					mPix = new Pix(extras.getLong(DocumentGridActivity.EXTRA_NATIVE_PIX));
+					
+					
 
 					// scale it so that it fits the screen
 					

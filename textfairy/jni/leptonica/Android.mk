@@ -1,67 +1,7 @@
-REAL_LOCAL_PATH := $(CURDIR)/jni/leptonica
-LOCAL_PATH :=
-
+LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
-
 LOCAL_MODULE := liblept
+LOCAL_SRC_FILES := $(TESS_TWO_PATH)/libs/$(TARGET_ARCH_ABI)/liblept.so
+LOCAL_EXPORT_C_INCLUDES := $(LEPTONICA_SRC_PATH)/src
+include $(PREBUILT_SHARED_LIBRARY)
 
-# leptonica (minus freetype)
-
-BLACKLIST_SRC_FILES := \
-  %endiantest.c \
-  %freetype.c \
-  %xtractprotos.c
-
-LOCAL_SRC_FILES := \
-  $(filter-out $(BLACKLIST_SRC_FILES),$(wildcard $(LEPTONICA_PATH)/src/*.c))
-  
-LOCAL_EXPORT_C_INCLUDES :=  $(LEPTONICA_PATH)/src
-  
-LOCAL_CFLAGS := \
-  -DHAVE_CONFIG_H
-
-LOCAL_C_INCLUDES := \
-  $(LIBJPEG_PATH) \
-  $(LIBPNG_PATH)
-
-LOCAL_LDLIBS := \
-  -lz
-
-# missing stdio functions
-
-ifneq ($(TARGET_SIMULATOR),true)
-LOCAL_SRC_FILES += \
-  $(REAL_LOCAL_PATH)/stdio/open_memstream.c \
-  $(REAL_LOCAL_PATH)/stdio/fopencookie.c \
-  $(REAL_LOCAL_PATH)/stdio/fmemopen.c
-LOCAL_C_INCLUDES += \
-  $(REAL_LOCAL_PATH)/stdio
-endif
-
-# jni
-
-LOCAL_SRC_FILES += \
-  $(REAL_LOCAL_PATH)/box.cpp \
-  $(REAL_LOCAL_PATH)/pix.cpp \
-  $(REAL_LOCAL_PATH)/pixa.cpp \
-  $(REAL_LOCAL_PATH)/utilities.cpp \
-  $(REAL_LOCAL_PATH)/readfile.cpp \
-  $(REAL_LOCAL_PATH)/writefile.cpp \
-  $(REAL_LOCAL_PATH)/jni.cpp
-  
-LOCAL_C_INCLUDES += \
-  $(REAL_LOCAL_PATH) \
-  $(LEPTONICA_PATH)/src
-
-LOCAL_LDLIBS += \
-  -ljnigraphics \
-  -llog
-
-# common
-
-LOCAL_SHARED_LIBRARIES:= libjpeg
-LOCAL_STATIC_LIBRARIES:= libpng
-
-LOCAL_PRELINK_MODULE:= false
-
-include $(BUILD_SHARED_LIBRARY)

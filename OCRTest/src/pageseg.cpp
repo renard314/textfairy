@@ -64,7 +64,7 @@ l_int32 getMedianComponentHeight(Pix* pixtl, bool debug) {
 	}
 
 	float median = 0;
-	numaGetRankValue(na, 0.75, &median);
+	numaGetRankValue(na, 0.75,NULL,false, &median);
 	//numaGetMedian(na, &median);
 	numaDestroy(&na);
 	pixaDestroy(&comp);

@@ -2,12 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.renard.ocr"
     android:installLocation="auto"
-    android:versionCode="28"
-    android:versionName="1.1.22">
+    android:versionCode="29"
+    android:versionName="1.2.01">
 
     <uses-sdk
         android:minSdkVersion="9"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="20" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />

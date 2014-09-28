@@ -19,14 +19,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
+import com.googlecode.leptonica.android.WriteFile;
+import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.Util;
@@ -49,11 +53,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	public static final String EXTRA_OCR_BOX = "ocr_box";
 
 	static {
-		System.loadLibrary("gnustl_shared");		
+//		System.loadLibrary("gnustl_shared");		
 		System.loadLibrary("lept");
 		System.loadLibrary("tess");
-		System.loadLibrary("image_processing");
-		System.loadLibrary("ocr");
+		System.loadLibrary("image_processing_jni");
 		nativeInit();
 
 	}
@@ -70,6 +73,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	private Messenger mMessenger;
 	private boolean mIsActivityAttached = false;
 	private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+
+	protected TessBaseAPI mTess;
 	
 	public OCR(final MonitoredActivity activity, final Messenger messenger){
 		mMessenger = messenger;
@@ -84,14 +89,17 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	private synchronized void onProgressImage(final int nativePix) {
 		Pix preview = new Pix(nativePix);
 		if (mMessenger != null && mIsActivityAttached) {
+			final Bitmap previewBitmap = WriteFile.writeBitmap(preview);
 			mPreviewHeight = preview.getHeight();
 			mPreviewWith = preview.getWidth();
-			sendMessage(MESSAGE_PREVIEW_IMAGE, nativePix);
+			preview.recycle();
+			sendMessage(MESSAGE_PREVIEW_IMAGE, previewBitmap);
 		} else {
 			preview.recycle();
 		}
 
 	}
+
 
 	/**
 	 * called from native code
@@ -224,19 +232,24 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	private void sendMessage(int what, int arg1) {
 		sendMessage(what, arg1, 0, null, null);
 	}
+	
+	private void sendMessage(int what, Bitmap previewBitmap) {
+		sendMessage(what, 0, 0, previewBitmap, null );		
+	}
+
 
 	private void sendMessage(int what, int arg1, Bundle b) {
 		sendMessage(what, arg1, 0, null, b);
 	}
 
-	private synchronized void sendMessage(int what, int arg1, int arg2, String string, Bundle b) {
+	private synchronized void sendMessage(int what, int arg1, int arg2, Object object, Bundle b) {
 		if (mIsActivityAttached) {
 
 			Message m = Message.obtain();
 			m.what = what;
 			m.arg1 = arg1;
 			m.arg2 = arg2;
-			m.obj = string;
+			m.obj = object;
 			m.setData(b);
 			try {
 				mMessenger.send(m);
@@ -275,7 +288,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 			public void run() {
 				try {
 					final String tessDir = Util.getTessDir(context);
-					nativeOCR(pixaText.getNativePixa(), pixaImages.getNativePixa(), selectedTexts, selectedImages, tessDir, lang);
+					//TODO fix
+					//nativeOCR(pixaText.getNativePixa(), pixaImages.getNativePixa(), selectedTexts, selectedImages, tessDir, lang);
 				} finally {
 					sendMessage(MESSAGE_END);
 				}
@@ -301,7 +315,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-					nativeAnalyseLayout(pixs.getNativePix());
+				//TODO fix
+					//nativeAnalyseLayout(pixs.getNativePix());
 			}
 		}).start();
 	}
@@ -325,11 +340,33 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 			@Override
 			public void run() {
 				try {
-					//final String lang = PreferencesUtils.getOCRLanguage(context);
 					final String tessDir = Util.getTessDir(context);
-					nativeOCRBook(pixs.getNativePix(), tessDir, lang);
+					long nativeTextPix = nativeOCRBook(pixs.getNativePix());
+					pixs.recycle(); 
+					Pix pixText = new Pix(nativeTextPix);
+			        mOriginalHeight = pixText.getHeight();
+			        mOriginalWidth = pixText.getWidth();
+					sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
+
+					mTess = new TessBaseAPI();
+					boolean result = mTess.init(tessDir, lang);
+					if(!result){
+						sendMessage(MESSAGE_ERROR);
+						return;
+					}
+					
+					mTess.setPageSegMode(PageSegMode.PSM_AUTO);
+					mTess.setImage(pixText);
+					pixText.recycle();
+					String hocrText = mTess.getHOCRText(0);
+					String htmlText =  mTess.getHtmlText();
+					int accuracy = mTess.meanConfidence();
+					sendMessage(MESSAGE_HOCR_TEXT, hocrText,accuracy);
+					sendMessage(MESSAGE_UTF8_TEXT, htmlText,accuracy);
+						
 				} finally {
 					sendMessage(MESSAGE_END);
+					mTess.end();
 				}
 			}
 		}).start();
@@ -337,7 +374,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	}
 
 	public void cancel() {
-		nativeCancelOCR();
+		mTess.stop();
 	}
 
 	// ***************
@@ -346,11 +383,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 
 	private static native void nativeInit();
 
-	private native int nativeOCRBook(int nativePix, String tessDir, String lang);
+	private native long nativeOCRBook(long nativePix);
 
-	private native int nativeOCR(int nativePixaTexts, int nativePixaImages, int[] selectedTexts, int[] selectedImages, String tessDir, String lang);
+	//private native long nativeOCR(long nativePixaTexts, long nativePixaImages, int[] selectedTexts, int[] selectedImages, String tessDir, String lang);
 
-	private native int nativeAnalyseLayout(int nativePix);
+	//private native long nativeAnalyseLayout(long nativePix);
 
-	private native int nativeCancelOCR();
 }

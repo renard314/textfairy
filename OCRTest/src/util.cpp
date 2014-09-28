@@ -24,134 +24,63 @@
  */
 
 #include "util.h"
+
+#include <allheaders.h>
+#include <dewarp.h>
+#include <environ.h>
+#include <imageio.h>
+#include <pix.h>
+#include <sstream>
+#include <string>
+
 #include "binarize.h"
+#include "dewarp.h"
 #include "pageseg.h"
 
 using namespace std;
 
 
 
-Pix* bookpage(Pix* pixOrg, Pix** pixFinal, void (*messageJavaCallback)(int),
-		void (*pixJavaCallback)(Pix*, bool, bool), bool showIntermediate,
-		bool debug) {
-	ostringstream debugstring;
-	Pix *pixhm, *pixb = NULL;
+void bookpage(Pix* pixOrg, Pix** pixText, void (*messageJavaCallback)(int), void (*pixJavaCallback)(Pix*), bool debug) {
+	Pix *pixb = NULL;
+	Pix* pixsg = NULL;
+	Pix* pixDewarped = NULL;
 	if (debug) {
 		startTimer();
 	}
 
-	messageJavaCallback(MESSAGE_IMAGE_DETECTION);
-	Pix* pixsg;
+	int depth = pixGetDepth(pixOrg);
+	if (depth == 32) {
+		log("converting from 32 to 8 bit");
+		pixsg = pixConvertRGBToLuminance(pixOrg);
+	} else {
+		pixsg = pixClone(pixOrg);
+	}
 
+	binarize(pixsg, NULL, &pixb);
+	pixJavaCallback(pixb);
 
-
-	extractImages(pixOrg, &pixhm, &pixsg);
-	pixJavaCallback(pixsg, false, true);
-	binarize(pixsg, pixhm, &pixb);
-
-    l_int32 border = pixGetWidth(pixb)/25;
-    if (border < 30){
-        border = 30;
-    }
-    if (debug>0){
-    	log("adding %i pixel border",border);
-    }
 	if (debug>0){
+		pixDisplay(pixb,0,0);
 		pixWrite("binarized.bmp", pixb, IFF_BMP);
 	}
 
-    Pix* pixHmWithBorder = pixAddBorder(pixhm,border,0x0);
-    Pix* pixWithBorder = pixAddBorder(pixb,border,0x0);
-    Pix* pixOrgWithBorder = pixAddBorder(pixOrg,border,0x0);
+	messageJavaCallback(MESSAGE_IMAGE_DEWARP);
+
+	startTimer();
+	l_int32 dewarpResult = pixDewarp(pixb, &pixDewarped);
+
+	if(dewarpResult){
+		*pixText = pixClone(pixb);
+    	log("dewarp failed in: %f",stopTimer());
+	} else {
+		pixJavaCallback(pixDewarped);
+		*pixText = pixClone(pixDewarped);
+		pixDestroy(&pixDewarped);
+    	log("dewarp success in: %f",stopTimer());
+	}
     pixDestroy(&pixb);
-    pixDestroy(&pixhm);
-    pixb =pixWithBorder;
-    pixhm = pixHmWithBorder;
-
-	if (debug>0){
-		pixDisplay(pixWithBorder,0,0);
-		pixWrite("binarized_border.bmp", pixb, IFF_BMP);
-	}
-
-	pixDestroy(&pixsg);
-
-	if (debug>1) {
-		debugstring << "Image-Text separation: " << stopTimer() << std::endl;
-		startTimer();
-	}
-
-	if (TRUE == showIntermediate) {
-		pixJavaCallback(pixb, debug, TRUE);
-	}
-
-	Pix* pixtext = NULL;
-	L_DEWARP *dew = dewarpCreate(pixb, 0, 5, 10, 0);
-	int buildresult = dewarpBuildModel(dew, 0);
-	int applyResult = -1;
-	if (buildresult == 0) {
-		messageJavaCallback(MESSAGE_IMAGE_DEWARP);
-		applyResult = dewarpApplyDisparity(dew, pixb, 0);
-		if (applyResult == 0) {
-			pixtext = pixClone(dew->pixd);
-		}
-	} else {
-		dewarpDestroy(&dew);
-	}
-
-	if (pixtext == NULL) {
-		pixtext = pixb;
-	} else {
-		if (TRUE == showIntermediate) {
-			debugstring << "showing dewarped pix" << std::endl;
-			pixJavaCallback(pixtext, debug, TRUE);
-		}
-		pixDestroy(&pixb);
-	}
-
-	if (debug>1) {
-		debugstring << "dewarp : " << stopTimer() << std::endl;
-	}
-
-	if (pixhm != NULL) {
-		if (debug>1) {
-			startTimer();
-		}
-
-		Pix* pixi = pixConvertTo32(pixtext);
-		pixInvert(pixhm, pixhm);
-		pixPaintThroughMask(pixOrgWithBorder, pixhm, 0, 0, 0);
-		pixDestroy(&pixhm);
-		if (buildresult == 0) {
-			if (applyResult == 0) {
-				pixDestroy(&dew->pixd);
-			}
-			dewarpApplyDisparity(dew, pixOrgWithBorder, 0);
-			*pixFinal = pixClone(dew->pixd);
-			dewarpDestroy(&dew);
-		} else {
-			*pixFinal = pixClone(pixOrgWithBorder);
-		}
-		Pix* pixmask = pixConvertTo1(*pixFinal, 1);
-		pixCombineMasked(*pixFinal, pixi, pixmask);
-		pixDestroy(&pixmask);
-		pixDestroy(&pixi);
-
-		if (debug>1) {
-			debugstring << "image restoration: " << stopTimer() << std::endl;
-		}
-		if (TRUE == showIntermediate) {
-			pixJavaCallback(*pixFinal, debug, TRUE);
-		}
-	} else {
-		if (dew != NULL) {
-			dewarpDestroy(&dew);
-		}
-		startTimer();
-		*pixFinal = pixConvertTo32(pixtext);
-		debugstring << "image restoration: " << stopTimer() << std::endl;
-	}
-    pixDestroy(&pixOrgWithBorder);
-	return pixtext;
+    pixDestroy(&pixsg);
 }
 
 /**
@@ -239,28 +168,36 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 
 	for (int i = 0; i < textCount; i++) {
 		Pix* pixtext = pixaGetPix(pixaSelectedColumns, i, L_CLONE);
-		L_DEWARP *dew = dewarpCreate(pixtext, 7, 30, 10, 1);
+		L_Dewarpa *dewa = dewarpaCreate(0, 0, 1, 5, -1);
+		dewarpaSetCurvatures(dewa, -1, 5, -1, -1, -1, -1);
+		dewarpaUseBothArrays(dewa, 1);  // try to use both disparity arrays for this example
+		 L_Dewarp *dew = dewarpCreate(pixtext, 1);
+		 // Insert in Dewarpa and obtain parameters for building the model
+		 dewarpaInsertDewarp(dewa, dew);
+
 		int x, y, w, dw, dh, h, dx = 0, dy = 0;
 		Box* b = pixaGetBox(pixaSelectedColumns, i, L_CLONE);
 		pixaGetBoxGeometry(pixaSelectedColumns, i, &x, &y, &w, &h);
-
-		int buildresult = dewarpBuildModel(dew, 0);
-		if (buildresult == 0) {
+		l_int32 vsuccess;
+		dewarpBuildPageModel(dew, NULL);  // no debugging
+		dewarpaModelStatus(dewa, 0, &vsuccess, NULL);
+		if (vsuccess) {
 			callbackMessage(MESSAGE_IMAGE_DEWARP);
-			int applyresult = dewarpApplyDisparity(dew, pixtext, 0);
+			Pix* pixDewarped;
+			int applyresult = dewarpaApplyDisparity(dewa,1, pixtext, 255,0,0,&pixDewarped,NULL);
 			if (applyresult == 0) {
-				dw = pixGetWidth(dew->pixd);
-				dh = pixGetHeight(dew->pixd);
+				dw = pixGetWidth(pixDewarped);
+				dh = pixGetHeight(pixDewarped);
 				dx = dw - w;
 				dy = dh - h;
 				boxSetGeometry(b, x, y, dw, dh);
-				pixaReplacePix(pixaSelectedColumns, i, pixClone(dew->pixd), b);
+				pixaReplacePix(pixaSelectedColumns, i,pixDewarped, b);
 				l_int32 right = x + w;
 				l_int32 bottom = y + h;
 				translateBoxa(pixaSelectedColumns, dx, dy, x, y);
 			}
 		}
-		dewarpDestroy(&dew);
+		dewarpaDestroy(&dewa);
 	}
 
 	callbackMessage(MESSAGE_ASSEMBLE_PIX);
@@ -364,100 +301,3 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 	*pBoxaColumns = boxaColumns;
 }
 
-std::string GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceToShowColor) {
-	int lcnt = 1, bcnt = 1, pcnt = 1, wcnt = 1;
-	ostringstream html_str;
-	bool isItalic = false;
-	bool para_open = false;
-
-	for (; !res_it->Empty(tesseract::RIL_BLOCK); wcnt++) {
-		if (res_it->Empty(tesseract::RIL_WORD)) {
-			res_it->Next(tesseract::RIL_WORD);
-			continue;
-		}
-
-		if (res_it->IsAtBeginningOf(tesseract::RIL_PARA)) {
-			if (para_open) {
-				html_str << "</p>";
-				pcnt++;
-			}
-			html_str << "<p>";
-			para_open = true;
-		}
-
-		// Now, process the word...
-		const char *font_name;
-		bool bold, italic, underlined, monospace, serif, smallcaps;
-		int pointsize, font_id;
-		font_name = res_it->WordFontAttributes(&bold, &italic, &underlined,
-				&monospace, &serif, &smallcaps, &pointsize, &font_id);
-
-		float confidence = res_it->Confidence(tesseract::RIL_WORD);
-		bool addConfidence = false;
-
-		if (italic && !isItalic) {
-			html_str << "<strong>";
-			isItalic = true;
-		} else if (!italic && isItalic) {
-			html_str << "</strong>";
-			isItalic = false;
-		}
-
-		char* word = res_it->GetUTF8Text(tesseract::RIL_WORD);
-		bool isSpace = strcmp(word, " ") == 0;
-		delete[] word;
-		if (confidence < minConfidenceToShowColor && !isSpace) {
-			addConfidence = true;
-			html_str << "<font conf='";
-			html_str << (int) confidence;
-			html_str << "' color='#DE2222'>";
-		}
-
-		do {
-			const char *grapheme = res_it->GetUTF8Text(tesseract::RIL_SYMBOL);
-			if (grapheme && grapheme[0] != 0) {
-				if (grapheme[1] == 0) {
-					switch (grapheme[0]) {
-					case '<':
-						html_str << "&lt;";
-						break;
-					case '>':
-						html_str << "&gt;";
-						break;
-					case '&':
-						html_str << "&amp;";
-						break;
-					case '"':
-						html_str << "&quot;";
-						break;
-					case '\'':
-						html_str << "&#39;";
-						break;
-					default:
-						html_str << grapheme;
-						break;
-					}
-				} else {
-					html_str << grapheme;
-				}
-			}
-			delete[] grapheme;
-			res_it->Next(tesseract::RIL_SYMBOL);
-		} while (!res_it->Empty(tesseract::RIL_BLOCK)
-				&& !res_it->IsAtBeginningOf(tesseract::RIL_WORD));
-
-		if (addConfidence == true) {
-			html_str << "</font>";
-		}
-
-		html_str << " ";
-	}
-	if (isItalic) {
-		html_str << "</strong>";
-	}
-	if (para_open) {
-		html_str << "</p>";
-		pcnt++;
-	}
-	return html_str.str();
-}

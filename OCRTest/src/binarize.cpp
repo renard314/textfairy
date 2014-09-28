@@ -225,7 +225,6 @@ void binarize(Pix* pixGrey, Pix* pixhm, Pix** pixb) {
 
 	s << "text mask creation: " << stopTimerNested(timer) << std::endl;
 	printf("%s", s.str().c_str());
-	pixDisplay(pixGrey,0,0);
 	pixWrite("toThresh.bmp", pixGrey, IFF_BMP);
 
 	/*

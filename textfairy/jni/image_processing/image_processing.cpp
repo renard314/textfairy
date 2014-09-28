@@ -21,15 +21,11 @@
 #include "allheaders.h"
 #include <sstream>
 #include <iostream>
-#include "baseapi.h"
-#include "ocrclass.h"
 #include <pthread.h>
 #include <cmath>
 #include "binarize.h"
 #include "pageseg.h"
-#include "resultiterator.h"
 #include <util.h>
-#include "text_search.h"
 
 using namespace std;
 
@@ -39,19 +35,10 @@ extern "C" {
 
 static jmethodID onFinalPix, onProgressImage, onImageSize, onProgressValues, onProgressText, onHOCRResult, onLayoutElements, onUTF8Result, onLayoutPix;
 
-static JavaVM *g_jvm = NULL;
-static Box* currentTextBox = NULL;
-l_int32 lastProgress = 0;
-static bool cancel_ocr = false;
-
 static JNIEnv *cachedEnv;
 static jobject* cachedObject;
-Pix* cachedTextLines;
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-
-	g_jvm = vm;
-
 	return JNI_VERSION_1_6;
 }
 
@@ -60,7 +47,6 @@ void Java_com_googlecode_tesseract_android_OCR_nativeInit(JNIEnv *env, jobject _
 	cls = env->FindClass("com/googlecode/tesseract/android/OCR");
 	onFinalPix = env->GetMethodID(cls, "onFinalPix", "(I)V");
 	onProgressImage = env->GetMethodID(cls, "onProgressImage", "(I)V");
-	onProgressValues = env->GetMethodID(cls, "onProgressValues", "(IIIIIIIII)V");
 	onProgressText = env->GetMethodID(cls, "onProgressText", "(I)V");
 	onHOCRResult = env->GetMethodID(cls, "onHOCRResult", "(Ljava/lang/String;I)V");
 	onLayoutElements = env->GetMethodID(cls, "onLayoutElements", "(II)V");
@@ -71,26 +57,20 @@ void Java_com_googlecode_tesseract_android_OCR_nativeInit(JNIEnv *env, jobject _
 }
 
 void JNI_OnUnload(JavaVM *vm, void *reserved) {
-	g_jvm = NULL;
 }
 
 void initStateVariables(JNIEnv* env, jobject *object) {
-	cancel_ocr = false;
 	cachedEnv = env;
 	cachedObject = object;
-	lastProgress = 0;
 }
 
 void resetStateVariables() {
-	cancel_ocr = false;
 	cachedEnv = NULL;
 	cachedObject = NULL;
-	lastProgress = 0;
 }
 
 bool isStateValid() {
-
-	if (cancel_ocr == false && cachedEnv != NULL && cachedObject != NULL) {
+	if (cachedEnv != NULL && cachedObject != NULL) {
 		return true;
 	} else {
 		LOGI("state is cancelled");
@@ -105,50 +85,21 @@ void messageJavaCallback(int message) {
 	}
 }
 
-void pixJavaCallback(Pix* pix, bool debug = FALSE, bool scale = TRUE) {
+void pixJavaCallback(Pix* pix) {
 	if (isStateValid()) {
-		L_TIMER timer;
-		l_int32 depth = pixGetDepth(pix);
-		if (debug) {
-			timer = startTimerNested();
-		}
-		Pix* pixpreview = NULL;
-		if (scale == TRUE) {
-			if (depth == 1) {
-				pixpreview = pixReduceBinary2(pix, NULL);
-			} else {
-				pixpreview = pixScale(pix, 0.25, 0.25);
-			}
-		} else {
-			pixpreview = pixClone(pix);
-		}
-		if (isStateValid()) {
-			cachedEnv->CallVoidMethod(*cachedObject, onProgressImage, (jint) pixpreview);
-		}
-		if (debug) {
-			ostringstream debugstring;
-			debugstring << "showPix: " << stopTimerNested(timer);
-			LOGI(debugstring.str().c_str());
-		}
+		Pix* pixpreview = pixClone(pix);
+		cachedEnv->CallVoidMethod(*cachedObject, onProgressImage, (jint) pixpreview);
 	}
 }
-bool cancelFunc(void* cancel_this, int words) {
-	return cancel_ocr;
-}
 
-bool progressJavaCallback(int progress, int left, int right, int top, int bottom) {
-
-	if (isStateValid() && currentTextBox != NULL) {
-		if (progress > lastProgress || left != 0 || right != 0 || top != 0 || bottom != 0) {
-			int x, y, w, h;
-			boxGetGeometry(currentTextBox, &x, &y, &w, &h);
-			cachedEnv->CallVoidMethod(*cachedObject, onProgressValues, progress, (jint) left, (jint) right, (jint) top, (jint) bottom, (jint) x, (jint) (x + w), (jint) y, (jint) (y + h));
-			lastProgress = progress;
-		}
+void callbackLayout(const Pix* pixpreview) {
+	if (isStateValid()) {
+		cachedEnv->CallVoidMethod(*cachedObject, onLayoutPix, pixpreview);
 	}
-	return true;
+	messageJavaCallback(MESSAGE_ANALYSE_LAYOUT);
 }
 
+/*
 
 int doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* const tessDir, const char* const lang,  bool debug = false) {
 	ETEXT_DESC monitor;
@@ -207,7 +158,7 @@ int doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostrings
 	l_int32 xb, yb, wb, hb;
 	l_int32 columnCount = boxaGetCount(boxaColumns);
 
-	/*do ocr on text parts*/
+	//do ocr on text parts
 	tesseract::TessBaseAPI api;
 	ETEXT_DESC monitor;
 	monitor.progress_callback = progressJavaCallback;
@@ -308,12 +259,7 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCR(JNIEnv *env, jobject th
 	return (jint) 0;
 }
 
-void callbackLayout(const Pix* pixpreview) {
-	if (isStateValid()) {
-		cachedEnv->CallVoidMethod(*cachedObject, onLayoutPix, pixpreview);
-	}
-	messageJavaCallback(MESSAGE_ANALYSE_LAYOUT);
-}
+
 
 jint Java_com_googlecode_tesseract_android_OCR_nativeAnalyseLayout(JNIEnv *env, jobject thiz, jint nativePix) {
 	LOGV(__FUNCTION__);
@@ -341,37 +287,29 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeAnalyseLayout(JNIEnv *env, 
 	resetStateVariables();
 	return (jint) 0;
 }
+*/
 
-jint Java_com_googlecode_tesseract_android_OCR_nativeCancelOCR(JNIEnv *env, jobject _thiz) {
-	LOGV(__FUNCTION__);
-	cachedEnv = NULL;
-	cachedObject = NULL;
-	if (cancel_ocr == true) {
-		return 0;
-	} else {
-		cancel_ocr = true;
-		return 1;
-	}
-}
 
-jint Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobject thiz, jint nativePix, jstring tessDir, jstring lang) {
+jlong Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobject thiz, jlong nativePix) {
 	LOGV(__FUNCTION__);
 	Pix *pixOrg = (PIX *) nativePix;
 	Pix* pixFinal;
 	Pix* pixText;
-	ostringstream hocr;
-	ostringstream utf8text;
-	//TODO callback to java with size of pix with border
-
-	const char *tessDirNative = env->GetStringUTFChars(tessDir, 0);
-	const char *langNative = env->GetStringUTFChars(lang, 0);
-
-	LOGI(tessDirNative);
-	LOGI(langNative);
-
 	initStateVariables(env, &thiz);
 
-	pixText = bookpage(pixOrg, &pixFinal, messageJavaCallback, pixJavaCallback,true, true);
+	bookpage(pixOrg, &pixText , messageJavaCallback, pixJavaCallback, true);
+	LOGI("processing is done");
+	if (isStateValid()) {
+		LOGI("calling  onFinalPix");
+		pixFinal = pixConvertTo32(pixText);
+		env->CallVoidMethod(thiz, onFinalPix, pixFinal);
+	}
+	resetStateVariables();
+
+	return (jlong)pixText;
+
+
+	/*
 	pixDestroy(&pixOrg);
 
 	int w = pixGetWidth(pixText);
@@ -380,7 +318,6 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobjec
     if (isStateValid()) {
         cachedEnv->CallVoidMethod(*cachedObject, onImageSize, w,h);
     }
-
 
 	currentTextBox = boxCreate(0, 0, w, h);
 
@@ -391,8 +328,6 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobjec
 	pixDestroy (&pixText);
 	boxDestroy(&currentTextBox);
 
-	env->ReleaseStringUTFChars(tessDir, tessDirNative);
-	env->ReleaseStringUTFChars(lang, langNative);
 
 	if (isStateValid()) {
 		jstring result = env->NewStringUTF(hocr.str().c_str());
@@ -413,6 +348,7 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobjec
 
 	resetStateVariables();
 	return (jint) 0;
+	*/
 
 }
 

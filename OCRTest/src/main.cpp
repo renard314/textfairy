@@ -23,17 +23,13 @@
 
 #include <allheaders.h>
 #include <array.h>
-#include <baseapi.h>
+#include "baseapi.h"
 #include <bmf.h>
-#include <Codecs.hh>
 #include <environ.h>
 #include <gplot.h>
 #include <imageio.h>
 #include <Image.hh>
-#include <jpeg.hh>
-#include <leptprotos.h>
 #include <morph.h>
-#include <pdf.hh>
 #include <pix.h>
 #include <publictypes.h>
 #include <cmath>
@@ -42,18 +38,19 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <hocr.hh>
-
+#include <ocrclass.h>
 #include "binarize.h"
 #include "pageseg.h"
-#include "text_search.h"
 #include "util.h"
+#include "ocr_util.h"
 #include <unistd.h>
 #include "RunningTextlineStats.h"
+#include <renderer.h>
 
 using namespace std;
 using namespace tesseract;
 
+/*
 void createPdf(Pix* pix, const char* hocrText) {
 	printf("%s", "creating pdf");
 
@@ -90,18 +87,21 @@ void createPdf(Pix* pix, const char* hocrText) {
 
 	delete pdfContext;
 }
-
-void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s, int debug_level = 0) {
+*/
+void doOCR(const char* filename, Pix* pixb,Pix* pixFinal, ETEXT_DESC* monitor, ostringstream* s, int debug_level = 0) {
+	log("starting ocr");
 	tesseract::TessBaseAPI api;
-	api.Init("/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/", "eng+deu", tesseract::OEM_DEFAULT);
+	int rc =api.Init("/Users/renard/devel/tess-two/tess-two/jni/com_googlecode_tesseract_android/src", "eng+deu", tesseract::OEM_DEFAULT);
+	if (rc) {
+		fprintf(stderr, "Could not initialize tesseract.\n");
+		exit(1);
+	}
+	pixWrite("pdfimage",pixFinal,IFF_JFIF_JPEG);
 	api.SetPageSegMode(tesseract::PSM_AUTO);
-	api.SetImage(pixb);
-	const char* hocrtext; //= api.GetHOCRText(monitor, 0);
-	createPdf(pixb, hocrtext);
-	//*s << hocrtext;
-	//const char* debugText = api.GetHTMLText(20);
-	//const char* debugText = api.GetUTF8Text();
+	api.SetInputName("pdfimage");
+  	api.SetImage(pixb);
 	api.Recognize(monitor);
+	log("ocr done");
 	ResultIterator* it = api.GetIterator();
 	std::string debugText = GetHTMLText(it, 70);
 	*s << debugText;
@@ -112,6 +112,22 @@ void doOCR(Pix* pixb, ETEXT_DESC* monitor, ostringstream* s, int debug_level = 0
 	} else if (debug_level > 0) {
 		std::cout << "confidence: " << api.MeanTextConf() << std::endl;
 	}
+    delete it;
+
+	tesseract::TessResultRenderer* renderer = new tesseract::TessPDFRenderer("renard", api.GetDatapath());
+	// Begin the output
+	const char* kUnknownTitle = "";
+	if (!renderer->BeginDocument(kUnknownTitle)) {
+	  log("error BeginDocument");
+	}
+	// Produce output
+	if(!renderer->AddImage(&api)){
+		log("error AddImage");
+	}
+	// End the output
+	renderer->EndDocument();
+	delete renderer;
+
 //	delete[] utf8text;
 //	delete[] hocrtext;
 	api.End();
@@ -123,8 +139,10 @@ bool onProgressChanged(int progress, int left, int right, int top, int bottom) {
 	return true;
 }
 
-void pixCallBack(Pix* pix, bool b1, bool b2) {
-	//pixDisplay(pix, 0, 0);
+void pixCallBack(Pix* pix) {
+	Pix* pixpreview = pixClone(pix);
+	pixDisplay(pixpreview, 0, 0);
+	pixDestroy(&pixpreview);
 }
 
 void messageCallback(int messageId) {
@@ -294,19 +312,6 @@ Pix* pixAnnotate(Pix* pixb, const char* textstr) {
 void pixaAddPixWithTitle(Pixa* pixa, Pix* pix, const char* title) {
 	Pix* pixt = pixAnnotate(pix, title);
 	pixaAddPix(pixa, pixt, L_INSERT);
-}
-void layoutDetect(const char* filename, int index) {
-	Pix* pixOrg = pixRead(filename);
-	Pix* pixg = pixConvertRGBToLuminance(pixOrg);
-	Pix* pixb;
-	Boxa* textRegions = pixFindTextRegions(pixg, &pixb);
-	renderTransformedBoxa(pixOrg, textRegions, 255);
-	Pix* pix32 = pixConvert1To32(NULL, pixb, 0, 0xffffffff);
-	pixDisplay(pix32, 0, 0);
-	pixDestroy(&pixg);
-	pixDestroy(&pix32);
-	pixDestroy(&pixb);
-	boxaDestroy(&textRegions);
 }
 
 Boxa* findEdgesInTile(Pix* pixbTile, Pix* pixt) {
@@ -755,27 +760,32 @@ void layoutDetectDebug(const char* filename, int index) {
 	pixDestroy(&pixg);
 }
 
+bool progressJavaCallback(int progress, int left, int right, int top, int bottom) {
+	log("progress = %i, l=%i, r=%i, t=%i, b=%i", progress,left, right, top, bottom);
+	return true;
+}
+
 void onePicture(const char* filename, int index) {
 	log("%s", filename);
 
 	int debug_level = 2;
 	ostringstream s;
-	Pix* pixFinal;
+	Pix* pixtext;
 	Pix* pixOrg = pixRead(filename);
 
 	s << index;
 	printf("%i\n", index);
 	L_TIMER timer = startTimerNested();
 
-	Pix* pixtext = bookpage(pixOrg, &pixFinal, messageCallback, pixCallBack, debug_level > 0, debug_level > 1);
-	if (debug_level > 1) {
-		printf("total time = %f", stopTimerNested(timer));
-		pixDisplay(pixtext, 0, 0);
-		pixWrite("binarized_dewarped.bmp", pixtext, IFF_BMP);
-	}
-	doOCR(pixtext, NULL, &s, debug_level);
+	bookpage(pixOrg, &pixtext, messageCallback, pixCallBack, debug_level > 0);
+	log("total time = %f", stopTimerNested(timer));
+	/*
+	ETEXT_DESC monitor;
+	monitor.progress_callback = progressJavaCallback;
 
-	pixDestroy(&pixFinal);
+	doOCR(filename, pixtext,pixFinal, &monitor, &s, debug_level);
+
+	*/
 	pixDestroy(&pixtext);
 	pixDestroy(&pixOrg);
 	s.str("");
@@ -844,6 +854,61 @@ void numaGroupTextLineHeights(Numa* numaTextHeights, Numa** numaMean, Numa** num
 	if (numaStdDev!=NULL){
 		*numaStdDev = numaStdDevResult;
 	}
+}
+/*!
+ *  pixSumPixelsByRow()
+ *
+ *      Input:  pix (1, 8 or 16 bpp; no colormap)
+ *              tab8  (<optional> lookup table for 1 bpp; use null for 8 bpp)
+ *      Return: na of pixel sums by row, or null on error
+ *
+ *  Notes:
+ *      (1) To resample for a bin size different from 1, use
+ *          numaUniformSampling() on the result of this function.
+ */
+NUMA *
+pixSumPixelsByRow(PIX      *pix,
+                  l_int32  *tab8)
+{
+l_int32    i, j, w, h, d, wpl;
+l_uint32  *line, *data;
+l_float32  sum;
+NUMA      *na;
+
+    PROCNAME("pixSumPixelsByRow");
+
+    if (!pix)
+        return (NUMA *)ERROR_PTR("pix not defined", procName, NULL);
+    pixGetDimensions(pix, &w, &h, &d);
+    if (d != 1 && d != 8 && d != 16)
+        return (NUMA *)ERROR_PTR("pix not 1, 8 or 16 bpp", procName, NULL);
+    if (pixGetColormap(pix) != NULL)
+        return (NUMA *)ERROR_PTR("pix colormapped", procName, NULL);
+
+    if (d == 1)
+        return pixCountPixelsByRow(pix, tab8);
+
+    if ((na = numaCreate(h)) == NULL)
+        return (NUMA *)ERROR_PTR("na not made", procName, NULL);
+    data = pixGetData(pix);
+    wpl = pixGetWpl(pix);
+    for (i = 0; i < h; i++) {
+        sum = 0.0;
+        line = data + i * wpl;
+        if (d == 8) {
+            sum += w * 255;
+            for (j = 0; j < w; j++)
+                sum -= GET_DATA_BYTE(line, j);
+        }
+        else {  /* d == 16 */
+            sum += w * 0xffff;
+            for (j = 0; j < w; j++)
+                sum -= GET_DATA_TWO_BYTES(line, j);
+        }
+        numaAddNumber(na, sum);
+    }
+
+    return na;
 }
 
 l_float32 pixGetTextLineSpacing(Pix* pixb){
@@ -965,11 +1030,11 @@ int main(int argc, const char* argv[]) {
 	if (argc == 3) {
 
 		s << "/Users/renard/devel/textfairy/OCRTest/" << argv[1] << "/" << argv[2] << ".jpg";
-		testbinary(s.str().c_str(), atoi(argv[1]));
+		//testbinary(s.str().c_str(), atoi(argv[1]));
 
 		//onePictureWithColumns(s.str().c_str(), atoi(argv[1]));
 
-		//onePicture(s.str().c_str(), atoi(argv[1]));
+		onePicture(s.str().c_str(), atoi(argv[1]));
 	} else if (argc == 4) {
 		int start = atoi(argv[2]);
 		int end = atoi(argv[3]);

@@ -1,79 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 4.0.0?>
-
-<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
-		<cconfiguration id="com.android.toolchain.gcc.536663258">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.android.toolchain.gcc.536663258" moduleId="org.eclipse.cdt.core.settings" name="Default">
-				<externalSettings>
-					<externalSetting>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/platforms/android-14/arch-x86/usr/include"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include-fixed"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86/lib/gcc/arm-linux-androideabi/4.4.3/include"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/sources/cxx-stl/gnu-libstdc++/libs/x86/include"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/sources/cxx-stl/gnu-libstdc++/libs/armeabi/include"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/textfairy/jni/tesseract"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/ccmain"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/wordrec"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/cube"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/neural_networks/runtime"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/textord"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/classify"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/api"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/viewer"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/image"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/dict"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/ccstruct"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/cutil"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/tesseract-ocr-read-only/ccutil"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/textfairy/jni/leptonica"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/textfairy/jni/leptonica/stdio"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/OCRTest/src"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/leptonica-1.68/src"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="jni/hocr2pdf"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/lib"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/utility"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src/codecs"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/platforms/android-14/arch-arm/usr/include"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/hocr2pdf/src"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/include"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/android-ndk-r8/sources/cxx-stl/gnu-libstdc++/include"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="/Users/renard/Desktop/devel/textfairy/libjpeg"/>
-						<entry flags="BUILTIN|READONLY|RESOLVED" kind="includePath" name="lib"/>
-					</externalSetting>
-				</externalSettings>
+		<cconfiguration id="com.android.toolchain.gcc.1811747092">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.android.toolchain.gcc.1811747092" moduleId="org.eclipse.cdt.core.settings" name="Default">
+				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.autotools.core.ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="Textfee" buildProperties="" description="" id="com.android.toolchain.gcc.536663258" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
-					<folderInfo id="com.android.toolchain.gcc.536663258.865022876" name="/" resourcePath="">
-						<toolChain id="com.android.toolchain.gcc.118428578" name="com.android.toolchain.gcc" superClass="com.android.toolchain.gcc">
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.android.targetPlatform.389360941" name="Android Platform" osList="all" superClass="com.android.targetPlatform"/>
-							<builder id="com.android.builder.1506484473" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Android Builder" superClass="com.android.builder">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="com.android.toolchain.gcc.1811747092" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="com.android.toolchain.gcc.1811747092.1095024601" name="/" resourcePath="">
+						<toolChain id="com.android.toolchain.gcc.2136135220" name="com.android.toolchain.gcc" superClass="com.android.toolchain.gcc">
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="com.android.targetPlatform.726085052" isAbstract="false" superClass="com.android.targetPlatform"/>
+							<builder arguments="-j16" buildPath="${workspace_loc:/Textfairy/jni}" command="ndk-build" id="com.android.builder.681132209" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Android Builder" superClass="com.android.builder">
 								<outputEntries>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="obj"/>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="libs"/>
 								</outputEntries>
 							</builder>
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1469871691" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.2028778843" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1438612771" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1489815719" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
-									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
-									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
-								</inputType>
-							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1793126386" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
-								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.658738160" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
-							</tool>
-							<tool id="com.android.gcc.compiler.1404981835" name="Android GCC Compiler" superClass="com.android.gcc.compiler">
-								<option id="com.android.gcc.option.includePath.1815903660" superClass="com.android.gcc.option.includePath" valueType="includePath">
-									<listOptionValue builtIn="false" value="/Users/renard/Desktop/devel/android-ndk-r9/platforms/android-18/arch-arm/usr/include"/>
+							<tool id="com.android.gcc.compiler.2102115629" name="Android GCC Compiler" superClass="com.android.gcc.compiler">
+								<option id="com.android.gcc.option.includePath.585622693" superClass="com.android.gcc.option.includePath" valueType="includePath">
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/OCRTest/src"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/tess-two/jni/com_googlecode_leptonica_android/src/src}&quot;"/>
 								</option>
-								<inputType id="com.android.gcc.inputType.1843318489" superClass="com.android.gcc.inputType"/>
+								<inputType id="com.android.gcc.inputType.1207496293" superClass="com.android.gcc.inputType"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
@@ -86,31 +45,33 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="Textfee.null.2083288021" name="Textfee"/>
+		<project id="Textfairy.null.1596640712" name="Textfairy"/>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Default">
-			<resource resourceType="PROJECT" workspacePath="/Textfee"/>
-		</configuration>
-	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.536663258;com.android.toolchain.gcc.536663258.865022876;com.android.gcc.compiler.1404981835;com.android.gcc.inputType.1843318489">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.android.AndroidPerProjectProfile"/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.536663258;com.android.toolchain.gcc.536663258.865022876;com.android.tool.compiler.g++.1625498081;com.android.tool.compiler.g++.input.1069774770">
+		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.1811747092;com.android.toolchain.gcc.1811747092.1095024601;com.android.gcc.compiler.2102115629;com.android.gcc.inputType.1207496293">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.android.AndroidPerProjectProfile"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.536663258;com.android.toolchain.gcc.536663258.865022876;com.android.tool.compiler.g++.1984438667;com.android.tool.compiler.g++.input.2134809343">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.536663258;com.android.toolchain.gcc.536663258.865022876;com.android.tool.compiler.c.1538038859;com.android.tool.compiler.c.input.1576068877">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.536663258;com.android.toolchain.gcc.536663258.865022876;com.android.tool.compiler.g++.1984438667;com.android.tool.compiler.g++.input.2134809343">
+		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.536663258;com.android.toolchain.gcc.536663258.865022876;com.android.tool.compiler.g++.1625498081;com.android.tool.compiler.g++.input.1069774770">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.536663258;com.android.toolchain.gcc.536663258.865022876;com.android.tool.compiler.c.762134962;com.android.tool.compiler.c.input.45282042">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
 		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/Textfairy"/>
+		</configuration>
 	</storageModule>
 </cproject>

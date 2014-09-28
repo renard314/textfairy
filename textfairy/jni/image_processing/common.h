@@ -38,6 +38,7 @@
 #define LOG_ASSERT(_cond, ...) if (!_cond) __android_log_assert("conditional", LOG_TAG, __VA_ARGS__)
 
 #define printf(fmt,args...)  __android_log_print(ANDROID_LOG_INFO  ,LOG_TAG, fmt, ##args)
+/*dont write debug images onto the sd card*/
 #define pixWrite(name,pixs,format)  __android_log_print(ANDROID_LOG_INFO  ,LOG_TAG, name)
 
 

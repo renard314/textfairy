@@ -1,36 +1,27 @@
-MY_DIR := $(CURDIR)
-HOCR2PDF_PATH := $(MY_DIR)/../hocr2pdf/src
-IMAGE_PROCESSING_PATH := $(MY_DIR)/../OCRTest/src
-TESSERACT_PATH := $(MY_DIR)/../tesseract-ocr-read-only
-#TESSERACT_PATH := $(MY_DIR)/../../textfairy_test/tesseract-ocr-3.02
-TESSERACT_CHANGE_PATH := $(MY_DIR)/../tesseract-changeset
-LEPTONICA_PATH := $(MY_DIR)/../leptonica-1.68
-LIBJPEG_PATH := $(MY_DIR)/../libjpeg
-LIBPNG_PATH := $(MY_DIR)/../libpng-android/jni
 
-ifeq "$(LIBPNG_PATH)" ""
-  $(error You must set the LIBPNG_PATH variable to the libpng source \
-          directory. See README and jni/Android.mk for details)
-endif
+LOCAL_PATH := $(call my-dir)
+include $(CLEAR_VARS)
 
-ifeq "$(HOCR2PDF_PATH)" ""
-  $(error You must set the HOCR2PDF_PATH variable to the hocr2pdf source \
-          directory. See README and jni/Android.mk for details)
-endif
+HOCR2PDF_PATH := $(LOCAL_PATH)/../../hocr2pdf/src
+HOCR2PDF_JNI_PATH := $(LOCAL_PATH)/hocr2pdf
 
-ifeq "$(LIBJPEG_PATH)" ""
-  $(error You must set the LIBJPEG_PATH variable to the Android JPEG \
-          source directory. See README and jni/Android.mk for details)
-endif
+IMAGE_PROCESSING_PATH := $(LOCAL_PATH)/../../OCRTest/src
+IMAGE_PROCESSING_JNI_PATH := $(LOCAL_PATH)/image_processing
 
-ifeq "$(LEPTONICA_PATH)" ""
-  $(error You must set the LEPTONICA_PATH variable to the leptonica \
-          source directory. See README and jni/Android.mk for details)
-endif
+TESS_TWO_PATH := $(LOCAL_PATH)/../../../tess-two/tess-two
+LEPTONICA_SRC_PATH := $(TESS_TWO_PATH)/jni/com_googlecode_leptonica_android/src
+LEPTONICA_PATH := $(LOCAL_PATH)/leptonica
 
-ifeq "$(TESSERACT_PATH)" ""
-  $(error You must set the TESSERACT_PATH variable to the tesseract \
-          source directory. See README and jni/Android.mk for details)
-endif
+LIBJPEG_PATH := $(LOCAL_PATH)/../../libjpeg
+LIBPNG_PATH := $(LOCAL_PATH)/../../libpng-android/jni
+
+
+include $(LIBJPEG_PATH)/Android.mk 
+include $(LIBPNG_PATH)/Android.mk 
+include $(HOCR2PDF_PATH)/Android.mk
+include $(HOCR2PDF_JNI_PATH)/Android.mk
+#include $(LEPTONICA_PATH)/Android.mk
+#include $(IMAGE_PROCESSING_PATH)/Android.mk
+include $(IMAGE_PROCESSING_JNI_PATH)/Android.mk
+
 # Just build the Android.mk files in the subdirs
-include $(call all-subdir-makefiles) $(LIBJPEG_PATH)/Android.mk $(LIBPNG_PATH)/Android.mk $(IMAGE_PROCESSING_PATH)/Android.mk $(HOCR2PDF_PATH)/Android.mk

@@ -19,7 +19,6 @@ package com.renard.pdf;
 
 public class Hocr2Pdf {
     static {
-		System.loadLibrary("gnustl_shared");		
         System.loadLibrary("hocr2pdf");
 		System.loadLibrary("hocr2pdfjni");
     }

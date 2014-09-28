@@ -16,6 +16,18 @@
 
 package com.renard.ocr;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -33,20 +45,19 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import android.view.Menu;
-import android.view.MenuItem;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
 import com.renard.documentview.DocumentActivity;
@@ -56,18 +67,6 @@ import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.pdf.Hocr2Pdf;
 import com.renard.pdf.Hocr2Pdf.PDFProgressListener;
 import com.renard.util.Util;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * activities which extend this activity can create a new document. this class
@@ -371,7 +370,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case REQUEST_CODE_CROP_PHOTO: {
-                    int nativePix = data.getIntExtra(EXTRA_NATIVE_PIX, 0);
+                    long nativePix = data.getLongExtra(EXTRA_NATIVE_PIX, 0);
                     Intent intent = new Intent(this, OCRActivity.class);
                     intent.putExtra(EXTRA_NATIVE_PIX, nativePix);
                     intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
