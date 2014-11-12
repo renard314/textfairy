@@ -54,4 +54,4 @@ make sure that you have got the android sdk as well as ndk (r8e) installed
 * `git submodule update`
 * `git submodule init`
 * modify `path` to `ndk-build` in `gradle.properties`
-* import `settings.gradle` into android studio or execute `gradle build`
+* import `settings.gradle` into android studio or execute `./gradlew build`

@@ -90,7 +90,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         super.onCreate(savedInstanceState);
 		setVolumeControlStream(AudioManager.STREAM_ALARM);
 
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_document);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mFragmentFrame = findViewById(R.id.document_fragment_container);
