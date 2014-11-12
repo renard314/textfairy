@@ -1,15 +1,6 @@
 import java.util.regex.Pattern
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
-    }
-}
-
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 android {
     lintOptions {
@@ -76,8 +67,8 @@ def getVersionCodeFromManifest(String prefix) {
 
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
 
     signingConfigs {
         release
@@ -91,7 +82,7 @@ android {
         }
     }
 
-    //ABI Key: 6 – x86,   2 – ARMv7,   1 – ARMv5
+    //ABI Key: 6 ��� x86,   2 ��� ARMv7,   1 ��� ARMv5
     productFlavors {
         x86 {
             versionCode getVersionCodeFromManifest("6")
@@ -158,12 +149,13 @@ dependencies {
     x86Compile fileTree(dir: 'build/native-libs', include: 'x86.jar')
     aV7Compile fileTree(dir: 'build/native-libs', include: 'armeabiv7a.jar')
     aV5Compile fileTree(dir: 'build/native-libs', include: 'armeabi.jar')
+    //compile 'com.viewpagerindicator:library:2.4.1'
+    compile 'com.viewpagerindicator:library:2.4.1@aar'
+    compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.google.code.findbugs:jsr305:2.0.2'
     compile 'com.nineoldandroids:library:2.4.0+'
     compile 'com.android.support:appcompat-v7:19.0.+'
     compile 'org.apache.commons:commons-compress:1.5'
-    compile project(":Android-ViewPagerIndicator:library")
     compile project(":FileExplorer")
-    compile project(":PhotoView:library")
     compile project(":ViewPager3D:ViewPager3D")
 }

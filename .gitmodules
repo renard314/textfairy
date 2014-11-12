@@ -1,6 +1,3 @@
 [submodule "ViewPager3D"]
 	path = ViewPager3D
 	url = git@github.com:renard314/ViewPager3D.git
-[submodule "Android-ViewPagerIndicator"]
-	path = Android-ViewPagerIndicator
-	url = git@github.com:renard314/Android-ViewPagerIndicator.git

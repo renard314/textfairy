@@ -26,7 +26,6 @@ Project Structure
  * is used by the text fairy through a jni wrapper (textfairy/jni)
 
 The following android library projects are included as git submodules:
-* [Android-ViewPagerIndicator] [1]
 * [ViewPager3D] [2]
 
 The following projects where added to the sources directly either because they were modified or they are not available as git repos:
@@ -37,7 +36,6 @@ The following projects where added to the sources directly either because they w
 * [Tesseract android tools] [8]
 * [libjpeg] [9]
 
-  [1]: https://github.com/JakeWharton/Android-ViewPagerIndicator
   [2]: https://github.com/renard314/ViewPager3D
   [4]: https://tesseract-ocr.googlecode.com/
   [5]: http://www.leptonica.com/index.html
