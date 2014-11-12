@@ -2,13 +2,6 @@ import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
 
-android {
-    lintOptions {
-        abortOnError true
-        ignoreWarnings true
-    }
-}
-
 import org.apache.tools.ant.taskdefs.condition.Os
 
 task ndkBuild(type: Exec,description: 'run ndk-build') {
