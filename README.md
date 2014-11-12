@@ -25,11 +25,10 @@ Project Structure
  * can be compiled to a command line executable main.cpp to debug/test the image processing code
  * is used by the text fairy through a jni wrapper (textfairy/jni)
 
-The following android library projects are included as git submodules
-* [Android-ViewPagerIndicator] [1]
+The following android library projects are included as git submodules:
 * [ViewPager3D] [2]
 
-The following projects where added to the sources directly either because they where modified or they are not available as git repos
+The following projects where added to the sources directly either because they were modified or they are not available as git repos:
 * [Tesseract (OCR Engine)] [4]
 * [Leptonica (Image processing library)] [5]
 * [Android Page Curl] [6]
@@ -37,7 +36,6 @@ The following projects where added to the sources directly either because they w
 * [Tesseract android tools] [8]
 * [libjpeg] [9]
 
-  [1]: https://github.com/JakeWharton/Android-ViewPagerIndicator
   [2]: https://github.com/renard314/ViewPager3D
   [4]: https://tesseract-ocr.googlecode.com/
   [5]: http://www.leptonica.com/index.html
@@ -51,11 +49,9 @@ Building with gradle
 --------------------------------------
 make sure that you have got the android sdk as well as ndk (r8e) installed
 
-* git clone git@github.com:renard314/textfairy.git
-* cd textfairy
-* git submodule update
-* git submodule init
-* modify path to ndk-build in gradle.properties
-* import settings.gradle into android studio or execute gradle build 
-
-
+* `git clone git@github.com:renard314/textfairy.git`
+* `cd textfairy`
+* `git submodule update`
+* `git submodule init`
+* modify `path` to `ndk-build` in `gradle.properties`
+* import `settings.gradle` into android studio or execute `./gradlew build`

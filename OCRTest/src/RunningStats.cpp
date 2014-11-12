@@ -44,9 +44,19 @@ double RunningStats::Variance() const
     return M2/(n-1.0);
 }
 
+double RunningStats::PopulationVariance() const
+{
+    return M2/(n);
+}
+
 double RunningStats::StandardDeviation() const
 {
     return sqrt( Variance() );
+}
+
+double RunningStats::PopulationStandardDeviation() const
+{
+    return sqrt( PopulationVariance() );
 }
 
 double RunningStats::Skewness() const

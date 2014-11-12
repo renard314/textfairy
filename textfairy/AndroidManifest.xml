@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
     package="com.renard.ocr"
     android:installLocation="auto"
     android:versionCode="29"
@@ -7,12 +8,12 @@
 
     <uses-sdk
         android:minSdkVersion="9"
-        android:targetSdkVersion="20" />
+        android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application
+    <application tools:replace="android:icon"
         android:largeHeap="true"
         android:name="com.renard.ocr.MyApplication"
         android:allowBackup="true"

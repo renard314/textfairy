@@ -1,42 +1,9 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
-    }
-}
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 android {
-    lintOptions {
-        // if true, stop the gradle build if errors are found
-        abortOnError false
-        ignoreWarnings true
-    }
-}
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
 
-
-dependencies {
-    repositories {
-        mavenCentral()
-    }
-}
-
-android {
-    compileSdkVersion 19
-    buildToolsVersion "19.0.3"
-
-        buildTypes {
-            debug {
-            }
-            release {
-            }
-        }
-        signingConfigs {
-            debug {
-            }
-        }
 
     sourceSets {
         main {

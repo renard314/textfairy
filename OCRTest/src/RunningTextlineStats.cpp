@@ -1,8 +1,10 @@
 #include "RunningTextlineStats.h"
 #include <cmath>
 #include <vector>
+#include <stdio.h>
 
-RunningTextlineStats::RunningTextlineStats() {
+RunningTextlineStats::RunningTextlineStats(bool debug) {
+	mDebug = debug;
 }
 
 void RunningTextlineStats::Push(double x) {
@@ -29,30 +31,37 @@ double RunningTextlineStats::StandardDeviation() const {
 	return stats.StandardDeviation();
 }
 
+double RunningTextlineStats::PopulationStandardDeviation() const {
+	return stats.PopulationStandardDeviation();
+}
+
 bool RunningTextlineStats::Fits(double lineHeight) const {
+	printf("testing: %f",lineHeight);
 	if (stats.NumDataValues() == 0) {
+		printf(" fits because its the first line\n");
 		return true;
 	}
 	RunningStats nextStats;
 	nextStats+=stats;
 	nextStats.Push(lineHeight);
 
-	double mean = stats.Mean();
-	double nextMean = nextStats.Mean();
-	double maxMean = mean * 1.2;
-	double minMean = mean * 0.8;
-	double stddev = (stats.NumDataValues() == 1) ? 0 : stats.StandardDeviation();
-	double maxStddev = stddev + 0.5;
-	double nextStddev = nextStats.StandardDeviation();
-	if (stddev == 0) {
-		//use mean to decide whether the next line belongs to current group
-		if (nextMean < minMean || nextMean > maxMean) {
-			return false;
+	//double error = stats.PopulationStandardDeviation() / stats.Mean();
+	double maxError = 0.1;
+	double nextError = nextStats.PopulationStandardDeviation() / nextStats.Mean();
+	//printf(" next std dev = %f max std dev = %f",nextStddev, maxStddev);
+	if(mDebug){
+		printf(" next error = %f max error = %f",nextError, maxError);
+	}
+
+	//use std dev
+	if (nextError> maxError) {
+		if(mDebug){
+			printf(" no fit\n");
 		}
+		return false;
 	} else {
-		//use std dev
-		if (nextStddev > maxStddev) {
-			return false;
+		if(mDebug){
+			printf(" fits!\n");
 		}
 	}
 	return true;

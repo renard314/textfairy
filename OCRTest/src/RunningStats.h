@@ -10,7 +10,9 @@ public:
     long long NumDataValues() const;
     double Mean() const;
     double Variance() const;
+    double PopulationVariance() const;
     double StandardDeviation() const;
+    double PopulationStandardDeviation() const;
     double Skewness() const;
     double Kurtosis() const;
 

@@ -6,7 +6,7 @@
 class RunningTextlineStats
 {
 public:
-	RunningTextlineStats();
+	RunningTextlineStats(bool debug);
     void Push(double x);
     bool Fits(double lineHeight) const;
     void Clear();
@@ -14,9 +14,11 @@ public:
     double Mean() const;
     double Variance() const;
     double StandardDeviation() const;
+    double PopulationStandardDeviation() const;
 
 private:
     RunningStats stats;
+    bool mDebug;
 };
 
 #endif

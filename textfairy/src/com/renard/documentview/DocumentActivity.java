@@ -17,6 +17,7 @@
 package com.renard.documentview;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -89,7 +90,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         super.onCreate(savedInstanceState);
 		setVolumeControlStream(AudioManager.STREAM_ALARM);
 
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_document);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mFragmentFrame = findViewById(R.id.document_fragment_container);
@@ -140,6 +141,22 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         new CreatePDFTask(idForPdf).execute();
     }
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		//TODO make immersive mode work well
+//		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && hasFocus) {
+//			View decorView = getWindow().getDecorView();
+//			decorView.setSystemUiVisibility(
+//					View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//							| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//							| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//							| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//							| View.SYSTEM_UI_FLAG_FULLSCREEN
+//							| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+//		}
+	}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
