@@ -40,6 +40,9 @@ build.xml
 .classpath
 .project
 
+# Android Studio project files
+*.iml
+
 # svn files
 .svn/
 
