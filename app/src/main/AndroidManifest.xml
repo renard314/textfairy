@@ -3,8 +3,8 @@
           xmlns:tools="http://schemas.android.com/tools"
     package="com.renard.ocr"
     android:installLocation="auto"
-    android:versionCode="29"
-    android:versionName="1.2.01">
+    android:versionCode="30"
+    android:versionName="2.1.01">
 
     <uses-sdk
         android:minSdkVersion="9"

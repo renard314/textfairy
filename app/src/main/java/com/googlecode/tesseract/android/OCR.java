@@ -53,7 +53,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	public static final String EXTRA_OCR_BOX = "ocr_box";
 
 	static {
-//		System.loadLibrary("gnustl_shared");		
 		System.loadLibrary("lept");
 		System.loadLibrary("tess");
 		System.loadLibrary("image_processing_jni");

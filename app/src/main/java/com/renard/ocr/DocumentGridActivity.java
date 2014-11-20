@@ -24,6 +24,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -64,12 +66,15 @@ import com.renard.ocr.help.HintDialog;
 import com.renard.ocr.help.ReleaseNoteDialog;
 import com.renard.util.Util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import com.googlecode.leptonica.android.ReadFile;
 /**
  * main activity of the app
  * 
@@ -113,7 +118,22 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
         final int columnWidth = Util.determineThumbnailSize(this, null);
         Util.setThumbnailSize(columnWidth, columnWidth, this);
         checkForImageIntent();
-    }
+		Bitmap b = Bitmap.createBitmap(300,300,Bitmap.Config.ARGB_8888);
+		Canvas c = new Canvas();
+		Paint p = new Paint(){{
+			setColor(Color.BLACK);
+			setStrokeWidth(5);
+			setStyle(Style.STROKE);
+		}
+		};
+		c.drawLine(0,0, 299,299,p);
+
+		try {
+			Util.savePixToSD(ReadFile.readBitmap(b),"test");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
     private void checkForImageIntent() {
         Intent intent = getIntent();
