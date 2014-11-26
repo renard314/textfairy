@@ -18,7 +18,7 @@
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.macosx.base.1314995880.1430365798" name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.1941521029" name="cdt.managedbuild.toolchain.gnu.macosx.base" nonInternalBuilderId="cdt.managedbuild.builder.gnu.cross" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.base.1282297004" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
-							<builder buildPath="${workspace_loc:/OCRTest}/Default" id="cdt.managedbuild.builder.gnu.cross.657695423" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/OCRTest}/Default" id="cdt.managedbuild.builder.gnu.cross.657695423" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.1621537126" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.651581043" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
 								<option id="macosx.cpp.link.option.libs.953131388" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
@@ -35,7 +35,7 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.base.1490269732" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
 								<option id="gnu.both.asm.option.include.paths.856555804" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/usr/local/include/leptonica"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/tess-two/tess-two/jni/com_googlecode_leptonica_android/src"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/codecs"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/lib"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility"/>
@@ -47,12 +47,12 @@
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.1708847309" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.910672021" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base">
 								<option id="gnu.cpp.compiler.option.include.paths.1813295141" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/usr/local/include/leptonica"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/codecs"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/lib"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility/template"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/tesseract"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/tess-two/tess-two/jni/com_googlecode_leptonica_android/src"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.534016377" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.optimization.level.72351439" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
@@ -61,12 +61,12 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.30322514" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base">
 								<option id="gnu.c.compiler.option.include.paths.1369368439" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/usr/local/include/leptonica"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/codecs"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/lib"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/hocr2pdf/src/utility/template"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/tesseract"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/tess-two/tess-two/jni/com_googlecode_leptonica_android/src"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.514620969" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.408354407" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
