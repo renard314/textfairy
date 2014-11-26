@@ -9,7 +9,7 @@
 #include <sstream>
 #include <iostream>
 #include "RunningTextlineStats.h"
-
+#include "leptonica_legacy.h"
 using namespace std;
 
 /*
@@ -742,7 +742,6 @@ NUMA * numaMakeDelta2(NUMA  *nas) {
     }
     return nad;
 }
-
 
 
 l_float32 pixGetTextLineSpacing(Pix* pixb){

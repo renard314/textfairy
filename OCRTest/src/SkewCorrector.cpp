@@ -21,12 +21,12 @@ Pix* SkewCorrector::rotate(Pix* pix, l_float32 angle) {
 Pix* SkewCorrector::correctSkew(Pix* pix, l_float32* angle_out){
     PROCNAME("SkewCorrector::correctSkew");
 	if(pix==NULL){
-		l_warning("pixs not defined",procName);
+		L_WARNING("pixs not defined",procName);
 		return NULL;
 	}
 	l_int32 depth = pixGetDepth(pix);
 	if(depth!=1){
-		l_warning("pixs not 1 bpp",procName);
+		L_WARNING("pixs not 1 bpp",procName);
 		return NULL;
 	}
 

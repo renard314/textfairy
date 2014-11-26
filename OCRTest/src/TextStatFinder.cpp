@@ -12,6 +12,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <vector>
+#include "leptonica_legacy.h"
 
 TextStatFinder::TextStatFinder(bool debug) {
 	mDebug = debug;
@@ -279,6 +280,8 @@ void numasDestroy(std::vector<Numa**> numas) {
 		numaDestroy(numas[i]);
 	}
 }
+
+
 
 
 //the original function added crossings twice if the y val was exactly the threshold value
@@ -640,12 +643,12 @@ bool  TextStatFinder::getTextStats(Pix* pix, l_float32* textSize, l_float32* tex
     	*textPropability = 0;
     }
 	if(pix==NULL){
-		l_warning("pixs not defined",procName);
+		L_WARNING("pixs not defined",procName);
 		return false;
 	}
 	l_int32 depth = pixGetDepth(pix);
 	if(depth!=1){
-		l_warning("pixs not 1 bpp",procName);
+		L_WARNING("pixs not 1 bpp",procName);
 		return false;
 	}
 
@@ -776,12 +779,12 @@ void  TextStatFinder::getTextStatsTiled(Pix* pix, Numa** textSizes, Pix** pixTex
     PROCNAME("TextStatFinder::getTextStatsTiled");
 
 	if(pix==NULL){
-		l_warning("pixs not defined",procName);
+		L_WARNING("pixs not defined",procName);
 		return;
 	}
 	l_int32 depth = pixGetDepth(pix);
 	if(depth!=1){
-		l_warning("pixs not 1 bpp",procName);
+		L_WARNING("pixs not 1 bpp",procName);
 		return;
 	}
 
