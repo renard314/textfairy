@@ -25,7 +25,7 @@
 #include <cmath>
 #include "binarize.h"
 #include "pageseg.h"
-#include <util.h>
+#include <image_processing_util.h>
 
 using namespace std;
 
