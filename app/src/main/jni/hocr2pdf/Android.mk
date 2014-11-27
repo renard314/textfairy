@@ -19,9 +19,10 @@ LOCAL_C_INCLUDES += \
 LOCAL_LDLIBS := \
   -llog \
   -lz
+LOCAL_LDFLAGS := -L$(TESS_TWO_PATH)/libs/$(TARGET_ARCH_ABI)/ -lpng
 
 #common
-LOCAL_SHARED_LIBRARIES:= libjpeg libhocr2pdf
+LOCAL_SHARED_LIBRARIES:= libjpeg libpng libhocr2pdf
 LOCAL_PRELINK_MODULE:= false
 LOCAL_DISABLE_FORMAT_STRING_CHECKS:=true
 

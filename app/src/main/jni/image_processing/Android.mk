@@ -9,7 +9,7 @@ LOCAL_MODULE := libimage_processing_jni
 LOCAL_SRC_FILES += \
   $(IMAGE_PROCESSING_PATH)/binarize.cpp \
   $(IMAGE_PROCESSING_PATH)/pageseg.cpp \
-  $(IMAGE_PROCESSING_PATH)/util.cpp \
+  $(IMAGE_PROCESSING_PATH)/image_processing_util.cpp \
   $(IMAGE_PROCESSING_PATH)/dewarp.cpp \
   image_processing.cpp
 
@@ -25,7 +25,7 @@ LOCAL_LDFLAGS := -L$(TESS_TWO_PATH)/libs/$(TARGET_ARCH_ABI)/ -llept
 
   
 #common
-LOCAL_SHARED_LIBRARIES:= liblept
+LOCAL_SHARED_LIBRARIES:= liblept libjpeg
 LOCAL_PRELINK_MODULE:= false
 LOCAL_DISABLE_FORMAT_STRING_CHECKS:=true
 include $(BUILD_SHARED_LIBRARY)
