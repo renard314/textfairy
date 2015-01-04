@@ -356,7 +356,8 @@ public class Util {
 		File image = new File(picdir, fileName);
         image.createNewFile();
 		try {
-			WriteFile.writeImpliedFormat(pix, image, 85, true);
+			boolean result = WriteFile.writeImpliedFormat(pix, image, 85, true);
+			Log.i("RENARD",""+result);
 //            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 //                WriteFile.writeImpliedFormat(pix, image, 85, true);
 //

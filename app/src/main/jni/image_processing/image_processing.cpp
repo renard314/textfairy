@@ -33,7 +33,7 @@ using namespace std;
 extern "C" {
 #endif  /* __cplusplus */
 
-static jmethodID onFinalPix, onProgressImage, onImageSize, onProgressValues, onProgressText, onHOCRResult, onLayoutElements, onUTF8Result, onLayoutPix;
+static jmethodID onProgressImage, onProgressValues, onProgressText, onHOCRResult, onLayoutElements, onUTF8Result, onLayoutPix;
 
 static JNIEnv *cachedEnv;
 static jobject* cachedObject;
@@ -45,14 +45,12 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 void Java_com_googlecode_tesseract_android_OCR_nativeInit(JNIEnv *env, jobject _thiz) {
 	jclass cls;
 	cls = env->FindClass("com/googlecode/tesseract/android/OCR");
-	onFinalPix = env->GetMethodID(cls, "onFinalPix", "(I)V");
 	onProgressImage = env->GetMethodID(cls, "onProgressImage", "(I)V");
 	onProgressText = env->GetMethodID(cls, "onProgressText", "(I)V");
 	onHOCRResult = env->GetMethodID(cls, "onHOCRResult", "(Ljava/lang/String;I)V");
 	onLayoutElements = env->GetMethodID(cls, "onLayoutElements", "(II)V");
 	onUTF8Result = env->GetMethodID(cls, "onUTF8Result", "(Ljava/lang/String;)V");
 	onLayoutPix = env->GetMethodID(cls, "onLayoutPix", "(I)V");
-	onImageSize = env->GetMethodID(cls, "onImageSize", "(II)V");
 
 }
 
@@ -298,12 +296,6 @@ jlong Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobje
 	initStateVariables(env, &thiz);
 
 	bookpage(pixOrg, &pixText , messageJavaCallback, pixJavaCallback, true);
-	LOGI("processing is done");
-	if (isStateValid()) {
-		LOGI("calling  onFinalPix");
-		pixFinal = pixConvertTo32(pixText);
-		env->CallVoidMethod(thiz, onFinalPix, pixFinal);
-	}
 	resetStateVariables();
 
 	return (jlong)pixText;

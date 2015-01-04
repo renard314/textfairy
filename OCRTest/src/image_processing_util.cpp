@@ -74,10 +74,10 @@ void bookpage(Pix* pixOrg, Pix** pixText, void (*messageJavaCallback)(int), void
 		*pixText = pixClone(pixb);
     	log("dewarp failed in: %f",stopTimer());
 	} else {
+    	log("dewarp success in: %f",stopTimer());
 		pixJavaCallback(pixDewarped);
 		*pixText = pixClone(pixDewarped);
 		pixDestroy(&pixDewarped);
-    	log("dewarp success in: %f",stopTimer());
 	}
     pixDestroy(&pixb);
     pixDestroy(&pixsg);
@@ -125,7 +125,7 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 		if (pixaImage != NULL) {
 			total = pixaGetCount(pixaImage);
 		}
-		debugstring << " and " << total << " Images in total" << std::endl;
+		debugstring << " and " << total << " Images in total" << endl;
 
 		debugstring << textCount << " text indexes: [";
 		for (int i = 0; i < textCount; i++) {
@@ -254,10 +254,8 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 	int yoffset = top - border;
 
 	if (debug) {
-		debugstring << "extend of final pix: (" << right << "," << bottom << ")"
-				<< std::endl;
-		debugstring << "offset: (" << xoffset << "," << yoffset << ")"
-				<< std::endl;
+		debugstring << "extend of final pix: (" << right << "," << bottom << ")" << endl;
+		debugstring << "offset: (" << xoffset << "," << yoffset << ")" << endl;
 		startTimer();
 	}
 
@@ -292,7 +290,7 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 	}
 
 	if (debug) {
-		debugstring << "time to assemble final pix: " << stopTimer() << std::endl;
+		debugstring << "time to assemble final pix: " << stopTimer() << endl;
 		printf("%s",debugstring.str().c_str());
 	}
 

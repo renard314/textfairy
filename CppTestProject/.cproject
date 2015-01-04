@@ -3,7 +3,24 @@
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.gnu.macosx.exe.debug.1276882171">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.macosx.exe.debug.1276882171" moduleId="org.eclipse.cdt.core.settings" name="Debug">
-				<externalSettings/>
+				<externalSettings>
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/image_processing_src"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/wordrec"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/viewer"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/textord"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/opencl"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/neural_networks/runtime"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/dict"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/cutil"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/cube"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/classify"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/ccutil"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/ccmain"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/tesseract_src/api"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/CppTestProject/leptonica_src/src"/>
+					</externalSetting>
+				</externalSettings>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
@@ -22,8 +39,11 @@
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.debug.98641553" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug.272832400" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.debug">
 								<option id="macosx.cpp.link.option.libs.1848847119" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jpeg"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="z"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jpeg"/>
+								</option>
+								<option id="macosx.cpp.link.option.paths.124992044" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="/usr/local/lib"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1682040473" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -31,27 +51,7 @@
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug.675411651" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug">
-								<option id="gnu.both.asm.option.include.paths.754636759" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/include"/>
-									<listOptionValue builtIn="false" value="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/include/c++/4.2.1"/>
-									<listOptionValue builtIn="false" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
-									<listOptionValue builtIn="false" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/leptonica_src/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/png_src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/ccmain}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/ccstruct}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/ccutil}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/classify}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/cube}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/cutil}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/dict}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/neural_networks/runtime}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/opencl}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/textord}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/viewer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/wordrec}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/image_processing_src}&quot;"/>
-								</option>
+								<option id="gnu.both.asm.option.include.paths.754636759" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.504712870" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.1959801353" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
@@ -60,22 +60,24 @@
 								<option id="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level.1171025944" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1894699367" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/leptonica_src/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/png_src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/api}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/ccmain}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/ccstruct}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/ccutil}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/classify}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/cube}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/cutil}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/dict}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/neural_networks/runtime}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/opencl}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/textord}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/viewer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/wordrec}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/image_processing_src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/ccstruct}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/leptonica_src/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/png_src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/api}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/ccmain}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/ccutil}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/classify}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/cube}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/cutil}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/dict}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/neural_networks/runtime}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/opencl}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/textord}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/viewer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/wordrec}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/image_processing_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
+									<listOptionValue builtIn="false" value="/CppTestProject/tesseract_src/ccstruct"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.543365784" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="USE_STD_NAMESPACE=1"/>
@@ -86,25 +88,8 @@
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.macosx.exe.debug.option.optimization.level.923416291" name="Optimization Level" superClass="gnu.c.compiler.macosx.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.macosx.exe.debug.option.debugging.level.1974751571" name="Debug Level" superClass="gnu.c.compiler.macosx.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.1234287629" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/include"/>
-									<listOptionValue builtIn="false" value="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/include/c++/4.2.1"/>
-									<listOptionValue builtIn="false" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
-									<listOptionValue builtIn="false" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/leptonica_src/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/png_src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/ccmain}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/ccstruct}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/ccutil}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/classify}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/cube}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/cutil}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/dict}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/neural_networks/runtime}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/opencl}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/textord}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/viewer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/wordrec}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/image_processing_src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/png_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.724703398" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -141,23 +126,38 @@
 							<builder buildPath="${workspace_loc:/HelloWorld2}/Release" id="cdt.managedbuild.target.gnu.builder.macosx.exe.release.481009557" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.exe.release"/>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.release.1536492796" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.exe.release"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.release.480630457" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.exe.release">
+								<option id="macosx.cpp.link.option.paths.1263469663" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="/usr/local/lib"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.186400774" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.exe.release.1863433267" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.exe.release">
+								<option id="gnu.both.asm.option.include.paths.1600920078" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.806279004" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.1336264052" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.exe.release.1069884009" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.exe.release">
 								<option id="gnu.cpp.compiler.macosx.exe.release.option.optimization.level.482348825" name="Optimization Level" superClass="gnu.cpp.compiler.macosx.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.macosx.exe.release.option.debugging.level.1292295027" name="Debug Level" superClass="gnu.cpp.compiler.macosx.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.include.paths.1208867319" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1826399187" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.release.1364992943" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.exe.release">
 								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.macosx.exe.release.option.optimization.level.439613847" name="Optimization Level" superClass="gnu.c.compiler.macosx.exe.release.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.macosx.exe.release.option.debugging.level.1528736620" name="Debug Level" superClass="gnu.c.compiler.macosx.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.include.paths.1433199303" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.5463121" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 						</toolChain>
@@ -193,6 +193,9 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jpeg"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="z"/>
 								</option>
+								<option id="macosx.cpp.link.option.paths.1545093807" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="/usr/local/lib"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1332900467" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -219,6 +222,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/viewer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/wordrec}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/image_processing_src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.364419395" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -245,6 +250,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/wordrec}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/image_processing_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/Users/renard/devel/android-ndk-r9c/platforms/android-19/arch-arm/usr/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.448175147" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="USE_STD_NAMESPACE=1"/>
@@ -274,6 +281,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/viewer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/tesseract_src/wordrec}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/image_processing_src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1082754977" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -317,4 +326,5 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

@@ -15,6 +15,7 @@
  */
 package com.googlecode.tesseract.android;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -88,6 +89,11 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	private synchronized void onProgressImage(final int nativePix) {
 		Pix preview = new Pix(nativePix);
 		if (mMessenger != null && mIsActivityAttached) {
+			try {
+				Util.savePixToSD(preview,"test"+nativePix);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			final Bitmap previewBitmap = WriteFile.writeBitmap(preview);
 			mPreviewHeight = preview.getHeight();
 			mPreviewWith = preview.getWidth();
@@ -110,7 +116,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	 * @param bottom
 	 */
 	private void onProgressValues(final int percent, final int left, final int right, final int top, final int bottom, final int left2, final int right2, final int top2, final int bottom2) {
-
+		Log.i(TAG,"onProgressValues ("+percent+")");
 		int newBottom = (bottom2 - top2) - bottom;
 		int newTop = (bottom2 - top2) - top;
 		// scale the word bounding rectangle to the preview image space
@@ -159,15 +165,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 		}
 	}
 
-    /**
-     * called from native with image dimensions
-     * @param w
-     * @param h
-     */
-    private void onImageSize(int w, int h){
-        mOriginalHeight = h;
-        mOriginalWidth = w;
-    }
 	/**
 	 * called from native
 	 * 
@@ -175,18 +172,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	 */
 	private void onLayoutPix(int nativePix) {
 		sendMessage(MESSAGE_LAYOUT_PIX, nativePix);
-	}
-
-	/**
-	 * called from native
-	 * 
-	 * @param nativePix pix pointer
-	 */
-	private void onFinalPix(int nativePix) {
-		Pix pix = new Pix(nativePix);
-		mOriginalHeight = pix.getHeight();
-		mOriginalWidth = pix.getWidth();
-		sendMessage(MESSAGE_FINAL_IMAGE, nativePix);
 	}
 
 	/**
@@ -216,22 +201,18 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 	private void sendMessage(int what) {
 		sendMessage(what, 0, 0, null, null);
 	}
-
 	private void sendMessage(int what, int arg1, int arg2) {
 		sendMessage(what, arg1, arg2, null, null);
 	}
-
 	private void sendMessage(int what, String string) {
 		sendMessage(what, 0, 0, string, null);
 	}
-
     private void sendMessage(int what, String string, int accuracy) {
         sendMessage(what, accuracy, 0, string, null);
     }
 	private void sendMessage(int what, int arg1) {
 		sendMessage(what, arg1, 0, null, null);
 	}
-	
 	private void sendMessage(int what, Bitmap previewBitmap) {
 		sendMessage(what, 0, 0, previewBitmap, null );		
 	}
@@ -346,6 +327,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter {
 			        mOriginalHeight = pixText.getHeight();
 			        mOriginalWidth = pixText.getWidth();
 					sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
+					sendMessage(MESSAGE_FINAL_IMAGE, (int)nativeTextPix);
 
 					mTess = new TessBaseAPI();
 					boolean result = mTess.init(tessDir, lang);
