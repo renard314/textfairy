@@ -28,6 +28,7 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.renard.ocr.cropimage.ImageViewTouchBase;
@@ -40,8 +41,9 @@ import com.renard.ocr.cropimage.ImageViewTouchBase;
 public class OCRImageView extends ImageViewTouchBase {
 
 	private final static float TEXT_SIZE = 32f;
+    private static final String LOG_TAG = OCRImageView.class.getSimpleName();
 
-	private final Paint mNumberStrokePaint = new Paint();
+    private final Paint mNumberStrokePaint = new Paint();
 	private final Paint mNumberPaint = new Paint();
 	private final Paint mWordPaint = new Paint();
 	private final Paint mBackgroundPaint = new Paint();
@@ -102,6 +104,8 @@ public class OCRImageView extends ImageViewTouchBase {
 	}
 
 	public void setProgress(int newProgress, RectF wordBoundingBox, RectF ocrBoundingBox) {
+        Log.i(LOG_TAG, "OCRImageView.setProgress(" +wordBoundingBox+","+ocrBoundingBox+")");
+        
 		this.mProgress = newProgress;
 		this.mWordBoundingBox.set(wordBoundingBox);
 		this.mOCRBoundingBox.set(ocrBoundingBox);

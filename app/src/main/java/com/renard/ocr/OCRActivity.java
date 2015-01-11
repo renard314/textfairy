@@ -39,6 +39,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -111,7 +112,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 				break;
 			}
 			case OCR.MESSAGE_TESSERACT_PROGRESS: {
-				int percent = msg.arg1;
+                int percent = msg.arg1;
 				Bundle data = msg.getData();
 				mImageView.setProgress(percent,
 						(RectF) data.getParcelable(OCR.EXTRA_WORD_BOX),
@@ -412,11 +413,9 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 							mOcrLanguage = ocrLanguage;
 
 							getSupportActionBar().show();
-							getSupportActionBar().setDisplayShowTitleEnabled(
-									true);
+							getSupportActionBar().setDisplayShowTitleEnabled(true);
 							// mFairyText.setText(R.string.progress_start);
-							getSupportActionBar().setTitle(
-									R.string.progress_start);
+							getSupportActionBar().setTitle(R.string.progress_start);
 
 							if (layoutKind == LayoutKind.SIMPLE) {
 								mOCR.startOCRForSimpleLayout(OCRActivity.this,

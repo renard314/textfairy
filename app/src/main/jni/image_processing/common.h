@@ -29,17 +29,19 @@
 
 
 #define MAX_INT16 0x7fff
-#define LOG_TAG "Tesseract(native)"
-#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define LOG_ASSERT(_cond, ...) if (!_cond) __android_log_assert("conditional", LOG_TAG, __VA_ARGS__)
+#define IMAGE_PROCESSING_LOG_TAG "Text Fairy (native)"
+#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, IMAGE_PROCESSING_LOG_TAG, __VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, IMAGE_PROCESSING_LOG_TAG, __VA_ARGS__)
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, IMAGE_PROCESSING_LOG_TAG, __VA_ARGS__)
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, IMAGE_PROCESSING_LOG_TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, IMAGE_PROCESSING_LOG_TAG, __VA_ARGS__)
+#define LOG_ASSERT(_cond, ...) if (!_cond) __android_log_assert("conditional", IMAGE_PROCESSING_LOG_TAG, __VA_ARGS__)
 
 #define printf(fmt,args...)  __android_log_print(ANDROID_LOG_INFO  ,LOG_TAG, fmt, ##args)
 /*dont write debug images onto the sd card*/
 #define pixWrite(name,pixs,format)  __android_log_print(ANDROID_LOG_INFO  ,LOG_TAG, name)
+//print log message to android log cat
+#define log(fmt,args...)  __android_log_print(ANDROID_LOG_INFO  ,LOG_TAG, fmt, ##args)
 
 
 #endif

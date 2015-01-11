@@ -44,11 +44,13 @@ bool cancelFunc(void* cancel_this, int words) {
 
 
 int main() {
-	Pix* pixOrg = pixRead("images/47.jpg");
+	Pix* pixOrg = pixRead("images/1.png");
 	Pix* pixText;
 	pixJavaCallback(pixOrg);
 
-	bookpage(pixOrg, &pixText , messageJavaCallback, pixJavaCallback, false);
+	bookpage(pixOrg, &pixText , messageJavaCallback, pixJavaCallback, true);
+
+	pixWrite("dewarpedTest.png",pixText,IFF_PNG);
 
 	ETEXT_DESC monitor;
 	monitor.progress_callback = progressJavaCallback;

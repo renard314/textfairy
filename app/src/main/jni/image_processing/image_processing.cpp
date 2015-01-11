@@ -45,12 +45,12 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 void Java_com_googlecode_tesseract_android_OCR_nativeInit(JNIEnv *env, jobject _thiz) {
 	jclass cls;
 	cls = env->FindClass("com/googlecode/tesseract/android/OCR");
-	onProgressImage = env->GetMethodID(cls, "onProgressImage", "(I)V");
+	onProgressImage = env->GetMethodID(cls, "onProgressImage", "(J)V");
 	onProgressText = env->GetMethodID(cls, "onProgressText", "(I)V");
 	onHOCRResult = env->GetMethodID(cls, "onHOCRResult", "(Ljava/lang/String;I)V");
 	onLayoutElements = env->GetMethodID(cls, "onLayoutElements", "(II)V");
 	onUTF8Result = env->GetMethodID(cls, "onUTF8Result", "(Ljava/lang/String;)V");
-	onLayoutPix = env->GetMethodID(cls, "onLayoutPix", "(I)V");
+	onLayoutPix = env->GetMethodID(cls, "onLayoutPix", "(J)V");
 
 }
 
@@ -86,13 +86,16 @@ void messageJavaCallback(int message) {
 void pixJavaCallback(Pix* pix) {
 	if (isStateValid()) {
 		Pix* pixpreview = pixClone(pix);
-		cachedEnv->CallVoidMethod(*cachedObject, onProgressImage, (jint) pixpreview);
+		Pix* pixScaled = pixScaleByIntSampling(pixpreview,0.25);
+		cachedEnv->CallVoidMethod(*cachedObject, onProgressImage, (jlong) pixScaled);
+		pixDestroy(&pixpreview);
+		pixDestroy(&pixScaled);
 	}
 }
 
 void callbackLayout(const Pix* pixpreview) {
 	if (isStateValid()) {
-		cachedEnv->CallVoidMethod(*cachedObject, onLayoutPix, pixpreview);
+		cachedEnv->CallVoidMethod(*cachedObject, onLayoutPix, (jlong)pixpreview);
 	}
 	messageJavaCallback(MESSAGE_ANALYSE_LAYOUT);
 }
@@ -196,12 +199,12 @@ int doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostrings
 	return accuracy/columnCount;
 }
 
-jint Java_com_googlecode_tesseract_android_OCR_nativeOCR(JNIEnv *env, jobject thiz, jint nativePixaText, jint nativePixaImage, jintArray selectedTexts, jintArray selectedImages, jstring tessDir, jstring lang, jboolean useCube) {
+*/
+
+jlongArray Java_com_googlecode_tesseract_android_OCR_combineSelectedPixa(JNIEnv *env, jobject thiz, jint nativePixaText, jint nativePixaImage, jintArray selectedTexts, jintArray selectedImages) {
 	LOGV(__FUNCTION__);
 	Pixa *pixaTexts = (PIXA *) nativePixaText;
 	Pixa *pixaImages = (PIXA *) nativePixaImage;
-	ostringstream hocr;
-	ostringstream utf8text;
 	initStateVariables(env, &thiz);
 
 	jint* textindexes = env->GetIntArrayElements(selectedTexts, 0);
@@ -209,16 +212,32 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCR(JNIEnv *env, jobject th
 	jint* imageindexes = env->GetIntArrayElements(selectedImages, 0);
 	jsize imageCount = env->GetArrayLength(selectedImages);
 
-	const char *tessDirNative = env->GetStringUTFChars(tessDir, 0);
-	const char *langNative = env->GetStringUTFChars(lang, 0);
-
-	lastProgress = 0;
 
 	Pix* pixFinal;
 	Pix* pixOcr;
 	Boxa* boxaColumns;
 
 	combineSelectedPixa(pixaTexts, pixaImages, textindexes, textCount, imageindexes, imageCount, messageJavaCallback, &pixFinal, &pixOcr, &boxaColumns, true);
+
+	jlongArray result;
+	result = env->NewLongArray(3);
+	 if (result == NULL) {
+	     return NULL; /* out of memory error thrown */
+	 }
+
+	jlong fill[3];
+	fill[0] = (jlong) pixFinal;
+	fill[1] = (jlong) pixOcr;
+	fill[2] = (jlong) boxaColumns;
+	// move from the temp structure to the java structure
+	env->SetLongArrayRegion(result, 0, 3, fill);
+
+	resetStateVariables();
+
+	return result;
+/*
+	const char *tessDirNative = env->GetStringUTFChars(tessDir, 0);
+	const char *langNative = env->GetStringUTFChars(lang, 0);
 
 	pixJavaCallback(pixFinal, TRUE, TRUE);
 	LOGI("after showPixRGB");
@@ -251,10 +270,11 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeOCR(JNIEnv *env, jobject th
 	env->ReleaseIntArrayElements(selectedImages, imageindexes, 0);
 	utf8text.str("");
 	hocr.str("");
-
 	resetStateVariables();
 
 	return (jint) 0;
+*/
+
 }
 
 
@@ -271,7 +291,7 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeAnalyseLayout(JNIEnv *env, 
 
 	Pix* pixsg;
 	extractImages(pixOrg, &pixhm, &pixsg);
-	pixJavaCallback(pixsg, false, true);
+	pixJavaCallback(pixsg);
 	binarize(pixsg, pixhm, &pixb);
 	pixDestroy(&pixsg);
 
@@ -285,62 +305,19 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeAnalyseLayout(JNIEnv *env, 
 	resetStateVariables();
 	return (jint) 0;
 }
-*/
+
 
 
 jlong Java_com_googlecode_tesseract_android_OCR_nativeOCRBook(JNIEnv *env, jobject thiz, jlong nativePix) {
 	LOGV(__FUNCTION__);
 	Pix *pixOrg = (PIX *) nativePix;
-	Pix* pixFinal;
 	Pix* pixText;
 	initStateVariables(env, &thiz);
 
-	bookpage(pixOrg, &pixText , messageJavaCallback, pixJavaCallback, true);
+	bookpage(pixOrg, &pixText , messageJavaCallback, pixJavaCallback, false);
 	resetStateVariables();
 
 	return (jlong)pixText;
-
-
-	/*
-	pixDestroy(&pixOrg);
-
-	int w = pixGetWidth(pixText);
-	int h = pixGetHeight(pixText);
-
-    if (isStateValid()) {
-        cachedEnv->CallVoidMethod(*cachedObject, onImageSize, w,h);
-    }
-
-	currentTextBox = boxCreate(0, 0, w, h);
-
-	messageJavaCallback(MESSAGE_OCR);
-
-	int accuracy = doOCR(pixText, &hocr, &utf8text, tessDirNative, langNative, true);
-
-	pixDestroy (&pixText);
-	boxDestroy(&currentTextBox);
-
-
-	if (isStateValid()) {
-		jstring result = env->NewStringUTF(hocr.str().c_str());
-		env->CallVoidMethod(thiz, onHOCRResult, result,accuracy);
-	}
-
-	if (isStateValid()) {
-		jstring result = env->NewStringUTF(utf8text.str().c_str());
-		env->CallVoidMethod(thiz, onUTF8Result, result);
-	}
-
-	if (isStateValid()) {
-		LOGI("calling  onFinalPix");
-		env->CallVoidMethod(thiz, onFinalPix, pixFinal);
-	}
-	hocr.str("");
-	utf8text.str("");
-
-	resetStateVariables();
-	return (jint) 0;
-	*/
 
 }
 

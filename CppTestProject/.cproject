@@ -51,7 +51,7 @@
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug.675411651" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug">
-								<option id="gnu.both.asm.option.include.paths.754636759" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
+								<option id="gnu.both.asm.option.include.paths.754636759" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.504712870" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.1959801353" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
@@ -77,7 +77,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/wordrec}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/image_processing_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
-									<listOptionValue builtIn="false" value="/CppTestProject/tesseract_src/ccstruct"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/android-ndk-r9c/platforms/android-19/arch-arm/usr/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.543365784" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="USE_STD_NAMESPACE=1"/>

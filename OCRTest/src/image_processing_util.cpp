@@ -76,8 +76,7 @@ void bookpage(Pix* pixOrg, Pix** pixText, void (*messageJavaCallback)(int), void
 	} else {
     	log("dewarp success in: %f",stopTimer());
 		pixJavaCallback(pixDewarped);
-		*pixText = pixClone(pixDewarped);
-		pixDestroy(&pixDewarped);
+		*pixText = pixDewarped;
 	}
     pixDestroy(&pixb);
     pixDestroy(&pixsg);
