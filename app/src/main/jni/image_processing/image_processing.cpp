@@ -201,23 +201,22 @@ int doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostrings
 
 */
 
-jlongArray Java_com_googlecode_tesseract_android_OCR_combineSelectedPixa(JNIEnv *env, jobject thiz, jint nativePixaText, jint nativePixaImage, jintArray selectedTexts, jintArray selectedImages) {
+jlongArray Java_com_googlecode_tesseract_android_OCR_combineSelectedPixa(JNIEnv *env, jobject thiz, jlong nativePixaText, jlong nativePixaImage, jintArray selectedTexts, jintArray selectedImages) {
 	LOGV(__FUNCTION__);
 	Pixa *pixaTexts = (PIXA *) nativePixaText;
 	Pixa *pixaImages = (PIXA *) nativePixaImage;
 	initStateVariables(env, &thiz);
-
-	jint* textindexes = env->GetIntArrayElements(selectedTexts, 0);
+	jint* textindexes = env->GetIntArrayElements(selectedTexts, NULL);
 	jsize textCount = env->GetArrayLength(selectedTexts);
-	jint* imageindexes = env->GetIntArrayElements(selectedImages, 0);
+	jint* imageindexes = env->GetIntArrayElements(selectedImages, NULL);
 	jsize imageCount = env->GetArrayLength(selectedImages);
-
 
 	Pix* pixFinal;
 	Pix* pixOcr;
 	Boxa* boxaColumns;
 
 	combineSelectedPixa(pixaTexts, pixaImages, textindexes, textCount, imageindexes, imageCount, messageJavaCallback, &pixFinal, &pixOcr, &boxaColumns, true);
+	pixJavaCallback(pixFinal);
 
 	jlongArray result;
 	result = env->NewLongArray(3);
@@ -233,7 +232,8 @@ jlongArray Java_com_googlecode_tesseract_android_OCR_combineSelectedPixa(JNIEnv 
 	env->SetLongArrayRegion(result, 0, 3, fill);
 
 	resetStateVariables();
-
+	env->ReleaseIntArrayElements(selectedTexts, textindexes, 0);
+	env->ReleaseIntArrayElements(selectedImages, imageindexes, 0);
 	return result;
 /*
 	const char *tessDirNative = env->GetStringUTFChars(tessDir, 0);

@@ -278,6 +278,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     mTess.setPageSegMode(PageSegMode.PSM_SINGLE_BLOCK);
                     mTess.setImage(pixOcr);
                     Boxa boxa = new Boxa(boxaColumnsPointer);
+                    mOriginalHeight = pixOcr.getHeight();
+                    mOriginalWidth = pixOcr.getWidth();
 
                     int xb, yb, wb, hb;
                     int columnCount = boxa.getCount();
@@ -286,7 +288,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     StringBuilder hocrText = new StringBuilder();
                     StringBuilder htmlText = new StringBuilder();
                     for (int i = 0; i < columnCount; i++) {
-                        if (boxa.getGeometry(i, geometry)) {
+                        if (!boxa.getGeometry(i, geometry)) {
                             continue;
                         }
                         xb = geometry[0];

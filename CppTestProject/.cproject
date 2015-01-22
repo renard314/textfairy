@@ -77,7 +77,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/tesseract_src/wordrec}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/image_processing_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
-									<listOptionValue builtIn="false" value="/Users/renard/devel/android-ndk-r9c/platforms/android-19/arch-arm/usr/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.543365784" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="USE_STD_NAMESPACE=1"/>

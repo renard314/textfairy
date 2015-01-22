@@ -114,7 +114,6 @@ android {
             jni.srcDirs = [] //disable automatic ndk-build
         }
     }
-
 }
 
 def Properties props = new Properties()

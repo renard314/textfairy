@@ -296,5 +296,6 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 	*pPixFinal = pixFinal;
 	*pPixOcr = pixOCR;
 	*pBoxaColumns = boxaColumns;
+	printf("%s",debugstring.str().c_str());
 }
 
