@@ -387,7 +387,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
     public void cancel() {
-        mTess.stop();
+        if(mTess!=null){
+            mTess.stop();
+        }
     }
 
     // ***************
