@@ -48,10 +48,10 @@
     <string name="save_success">Save successful</string>
     <string name="save_fail">Save failed!</string>
     <string name="share_chooser_title">Select how you want to share the text</string>
-    <string name="progress_start">starting OCR Process</string>
+    <string name="progress_start">starting</string>
     <string name="download_language">download</string>
     <string name="progress_dewarp">Straightening text</string>
-    <string name="progress_ocr">Optical character recognition in progress</string>
+    <string name="progress_ocr">Reading text</string>
     <string name="delete">Delete </string>
     <string name="edit_title">Change title</string>
     <string name="cancel">Cancel</string>
@@ -130,7 +130,7 @@
     <string name="start_text_21">He looks at the bartender and says "Can I get a screwdriver?"</string>
     <string name="document_list_help_title">Here you can manage your scanned documents</string>
     <string name="toc_help_title">Here you see a list of all pages in the document</string>
-    <string name="no_ocr">No ocr. Save image unchanged.</string>
+    <string name="no_ocr">No processing. Save image unchanged.</string>
     <string name="crop_help_title">You can crop and rotate your photo now</string>
     <string name="continue_ocr">continue</string>
     <string name="default_ocr_language">eng</string>

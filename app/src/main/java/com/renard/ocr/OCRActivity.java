@@ -69,8 +69,10 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 
 	public static final String EXTRA_PARENT_DOCUMENT_ID = "parent_id";
 	private static final String OCR_LANGUAGE = "ocr_language";
+    public static final String EXTRA_USE_ACCESSIBILITY_MODE = "ACCESSIBILTY_MODE";
 
-	private Button mButtonStartOCR;
+
+    private Button mButtonStartOCR;
 	private OCRImageView mImageView;
 	private int mOriginalHeight = 0;
 	private int mOriginalWidth = 0;
@@ -380,27 +382,28 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 
 		mOCR = new OCR(this, mMessageReceiver);
 
-		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		//this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		setContentView(R.layout.ocr_visualize);
 		mImageView = (OCRImageView) findViewById(R.id.progress_image);
 
 		mParentId = getIntent().getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1);
-		long nativePix = getIntent().getExtras().getLong(
-				DocumentGridActivity.EXTRA_NATIVE_PIX);
+		long nativePix = getIntent().getExtras().getLong(DocumentGridActivity.EXTRA_NATIVE_PIX);
 
 		Pix pixOrg = new Pix(nativePix);
 		mOriginalHeight = pixOrg.getHeight();
 		mOriginalWidth = pixOrg.getWidth();
 
-		askUserAboutDocumentLayout(pixOrg);
+        final boolean accessibility = getIntent().getBooleanExtra(EXTRA_USE_ACCESSIBILITY_MODE, false);
+
+        askUserAboutDocumentLayout(pixOrg, accessibility);
 
 		mButtonStartOCR = (Button) findViewById(R.id.column_pick_completed);
 		initAppIcon(this, -1);
 
 	}
 
-	private void askUserAboutDocumentLayout(final Pix pixOrg) {
+	private void askUserAboutDocumentLayout(final Pix pixOrg, final boolean accessibility) {
 		AlertDialog alertDialog = LayoutQuestionDialog.createDialog(this,
 				new LayoutChoseListener() {
 
@@ -414,20 +417,17 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 
 							getSupportActionBar().show();
 							getSupportActionBar().setDisplayShowTitleEnabled(true);
-							// mFairyText.setText(R.string.progress_start);
 							getSupportActionBar().setTitle(R.string.progress_start);
 
 							if (layoutKind == LayoutKind.SIMPLE) {
-								mOCR.startOCRForSimpleLayout(OCRActivity.this,
-										determineOcrLanguage(ocrLanguage),
-										pixOrg);
+								mOCR.startOCRForSimpleLayout(OCRActivity.this, determineOcrLanguage(ocrLanguage), pixOrg);
 							} else if (layoutKind == LayoutKind.COMPLEX) {
 								mAccuracy = 0;
 								mOCR.startLayoutAnalysis(pixOrg);
 							}
 						}
 					}
-				});
+				},accessibility);
 		alertDialog.setOnCancelListener(new OnCancelListener() {
 
 			@Override

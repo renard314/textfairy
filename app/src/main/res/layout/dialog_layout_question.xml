@@ -5,13 +5,20 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent" >
 
-    <include
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/help_header"
+        android:text="@string/document_layout_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        layout="@layout/dialog_title"
-        android:gravity="center_horizontal" />
+        android:drawableLeft="@drawable/fairy_question"
+        android:drawablePadding="@dimen/default_padding"
+        android:gravity="center_vertical|left"
+        android:layout_margin="@dimen/default_padding"
+        android:textAppearance="@style/FairySpeechbubble" >
+
+    </TextView>
+
 
     <RadioGroup
         android:id="@+id/radioGroup_layout_buttons"

@@ -48,10 +48,10 @@
     <string name="save_success">Speichern erfolgreich</string>
     <string name="save_fail">Speichern nicht erfolgreich!</string>
     <string name="share_chooser_title">Wähle aus wie du den Text versenden möchtest</string>
-    <string name="progress_start">Starte die Texterkennung</string>
+    <string name="progress_start">Starte Texterkennung</string>
     <string name="download_language">laden</string>
     <string name="progress_dewarp">Begradige Text</string>
-    <string name="progress_ocr">Texterkennung läuft..</string>
+    <string name="progress_ocr">Lese Text..</string>
     <string name="delete">Löschen</string>
     <string name="edit_title">Ändere Titel</string>
     <string name="cancel">Abbrechen</string>

@@ -42,6 +42,7 @@ using namespace std;
 
 
 void bookpage(Pix* pixOrg, Pix** pixText, void (*messageJavaCallback)(int), void (*pixJavaCallback)(Pix*), bool debug) {
+
 	Pix *pixb = NULL;
 	Pix* pixsg = NULL;
 	Pix* pixDewarped = NULL;

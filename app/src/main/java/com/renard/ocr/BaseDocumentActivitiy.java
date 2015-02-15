@@ -41,18 +41,24 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -60,6 +66,7 @@ import android.widget.Toast;
 
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
+import com.googlecode.leptonica.android.Rotate;
 import com.renard.documentview.DocumentActivity;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.cropimage.CropImage;
@@ -80,6 +87,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     public final static String EXTRA_NATIVE_PIX = "pix_pointer";
     public final static String EXTRA_IMAGE_URI = "image_uri";
     public final static String EXTRA_ROTATION = "rotation";
+
 
     private static final int PDF_PROGRESS_DIALOG_ID = 0;
     private static final int DELETE_PROGRESS_DIALOG_ID = 1;
@@ -106,7 +114,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     private static int rotateXDegrees = 0;
 
     protected enum PixLoadStatus {
-       IMAGE_FORMAT_UNSUPPORTED, IMAGE_NOT_32_BIT,IMAGE_COULD_NOT_BE_READ, MEDIA_STORE_RETURNED_NULL, IMAGE_DOES_NOT_EXIST, SUCCESS, IO_ERROR, CAMERA_APP_NOT_FOUND, CAMERA_APP_ERROR, CAMERA_NO_IMAGE_RETURNED
+        IMAGE_FORMAT_UNSUPPORTED, IMAGE_NOT_32_BIT, IMAGE_COULD_NOT_BE_READ, MEDIA_STORE_RETURNED_NULL, IMAGE_DOES_NOT_EXIST, SUCCESS, IO_ERROR, CAMERA_APP_NOT_FOUND, CAMERA_APP_ERROR, CAMERA_NO_IMAGE_RETURNED
 
     }
 
@@ -150,11 +158,11 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             File image = null;
             try {
-                if (!storageDir.exists()){
+                if (!storageDir.exists()) {
                     storageDir.mkdirs();
                 }
-                image = new File(storageDir,imageFileName + ".jpg");
-                if (image.exists()){
+                image = new File(storageDir, imageFileName + ".jpg");
+                if (image.exists()) {
                     image.createNewFile();
                 }
                 cameraPicUri = Uri.fromFile(image);
@@ -215,13 +223,14 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
     private void onTakePhotoActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode == RESULT_OK) {
+            rotateXDegrees = -1;
             if (requestCode == REQUEST_CODE_MAKE_PHOTO) {
                 Cursor myCursor = null;
                 Date dateOfPicture = null;
                 //check if there is a file at the uri we specified
-                if (cameraPicUri!=null){
+                if (cameraPicUri != null) {
                     File f = new File(cameraPicUri.getPath());
-                    if (f.isFile() && f.exists() && f.canRead()){
+                    if (f.isFile() && f.exists() && f.canRead()) {
                         //all is well
                         loadBitmapFromContentUri(cameraPicUri);
                         return;
@@ -232,8 +241,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                 try {
                     // Create a Cursor to obtain the file Path for the large
                     // image
-                    String[] largeFileProjection = {MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.ORIENTATION,
-                            MediaStore.Images.ImageColumns.DATE_TAKEN};
+                    String[] largeFileProjection = {MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.ORIENTATION, MediaStore.Images.ImageColumns.DATE_TAKEN};
                     String largeFileSort = MediaStore.Images.ImageColumns._ID + " DESC";
                     myCursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, largeFileProjection, null, null, largeFileSort);
                     myCursor.moveToFirst();
@@ -244,7 +252,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     if (tempCameraPicUri != null) {
                         dateOfPicture = new Date(myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)));
 
-                        if (dateOfPicture.getTime()==0 || (dateOfPicture != null && dateOfPicture.after(dateCameraIntentStarted))) {
+                        if (dateOfPicture.getTime() == 0 || (dateOfPicture != null && dateOfPicture.after(dateCameraIntentStarted))) {
                             cameraPicUri = tempCameraPicUri;
                             rotateXDegrees = myCursor.getInt(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.ORIENTATION));
                         }
@@ -281,35 +289,42 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         if (mBitmapLoadTask != null) {
             mBitmapLoadTask.cancel(true);
         }
+        AccessibilityManager am = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
+        boolean isAccessibilityEnabled = am.isEnabled();
+        boolean isExploreByTouchEnabled = AccessibilityManagerCompat.isTouchExplorationEnabled(am);
+        final boolean skipCrop = isExploreByTouchEnabled && isAccessibilityEnabled;
+
         mBitmapLoadTask = new AsyncTask<Void, Void, Pair<Pix, PixLoadStatus>>() {
-            ProgressDialogFragment progressDialog;
 
             protected void onPreExecute() {
-                progressDialog = ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image);
-                // getSupportFragmentManager().beginTransaction().show(progressDialog).commit();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                Fragment prev = getSupportFragmentManager().findFragmentByTag("load_image_progress");
+                if (prev != null) {
+                    ft.remove(prev);
+                }
+                ft.addToBackStack(null);
+
+                ProgressDialogFragment progressDialog = ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image);
                 progressDialog.show(getSupportFragmentManager(), "load_image_progress");
             }
 
             ;
 
             protected void onPostExecute(Pair<Pix, PixLoadStatus> p) {
-                if (progressDialog != null) {
-                    try {
-                        progressDialog.dismiss();
-                        getSupportFragmentManager().beginTransaction().remove(progressDialog).commitAllowingStateLoss();
-                    } catch (NullPointerException e) {
-                        // workaround strange playstore crash
-
-                    } catch (IllegalStateException e) {
-                        // workaround strange playstore crash
-
-                    }
+                Fragment prev = getSupportFragmentManager().findFragmentByTag("load_image_progress");
+                if (prev != null) {
+                    DialogFragment df = (DialogFragment) prev;
+                    df.dismiss();
                 }
                 if (p.second == PixLoadStatus.SUCCESS) {
-                    Intent actionIntent = new Intent(BaseDocumentActivitiy.this, CropImage.class);
-                    actionIntent.putExtra(EXTRA_NATIVE_PIX, p.first.getNativePix());
-                    actionIntent.putExtra(EXTRA_ROTATION, rotateXDegrees);
-                    startActivityForResult(actionIntent, REQUEST_CODE_CROP_PHOTO);
+                    if (skipCrop) {
+                        startOcrActivity(p.first.getNativePix(), true);
+                    } else {
+                        Intent actionIntent = new Intent(BaseDocumentActivitiy.this, CropImage.class);
+                        actionIntent.putExtra(EXTRA_NATIVE_PIX, p.first.getNativePix());
+                        actionIntent.putExtra(EXTRA_ROTATION, rotateXDegrees);
+                        startActivityForResult(actionIntent, REQUEST_CODE_CROP_PHOTO);
+                    }
                 } else {
                     showFileError(p.second);
                 }
@@ -327,7 +342,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     if (pathForUri != null && pathForUri.startsWith("http")) {
                         Bitmap b = MediaStore.Images.Media.getBitmap(getContentResolver(), cameraPicUri);
                         if (b != null) {
-                            if (b.getConfig()!= Bitmap.Config.ARGB_8888){
+                            if (b.getConfig() != Bitmap.Config.ARGB_8888) {
                                 return Pair.create(null, PixLoadStatus.IMAGE_NOT_32_BIT);
                             }
                             p = ReadFile.readBitmap(b);
@@ -338,8 +353,12 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     } else if (pathForUri != null) {
                         File imageFile = new File(pathForUri);
                         if (imageFile.exists()) {
+                            if(rotateXDegrees==-1) {
+                                rotateXDegrees = getRotationFromFile(pathForUri);
+                            }
+
                             p = ReadFile.readFile(imageFile);
-                            if (p==null){
+                            if (p == null) {
                                 return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
                             }
                         } else {
@@ -348,11 +367,18 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     } else if (cameraPicUri.toString().startsWith("content")) {
                         InputStream stream = getContentResolver().openInputStream(cameraPicUri);
                         p = ReadFile.readMem(Util.toByteArray(stream));
-                        if (p==null){
+                        if (p == null) {
                             return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
                         }
                     } else {
                         return Pair.create(null, PixLoadStatus.IO_ERROR);
+                    }
+
+                    if(skipCrop && rotateXDegrees>0 && rotateXDegrees!=360){
+                        final Pix pix = Rotate.rotateOrth(p, rotateXDegrees / 90);
+                        p.recycle();
+                        p = pix;
+                        rotateXDegrees = 0 ;
                     }
 
                     return Pair.create(p, PixLoadStatus.SUCCESS);
@@ -365,16 +391,47 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }.execute();
     }
 
+    private int getRotationFromFile(String pathForUri) {
+        int orientation = 0;
+        try {
+            ExifInterface exif = new ExifInterface(pathForUri);
+            int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+            switch (exifOrientation) {
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    orientation = 270;
+
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    orientation = 180;
+
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    orientation = 90;
+
+                    break;
+
+                case ExifInterface.ORIENTATION_NORMAL:
+                    orientation = 0;
+
+                    break;
+                default:
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return orientation;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case REQUEST_CODE_CROP_PHOTO: {
                     long nativePix = data.getLongExtra(EXTRA_NATIVE_PIX, 0);
-                    Intent intent = new Intent(this, OCRActivity.class);
-                    intent.putExtra(EXTRA_NATIVE_PIX, nativePix);
-                    intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
-                    startActivityForResult(intent, REQUEST_CODE_OCR);
+                    startOcrActivity(nativePix,false);
                     break;
                 }
                 case REQUEST_CODE_MAKE_PHOTO:
@@ -383,6 +440,14 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     break;
             }
         }
+    }
+
+    private void startOcrActivity(long nativePix, boolean accessibilityMode) {
+        Intent intent = new Intent(this, OCRActivity.class);
+        intent.putExtra(EXTRA_NATIVE_PIX, nativePix);
+        intent.putExtra(OCRActivity.EXTRA_USE_ACCESSIBILITY_MODE, accessibilityMode);
+        intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
+        startActivityForResult(intent, REQUEST_CODE_OCR);
     }
 
     protected void onPostResume() {
@@ -588,7 +653,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
      * ASYNC TASKS
      */
 
-    protected class CreatePDFTask extends AsyncTask<Void, Integer, Pair<ArrayList<Uri>,ArrayList<Uri>>> implements PDFProgressListener {
+    protected class CreatePDFTask extends AsyncTask<Void, Integer, Pair<ArrayList<Uri>, ArrayList<Uri>>> implements PDFProgressListener {
 
         private Set<Integer> mIds = new HashSet<Integer>();
         private int mCurrentPageCount;
@@ -630,28 +695,28 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
 
         @Override
-        protected void onPostExecute(Pair<ArrayList<Uri>,ArrayList<Uri>> files) {
+        protected void onPostExecute(Pair<ArrayList<Uri>, ArrayList<Uri>> files) {
             dismissDialog(PDF_PROGRESS_DIALOG_ID);
-            if (files!= null && files.first.size()>0) {
-				if(files.first.size()>1){
-					//we have more than one pdf file
-					//share by sending them
-					sharePDFBySending(files);
-				} else {
-					// single pdf file
-					// share by opening pdf viewer
-					Intent target = new Intent(Intent.ACTION_VIEW);
-					target.setDataAndType(files.first.get(0),"application/pdf");
-					target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            if (files != null && files.first.size() > 0) {
+                if (files.first.size() > 1) {
+                    //we have more than one pdf file
+                    //share by sending them
+                    sharePDFBySending(files);
+                } else {
+                    // single pdf file
+                    // share by opening pdf viewer
+                    Intent target = new Intent(Intent.ACTION_VIEW);
+                    target.setDataAndType(files.first.get(0), "application/pdf");
+                    target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-					Intent intent = Intent.createChooser(target, "Open File");
-					try {
-						startActivity(intent);
-					} catch (ActivityNotFoundException e) {
-						sharePDFBySending(files);
-					}
+                    Intent intent = Intent.createChooser(target, "Open File");
+                    try {
+                        startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        sharePDFBySending(files);
+                    }
 
-				}
+                }
 
 
             } else {
@@ -659,20 +724,20 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             }
         }
 
-		private void sharePDFBySending(Pair<ArrayList<Uri>,ArrayList<Uri>> files) {
-			Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
-			shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getText(R.string.share_subject));
-			CharSequence seq = Html.fromHtml(mOCRText.toString());
-			shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, seq);
-			shareIntent.setType("application/pdf");
-			ArrayList<Uri> allFiles = new ArrayList<Uri>();
-			allFiles.addAll(files.first);
-			allFiles.addAll(files.second);
-			shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, allFiles);
-			startActivity(Intent.createChooser(shareIntent, getText(R.string.share_chooser_title)));
-		}
+        private void sharePDFBySending(Pair<ArrayList<Uri>, ArrayList<Uri>> files) {
+            Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
+            shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getText(R.string.share_subject));
+            CharSequence seq = Html.fromHtml(mOCRText.toString());
+            shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, seq);
+            shareIntent.setType("application/pdf");
+            ArrayList<Uri> allFiles = new ArrayList<Uri>();
+            allFiles.addAll(files.first);
+            allFiles.addAll(files.second);
+            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, allFiles);
+            startActivity(Intent.createChooser(shareIntent, getText(R.string.share_chooser_title)));
+        }
 
-		private Pair<File, File> createPDF(File dir, long documentId) {
+        private Pair<File, File> createPDF(File dir, long documentId) {
 
             Cursor cursor = getContentResolver().query(DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?",
                     new String[]{String.valueOf(documentId), String.valueOf(documentId)}, "created ASC");
@@ -722,7 +787,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
 
         @Override
-        protected Pair<ArrayList<Uri>,ArrayList<Uri>> doInBackground(Void... params) {
+        protected Pair<ArrayList<Uri>, ArrayList<Uri>> doInBackground(Void... params) {
             File dir = Util.getPDFDir();
             if (!dir.exists()) {
                 if (!dir.mkdir()) {
@@ -731,7 +796,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             }
 
             ArrayList<Uri> pdfFiles = new ArrayList<Uri>();
-			ArrayList<Uri> txtFiles = new ArrayList<Uri>();
+            ArrayList<Uri> txtFiles = new ArrayList<Uri>();
             mCurrentDocumentIndex = 0;
             for (long id : mIds) {
                 final Pair<File, File> pair = createPDF(dir, id);
@@ -745,7 +810,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                 }
                 mCurrentDocumentIndex++;
             }
-			return Pair.create(pdfFiles, txtFiles);
+            return Pair.create(pdfFiles, txtFiles);
         }
     }
 
