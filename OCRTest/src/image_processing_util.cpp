@@ -166,37 +166,22 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 	/*dewarp text regions*/
 
 	for (int i = 0; i < textCount; i++) {
-		Pix* pixtext = pixaGetPix(pixaSelectedColumns, i, L_CLONE);
-		L_Dewarpa *dewa = dewarpaCreate(0, 0, 1, 5, -1);
-		dewarpaSetCurvatures(dewa, -1, 5, -1, -1, -1, -1);
-		dewarpaUseBothArrays(dewa, 1);  // try to use both disparity arrays for this example
-		 L_Dewarp *dew = dewarpCreate(pixtext, 1);
-		 // Insert in Dewarpa and obtain parameters for building the model
-		 dewarpaInsertDewarp(dewa, dew);
-
 		int x, y, w, dw, dh, h, dx = 0, dy = 0;
-		Box* b = pixaGetBox(pixaSelectedColumns, i, L_CLONE);
+		Pix* pixtext = pixaGetPix(pixaSelectedColumns, i, L_CLONE);
 		pixaGetBoxGeometry(pixaSelectedColumns, i, &x, &y, &w, &h);
-		l_int32 vsuccess;
-		dewarpBuildPageModel(dew, NULL);  // no debugging
-		dewarpaModelStatus(dewa, 0, &vsuccess, NULL);
-		if (vsuccess) {
-			callbackMessage(MESSAGE_IMAGE_DEWARP);
-			Pix* pixDewarped;
-			int applyresult = dewarpaApplyDisparity(dewa,1, pixtext, 255,0,0,&pixDewarped,NULL);
-			if (applyresult == 0) {
-				dw = pixGetWidth(pixDewarped);
-				dh = pixGetHeight(pixDewarped);
-				dx = dw - w;
-				dy = dh - h;
-				boxSetGeometry(b, x, y, dw, dh);
-				pixaReplacePix(pixaSelectedColumns, i,pixDewarped, b);
-				l_int32 right = x + w;
-				l_int32 bottom = y + h;
-				translateBoxa(pixaSelectedColumns, dx, dy, x, y);
-			}
+		Box* b = pixaGetBox(pixaSelectedColumns, i, L_CLONE);
+		Pix* pixDewarped = NULL;
+		l_int32 dewarpResult = pixDewarp(pixtext, &pixDewarped);
+		if(!dewarpResult){
+			log("dewarp success");
+			dw = pixGetWidth(pixDewarped);
+			dh = pixGetHeight(pixDewarped);
+			dx = dw - w;
+			dy = dh - h;
+			boxSetGeometry(b, x, y, dw, dh);
+			pixaReplacePix(pixaSelectedColumns, i,pixDewarped, b);
+			translateBoxa(pixaSelectedColumns, dx, dy, x, y);
 		}
-		dewarpaDestroy(&dewa);
 	}
 
 	callbackMessage(MESSAGE_ASSEMBLE_PIX);
