@@ -61,26 +61,14 @@ public abstract class ImageViewTouchBase extends ImageView {
     int mThisWidth = -1, mThisHeight = -1;
 
     float mMaxZoom;
-    
-    int mScrollY;
-    
-    int mScrollX;
-    
+
     int mLeft;
-    
+
     int mRight;
-    
+
     int mTop;
-    
+
     int mBottom;
-    
-    int mPaddingTop;
-    
-    int mPaddingBottom;
-    
-    int mPaddingLeft;
-    
-    int mPaddingRight;
 
     // ImageViewTouchBase will pass a Bitmap to the Recycler if it has finished
     // its use of that Bitmap.
@@ -89,14 +77,14 @@ public abstract class ImageViewTouchBase extends ImageView {
     }
 
     private final Recycler mRecycler = new Recycler() {
-		
-		@Override
-		public void recycle(Bitmap b) {
-			if(b!=null && !b.isRecycled()){
-				b.recycle();
-			}
-		}
-	};
+
+        @Override
+        public void recycle(Bitmap b) {
+            if (b != null && !b.isRecycled()) {
+                b.recycle();
+            }
+        }
+    };
 
     @Override
     protected void onLayout(boolean changed, int left, int top,
@@ -157,7 +145,7 @@ public abstract class ImageViewTouchBase extends ImageView {
     }
 
     public void clear() {
-        setImageBitmapResetBase(null, true,0);
+        setImageBitmapResetBase(null, true, 0);
     }
 
     private Runnable mOnLayoutRunnable = null;
@@ -171,7 +159,7 @@ public abstract class ImageViewTouchBase extends ImageView {
     public void setImageRotateBitmapResetBase(final RotateBitmap bitmap, final boolean resetSupp) {
         final int viewWidth = getWidth();
 
-        if (viewWidth <= 0)  {
+        if (viewWidth <= 0) {
             mOnLayoutRunnable = new Runnable() {
                 public void run() {
                     setImageRotateBitmapResetBase(bitmap, resetSupp);
@@ -214,7 +202,7 @@ public abstract class ImageViewTouchBase extends ImageView {
         m.mapRect(rect);
 
         float height = rect.height();
-        float width  = rect.width();
+        float width = rect.width();
 
         float deltaX = 0, deltaY = 0;
 
@@ -280,7 +268,7 @@ public abstract class ImageViewTouchBase extends ImageView {
         float w = bitmap.getWidth();
         float h = bitmap.getHeight();
         //int rotation = bitmap.getRotation();
-        
+
         matrix.reset();
 
         // We limit up-scaling to 2x otherwise the result may look bad if it's
@@ -293,7 +281,7 @@ public abstract class ImageViewTouchBase extends ImageView {
         matrix.postScale(scale, scale);
 
         matrix.postTranslate(
-                (viewWidth  - w * scale) / 2F,
+                (viewWidth - w * scale) / 2F,
                 (viewHeight - h * scale) / 2F);
     }
 
@@ -317,7 +305,7 @@ public abstract class ImageViewTouchBase extends ImageView {
             return 1F;
         }
 
-        float fw = (float) mBitmapDisplayed.getWidth()  / (float) mThisWidth;
+        float fw = (float) mBitmapDisplayed.getWidth() / (float) mThisWidth;
         float fh = (float) mBitmapDisplayed.getHeight() / (float) mThisHeight;
         float max = Math.max(fw, fh) * 2;
         return max;
@@ -409,9 +397,6 @@ public abstract class ImageViewTouchBase extends ImageView {
 
     protected void postTranslate(float dx, float dy) {
         mSuppMatrix.postTranslate(dx, dy);
-    }
-    protected void postRotate(float degrees) {
-    	mSuppMatrix.postRotate(degrees);
     }
 
     protected void panBy(float dx, float dy) {

@@ -39,7 +39,10 @@ public class CroppingTrapezoid {
         matrix.mapPoints(mMappedPoints, mPoints);
         return getBoundingRect(mMappedPoints);
     }
-
+    public float[] getScreenPoints(Matrix matrix){
+        matrix.mapPoints(mMappedPoints, mPoints);
+        return mMappedPoints;
+    }
 
     public Point getTopLeft() {
         return new Point((int) mPoints[0], (int) mPoints[1]);
@@ -104,29 +107,35 @@ public class CroppingTrapezoid {
             return;
         }
         if ((GROW_LEFT_EDGE) == edge) {
+            Log.i(LOG_TAG, "growing left edge");
             mPoints[0] += dx;
             mPoints[1] += dy;
             mPoints[6] += dx;
             mPoints[7] += dy;
         }
         if ((GROW_RIGHT_EDGE) == edge) {
+            Log.i(LOG_TAG, "growing right edge");
             mPoints[2] += dx;
             mPoints[3] += dy;
             mPoints[4] += dx;
             mPoints[5] += dy;
         }
         if ((GROW_TOP_EDGE) == edge) {
+            Log.i(LOG_TAG, "growing top edge");
             mPoints[0] += dx;
             mPoints[1] += dy;
             mPoints[2] += dx;
             mPoints[3] += dy;
         }
         if ((GROW_BOTTOM_EDGE) == edge) {
+            Log.i(LOG_TAG, "growing bottom edge");
             mPoints[4] += dx;
             mPoints[5] += dy;
             mPoints[6] += dx;
             mPoints[7] += dy;
         }
+        Log.i(LOG_TAG, "("+dx+","+dy+")");
+
 
         // TODO Don't let the cropping rectangle shrink too fast.
         final float widthCap = 25F;
@@ -138,7 +147,7 @@ public class CroppingTrapezoid {
         if (r.height() < heightCap) {
             //r.inset(0F, -(heightCap - r.height()) / 2F);
         }
-        capPoints();
+       capPoints();
     }
 
 

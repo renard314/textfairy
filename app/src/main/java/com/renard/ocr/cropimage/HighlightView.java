@@ -110,6 +110,7 @@ class HighlightView {
         if (mHidden) {
             return;
         }
+        mDrawRect = computeLayout();
 
 //        mContext.getDrawingRect(mViewDrawingRect);
 //
@@ -130,14 +131,11 @@ class HighlightView {
     }
 
     private void drawEdges(Canvas canvas) {
-        final Point topLeft = mTrapzoid.getTopLeft();
-        final Point topRight = mTrapzoid.getTopRight();
-        final Point bottomRight = mTrapzoid.getBottomRight();
-        final Point bottomLeft = mTrapzoid.getBottomLeft();
-        canvas.drawLine(topLeft.x,topLeft.y,topRight.x,topRight.y,mOutlinePaint);
-        canvas.drawLine(topRight.x,topRight.y,bottomRight.x,bottomRight.y,mOutlinePaint);
-        canvas.drawLine(bottomRight.x,bottomRight.y,bottomLeft.x, bottomLeft.y,mOutlinePaint);
-        canvas.drawLine(topLeft.x,topLeft.y,bottomLeft.x, bottomLeft.y,mOutlinePaint);
+        final float[] p = mTrapzoid.getScreenPoints(mMatrix);
+        canvas.drawLine(p[0],p[1],p[2],p[3],mOutlinePaint);
+        canvas.drawLine(p[2],p[3],p[4],p[5],mOutlinePaint);
+        canvas.drawLine(p[4],p[5],p[6],p[7],mOutlinePaint);
+        canvas.drawLine(p[0],p[1],p[6],p[7],mOutlinePaint);
     }
 
     private void drawResizeDrawables(Canvas canvas) {
