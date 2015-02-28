@@ -19,37 +19,6 @@ tasks.withType(JavaCompile) {
     compileTask -> compileTask.dependsOn(ndkBuild)
 }
 
-
-// Task to put native libs into a jar file
-/*
-task nativeArmV5LibsToJar(type: Zip, description: 'create a jar archive of the native armeabi libs') {
-    destinationDir file("$buildDir/native-libs")
-    baseName 'armeabi'
-    extension 'jar'
-    from fileTree(dir: 'libs', include: 'armeabi/*.so')
-    into 'lib/'
-}
-task nativeArmV7LibsToJar(type: Zip, description: 'create a jar archive of the native armeabiv7a libs') {
-    destinationDir file("$buildDir/native-libs")
-    baseName 'armeabiv7a'
-    extension 'jar'
-    from fileTree(dir: 'libs', include: 'armeabi-v7a/*.so')
-    into 'lib/'
-}
-task nativeX86LibsToJar(type: Zip, description: 'create a jar archive of the native x86 libs') {
-    destinationDir file("$buildDir/native-libs")
-    baseName 'x86'
-    extension 'jar'
-    from fileTree(dir: 'libs', include: 'x86/*.so')
-    into 'lib/'
-}
-
-
-nativeArmV5LibsToJar.dependsOn(ndkBuild)
-nativeArmV7LibsToJar.dependsOn(ndkBuild)
-nativeX86LibsToJar.dependsOn(ndkBuild)
-*/
-
 tasks.withType(JavaCompile) {
     compileTask -> compileTask.dependsOn(ndkBuild)
 }
@@ -147,4 +116,17 @@ dependencies {
     compile project(":FileExplorer")
     compile project(":ViewPager3D:ViewPager3D")
     compile project(":tess-two:tess-two")
+
+    testCompile 'junit:junit:4.12'
+    testCompile "org.robolectric:robolectric:3.0-SNAPSHOT"
+    testCompile "org.mockito:mockito-core:1.9.5"
+    testCompile 'org.mockito:mockito-all:1.9.5'
+    testCompile 'org.powermock:powermock-api-mockito:1.5.6'
+    testCompile 'org.powermock:powermock-module-junit4:1.5.6'
+    testCompile 'org.powermock:powermock-core:1.5.6'
+    testCompile 'org.powermock:powermock-module-junit4-rule:1.5.6'
+    testCompile 'org.powermock:powermock-classloading-base:1.5.6'
+    testCompile 'org.powermock:powermock-classloading-xstream:1.5.6'
+    testCompile 'com.thoughtworks.xstream:xstream:1.4.7'
+
 }

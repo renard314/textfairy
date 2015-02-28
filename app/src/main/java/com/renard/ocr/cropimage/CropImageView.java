@@ -76,7 +76,7 @@ public class CropImageView extends ImageViewTouchBase {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		CropImage cropImage = (CropImage) mContext;
+		CropImageActivity cropImage = (CropImageActivity) mContext;
 		if (cropImage.mSaving) {
 			return false;
 		}
@@ -173,7 +173,7 @@ public class CropImageView extends ImageViewTouchBase {
 		zoom = zoom * this.getScale();
 		zoom = Math.max(1F, zoom);
 		if ((Math.abs(zoom - getScale()) / zoom) > .1) {
-			float[] coordinates = new float[] { hv.mCropRect.centerX(), hv.mCropRect.centerY() };
+			float[] coordinates = new float[] { hv.getCropRect().centerX(), hv.getCropRect().centerY() };
 			getImageMatrix().mapPoints(coordinates);
 			zoomTo(zoom, coordinates[0], coordinates[1], 300F);
 		}

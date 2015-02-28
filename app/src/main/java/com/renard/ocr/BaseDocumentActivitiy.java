@@ -69,7 +69,7 @@ import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.leptonica.android.Rotate;
 import com.renard.documentview.DocumentActivity;
 import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.cropimage.CropImage;
+import com.renard.ocr.cropimage.CropImageActivity;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.pdf.Hocr2Pdf;
 import com.renard.pdf.Hocr2Pdf.PDFProgressListener;
@@ -320,7 +320,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     if (skipCrop) {
                         startOcrActivity(p.first.getNativePix(), true);
                     } else {
-                        Intent actionIntent = new Intent(BaseDocumentActivitiy.this, CropImage.class);
+                        Intent actionIntent = new Intent(BaseDocumentActivitiy.this, CropImageActivity.class);
                         actionIntent.putExtra(EXTRA_NATIVE_PIX, p.first.getNativePix());
                         actionIntent.putExtra(EXTRA_ROTATION, rotateXDegrees);
                         startActivityForResult(actionIntent, REQUEST_CODE_CROP_PHOTO);

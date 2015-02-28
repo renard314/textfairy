@@ -21,326 +21,212 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.renard.ocr.R;
 
-// This class is used by CropImage to display a highlighted cropping rectangle
+// This class is used by CropImage to display a highlighted cropping trapezoid
 // overlayed with the image. There are two coordinate spaces in use. One is
 // image, another is screen. computeLayout() uses mMatrix to map from image
 // space to screen space.
 class HighlightView {
-	@SuppressWarnings("unused")
-	private static final String LOG_TAG = HighlightView.class.getSimpleName();
-	View mContext; // The View displaying the image.
 
-	/* used during onDraw */
-	private final Rect mViewDrawingRect = new Rect();
-	private final Rect mLeftRect = new Rect();
-	private final Rect mRightRect = new Rect();
-	private final Rect mTopRect = new Rect();
-	private final Rect mBottomRect = new Rect();
+    Matrix mMatrix;
 
-	public static final int GROW_NONE = (1 << 0);
-	public static final int GROW_LEFT_EDGE = (1 << 1);
-	public static final int GROW_RIGHT_EDGE = (1 << 2);
-	public static final int GROW_TOP_EDGE = (1 << 3);
-	public static final int GROW_BOTTOM_EDGE = (1 << 4);
-	public static final int MOVE = (1 << 5);
+    enum ModifyMode {
+        None, Move, Grow
+    }
 
-	public HighlightView(View ctx) {
-		mContext = ctx;
-	}
+    @SuppressWarnings("unused")
+    private static final String LOG_TAG = HighlightView.class.getSimpleName();
+    private View mContext; // The View displaying the image.
 
-	private void init() {
-		android.content.res.Resources resources = mContext.getResources();
-		mResizeDrawableWidth = resources.getDrawable(R.drawable.camera_crop_width);
-		mResizeDrawableHeight = resources.getDrawable(R.drawable.camera_crop_height);
-	}
+    /* used during onDraw */
+    private final Rect mViewDrawingRect = new Rect();
+    private final Rect mLeftRect = new Rect();
+    private final Rect mRightRect = new Rect();
+    private final Rect mTopRect = new Rect();
+    private final Rect mBottomRect = new Rect();
 
-	boolean mIsFocused;
-	boolean mHidden = false;
-	private float mPixelDensity;
+    private ModifyMode mMode = ModifyMode.None;
+    private final CroppingTrapezoid mTrapzoid;
+    boolean mIsFocused;
+    boolean mHidden = false;
+    private float mPixelDensity;
 
-	public boolean hasFocus() {
-		return mIsFocused;
-	}
+    Rect mDrawRect; // in screen space
 
-	public void setFocus(boolean f) {
-		mIsFocused = f;
-	}
 
-	protected void draw(Canvas canvas) {
-		if (mHidden) {
-			return;
-		}
+    private Drawable mResizeDrawableWidth;
+    private Drawable mResizeDrawableHeight;
 
-		mContext.getDrawingRect(mViewDrawingRect);
+    private final Paint mFocusPaint = new Paint();
+    private final Paint mNoFocusPaint = new Paint();
+    private final Paint mOutlinePaint = new Paint();
 
-		mTopRect.set(0, 0, mViewDrawingRect.right, mDrawRect.top);
-		mRightRect.set(0, mDrawRect.top, mDrawRect.left, mDrawRect.bottom);
-		mLeftRect.set(mDrawRect.right, mDrawRect.top, mViewDrawingRect.right, mDrawRect.bottom);
-		mBottomRect.set(0, mDrawRect.bottom, mViewDrawingRect.right, mViewDrawingRect.bottom);
+    public static final int GROW_NONE = 0;
+    public static final int GROW_LEFT_EDGE = (1 << 1);
+    public static final int GROW_RIGHT_EDGE = (1 << 2);
+    public static final int GROW_TOP_EDGE = (1 << 3);
+    public static final int GROW_BOTTOM_EDGE = (1 << 4);
+    public static final int MOVE = (1 << 5);
 
-		canvas.drawRect(mTopRect, mFocusPaint);
-		canvas.drawRect(mRightRect, mFocusPaint);
-		canvas.drawRect(mLeftRect, mFocusPaint);
-		canvas.drawRect(mBottomRect, mFocusPaint);
-		canvas.drawRect(mDrawRect, mOutlinePaint);
 
-		drawResizeDrawables(canvas);
+    public HighlightView(ImageView ctx, Rect imageRect, RectF cropRect, float density) {
+        mContext = ctx;
+        final int progressColor = mContext.getResources().getColor(R.color.progress_color);
+        mMatrix = new Matrix(ctx.getImageMatrix());
+        mPixelDensity = density;
+        Log.i(LOG_TAG, "image = " +imageRect.toString() + " crop = " + cropRect.toString());
+        mTrapzoid = new CroppingTrapezoid(cropRect,imageRect);
 
-	}
+        mDrawRect = computeLayout();
 
-	private void drawResizeDrawables(Canvas canvas) {
-		int left = mDrawRect.left + 1;
-		int right = mDrawRect.right + 1;
-		int top = mDrawRect.top + 4;
-		int bottom = mDrawRect.bottom + 3;
+        mFocusPaint.setARGB(125, 50, 50, 50);
+        mNoFocusPaint.setARGB(125, 50, 50, 50);
+        mOutlinePaint.setARGB(125, Color.red(progressColor), Color.green(progressColor), Color.blue(progressColor));
+        mOutlinePaint.setStrokeWidth(3F);
+        mOutlinePaint.setStyle(Paint.Style.STROKE);
+        mOutlinePaint.setAntiAlias(true);
 
-		int widthWidth = mResizeDrawableWidth.getIntrinsicWidth() / 2;
-		int widthHeight = mResizeDrawableWidth.getIntrinsicHeight() / 2;
-		int heightHeight = mResizeDrawableHeight.getIntrinsicHeight() / 2;
-		int heightWidth = mResizeDrawableHeight.getIntrinsicWidth() / 2;
+        mMode = ModifyMode.None;
+        android.content.res.Resources resources = mContext.getResources();
+        mResizeDrawableWidth = resources.getDrawable(R.drawable.camera_crop_width);
+        mResizeDrawableHeight = resources.getDrawable(R.drawable.camera_crop_height);
+    }
 
-		int xMiddle = mDrawRect.left + ((mDrawRect.right - mDrawRect.left) / 2);
-		int yMiddle = mDrawRect.top + ((mDrawRect.bottom - mDrawRect.top) / 2);
 
-		mResizeDrawableWidth.setBounds(left - widthWidth, yMiddle - widthHeight, left + widthWidth, yMiddle + widthHeight);
-		mResizeDrawableWidth.draw(canvas);
+    public void setFocus(boolean f) {
+        mIsFocused = f;
+    }
 
-		mResizeDrawableWidth.setBounds(right - widthWidth, yMiddle - widthHeight, right + widthWidth, yMiddle + widthHeight);
-		mResizeDrawableWidth.draw(canvas);
+    protected void draw(Canvas canvas) {
+        if (mHidden) {
+            return;
+        }
 
-		mResizeDrawableHeight.setBounds(xMiddle - heightWidth, top - heightHeight, xMiddle + heightWidth, top + heightHeight);
-		mResizeDrawableHeight.draw(canvas);
+//        mContext.getDrawingRect(mViewDrawingRect);
+//
+//        mTopRect.set(0, 0, mViewDrawingRect.right, mDrawRect.top);
+//        mRightRect.set(0, mDrawRect.top, mDrawRect.left, mDrawRect.bottom);
+//        mLeftRect.set(mDrawRect.right, mDrawRect.top, mViewDrawingRect.right, mDrawRect.bottom);
+//        mBottomRect.set(0, mDrawRect.bottom, mViewDrawingRect.right, mViewDrawingRect.bottom);
+//
+//        canvas.drawRect(mTopRect, mFocusPaint);
+//        canvas.drawRect(mRightRect, mFocusPaint);
+//        canvas.drawRect(mLeftRect, mFocusPaint);
+//        canvas.drawRect(mBottomRect, mFocusPaint);
+//        canvas.drawRect(mDrawRect, mOutlinePaint);
 
-		mResizeDrawableHeight.setBounds(xMiddle - heightWidth, bottom - heightHeight, xMiddle + heightWidth, bottom + heightHeight);
-		mResizeDrawableHeight.draw(canvas);
-	}
+        //drawResizeDrawables(canvas);
+        drawEdges(canvas);
 
-	public void setMode(ModifyMode mode) {
-		if (mode != mMode) {
-			mMode = mode;
-			mContext.invalidate();
-		}
-	}
+    }
 
-	// Determines which edges are hit by touching at (x, y).
-	public int getHit(float x, float y, float scale) {
-		// Rect drawRect = computeLayout();
-		Rect r = getCropRect();
-		// float scaleFactor = (1f*r.width())/drawRect.width();
+    private void drawEdges(Canvas canvas) {
+        final Point topLeft = mTrapzoid.getTopLeft();
+        final Point topRight = mTrapzoid.getTopRight();
+        final Point bottomRight = mTrapzoid.getBottomRight();
+        final Point bottomLeft = mTrapzoid.getBottomLeft();
+        canvas.drawLine(topLeft.x,topLeft.y,topRight.x,topRight.y,mOutlinePaint);
+        canvas.drawLine(topRight.x,topRight.y,bottomRight.x,bottomRight.y,mOutlinePaint);
+        canvas.drawLine(bottomRight.x,bottomRight.y,bottomLeft.x, bottomLeft.y,mOutlinePaint);
+        canvas.drawLine(topLeft.x,topLeft.y,bottomLeft.x, bottomLeft.y,mOutlinePaint);
+    }
 
-		final float hysteresis = (20F * mPixelDensity) / scale;
-		// convert hysteresis to imagespace
+    private void drawResizeDrawables(Canvas canvas) {
+        int left = mDrawRect.left + 1;
+        int right = mDrawRect.right + 1;
+        int top = mDrawRect.top + 4;
+        int bottom = mDrawRect.bottom + 3;
 
-		// System.out.println(String.format("Hysteresis: %4.2f | ScaleFactor: %4.2f",hysteresis,scale));
-		int retval = GROW_NONE;
+        int widthWidth = mResizeDrawableWidth.getIntrinsicWidth() / 2;
+        int widthHeight = mResizeDrawableWidth.getIntrinsicHeight() / 2;
+        int heightHeight = mResizeDrawableHeight.getIntrinsicHeight() / 2;
+        int heightWidth = mResizeDrawableHeight.getIntrinsicWidth() / 2;
 
-		// verticalCheck makes sure the position is between the top and
-		// the bottom edge (with some tolerance). Similar for horizCheck.
-		boolean verticalCheck = (y >= r.top - hysteresis) && (y < r.bottom + hysteresis);
-		boolean horizCheck = (x >= r.left - hysteresis) && (x < r.right + hysteresis);
+        int xMiddle = mDrawRect.left + ((mDrawRect.right - mDrawRect.left) / 2);
+        int yMiddle = mDrawRect.top + ((mDrawRect.bottom - mDrawRect.top) / 2);
 
-		// Check whether the position is near some edge(s).
-		if ((Math.abs(r.left - x) < hysteresis) && verticalCheck) {
-			retval |= GROW_LEFT_EDGE;
-		}
-		if ((Math.abs(r.right - x) < hysteresis) && verticalCheck) {
-			retval |= GROW_RIGHT_EDGE;
-		}
-		if ((Math.abs(r.top - y) < hysteresis) && horizCheck) {
-			retval |= GROW_TOP_EDGE;
-		}
-		if ((Math.abs(r.bottom - y) < hysteresis) && horizCheck) {
-			retval |= GROW_BOTTOM_EDGE;
-		}
+        mResizeDrawableWidth.setBounds(left - widthWidth, yMiddle - widthHeight, left + widthWidth, yMiddle + widthHeight);
+        mResizeDrawableWidth.draw(canvas);
 
-		// Not near any edge but inside the rectangle: move.
-		if (retval == GROW_NONE && r.contains((int) x, (int) y)) {
-			retval = MOVE;
-		}
+        mResizeDrawableWidth.setBounds(right - widthWidth, yMiddle - widthHeight, right + widthWidth, yMiddle + widthHeight);
+        mResizeDrawableWidth.draw(canvas);
 
-		return retval;
-	}
+        mResizeDrawableHeight.setBounds(xMiddle - heightWidth, top - heightHeight, xMiddle + heightWidth, top + heightHeight);
+        mResizeDrawableHeight.draw(canvas);
 
-	void handleMotion(int edge, float x1, float y1, float x2, float y2, Matrix m) {
-		float[] points = new float[4];
-		points[0] = x1;
-		points[1] = y1;
-		points[2] = x2;
-		points[3] = y2;
-		Matrix screen2image = new Matrix();
-		m.invert(screen2image);
-		screen2image.mapPoints(points);
-		handleMotion(edge, points[0] - points[2], points[1] - points[3]);
-	}
+        mResizeDrawableHeight.setBounds(xMiddle - heightWidth, bottom - heightHeight, xMiddle + heightWidth, bottom + heightHeight);
+        mResizeDrawableHeight.draw(canvas);
 
-	// Handles motion (dx, dy) in screen space.
-	// The "edge" parameter specifies which edges the user is dragging.
-	void handleMotion(int edge, float dx, float dy) {
-		// Rect r = computeLayout();
-		if (edge == GROW_NONE) {
-			return;
-		} else if (edge == MOVE) {
 
-			moveBy(dx, dy);
-		} else {
-			growBy(edge, dx, dy);
-		}
-	}
+        final Point topLeft = mTrapzoid.getTopLeft();
+        mResizeDrawableHeight.setBounds(topLeft.x - heightWidth, topLeft.y - heightHeight, topLeft.x + heightWidth, topLeft.y + heightHeight);
+        mResizeDrawableHeight.draw(canvas);
 
-	// Grows the cropping rectange by (dx, dy) in image space.
-	void growBy(int edge, float dx, float dy) {
+        final Point topRight = mTrapzoid.getTopRight();
+        mResizeDrawableHeight.setBounds(topRight.x - heightWidth, topRight.y - heightHeight, topRight.x + heightWidth, topRight.y + heightHeight);
+        mResizeDrawableHeight.draw(canvas);
 
-		if (mMaintainAspectRatio) {
-			if (dx != 0) {
-				dy = dx / mInitialAspectRatio;
-			} else if (dy != 0) {
-				dx = dy * mInitialAspectRatio;
-			}
-		}
+        final Point bottomRightt = mTrapzoid.getBottomRight();
+        mResizeDrawableHeight.setBounds(bottomRightt.x - heightWidth, bottomRightt.y - heightHeight, bottomRightt.x + heightWidth, bottomRightt.y + heightHeight);
+        mResizeDrawableHeight.draw(canvas);
 
-		// Don't let the cropping rectangle grow too fast.
-		// Grow at most half of the difference between the image rectangle and
-		// the cropping rectangle.
-		RectF r = new RectF(mCropRect);
-		if (dx > 0F && r.width() + 2 * dx > mImageRect.width()) {
-			float adjustment = (mImageRect.width() - r.width()) / 2F;
-			dx = adjustment;
-			if (mMaintainAspectRatio) {
-				dy = dx / mInitialAspectRatio;
-			}
-		}
-		if (dy > 0F && r.height() + 2 * dy > mImageRect.height()) {
-			float adjustment = (mImageRect.height() - r.height()) / 2F;
-			dy = adjustment;
-			if (mMaintainAspectRatio) {
-				dx = dy * mInitialAspectRatio;
-			}
-		}
-		
-		if (((GROW_LEFT_EDGE) & edge) != 0) {
-			r.left+=dx;
-		}
-		if (((GROW_RIGHT_EDGE) & edge) != 0) {
-			r.right+=dx;
-		}
-		if (((GROW_TOP_EDGE) & edge) != 0) {
-			r.top+=dy;
-		}
-		if (((GROW_BOTTOM_EDGE) & edge) != 0) {
-			r.bottom+=dy;
-		}
+        final Point bottomLeft = mTrapzoid.getBottomLeft();
+        mResizeDrawableHeight.setBounds(bottomLeft.x - heightWidth, bottomLeft.y - heightHeight, bottomLeft.x + heightWidth, bottomLeft.y + heightHeight);
+        mResizeDrawableHeight.draw(canvas);
 
-		// Don't let the cropping rectangle shrink too fast.
-		final float widthCap = 25F;
-		if (r.width() < widthCap) {
-			r.inset(-(widthCap - r.width()) / 2F, 0F);
-		}
-		float heightCap = mMaintainAspectRatio ? (widthCap / mInitialAspectRatio) : widthCap;
-		if (r.height() < heightCap) {
-			r.inset(0F, -(heightCap - r.height()) / 2F);
-		}
+    }
 
-		// Put the cropping rectangle inside the image rectangle.
-        r.left=Math.max(0,r.left);
-        r.right=Math.min(mImageRect.right,r.right);
-        r.top=Math.max(0,r.top);
-        r.bottom=Math.min(mImageRect.bottom,r.bottom);
-		mCropRect.set(r);
-		mDrawRect = computeLayout();
-		mContext.invalidate();
-	}
+    public void setMode(ModifyMode mode) {
+        if (mode != mMode) {
+            mMode = mode;
+            mContext.invalidate();
+        }
+    }
 
-	// Grows the cropping rectange by (dx, dy) in image space.
-	void moveBy(float dx, float dy) {
-		// System.out.println(String.format("move by : %3.0f - %3.0f",dx,dy));
-		Rect invalRect = new Rect(mDrawRect);
 
-		float width = 0;
-		float height = 0;
-		if (mResizeDrawableHeight != null && mResizeDrawableWidth != null) {
-			width = mResizeDrawableHeight.getIntrinsicWidth() / 2;
-			height = mResizeDrawableWidth.getIntrinsicHeight() / 2;
-		}
-		invalRect.inset((int) -width, (int) -height);
-		mCropRect.offset(dx, dy);
+    // Determines which edges are hit by touching at (x, y).
+    public int getHit(float x, float y, float scale) {
+        // convert hysteresis to imagespace
+        final float hysteresis = (20F * mPixelDensity) / scale;
+        return mTrapzoid.getHit(x, y, hysteresis);
+    }
 
-		// Put the cropping rectangle inside image rectangle.
-		mCropRect.offset(Math.max(0, mImageRect.left - mCropRect.left), Math.max(0, mImageRect.top - mCropRect.top));
 
-		mCropRect.offset(Math.min(0, mImageRect.right - mCropRect.right), Math.min(0, mImageRect.bottom - mCropRect.bottom));
+    // Handles motion (dx, dy) in screen space.
+    // The "edge" parameter specifies which edges the user is dragging.
+    void handleMotion(int edge, float dx, float dy) {
+        if (edge == GROW_NONE) {
+            return;
+        } else if (edge == MOVE) {
+            mTrapzoid.moveBy(dx, dy);
+        } else {
+            mTrapzoid.growBy(edge, dx, dy);
+        }
+        mDrawRect = computeLayout();
+        invalidate();
+    }
 
-		mDrawRect = computeLayout();
-		invalRect.union(mDrawRect);
-		invalRect.inset(-10, -10);
-		mContext.invalidate(invalRect);
-	}
+    // Returns the cropping rectangle in image space.
+    public Rect getCropRect() {
+        return mTrapzoid.getBoundingRect();
+    }
 
-	// Returns the cropping rectangle in image space.
-	public Rect getCropRect() {
-		return new Rect((int) mCropRect.left, (int) mCropRect.top, (int) mCropRect.right, (int) mCropRect.bottom);
-	}
+    // Maps the cropping rectangle from image space to screen space.
+    private Rect computeLayout() {
+        return mTrapzoid.getBoundingRect(mMatrix);
+    }
 
-	// Maps the cropping rectangle from image space to screen space.
-	private Rect computeLayout() {
+    public void invalidate() {
+        mContext.invalidate();
+    }
 
-		RectF r = new RectF(mCropRect.left, mCropRect.top, mCropRect.right, mCropRect.bottom);
-		mMatrix.mapRect(r);
-		return new Rect(Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom));
-	}
-
-	public void invalidate() {
-		mDrawRect = computeLayout();
-	}
-
-	public void setup(Matrix m, Rect imageRect, RectF cropRect, boolean maintainAspectRatio, final float pixelDensity) {
-		final int progressColor = mContext.getResources().getColor(R.color.progress_color);
-
-		mMatrix = new Matrix(m);
-		mCropRect = cropRect;
-		mImageRect = new RectF(imageRect);
-		mMaintainAspectRatio = maintainAspectRatio;
-		mPixelDensity = pixelDensity;
-
-		mInitialAspectRatio = mCropRect.width() / mCropRect.height();
-		mDrawRect = computeLayout();
-
-		mFocusPaint.setARGB(125, 50, 50, 50);
-		mNoFocusPaint.setARGB(125, 50, 50, 50);
-		mOutlinePaint.setARGB(125, Color.red(progressColor), Color.green(progressColor), Color.blue(progressColor));
-		mOutlinePaint.setStrokeWidth(3F);
-		mOutlinePaint.setStyle(Paint.Style.STROKE);
-		mOutlinePaint.setAntiAlias(true);
-
-		mMode = ModifyMode.None;
-		init();
-	}
-
-	enum ModifyMode {
-		None, Move, Grow
-	}
-
-	private ModifyMode mMode = ModifyMode.None;
-
-	Rect mDrawRect; // in screen space
-	private RectF mImageRect; // in image space
-	RectF mCropRect; // in image space
-	Matrix mMatrix;
-
-	private boolean mMaintainAspectRatio = false;
-	private float mInitialAspectRatio;
-
-	private Drawable mResizeDrawableWidth;
-	private Drawable mResizeDrawableHeight;
-
-	private final Paint mFocusPaint = new Paint();
-	private final Paint mNoFocusPaint = new Paint();
-	private final Paint mOutlinePaint = new Paint();
 }

@@ -299,7 +299,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
     // Combine the base matrix and the supp matrix to make the final matrix.
     protected Matrix getImageViewMatrix() {
-        // The final matrix is computed as the concatentation of the base matrix
+        // The final matrix is computed as the concatenation of the base matrix
         // and the supplementary matrix.
         mDisplayMatrix.set(mBaseMatrix);
         mDisplayMatrix.postConcat(mSuppMatrix);
@@ -319,7 +319,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
         float fw = (float) mBitmapDisplayed.getWidth()  / (float) mThisWidth;
         float fh = (float) mBitmapDisplayed.getHeight() / (float) mThisHeight;
-        float max = Math.max(fw, fh) * 4;
+        float max = Math.max(fw, fh) * 2;
         return max;
     }
 

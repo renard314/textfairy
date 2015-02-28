@@ -49,10 +49,9 @@ import com.renard.util.Util;
 /**
  * The activity can crop specific region of interest from an image.
  */
-public class CropImage extends MonitoredActivity {
+public class CropImageActivity extends MonitoredActivity {
 	private static final int HINT_DIALOG_ID = 2;
 
-	private int mAspectX, mAspectY;
 	private final Handler mHandler = new Handler();
 
 	private int mRotation = 0;
@@ -106,15 +105,13 @@ public class CropImage extends MonitoredActivity {
                         } else if (bestScale<=0.5f){
                             mScaleFactor = (float) (1/Math.pow(2,0.25f));
                         } else {
-                            mScaleFactor = (float) (1/mScaleFactor);
+                            mScaleFactor =  1/mScaleFactor;
                         }
                     }
 
 					mPixScaled = Scale.scaleWithoutFiltering(mPix, mScaleFactor);
 
 					mBitmap = WriteFile.writeBitmap(mPixScaled);
-					mAspectX = extras.getInt("aspectX");
-					mAspectY = extras.getInt("aspectY");
 					mRotation = extras.getInt(DocumentGridActivity.EXTRA_ROTATION) / 90;
 				}
 
@@ -307,7 +304,6 @@ public class CropImage extends MonitoredActivity {
 
 	// Create a default HightlightView if we found no face in the picture.
 	private void makeDefault() {
-		HighlightView hv = new HighlightView(mImageView);
 
 		int width = mBitmap.getWidth();
 		int height = mBitmap.getHeight();
@@ -318,13 +314,6 @@ public class CropImage extends MonitoredActivity {
 		int cropWidth = Math.min(width, height) * 4 / 5;
 		int cropHeight = cropWidth;
 
-		if (mAspectX != 0 && mAspectY != 0) {
-			if (mAspectX > mAspectY) {
-				cropHeight = cropWidth * mAspectY / mAspectX;
-			} else {
-				cropWidth = cropHeight * mAspectX / mAspectY;
-			}
-		}
 
 		int x = (width - cropWidth) / 2;
 		int y = (height - cropHeight) / 2;
@@ -333,7 +322,8 @@ public class CropImage extends MonitoredActivity {
 		DisplayMetrics metrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-		hv.setup(mImageView.getImageViewMatrix(), imageRect, cropRect, mAspectX != 0 && mAspectY != 0, metrics.density);
+        HighlightView hv = new HighlightView(mImageView, imageRect, cropRect, metrics.density);
+
 		mImageView.add(hv);
 		mImageView.invalidate();
 		mCrop = hv;
