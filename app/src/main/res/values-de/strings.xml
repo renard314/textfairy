@@ -68,8 +68,8 @@
     <string name="layout_complex">Scanne Text mit mehreren Spalten</string>
     <string name="layout_simple">Scanne Text als einzelnen Block</string>
     <string name="saving_document">Speichere Dokument</string>
-    <string name="button_column_pick_completed">starte Texterkennung</string>
-    <string name="export_as_pdf">erstelle PDF</string>
+    <string name="button_column_pick_completed">Starte Texterkennung</string>
+    <string name="export_as_pdf">Erstelle PDF</string>
     <string name="delete_language_title">%1$s löschen?</string>
     <string name="delete_language_message">Du erhälst %1$d kb Speicher zurück.</string>
     <string name="delete_dialog_message">Dokumente werden gelöscht..</string>
@@ -85,8 +85,8 @@
     <string name="progress_choose_columns">Auswahl Bild- &amp; Textbereiche.</string>
     <string name="new_photo">Neues Photo</string>
     <string name="no_sd_card">Die Textfee kann nicht von der Speicherkarte lesen. Ist das Telefon vielleicht mit deinem PC verbunden? Wenn ja, dann entferne das Kabel und versuche es erneut.</string>
-    <string name="rotate_right">rechts drehen</string>
-    <string name="rotate_left">links drehen</string>
+    <string name="rotate_right">Rechts drehen</string>
+    <string name="rotate_left">Links drehen</string>
     <string name="content_description_fairy">Die hilfreiche Textfee</string>
     <string name="crop_title">Wähle einen Bildauschnitt</string>
     <string name="text_options_title">Ändere Deine Texteinstellungen</string>

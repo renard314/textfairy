@@ -26,12 +26,11 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
-import com.googlecode.leptonica.android.Bilinear;
+import com.googlecode.leptonica.android.Projective;
 import com.googlecode.leptonica.android.Box;
 import com.googlecode.leptonica.android.Clip;
 import com.googlecode.leptonica.android.Pix;
@@ -214,23 +213,24 @@ public class CropImageActivity extends MonitoredActivity {
         Util.startBackgroundJob(this, null, getText(R.string.cropping_image).toString(), new Runnable() {
             public void run() {
                 try {
-                    Rect r = mCrop.getCropRect();
-                    final float[] trapezoid = mCrop.getTrapezoid();
-
-                    Box bb = getBoundingBox(r, mScaleFactor);
-                    Pix croppedPix = Clip.clipRectangle(mPix, bb);
-                    if (croppedPix == null) {
-                        throw new IllegalStateException();
-                    }
                     float scale = 1f / mScaleFactor;
                     Matrix scaleMatrix = new Matrix();
                     scaleMatrix.setScale(scale, scale);
+
+                    final float[] trapezoid = mCrop.getTrapezoid();
+                    final RectF perspectiveCorrectedBoundingRect = new RectF(mCrop.getPerspectiveCorrectedBoundingRect());
+                    scaleMatrix.mapRect(perspectiveCorrectedBoundingRect);
+                    Box bb = new Box((int)perspectiveCorrectedBoundingRect.left,(int)perspectiveCorrectedBoundingRect.top,(int)perspectiveCorrectedBoundingRect.width(),(int)perspectiveCorrectedBoundingRect.height());
+                    Pix croppedPix = Clip.clipRectangle2(mPix, bb);
+                    if (croppedPix == null) {
+                        throw new IllegalStateException();
+                    }
+
                     scaleMatrix.postTranslate(-bb.getX(), -bb.getY());
                     scaleMatrix.mapPoints(trapezoid);
 
-
                     final float[] dest = new float[]{0, 0, bb.getWidth(), 0, bb.getWidth(), bb.getHeight(), 0, bb.getHeight()};
-                    Pix bilinear = Bilinear.bilinear(croppedPix, dest, trapezoid);
+                    Pix bilinear = Projective.projectiveTransform(croppedPix, dest, trapezoid);
                     if (bilinear == null) {
                         bilinear = croppedPix;
                     } else {
@@ -258,15 +258,6 @@ public class CropImageActivity extends MonitoredActivity {
             }
         }, mHandler);
 
-    }
-
-    private Box getBoundingBox(Rect r, float scaleFactor) {
-        float scale = 1f / scaleFactor;
-        final int left = (int) (r.left * scale);
-        final int top = (int) (r.top * scale);
-        final int width = (int) ((r.right - r.left) * scale);
-        final int height = (int) ((r.bottom - r.top) * scale);
-        return new Box(left, top, width, height);
     }
 
     @Override

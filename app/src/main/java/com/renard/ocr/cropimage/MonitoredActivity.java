@@ -147,7 +147,8 @@ public class MonitoredActivity extends ActionBarActivity implements BaseActivity
         ImageView nativeAppIcon = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             nativeAppIcon = (ImageView) activity.findViewById(android.R.id.home);
-        } else {
+        }
+        if(nativeAppIcon==null){
             nativeAppIcon = (ImageView) activity.findViewById(android.support.v7.appcompat.R.id.home);
         }
         ImageView sherlockAppIcon = null;//(ImageView) activity.findViewById(com.actionbarsherlock.R.id.abs__home);

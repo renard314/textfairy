@@ -3,5 +3,5 @@
     <dimen name="crop_handle_corner_radius">6dp</dimen>
     <dimen name="crop_handle_edge_radius">4dp</dimen>
     <dimen name="crop_edge_width">3dp</dimen>
-    <dimen name="crop_hit_hysteresis">20dp</dimen>
+    <dimen name="crop_hit_hysteresis">30dp</dimen>
 </resources>

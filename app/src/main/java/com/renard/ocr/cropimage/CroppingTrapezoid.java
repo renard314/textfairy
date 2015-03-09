@@ -35,7 +35,7 @@ public class CroppingTrapezoid {
         return getBoundingRect(mPoints);
     }
 
-    public float[] getBoundingPoints(Matrix matrix) {
+    private float[] getBoundingPoints(Matrix matrix) {
         final Rect boundingRect = getBoundingRect(mPoints);
         float[] points = new float[4];
         points[0]= boundingRect.left;
@@ -45,13 +45,47 @@ public class CroppingTrapezoid {
         matrix.mapPoints(points);
         return points;
     }
-    public RectF getBoundingRectF(Matrix matrix) {
-        float[] points = getBoundingPoints(matrix);
-        float left =  Math.min(points[0],points[2]);
-        float right = Math.max(points[0],points[2]);
-        float top = Math.min(points[1],points[3]);
-        float bottom = Math.max(points[1],points[3]);
-        return new RectF(left,top,right,bottom);
+
+    public Rect getPerspectiveCorrectedBoundingRect(){
+        float[] p = mMappedPoints;
+        System.arraycopy(mPoints,0,p,0,8);
+        float w1= p[2]-p[0];
+        float w2 = p[4]-p[6];
+        float h1 =  p[7]-p[1];
+        float h2 = p[5]-p[3];
+        float diffH = w1-w2;
+        float diffV = h1-h2;
+        if(diffH<0){
+            float scale = (Math.abs(diffH)+w2)/w2;
+            h1*=(scale);
+            h2*=(scale);
+            //move top up
+            p[1]=p[7]-h1;
+            p[3]=p[5]-h2;
+        } else {
+            float scale = (diffH+w1)/w1;
+            h1*=scale;
+            h2*=scale;
+            //move bottom down
+            p[7] = p[1]+h1;
+            p[5] = p[3]+h2;
+        }
+        if(diffV<0){
+            float scale = (Math.abs(diffV)+h2)/h2;
+            w1*=scale;
+            w2*=scale;
+            //move left to left
+            p[0]=p[2]-w1;
+            p[6]=p[4]-w2;
+        } else {
+            float scale = (diffV+h1)/h1;
+            w1*=scale;
+            w2*=scale;
+            //move right to right
+            p[2]=p[0]+w1;
+            p[4]=p[6]+w2;
+        }
+        return getBoundingRect(mMappedPoints);
     }
 
     public Rect getBoundingRect(Matrix matrix) {
@@ -60,6 +94,7 @@ public class CroppingTrapezoid {
         int right = (int) Math.max(points[0],points[2]);
         int top = (int) Math.min(points[1],points[3]);
         int bottom = (int) Math.max(points[1],points[3]);
+
         return new Rect(left,top,right, bottom);
     }
 
@@ -258,14 +293,14 @@ public class CroppingTrapezoid {
         return retval;
     }
 
-    private Rect getBoundingRect(float[] points) {
+    private Rect getBoundingRect(float[] p) {
         //return new Rect(Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom));
-        int left = (int) Math.min(points[0], points[6]);
-        int right = (int) Math.max(points[2], points[4]);
-        int top = (int) Math.min(points[1], points[3]);
-        int bottom = (int) Math.max(points[5], points[7]);
-        //int width = right-left;
-        //int height = bottom-top;
+
+        int left = (int) Math.min(p[0], p[6]);
+        int right = (int) Math.max(p[2], p[4]);
+        int top = (int) Math.min(p[1], p[3]);
+        int bottom = (int) Math.max(p[5], p[7]);
+
         return new Rect(left, top, right, bottom);
     }
 
@@ -279,7 +314,7 @@ public class CroppingTrapezoid {
         mPoints[6] = Math.max(0, mPoints[6]); //left
         mPoints[7] = Math.min(mImageRect.bottom, mPoints[7]); //bottom
         //lef top always to left of right top
-        final float cap = 25f;
+        final float cap = 50f;
         final float leftBound = Math.max(mPoints[0], mPoints[6]) + cap;
         final float rightBound = Math.min(mPoints[2], mPoints[4]) - cap;
         final float topBound = Math.max(mPoints[1], mPoints[3]) + cap;
