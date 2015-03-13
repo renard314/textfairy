@@ -55,6 +55,7 @@ import com.renard.ocr.LayoutQuestionDialog.LayoutChoseListener;
 import com.renard.ocr.LayoutQuestionDialog.LayoutKind;
 import com.renard.ocr.SdWarningDialogFragment.SdReadyListener;
 import com.renard.ocr.cropimage.MonitoredActivity;
+import com.renard.util.Screen;
 import com.renard.util.Util;
 
 /**
@@ -82,8 +83,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 
 	// askUserAboutDocumentLayout
 	private OCR mOCR;
-	private Messenger mMessageReceiver = new Messenger(
-			new ProgressActivityHandler()); // receives
+	private Messenger mMessageReceiver = new Messenger(new ProgressActivityHandler()); // receives
 	// messages
 	// from
 	// background
@@ -200,8 +200,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 				// CharSequence text =
 				// getText(R.string.progress_choose_columns);
 				// mFairyText.setText(text);
-				getSupportActionBar()
-						.setTitle(R.string.progress_choose_columns);
+				getSupportActionBar().setTitle(R.string.progress_choose_columns);
 
 				break;
 			}
@@ -229,11 +228,6 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 
 	private void saveDocument(final Pix pix, final String hocrString,
 			final String utf8String, final boolean checkSd, final int accuracy) {
-		// if (checkSd &&
-		// !Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
-		// {
-		// waitForSdCard(pix, hocrString, utf8String);
-		// } else {
 
 		Util.startBackgroundJob(OCRActivity.this, "",
 				getText(R.string.saving_document).toString(), new Runnable() {
@@ -291,6 +285,7 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 								i.setData(documentUri);
 								startActivity(i);
 								finish();
+                                Screen.unlockOrientation(OCRActivity.this);
 							}
 						}
 					}
@@ -381,6 +376,8 @@ public class OCRActivity extends MonitoredActivity implements SdReadyListener {
 		getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 		mOCR = new OCR(this, mMessageReceiver);
+
+        Screen.lockOrientation(this);
 
 		//this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 

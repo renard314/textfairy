@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
- * Copyright (C) 2012,2013 Renard Wellnitz
+ * Copyright (C) 2012,2013,2014,2015 Renard Wellnitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,7 +147,8 @@ public class MonitoredActivity extends ActionBarActivity implements BaseActivity
         ImageView nativeAppIcon = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             nativeAppIcon = (ImageView) activity.findViewById(android.R.id.home);
-        } else {
+        }
+        if(nativeAppIcon==null){
             nativeAppIcon = (ImageView) activity.findViewById(android.support.v7.appcompat.R.id.home);
         }
         ImageView sherlockAppIcon = null;//(ImageView) activity.findViewById(com.actionbarsherlock.R.id.abs__home);

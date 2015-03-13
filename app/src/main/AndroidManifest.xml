@@ -88,7 +88,7 @@
             android:label="@string/toc_title"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
-            android:name="com.renard.ocr.cropimage.CropImage"
+            android:name=".cropimage.CropImageActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/crop_title"
             android:logo="@drawable/textfairy_title"

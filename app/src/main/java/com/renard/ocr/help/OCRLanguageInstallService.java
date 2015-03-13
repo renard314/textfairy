@@ -63,10 +63,22 @@ public class OCRLanguageInstallService extends IntentService {
 			DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
 			ParcelFileDescriptor file;
 			try {
+                String fileName = intent.getStringExtra(EXTRA_FILE_NAME);
+                String langName = extractLanguageNameFromUri(fileName);
+                File tessDir = Util.getTrainingDataDir(this);
+                tessDir.mkdirs();
+
 				file = dm.openDownloadedFile(downloadId);
 				FileInputStream fin = new FileInputStream(file.getFileDescriptor());
 				BufferedInputStream in = new BufferedInputStream(fin);
-				FileOutputStream out = openFileOutput("tess-lang.tmp", Context.MODE_PRIVATE);
+                FileOutputStream out;
+                if(langName.endsWith("traineddata")){
+                    File trainedData = new File(tessDir, langName);
+                    out = new FileOutputStream(trainedData);
+                } else{
+                    out = openFileOutput("tess-lang.tmp", Context.MODE_PRIVATE);
+
+                }
 				GzipCompressorInputStream gzIn = new GzipCompressorInputStream(in);
 				final byte[] buffer = new byte[4096];
 				int n = 0;
@@ -75,16 +87,19 @@ public class OCRLanguageInstallService extends IntentService {
 				}
 				out.close();
 				gzIn.close();
-				String fileName = intent.getStringExtra(EXTRA_FILE_NAME);
-				String langName = extractLanguageNameFromUri(fileName);
+                if(langName.endsWith("traineddata")){
+                    String lang = langName.substring(0, langName.length() - ".traineddata".length());
+                    notifyReceivers(lang);
+                    return;
+                }
 
-				FileInputStream fileIn = openFileInput("tess-lang.tmp");
+
+                    FileInputStream fileIn = openFileInput("tess-lang.tmp");
 				TarArchiveInputStream tarIn = new TarArchiveInputStream(fileIn);
 
                 if ("ara.traineddata".equalsIgnoreCase(langName)||"hin.traineddata".equalsIgnoreCase(langName)){
-                    //extract also cube data for arabic as otherwise tesseract will crash
+                    //extract also cube data as otherwise tesseract will crash
                     TarArchiveEntry entry = null;
-                    File tessDir = Util.getTrainingDataDir(this);
                     String lang=null;
                     while((entry = tarIn.getNextTarEntry())!=null){
                         final String currentFileName = entry.getName().substring("tesseract-ocr/tessdata/".length());
@@ -103,6 +118,7 @@ public class OCRLanguageInstallService extends IntentService {
                     notifyReceivers(lang);
                     return;
                 }
+
                 TarArchiveEntry entry = tarIn.getNextTarEntry();
 
                 while (!entryIsNotLanguageFile(entry, langName)) {
@@ -112,14 +128,11 @@ public class OCRLanguageInstallService extends IntentService {
 					entry = tarIn.getNextTarEntry();
 				}
 				if (entry != null) {
-					File tessDir = Util.getTrainingDataDir(this);
-                    tessDir.mkdirs();
 					final String currentLangName = entry.getName().substring("tesseract-ocr/tessdata/".length());
 					File trainedData = new File(tessDir, currentLangName);
                     if (trainedData.isDirectory()){
                         trainedData.delete();
                     }
-                    tessDir.mkdirs();
 					FileOutputStream fout = new FileOutputStream(trainedData);
 					int len;
 					while ((len = tarIn.read(buffer)) != -1) {
@@ -177,6 +190,11 @@ public class OCRLanguageInstallService extends IntentService {
 			}
 			return fileName.substring(end - 3, end) + ".traineddata";
 		}
+        end = fileName.indexOf(".gz");
+        int start = fileName.lastIndexOf("/");
+        if(end>-1 && end >2 && start>=-1){
+            return fileName.substring(start+1,end);
+        }
 		return null;
 	}
 

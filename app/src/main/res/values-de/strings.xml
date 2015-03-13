@@ -28,7 +28,7 @@
     <string name="language_downloaded">%1$s erfolgreich geladen</string>
     <string name="app_name">Textfee</string>
     <string name="tips">Tipps</string>
-    <string name="ocr_language_delete">löschen</string>
+    <string name="ocr_language_delete">Löschen</string>
     <string name="pref_title_help">Zeige Tipps</string>
     <string name="pref_title_contact">Kontakt</string>
     <string name="download_title">Sprachdaten für %s</string>
@@ -49,7 +49,7 @@
     <string name="save_fail">Speichern nicht erfolgreich!</string>
     <string name="share_chooser_title">Wähle aus wie du den Text versenden möchtest</string>
     <string name="progress_start">Starte Texterkennung</string>
-    <string name="download_language">laden</string>
+    <string name="download_language">Laden</string>
     <string name="progress_dewarp">Begradige Text</string>
     <string name="progress_ocr">Lese Text..</string>
     <string name="delete">Löschen</string>
@@ -63,13 +63,13 @@
     <string name="error_title">Fehler</string>
     <string name="error_load_file">Sorry aber ich konnte die Datei nicht finden. Wurde sie vielleicht gelöscht?</string>
     <string name="pdf_creation_message">Deine  PDF wird erstellt!</string>
-    <string name="option_view_mode">wechsle Ansicht</string>
+    <string name="option_view_mode">Wechsle Ansicht</string>
     <string name="document_layout_dialog">Was soll ich machen?</string>
     <string name="layout_complex">Scanne Text mit mehreren Spalten</string>
     <string name="layout_simple">Scanne Text als einzelnen Block</string>
     <string name="saving_document">Speichere Dokument</string>
-    <string name="button_column_pick_completed">starte Texterkennung</string>
-    <string name="export_as_pdf">erstelle PDF</string>
+    <string name="button_column_pick_completed">Starte Texterkennung</string>
+    <string name="export_as_pdf">Erstelle PDF</string>
     <string name="delete_language_title">%1$s löschen?</string>
     <string name="delete_language_message">Du erhälst %1$d kb Speicher zurück.</string>
     <string name="delete_dialog_message">Dokumente werden gelöscht..</string>
@@ -85,8 +85,8 @@
     <string name="progress_choose_columns">Auswahl Bild- &amp; Textbereiche.</string>
     <string name="new_photo">Neues Photo</string>
     <string name="no_sd_card">Die Textfee kann nicht von der Speicherkarte lesen. Ist das Telefon vielleicht mit deinem PC verbunden? Wenn ja, dann entferne das Kabel und versuche es erneut.</string>
-    <string name="rotate_right">rechts drehen</string>
-    <string name="rotate_left">links drehen</string>
+    <string name="rotate_right">Rechts drehen</string>
+    <string name="rotate_left">Links drehen</string>
     <string name="content_description_fairy">Die hilfreiche Textfee</string>
     <string name="crop_title">Wähle einen Bildauschnitt</string>
     <string name="text_options_title">Ändere Deine Texteinstellungen</string>
@@ -142,7 +142,7 @@
     <string name="ocr_result_is_bad">Ich konnte nicht viel erkennen. Ich hoffe die Tipps helfen.</string>
     <string name="ocr_result_is_ok">Ich denke ich konnte das meiste lesen.</string>
     <string name="ocr_result_is_good">Juhu, das lief ganz gut!</string>
-    <string name="play">play</string>
+    <string name="play">Play</string>
     <string name="stop">stop</string>
     <string name="tts_init_error">Sprachmodul konnte nicht geladen werden.</string>
     <string name="open_settings">Sprachoptionen</string>

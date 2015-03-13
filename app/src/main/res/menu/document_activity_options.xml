@@ -9,7 +9,7 @@
     </item>
     <item
         android:id="@+id/item_text_options"
-        android:icon="@drawable/ic_action_preferences"
+        android:icon="@drawable/ic_action_preferences_dark"
         yourapp:showAsAction="ifRoom"
         android:title="@string/option_text">
     </item>

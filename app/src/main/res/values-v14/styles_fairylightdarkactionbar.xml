@@ -19,6 +19,7 @@
 
 <resources>
 
+
     <style name="Theme.Fairylightdarkactionbar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_fairylightdarkactionbar</item>
         <item name="android:popupMenuStyle">@style/PopupMenu.Fairylightdarkactionbar</item>
@@ -29,7 +30,8 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_fairylightdarkactionbar</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_fairylightdarkactionbar</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Fairylightdarkactionbar</item>
-        
+        <!-- OverFlow Menu Text Color -->
+        <item name="android:textColor">#FF222222</item>
                 <!-- Light.DarkActionBar specific -->
         <item name="android:actionBarWidgetTheme">@style/Theme.Fairylightdarkactionbar.Widget</item>
 
@@ -46,7 +48,7 @@
         <item name="android:background">@drawable/ab_transparent_fairylightdarkactionbar</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Fairylightdarkactionbar</item>
     </style>
-    
+
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
     <style name="Theme.Fairylightdarkactionbar.Widget" parent="@style/Theme.AppCompat">
         <item name="android:popupMenuStyle">@style/PopupMenu.Fairylightdarkactionbar</item>

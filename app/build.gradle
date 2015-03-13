@@ -147,4 +147,16 @@ dependencies {
     compile project(":FileExplorer")
     compile project(":ViewPager3D:ViewPager3D")
     compile project(":tess-two:tess-two")
+    testCompile 'junit:junit:4.12'
+    testCompile "org.robolectric:robolectric:3.0-SNAPSHOT"
+    testCompile "org.mockito:mockito-core:1.9.5"
+    testCompile 'org.mockito:mockito-all:1.9.5'
+    testCompile 'org.powermock:powermock-api-mockito:1.5.6'
+    testCompile 'org.powermock:powermock-module-junit4:1.5.6'
+    testCompile 'org.powermock:powermock-core:1.5.6'
+    testCompile 'org.powermock:powermock-module-junit4-rule:1.5.6'
+    testCompile 'org.powermock:powermock-classloading-base:1.5.6'
+    testCompile 'org.powermock:powermock-classloading-xstream:1.5.6'
+    testCompile 'com.thoughtworks.xstream:xstream:1.4.7'
+
 }

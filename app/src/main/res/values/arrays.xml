@@ -64,6 +64,8 @@
         <item>grc Ancient Greek</item>
         <item>rus Russian</item>
         <item>vie Vietnamese</item>
+        <item>guj Gujarati</item>
+        <item>deu-frak Deutsch (Fraktur)</item>
     </string-array>
     <string-array name="start_activity_texts">
         <item>@string/start_text_1</item>

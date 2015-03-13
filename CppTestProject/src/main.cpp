@@ -40,10 +40,7 @@ bool cancelFunc(void* cancel_this, int words) {
 	return false;
 }
 
-
-
-
-int main() {
+void doOcr(){
 	Pix* pixOrg = pixRead("images/1.png");
 	Pix* pixText;
 	pixJavaCallback(pixOrg);
@@ -84,5 +81,53 @@ int main() {
 	pixaClear(pixaDebugDisplay);
 	pixDestroy(&pixOrg);
 	pixDestroy(&pixText);
+}
+
+
+
+int main() {
+	Pix* pixOrg = pixRead("images/2.png");
+	PTA* orgPoints = ptaCreate(4);
+	PTA* mappedPoints = ptaCreate(4);
+	l_int32 x1,y1,x2,y2,x3,y3,x4,y4;
+	x1 = 541;
+	y1 = 172;
+	x2 = 2235;
+	y2 = 0;
+	x3 = 2218;
+	y3 = 1249;
+	x4 = 605;
+	y4 = 1002;
+
+	ptaAddPt(orgPoints,x1,y1);
+	ptaAddPt(orgPoints,x2,y2);
+	ptaAddPt(orgPoints,x3,y3);
+	ptaAddPt(orgPoints,x4,y4);
+
+
+
+	pixRenderLine(pixOrg,x1,y1,x2,y2,6,L_CLEAR_PIXELS);
+	pixRenderLine(pixOrg,x2,y2,x3,y3,6,L_CLEAR_PIXELS);
+	pixRenderLine(pixOrg,x3,y3,x4,y4,6,L_CLEAR_PIXELS);
+	pixRenderLine(pixOrg,x4,y4,x1,y1,6,L_CLEAR_PIXELS);
+
+	l_int32  x, y, w, h;
+	w = pixGetWidth(pixOrg);
+	h = pixGetHeight(pixOrg);
+	x =0;
+	y= 0;
+	Box* orgBox = boxCreate(x,y,w,h);
+	ptaAddPt(mappedPoints, x, y);
+	ptaAddPt(mappedPoints, x + w - 1, y);
+	ptaAddPt(mappedPoints, x + w - 1, y + h - 1);
+	ptaAddPt(mappedPoints, x, y + h - 1);
+
+	pixRenderBox(pixOrg,orgBox,5,L_SET_PIXELS);
+	//Pix* pixBilinar = pixBilinearPta(pixOrg,mappedPoints,orgPoints,L_BRING_IN_WHITE);
+	Pix* pixBilinar =pixProjectivePtaColor(pixOrg,mappedPoints,orgPoints,0xffffff00);
+	pixDisplay(pixOrg,0,0);
+	pixDisplay(pixBilinar,0,0);
+	pixDestroy(&pixOrg);
+	pixDestroy(&pixBilinar);
 	return 0;
 }
