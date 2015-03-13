@@ -82,9 +82,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
                     OCRLanguage language = (OCRLanguage) mAdapter.getItem(position);
                     if (!language.mDownloaded) {
                         final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-                        final String part1 = "http://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.";
-                        final String part2 = ".tar.gz";
-                        Uri uri = Uri.parse(part1 + language.mValue + part2);
+                        Uri uri = getDownloadUri(language);
                         Request request = new Request(uri);
                         request.setTitle(language.mDisplayText);
                         String tessDir = Util.getDownloadTempDir(OCRLanguageActivity.this);
@@ -159,6 +157,20 @@ public class OCRLanguageActivity extends MonitoredActivity {
             return initLanguageList();
         }
 
+    }
+
+    private Uri getDownloadUri(OCRLanguage language) {
+        final String part1;
+        final String part2;
+        if("deu-frak".equalsIgnoreCase(language.getValue())){
+            part1 = "https://tesseract-ocr.googlecode.com/files/";
+            part2 = ".traineddata.gz";
+        } else {
+            part1 = "http://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.";
+            part2 = ".tar.gz";
+
+        }
+        return Uri.parse(part1 + language.mValue + part2);
     }
 
     private static String[] getCubeFilesForLanguage(String language, final Context context) {
