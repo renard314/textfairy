@@ -118,21 +118,6 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
         final int columnWidth = Util.determineThumbnailSize(this, null);
         Util.setThumbnailSize(columnWidth, columnWidth, this);
         checkForImageIntent();
-		Bitmap b = Bitmap.createBitmap(300,300,Bitmap.Config.ARGB_8888);
-		Canvas c = new Canvas();
-		Paint p = new Paint(){{
-			setColor(Color.BLACK);
-			setStrokeWidth(5);
-			setStyle(Style.STROKE);
-		}
-		};
-		c.drawLine(0,0, 299,299,p);
-
-		try {
-			Util.savePixToSD(ReadFile.readBitmap(b),"test");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
     private void checkForImageIntent() {
@@ -141,7 +126,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
         String type = intent.getType();
 
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (imageUri != null) {
                 loadBitmapFromContentUri(imageUri);
             } else {
