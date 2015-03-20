@@ -141,9 +141,11 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         cameraPicUri = null;
         Intent i = new Intent(Intent.ACTION_GET_CONTENT, null);
         i.setType("image/*");
+        Intent chooser = Intent.createChooser(i,"Image source");
+
         // File photo = getTmpPhotoFile();
         // i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
-        startActivityForResult(i, REQUEST_CODE_PICK_PHOTO);
+        startActivityForResult(chooser, REQUEST_CODE_PICK_PHOTO);
     }
 
     protected void startCamera() {
@@ -458,7 +460,14 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
     }
 
-    ;
+    @Override
+    protected synchronized void onDestroy() {
+        super.onDestroy();
+        if(mBitmapLoadTask!=null){
+            mBitmapLoadTask.cancel(true);
+            mBitmapLoadTask = null;
+        }
+    }
 
     private void showFileError(PixLoadStatus status) {
         showFileError(status, null);

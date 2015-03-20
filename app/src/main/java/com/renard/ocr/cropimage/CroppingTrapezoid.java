@@ -159,15 +159,15 @@ public class CroppingTrapezoid {
         // Don't let the cropping rectangle grow too fast.
         // Grow at most half of the difference between the image rectangle and
         // the cropping rectangle.
-        Rect r = getBoundingRect();
-        if (dx > 0F && r.width() + 2 * dx > mImageRect.width()) {
-            float adjustment = (mImageRect.width() - r.width()) / 2F;
-            dx = adjustment;
-        }
-        if (dy > 0F && r.height() + 2 * dy > mImageRect.height()) {
-            float adjustment = (mImageRect.height() - r.height()) / 2F;
-            dy = adjustment;
-        }
+//        Rect r = getBoundingRect();
+//        if (dx > 0F && r.width() + 2 * dx > mImageRect.width()) {
+//            float adjustment = (mImageRect.width() - r.width()) / 2F;
+//            dx = adjustment;
+//        }
+//        if (dy > 0F && r.height() + 2 * dy > mImageRect.height()) {
+//            float adjustment = (mImageRect.height() - r.height()) / 2F;
+//            dy = adjustment;
+//        }
 
         if ((GROW_LEFT_EDGE | GROW_TOP_EDGE) == edge) {
             mPoints[0] += dx;
@@ -219,16 +219,16 @@ public class CroppingTrapezoid {
         }
 
 
-        // TODO Don't let the cropping rectangle shrink too fast.
-        final float widthCap = 25F;
-        r = getBoundingRect();
-        if (r.width() < widthCap) {
-            //r.inset(-(widthCap - r.width()) / 2F, 0F);
-        }
-        float heightCap = widthCap;
-        if (r.height() < heightCap) {
-            //r.inset(0F, -(heightCap - r.height()) / 2F);
-        }
+//        // TODO Don't let the cropping rectangle shrink too fast.
+//        final float widthCap = 25F;
+//        r = getBoundingRect();
+//        if (r.width() < widthCap) {
+//            //r.inset(-(widthCap - r.width()) / 2F, 0F);
+//        }
+//        float heightCap = widthCap;
+//        if (r.height() < heightCap) {
+//            //r.inset(0F, -(heightCap - r.height()) / 2F);
+//        }
         capPoints(edge);
     }
 

@@ -78,14 +78,13 @@ android {
     }
     buildTypes {
         release {
-	    //runProguard true
+	        //runProguard true
             proguardFile file('android.pro')
             proguardFile getDefaultProguardFile('proguard-android.txt')
             signingConfig signingConfigs.release
         }
     }
 
-    //ABI Key: 6 ��� x86,   2 ��� ARMv7,   1 ��� ARMv5
     productFlavors {
         x86 {
             versionCode getVersionCodeFromManifest("6")
@@ -137,7 +136,7 @@ if (propFile.canRead()) {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile fileTree(dir: 'src/main/lib', include: '*.jar')
     compile 'com.viewpagerindicator:library:2.4.1@aar'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.google.code.findbugs:jsr305:2.0.2'
