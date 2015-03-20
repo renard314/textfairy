@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="crop_handle_corner_radius">6dp</dimen>
-    <dimen name="crop_handle_edge_radius">4dp</dimen>
+    <dimen name="crop_handle_corner_radius">7dp</dimen>
+    <dimen name="crop_handle_edge_radius">5dp</dimen>
     <dimen name="crop_edge_width">3dp</dimen>
     <dimen name="crop_hit_hysteresis">30dp</dimen>
 </resources>

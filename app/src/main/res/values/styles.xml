@@ -16,4 +16,17 @@
         <item name="android:gravity">left|center</item>
         <item name="android:drawableLeft">@drawable/ic_bullet_point</item>
     </style>
+
+    <style name="ocr_tip_style">
+        <item name="android:drawablePadding">12dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+    <style name="ocr_tip_style_check" parent="ocr_tip_style">
+        <item name="android:drawableLeft">@drawable/check</item>
+    </style>
+    <style name="ocr_tip_style_cross" parent="ocr_tip_style">
+        <item name="android:drawableLeft">@drawable/cross</item>
+    </style>
+
 </resources>

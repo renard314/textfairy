@@ -146,6 +146,9 @@ public class PreferencesUtils {
 	}
 
 	private static void applyById(TextView view, int id) {
+        if(view==null){
+            return;
+        }
 		if (id == R.id.align_block) {
 			view.setGravity(Gravity.CENTER_HORIZONTAL);
 		} else if (id == R.id.align_left) {

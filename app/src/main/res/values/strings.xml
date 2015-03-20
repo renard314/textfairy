@@ -76,8 +76,8 @@
     <string name="progress_pfd_creation">Creating page %1$d/%2$d for %3$s.</string>
     <string name="option_text">Text settings</string>
     <string name="option_content">Table of contents</string>
-    <string name="option_line_spacing">line spacing</string>
-    <string name="option_text_alignment">text alignment</string>
+    <string name="option_line_spacing">Line spacing</string>
+    <string name="option_text_alignment">Text alignment</string>
     <string name="options_preview_text">This is a preview of your current text settings. Press the back key to continue reading.\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</string>
     <string name="progress_analyse_layout">I\'m analysing the layout. Please wait some seconds.</string>
     <string name="progress_image_detection">Searching for text</string>
@@ -89,12 +89,12 @@
     <string name="rotate_left">Rotate left</string>
     <string name="content_description_fairy">The helpful text fairy</string>
     <string name="crop_title">Choose image section</string>
-    <string name="text_options_title">change your text settings</string>
+    <string name="text_options_title">Change your text settings</string>
     <string name="app_options_title">Change your settings</string>
     <string name="edit_title_hint">Enter a title</string>
     <string name="option_gallery_title">Pick an image from the gallery</string>
     <string name="option_camera_title">Make a new photo</string>
-    <string name="option_preference_title">Preferences</string>
+    <string name="option_preference_title">Settings</string>
     <string name="show_tips">Show tips</string>
     <string name="document_help_title">You can manage your document here.</string>
     <string name="fairy_welcome_bubble">I\'m the Text Fairy</string>
@@ -175,7 +175,7 @@
     <string name="beta_test_body">Please inform me when a new version is available for beta testing.</string>
     <string name="beta_test_subject">Text fairy beta test</string>
     <string name="app_version">Version %s</string>
-    <string name="image_not_32_bit">Image needs to be 32 bit</string>
+    <string name="image_not_32_bit">Image needs to be 32 bit.</string>
     <string name="image_format_unsupported">Image format not recognized. Only png, jpeg or bmp files are currently supported.</string>
     <string name="tts_not_available">Text to Speech is not available on your phone.</string>
     <string name="empty_document">Document contains no text.</string>
@@ -185,7 +185,17 @@
     <string name="click_image_below">Once you are a member click on the image below</string>
     <string name="first_step">First step</string>
     <string name="second_step">Second step</string>
-    <string name="first_step_detail">If you are not a member the second step won\'t work</string>
-    <string name="second_step_first_detail">You can opt out of the beta program anytime</string>
-    <string name="second_step_second_detail">Please drop me a mail if you find a bug</string>
+    <string name="first_step_detail">If you are not a member the second step won\'t work.</string>
+    <string name="second_step_first_detail">You can opt out of the beta program anytime.</string>
+    <string name="second_step_second_detail">Please drop me a mail if you find a bug.</string>
+    <string name="explanation_crop_video">I\'ll show you how to crop an image (20s).</string>
+    <string name="ocr_tip_1">Good lightning is most important. Use the flashlight if possible.</string>
+    <string name="ocr_tip_2">Blurry text is hard to read for me. Make sure that the camera has properly focussed the text</string>
+    <string name="ocr_tip_3">Experiment with different iso values. High iso values can lead to image noise that makes it harder to recognize the letters</string>
+    <string name="ocr_tip_4">Most of the time 5 to 7 megapixels is enough resolution to get good results. Higher values will often only increase the processing time.</string>
+    <string name="ocr_tip_heading">How i can improve the text recognition:</string>
+    <string name="additional_tips">Additional tips</string>
+    <string name="ocr_tip_5">You can speed up the text recognition by cropping the taken photo</string>
+    <string name="ocr_tip_6">I\'m best at recognizing Text from books, magazines or new papers. Ornate or colorful letters are problematic for me.</string>
+    <string name="ocr_tip_7">I\'m having equally difficulties when reading light text from dark backgrounds.</string>
 </resources>

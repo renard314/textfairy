@@ -19,46 +19,27 @@ import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 
-public class HelpActivity extends MonitoredActivity {
+public class HelpActivity extends MonitoredActivity implements YouTubePlayer.OnInitializedListener {
 
-    public static final String EXTRA_HELP_TEXT_ID = "help_text_id";
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // ViewServer.get(this).addWindow(this);
-
-        // TextView title = (TextView) findViewById(R.id.abs__action_bar_title);
-        // title.setTextColor(Color.BLACK);
-        // LayoutParams params = (LayoutParams) title.getLayoutParams();
-        // LinearLayout p = (LinearLayout)title.getParent();
-        // p.setBackgroundResource(R.drawable.speech_bubble);
 
         initAppIcon(this, -1);
-        WebView webView = (WebView) findViewById(R.id.webView_help);
-        webView.loadUrl("file:///android_res/raw/tips.html");
+        YouTubePlayerFragment youTubePlayerFragment = (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
+        youTubePlayerFragment.initialize("AIzaSyBDZn3rmXgEP64ID0Rp32OwSScns6ZdaF8", this);
 
     }
 
-    ;
 
-    @Override
-    protected void onDestroy() {
-        // ViewServer.get(this).removeWindow(this);
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onResume() {
-        // ViewServer.get(this).setFocusedWindow(this);
-        super.onResume();
-    }
 
     @Override
     protected void onPause() {
@@ -76,4 +57,13 @@ public class HelpActivity extends MonitoredActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+        youTubePlayer.cueVideo("-xGYQaAzWu4");
+    }
+
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+
+    }
 }

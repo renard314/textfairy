@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent" >
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    <TextView
         android:id="@+id/help_header"
         android:text="@string/document_layout_dialog"
         android:layout_width="match_parent"
