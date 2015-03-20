@@ -26,7 +26,7 @@
 #include "image_processing_util.h"
 
 #include <allheaders.h>
-#include <dewarp.h>
+#include <dewarp_textfairy.h>
 #include <environ.h>
 #include <imageio.h>
 #include <pix.h>

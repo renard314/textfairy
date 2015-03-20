@@ -11,6 +11,8 @@
 #include <image_processing_util.h>
 #include "baseapi.h"
 #include <ocrclass.h>
+#include "binarize.h"
+#include "dewarp_textfairy.h"
 
 using namespace std;
 
@@ -41,7 +43,7 @@ bool cancelFunc(void* cancel_this, int words) {
 }
 
 void doOcr(){
-	Pix* pixOrg = pixRead("images/1.png");
+	Pix* pixOrg = pixRead("images/renard.png");
 	Pix* pixText;
 	pixJavaCallback(pixOrg);
 
@@ -56,7 +58,7 @@ void doOcr(){
 	monitor.progress_this = NULL;
 
 	tesseract::TessBaseAPI api;
-	int rc =api.Init("/Users/renard/devel/textfairy", "eng+deu", tesseract::OEM_DEFAULT);
+	int rc =api.Init("/Users/renard/devel/textfairy", "bul+eng", tesseract::OEM_DEFAULT);
 	if (rc) {
 		fprintf(stderr, "Could not initialize tesseract.\n");
 		exit(1);
@@ -83,10 +85,9 @@ void doOcr(){
 	pixDestroy(&pixText);
 }
 
+void perspective(){
+	Pix* pixOrg = pixRead("images/renard.png");
 
-
-int main() {
-	Pix* pixOrg = pixRead("images/2.png");
 	PTA* orgPoints = ptaCreate(4);
 	PTA* mappedPoints = ptaCreate(4);
 	l_int32 x1,y1,x2,y2,x3,y3,x4,y4;
@@ -129,5 +130,50 @@ int main() {
 	pixDisplay(pixBilinar,0,0);
 	pixDestroy(&pixOrg);
 	pixDestroy(&pixBilinar);
+}
+
+void dewarp(){
+	Pix* pixOrg = pixRead("images/renard.png");
+	Pix* pixsg = pixConvertRGBToLuminance(pixOrg);
+	Pix*pixb;
+
+	binarize(pixsg, NULL, &pixb);
+	Ptaa* ptaa1 = dewarpGetTextlineCenters(pixb, 0);
+	Pix* pixt1 = pixCreateTemplate(pixOrg);
+	Pix* pixt2 = pixDisplayPtaa(pixt1, ptaa1);
+	//pixDisplayWithTitle(pixt2, 0, 500, "textline centers", 1);
+
+    /* Remove short lines */
+	Ptaa* ptaa2 = dewarpRemoveShortLines(pixb, ptaa1, 0.8, 0);
+
+    /* Fit to quadratic */
+	int n = ptaaGetCount(ptaa2);
+	int i=0;
+	NUMA         *nax, *nafit;
+	l_float32     a, b, c, d, e;
+
+	for (i = 0; i < n; i++) {
+		Pta* pta = ptaaGetPta(ptaa2, i, L_CLONE);
+		ptaGetArrays(pta, &nax, NULL);
+		//ptaGetQuadraticLSF(pta, &a, &b, &c, &nafit);
+		//ptaGetCubicLSF(pta, &a,&b,&c,&d,&nafit);
+		ptaGetQuarticLSF(pta,&a,&b,&c,&d,&e,&nafit);
+		Pta* ptad = ptaCreateFromNuma(nax, nafit);
+		pixDisplayPta(pixt2, pixt2, ptad);
+		ptaDestroy(&pta);
+		ptaDestroy(&ptad);
+		numaDestroy(&nax);
+		numaDestroy(&nafit);
+	}
+	//pixDisplayWithTitle(pixt2, 300, 500, "fitted lines superimposed",1);
+	Pix* pixd;
+	pixDewarp(pixb,&pixd);
+	pixDisplayWithTitle(pixd, 300, 500, "cubic dewarp",1);
+
+}
+
+int main() {
+	doOcr();
+
 	return 0;
 }
