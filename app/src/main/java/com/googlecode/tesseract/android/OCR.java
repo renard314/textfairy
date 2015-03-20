@@ -76,6 +76,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
     protected TessBaseAPI mTess;
+    private boolean mStopped;
 
     public OCR(final MonitoredActivity activity, final Messenger messenger) {
         mMessenger = messenger;
@@ -216,7 +217,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
     private synchronized void sendMessage(int what, int arg1, int arg2, Object object, Bundle b) {
-        if (mIsActivityAttached) {
+        if (mIsActivityAttached && !mStopped) {
 
             Message m = Message.obtain();
             m.what = what;
@@ -267,20 +268,28 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
                     sendMessage(MESSAGE_FINAL_IMAGE, (int) pixOrgPointer);
                     sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
+                    Boxa boxa;
+                    Pix pixOcr;
+                    synchronized (OCR.this) {
 
-                    mTess = new TessBaseAPI(OCR.this);
-                    boolean result = mTess.init(tessDir, lang);
-                    if (!result) {
-                        sendMessage(MESSAGE_ERROR);
-                        return;
+                        mTess = new TessBaseAPI(OCR.this);
+                        boolean result = mTess.init(tessDir, lang);
+                        if (!result) {
+                            sendMessage(MESSAGE_ERROR);
+                            return;
+                        }
+                        pixOcr = new Pix(pixOcrPointer);
+                        mTess.setPageSegMode(PageSegMode.PSM_SINGLE_BLOCK);
+                        mTess.setImage(pixOcr);
+                        boxa = new Boxa(boxaColumnsPointer);
+                        mOriginalHeight = pixOcr.getHeight();
+                        mOriginalWidth = pixOcr.getWidth();
                     }
-                    Pix pixOcr = new Pix(pixOcrPointer);
-                    mTess.setPageSegMode(PageSegMode.PSM_SINGLE_BLOCK);
-                    mTess.setImage(pixOcr);
-                    Boxa boxa = new Boxa(boxaColumnsPointer);
-                    mOriginalHeight = pixOcr.getHeight();
-                    mOriginalWidth = pixOcr.getWidth();
-
+                    synchronized (OCR.this) {
+                        if (mStopped) {
+                            return;
+                        }
+                    }
                     int xb, yb, wb, hb;
                     int columnCount = boxa.getCount();
                     float accuracy = 0;
@@ -296,7 +305,17 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                         wb = geometry[2];
                         hb = geometry[3];
                         mTess.setRectangle(xb, yb, wb, hb);
+                        synchronized (OCR.this) {
+                            if (mStopped) {
+                                return;
+                            }
+                        }
                         hocrText.append(mTess.getHOCRText(0));
+                        synchronized (OCR.this) {
+                            if (mStopped) {
+                                return;
+                            }
+                        }
                         htmlText.append(mTess.getHtmlText());
                         accuracy += mTess.meanConfidence();
                     }
@@ -362,20 +381,28 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     mOriginalWidth = pixText.getWidth();
                     sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
                     sendMessage(MESSAGE_FINAL_IMAGE, (int) nativeTextPix);
-                    mTess = new TessBaseAPI(OCR.this);
-                    boolean result = mTess.init(tessDir, lang);
-                    if (!result) {
-                        sendMessage(MESSAGE_ERROR);
-                        return;
+                    synchronized (OCR.this) {
+                        mTess = new TessBaseAPI(OCR.this);
+                        boolean result = mTess.init(tessDir, lang);
+                        if (!result) {
+                            sendMessage(MESSAGE_ERROR);
+                            return;
+                        }
+
+                        mTess.setPageSegMode(PageSegMode.PSM_AUTO);
+                        mTess.setImage(pixText);
+                    }
+                    String hocrText = mTess.getHOCRText(0);
+                    synchronized (OCR.this) {
+                        if (mStopped) {
+                            return;
+                        }
+                        String htmlText = mTess.getHtmlText();
+                        int accuracy = mTess.meanConfidence();
+                        sendMessage(MESSAGE_HOCR_TEXT, hocrText, accuracy);
+                        sendMessage(MESSAGE_UTF8_TEXT, htmlText, accuracy);
                     }
 
-                    mTess.setPageSegMode(PageSegMode.PSM_AUTO);
-                    mTess.setImage(pixText);
-                    String hocrText = mTess.getHOCRText(0);
-                    String htmlText = mTess.getHtmlText();
-                    int accuracy = mTess.meanConfidence();
-                    sendMessage(MESSAGE_HOCR_TEXT, hocrText, accuracy);
-                    sendMessage(MESSAGE_UTF8_TEXT, htmlText, accuracy);
 
                 } finally {
                     sendMessage(MESSAGE_END);
@@ -386,9 +413,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     }
 
-    public void cancel() {
-        if(mTess!=null){
+    public synchronized void cancel() {
+        if (mTess != null) {
             mTess.stop();
+            mStopped = true;
         }
     }
 
