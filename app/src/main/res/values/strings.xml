@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
     <string name="whats_new_title">Check out what has changed</string>
-    <string name="whats_new">Whats new?</string>
+    <string name="whats_new">Release notes</string>
     <string name="text_was_copied_to_clipboard">Text copied to clipboard.</string>
     <string name="copy_to_clipboard">Copy to clipboard</string>
     <string name="image_could_not_be_read">The image was not found in the data sent.</string>
@@ -32,8 +32,8 @@
     <string name="download_title">Language data for %s</string>
     <string name="ocr_language_title">Choose OCR Language</string>
     <string name="pref_summary_rate">Rate the text fairy</string>
-    <string name="pref_summary_license">Learn about the software that was used to create the Textfairy</string>
-    <string name="pref_summary_contact">Learn about the creator and supply feedback</string>
+    <string name="pref_summary_license">Learn about the software that was used to create the Textfairy.</string>
+    <string name="pref_summary_contact">Learn about the creator and supply feedback.</string>
     <string name="pref_summary_default_ocr_lang">Download and manage languages for text recognition.</string>
     <string name="pref_summary_data_directory">Specify the directory where the text fairy should look for language files. Only change this if you know what you are doing.</string>
     <string name="pref_title_data_directory">Tessdata directory</string>
@@ -75,7 +75,7 @@
     <string name="delete_dialog_message">Deleting Documents..</string>
     <string name="progress_pfd_creation">Creating page %1$d/%2$d for %3$s.</string>
     <string name="option_text">Text settings</string>
-    <string name="option_content">Table of contents</string>
+    <string name="option_content" translatable="false">Table of contents</string>
     <string name="option_line_spacing">Line spacing</string>
     <string name="option_text_alignment">Text alignment</string>
     <string name="options_preview_text">This is a preview of your current text settings. Press the back key to continue reading.\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</string>
@@ -188,14 +188,15 @@
     <string name="first_step_detail">If you are not a member the second step won\'t work.</string>
     <string name="second_step_first_detail">You can opt out of the beta program anytime.</string>
     <string name="second_step_second_detail">Please drop me a mail if you find a bug.</string>
-    <string name="explanation_crop_video">I\'ll show you how to crop an image (20s).</string>
+    <string name="explanation_crop_video">(Video) How to fix the view point.</string>
     <string name="ocr_tip_1">Good lightning is most important. Use the flashlight if possible.</string>
     <string name="ocr_tip_2">Blurry text is hard to read for me. Make sure that the camera has properly focussed the text</string>
     <string name="ocr_tip_3">Experiment with different iso values. High iso values can lead to image noise that makes it harder to recognize the letters</string>
     <string name="ocr_tip_4">Most of the time 5 to 7 megapixels is enough resolution to get good results. Higher values will often only increase the processing time.</string>
-    <string name="ocr_tip_heading">How i can improve the text recognition:</string>
-    <string name="additional_tips">Additional tips</string>
+    <string name="ocr_tip_heading">How to improve text recognition.</string>
+    <string name="additional_tips">Additional tips.</string>
     <string name="ocr_tip_5">You can speed up the text recognition by cropping the taken photo</string>
     <string name="ocr_tip_6">I\'m best at recognizing Text from books, magazines or new papers. Ornate or colorful letters are problematic for me.</string>
     <string name="ocr_tip_7">I\'m having equally difficulties when reading light text from dark backgrounds.</string>
+    <string name="crop_image_tutorial">0tcFdaDuLTs</string>
 </resources>

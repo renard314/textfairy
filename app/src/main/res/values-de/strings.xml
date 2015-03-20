@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources xmlns="http://schemas.android.com/apk/res/android">
     <string name="whats_new_title">Sieh was es Neues gibt</string>
-    <string name="whats_new">Was is neu?</string>
+    <string name="whats_new">Neues</string>
     <string name="text_was_copied_to_clipboard">Text in Zwischenablage kopiert.</string>
     <string name="copy_to_clipboard">Kopiere Text in Zwischenablage</string>   
     <string name="image_could_not_be_read">Das Bild konnte nicht geladen werden.</string>
@@ -188,5 +188,16 @@
     <string name="first_step_detail">Du musst Mitglied dieser Gruppe sein damit der zweite Schritt funktioniert.</string>
     <string name="second_step_first_detail">Sie können jederzeit das Betaprogramm jederzeit verlassen.</string>
     <string name="second_step_second_detail">Schreib mir eine Mail wenn du einen Fehler findes.</string>
+    <string name="crop_image_tutorial">AFjRvJr34e4</string>
+    <string name="additional_tips">Was noch wichtig ist.</string>
+    <string name="explanation_crop_video">(Video) Blickwinkel Korrektur.</string>
+    <string name="ocr_tip_1">Eine gute Ausleuchtung des Bildes ist sehr wichtig. Mache wenn möglich dein Bild mit Blitz.</string>
+    <string name="ocr_tip_2">Achte darauf, dass die Kamera das Bild richtig fokussiert.</string>
+    <string name="ocr_tip_3">Verwende beim Fotographieren keinen zu hohen ISO-Wert. Bildrauschen, das aus einem zu hohen ISO-Wert resultiert, macht mir Probleme.</string>
+    <string name="ocr_tip_4">Fotos mit mehr als fünf Megapixel erhöhen eigentlich nur die Berechnungszeit der Texterkennung aber nicht unbedingt die Genauigkeit!</string>
+    <string name="ocr_tip_5">Verwaschene Buchstaben sind schwer zu filtern für die Texterkennung. Mache lieber ein neues Bild bis du ein Ergebnis hast das gut fokussiert ist.</string>
+    <string name="ocr_tip_6">Ich bin darauf trainiert Text zu erkennen wie er in Büchern, Magazinen und Zeitungsartikeln vorkommt. Verschnörkelte und bunte Schriftzeichen kann ich leider nicht so gut erkennen.</string>
+    <string name="ocr_tip_7">Genauso schwierig ist es für mich hellen Text zu erkennen der auf dunklem Untergrund gedruckt ist.</string>
+    <string name="ocr_tip_heading">Wie ich die Texterkennung verbessern kann:</string>
 
 </resources>

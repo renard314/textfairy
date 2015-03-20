@@ -22,6 +22,7 @@ import android.webkit.WebView;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 
@@ -34,11 +35,10 @@ public class HelpActivity extends MonitoredActivity implements YouTubePlayer.OnI
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initAppIcon(this, -1);
-        YouTubePlayerFragment youTubePlayerFragment = (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
+        YouTubePlayerSupportFragment youTubePlayerFragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
         youTubePlayerFragment.initialize("AIzaSyBDZn3rmXgEP64ID0Rp32OwSScns6ZdaF8", this);
 
     }
-
 
 
     @Override
@@ -59,7 +59,7 @@ public class HelpActivity extends MonitoredActivity implements YouTubePlayer.OnI
 
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-        youTubePlayer.cueVideo("-xGYQaAzWu4");
+        youTubePlayer.cueVideo(getString(R.string.crop_image_tutorial));
     }
 
     @Override
