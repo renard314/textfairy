@@ -71,31 +71,25 @@ public class OCRLanguageInstallService extends IntentService {
 				file = dm.openDownloadedFile(downloadId);
 				FileInputStream fin = new FileInputStream(file.getFileDescriptor());
 				BufferedInputStream in = new BufferedInputStream(fin);
-                FileOutputStream out;
-                if(langName.endsWith("traineddata")){
-                    File trainedData = new File(tessDir, langName);
-                    out = new FileOutputStream(trainedData);
-                } else{
-                    out = openFileOutput("tess-lang.tmp", Context.MODE_PRIVATE);
+                GzipCompressorInputStream gzIn = new GzipCompressorInputStream(in);
 
-                }
-				GzipCompressorInputStream gzIn = new GzipCompressorInputStream(in);
-				final byte[] buffer = new byte[4096];
-				int n = 0;
-				while (-1 != (n = gzIn.read(buffer))) {
-					out.write(buffer, 0, n);
-				}
-				out.close();
-				gzIn.close();
-                if(langName.endsWith("traineddata")){
+                final byte[] buffer = new byte[4096*8];
+                if(fileName.endsWith("traineddata.gz")){
+                    File trainedData = new File(tessDir, langName);
+                    FileOutputStream out = new FileOutputStream(trainedData);
+                    int n;
+                    while (-1 != (n = gzIn.read(buffer))) {
+                        out.write(buffer, 0, n);
+                    }
+                    out.close();
+                    gzIn.close();
                     String lang = langName.substring(0, langName.length() - ".traineddata".length());
                     notifyReceivers(lang);
                     return;
                 }
 
+                TarArchiveInputStream tarIn = new TarArchiveInputStream(gzIn);
 
-                    FileInputStream fileIn = openFileInput("tess-lang.tmp");
-				TarArchiveInputStream tarIn = new TarArchiveInputStream(fileIn);
 
                 if ("ara.traineddata".equalsIgnoreCase(langName)||"hin.traineddata".equalsIgnoreCase(langName)){
                     //extract also cube data as otherwise tesseract will crash
@@ -155,6 +149,7 @@ public class OCRLanguageInstallService extends IntentService {
 				if (targetFile.exists()) {
 					targetFile.delete();
 				}
+
 			}
 
 		}
