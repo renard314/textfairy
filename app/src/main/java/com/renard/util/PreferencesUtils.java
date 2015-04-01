@@ -52,7 +52,7 @@ public class PreferencesUtils {
 		final String defaultLanguageDisplay = appContext.getString(R.string.default_ocr_display_language);
 		setIfEmpty(edit, prefs, PREFERENCES_OCR_LANG, defaultLanguage);
 		setIfEmpty(edit, prefs, PREFERENCES_OCR_LANG_DISPLAY, defaultLanguageDisplay);
-		edit.commit();
+		edit.apply();
 	}
 
 	private static void setIfEmpty(final Editor edit, final SharedPreferences prefs, final String id, final int value) {
