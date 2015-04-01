@@ -22,29 +22,23 @@ public class ProgressDialogFragment extends DialogFragment {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		if (outState.isEmpty()) {
-			outState.putBoolean("bug:fix", true);
-		}
-	}
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setStyle(DialogFragment.STYLE_NO_TITLE,getTheme());
-	}
+        setRetainInstance(true);
+    }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.dialog_progress, container, false);
-
 		Bundle arguments = getArguments();
 		if (arguments != null) {
 			int titleId = arguments.getInt(TITLE_ID);
 			int messageId = arguments.getInt(MESSAGE_ID);
-			TextView title = (TextView) view.findViewById(R.id.title);
+			//TextView title = (TextView) view.findViewById(R.id.title);
+            //title.setText(titleId);
 			TextView message = (TextView) view.findViewById(R.id.message);
-			title.setText(titleId);
+
 			message.setText(messageId);
 		}
 		return view;

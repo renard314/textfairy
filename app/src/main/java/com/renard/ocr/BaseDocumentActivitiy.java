@@ -16,32 +16,21 @@
 
 package com.renard.ocr;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -50,10 +39,11 @@ import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,8 +55,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.leptonica.android.Pix;
-import com.googlecode.leptonica.android.ReadFile;
-import com.googlecode.leptonica.android.Rotate;
 import com.renard.documentview.DocumentActivity;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.cropimage.CropImageActivity;
@@ -74,6 +62,16 @@ import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.pdf.Hocr2Pdf;
 import com.renard.pdf.Hocr2Pdf.PDFProgressListener;
 import com.renard.util.Util;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * activities which extend this activity can create a new document. this class
@@ -84,9 +82,11 @@ import com.renard.util.Util;
  */
 public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
+    private final static String LOG_TAG = BaseDocumentActivitiy.class.getSimpleName();
     public final static String EXTRA_NATIVE_PIX = "pix_pointer";
     public final static String EXTRA_IMAGE_URI = "image_uri";
     public final static String EXTRA_ROTATION = "rotation";
+    private final static String IMAGE_LOAD_PROGRESS_TAG = "image_load_progress";
 
 
     private static final int PDF_PROGRESS_DIALOG_ID = 0;
@@ -103,20 +103,18 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
     private final static int REQUEST_CODE_MAKE_PHOTO = 0;
     private final static int REQUEST_CODE_PICK_PHOTO = 1;
-    private final static int REQUEST_CODE_CROP_PHOTO = 2;
+    final static int REQUEST_CODE_CROP_PHOTO = 2;
     protected final static int REQUEST_CODE_OCR = 3;
 
     private static final String DATE_CAMERA_INTENT_STARTED_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.dateCameraIntentStarted";
+    private static final String STATE_RECEIVER_REGISTERED = "state_receiver_registered";
     private static Date dateCameraIntentStarted = null;
     private static final String CAMERA_PIC_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
     private static Uri cameraPicUri = null;
     private static final String ROTATE_X_DEGREES_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.ROTATE_X_DEGREES_STATE";
     private static int rotateXDegrees = 0;
+    private boolean mReceiverRegistered = false;
 
-    protected enum PixLoadStatus {
-        IMAGE_FORMAT_UNSUPPORTED, IMAGE_NOT_32_BIT, IMAGE_COULD_NOT_BE_READ, MEDIA_STORE_RETURNED_NULL, IMAGE_DOES_NOT_EXIST, SUCCESS, IO_ERROR, CAMERA_APP_NOT_FOUND, CAMERA_APP_ERROR, CAMERA_NO_IMAGE_RETURNED
-
-    }
 
     private static class CameraResult {
         public CameraResult(int requestCode, int resultCode, Intent data) {
@@ -132,8 +130,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
     protected abstract int getParentId();
 
-    ProgressDialog pdfProgressDialog;
-    ProgressDialog deleteProgressdialog;
+    private ProgressDialog pdfProgressDialog;
+    private ProgressDialog deleteProgressDialog;
     private AsyncTask<Void, Void, Pair<Pix, PixLoadStatus>> mBitmapLoadTask;
     private CameraResult mCameraResult;
 
@@ -141,7 +139,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         cameraPicUri = null;
         Intent i = new Intent(Intent.ACTION_GET_CONTENT, null);
         i.setType("image/*");
-        Intent chooser = Intent.createChooser(i,"Image source");
+        Intent chooser = Intent.createChooser(i, getString(R.string.image_source));
 
         // File photo = getTmpPhotoFile();
         // i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
@@ -181,6 +179,11 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "onSaveInstanceState" + this);
+        //remember to register the receiver again in #onRestoreInstanceState
+        savedInstanceState.putBoolean(STATE_RECEIVER_REGISTERED,mReceiverRegistered);
+        unRegisterImageLoadedReceiver();
+        //unregister receiver before onSaveInstanceState is called!
         super.onSaveInstanceState(savedInstanceState);
         if (dateCameraIntentStarted != null) {
             savedInstanceState.putLong(DATE_CAMERA_INTENT_STARTED_STATE, dateCameraIntentStarted.getTime());
@@ -188,12 +191,26 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         if (cameraPicUri != null) {
             savedInstanceState.putString(CAMERA_PIC_URI_STATE, cameraPicUri.toString());
         }
+
         savedInstanceState.putInt(ROTATE_X_DEGREES_STATE, rotateXDegrees);
+
+    }
+
+    @TargetApi(11)
+    @Override
+    protected synchronized void onDestroy() {
+        super.onDestroy();
+        //cancel loading of image if the activity is destroyed for good
+        if (android.os.Build.VERSION.SDK_INT >= 11 && !isChangingConfigurations() && mBitmapLoadTask != null) {
+            mBitmapLoadTask.cancel(false);
+        }
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "onRestoreInstanceState " + this);
         super.onRestoreInstanceState(savedInstanceState);
+
         if (savedInstanceState.containsKey(DATE_CAMERA_INTENT_STARTED_STATE)) {
             dateCameraIntentStarted = new Date(savedInstanceState.getLong(DATE_CAMERA_INTENT_STARTED_STATE));
         }
@@ -201,6 +218,11 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             cameraPicUri = Uri.parse(savedInstanceState.getString(CAMERA_PIC_URI_STATE));
         }
         rotateXDegrees = savedInstanceState.getInt(ROTATE_X_DEGREES_STATE);
+
+        if(savedInstanceState.getBoolean(STATE_RECEIVER_REGISTERED)){
+            registerImageLoaderReceiver();
+        }
+
     }
 
     @Override
@@ -234,6 +256,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     File f = new File(cameraPicUri.getPath());
                     if (f.isFile() && f.exists() && f.canRead()) {
                         //all is well
+                        Log.i(LOG_TAG, "onTakePhotoActivityResult");
                         loadBitmapFromContentUri(cameraPicUri);
                         return;
                     }
@@ -260,9 +283,6 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                         }
                     }
                 } catch (Exception e) {
-                    // Log.w("TAG",
-                    // "Exception - optaining the picture's uri failed: " +
-                    // e.toString());
                 } finally {
                     if (myCursor != null) {
                         myCursor.close();
@@ -296,144 +316,42 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         boolean isExploreByTouchEnabled = AccessibilityManagerCompat.isTouchExplorationEnabled(am);
         final boolean skipCrop = isExploreByTouchEnabled && isAccessibilityEnabled;
 
-        mBitmapLoadTask = new AsyncTask<Void, Void, Pair<Pix, PixLoadStatus>>() {
-
-            protected void onPreExecute() {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                Fragment prev = getSupportFragmentManager().findFragmentByTag("load_image_progress");
-                if (prev != null) {
-                    ft.remove(prev);
-                }
-                ft.addToBackStack(null);
-
-                ProgressDialogFragment progressDialog = ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image);
-                progressDialog.show(getSupportFragmentManager(), "load_image_progress");
-            }
-
-            ;
-
-            protected void onPostExecute(Pair<Pix, PixLoadStatus> p) {
-                Fragment prev = getSupportFragmentManager().findFragmentByTag("load_image_progress");
-                if (prev != null) {
-                    DialogFragment df = (DialogFragment) prev;
-                    df.dismiss();
-                }
-                if (p.second == PixLoadStatus.SUCCESS) {
-                    if (skipCrop) {
-                        startOcrActivity(p.first.getNativePix(), true);
-                    } else {
-                        Intent actionIntent = new Intent(BaseDocumentActivitiy.this, CropImageActivity.class);
-                        actionIntent.putExtra(EXTRA_NATIVE_PIX, p.first.getNativePix());
-                        actionIntent.putExtra(EXTRA_ROTATION, rotateXDegrees);
-                        startActivityForResult(actionIntent, REQUEST_CODE_CROP_PHOTO);
-                    }
-                } else {
-                    showFileError(p.second);
-                }
-            }
-
-            ;
-
-            @Override
-            protected Pair<Pix, PixLoadStatus> doInBackground(Void... params) {
-                try {
-                    Pix p = null;
-                    String pathForUri = Util.getPathForUri(BaseDocumentActivitiy.this, cameraPicUri);
-                    // MediaStore loves to crash with an oom exception. So we
-                    // try to load bitmap nativly if it is on internal storage
-                    if (pathForUri != null && pathForUri.startsWith("http")) {
-                        Bitmap b = MediaStore.Images.Media.getBitmap(getContentResolver(), cameraPicUri);
-                        if (b != null) {
-                            if (b.getConfig() != Bitmap.Config.ARGB_8888) {
-                                return Pair.create(null, PixLoadStatus.IMAGE_NOT_32_BIT);
-                            }
-                            p = ReadFile.readBitmap(b);
-                            b.recycle();
-                        } else {
-                            return Pair.create(null, PixLoadStatus.MEDIA_STORE_RETURNED_NULL);
-                        }
-                    } else if (pathForUri != null) {
-                        File imageFile = new File(pathForUri);
-                        if (imageFile.exists()) {
-                            if(rotateXDegrees==-1) {
-                                rotateXDegrees = getRotationFromFile(pathForUri);
-                            }
-
-                            p = ReadFile.readFile(imageFile);
-                            if (p == null) {
-                                return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
-                            }
-                        } else {
-                            return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
-                        }
-                    } else if (cameraPicUri.toString().startsWith("content")) {
-                        InputStream stream = getContentResolver().openInputStream(cameraPicUri);
-                        p = ReadFile.readMem(Util.toByteArray(stream));
-                        if (p == null) {
-                            return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
-                        }
-                    } else {
-                        return Pair.create(null, PixLoadStatus.IO_ERROR);
-                    }
-
-                    if(skipCrop && rotateXDegrees>0 && rotateXDegrees!=360){
-                        final Pix pix = Rotate.rotateOrth(p, rotateXDegrees / 90);
-                        p.recycle();
-                        p = pix;
-                        rotateXDegrees = 0 ;
-                    }
-
-                    return Pair.create(p, PixLoadStatus.SUCCESS);
-                } catch (FileNotFoundException e) {
-                    return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
-                } catch (IOException e) {
-                    return Pair.create(null, PixLoadStatus.IO_ERROR);
-                }
-            }
-        }.execute();
-    }
-
-    private int getRotationFromFile(String pathForUri) {
-        int orientation = 0;
-        try {
-            ExifInterface exif = new ExifInterface(pathForUri);
-            int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-
-            switch (exifOrientation) {
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    orientation = 270;
-
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    orientation = 180;
-
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    orientation = 90;
-
-                    break;
-
-                case ExifInterface.ORIENTATION_NORMAL:
-                    orientation = 0;
-
-                    break;
-                default:
-                    break;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (mBitmapLoadTask != null) {
+            mBitmapLoadTask.cancel(false);
         }
+        registerImageLoaderReceiver();
+        mBitmapLoadTask = new ImageLoadAsyncTask(this, skipCrop, rotateXDegrees, cameraPicUri).execute();
 
-        return orientation;
     }
+
+    private synchronized void unRegisterImageLoadedReceiver() {
+        if (mReceiverRegistered) {
+            Log.i(LOG_TAG,"unRegisterImageLoadedReceiver "+mMessageReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            mReceiverRegistered = false;
+        }
+    }
+
+
+    private synchronized void registerImageLoaderReceiver() {
+        if(!mReceiverRegistered){
+            Log.i(LOG_TAG,"registerImageLoaderReceiver "+mMessageReceiver);
+            final IntentFilter intentFilter = new IntentFilter(ImageLoadAsyncTask.ACTION_IMAGE_LOADED);
+            intentFilter.addAction(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START);
+            LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, intentFilter);
+            mReceiverRegistered = true;
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case REQUEST_CODE_CROP_PHOTO: {
                     long nativePix = data.getLongExtra(EXTRA_NATIVE_PIX, 0);
-                    startOcrActivity(nativePix,false);
+                    startOcrActivity(nativePix, false);
                     break;
                 }
                 case REQUEST_CODE_MAKE_PHOTO:
@@ -444,7 +362,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
     }
 
-    private void startOcrActivity(long nativePix, boolean accessibilityMode) {
+    void startOcrActivity(long nativePix, boolean accessibilityMode) {
         Intent intent = new Intent(this, OCRActivity.class);
         intent.putExtra(EXTRA_NATIVE_PIX, nativePix);
         intent.putExtra(OCRActivity.EXTRA_USE_ACCESSIBILITY_MODE, accessibilityMode);
@@ -460,16 +378,59 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
     }
 
-    @Override
-    protected synchronized void onDestroy() {
-        super.onDestroy();
-        if(mBitmapLoadTask!=null){
-            mBitmapLoadTask.cancel(true);
-            mBitmapLoadTask = null;
+    // handler for received Intents for the image loaded event
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(LOG_TAG, "onReceive " + BaseDocumentActivitiy.this);
+            if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADED)) {
+                unRegisterImageLoadedReceiver();
+                final long nativePix = intent.getLongExtra(ImageLoadAsyncTask.EXTRA_PIX, 0);
+                final int statusNumber = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_STATUS, PixLoadStatus.SUCCESS.ordinal());
+                final boolean skipCrop = intent.getBooleanExtra(ImageLoadAsyncTask.EXTRA_SKIP_CROP, false);
+                handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop);
+            } else if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START)) {
+                showLoadingImageProgressDialog();
+            }
+        }
+    };
+
+    private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop) {
+        PixLoadStatus status = pixLoadStatus;
+        dismissLoadingImageProgressDialog();
+
+        if (status == PixLoadStatus.SUCCESS) {
+            if (skipCrop) {
+                startOcrActivity(nativePix, true);
+            } else {
+                Intent actionIntent = new Intent(this, CropImageActivity.class);
+                actionIntent.putExtra(BaseDocumentActivitiy.EXTRA_NATIVE_PIX, nativePix);
+                actionIntent.putExtra(BaseDocumentActivitiy.EXTRA_ROTATION, rotateXDegrees);
+                startActivityForResult(actionIntent, BaseDocumentActivitiy.REQUEST_CODE_CROP_PHOTO);
+            }
+        } else {
+            showFileError(status);
         }
     }
 
-    private void showFileError(PixLoadStatus status) {
+    private void dismissLoadingImageProgressDialog() {
+        Fragment prev = getSupportFragmentManager().findFragmentByTag(IMAGE_LOAD_PROGRESS_TAG);
+        if (prev != null) {
+            Log.i(LOG_TAG, "dismissing dialog");
+            DialogFragment df = (DialogFragment) prev;
+            df.dismissAllowingStateLoss();
+        } else {
+            Log.i(LOG_TAG, "cannot dismiss dialog. its null! " + this);
+        }
+    }
+
+    private void showLoadingImageProgressDialog() {
+        Log.i(LOG_TAG,"showLoadingImageProgressDialog");
+        ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image).show(getSupportFragmentManager(), IMAGE_LOAD_PROGRESS_TAG);
+
+    }
+
+    void showFileError(PixLoadStatus status) {
         showFileError(status, null);
     }
 
@@ -535,13 +496,13 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             case DELETE_PROGRESS_DIALOG_ID:
                 max = args.getInt(DIALOG_ARG_MAX);
                 message = args.getString(DIALOG_ARG_MESSAGE);
-                deleteProgressdialog = new ProgressDialog(this);
-                deleteProgressdialog.setMessage(message);
-                deleteProgressdialog.setIndeterminate(false);
-                deleteProgressdialog.setMax(max);
-                deleteProgressdialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                deleteProgressdialog.setCancelable(false);
-                return deleteProgressdialog;
+                deleteProgressDialog = new ProgressDialog(this);
+                deleteProgressDialog.setMessage(message);
+                deleteProgressDialog.setIndeterminate(false);
+                deleteProgressDialog.setMax(max);
+                deleteProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                deleteProgressDialog.setCancelable(false);
+                return deleteProgressDialog;
             case EDIT_TITLE_DIALOG_ID:
                 View layout = getLayoutInflater().inflate(R.layout.edit_title_dialog, null);
                 final Uri documentUri = Uri.parse(args.getString(DIALOG_ARG_DOCUMENT_URI));
@@ -624,10 +585,10 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
                             @Override
                             public void run() {
-                                deleteProgressdialog.setProgress(progress);
-                                deleteProgressdialog.setMax(max);
+                                deleteProgressDialog.setProgress(progress);
+                                deleteProgressDialog.setMax(max);
                                 if (message != null) {
-                                    deleteProgressdialog.setMessage(message);
+                                    deleteProgressDialog.setMessage(message);
                                 }
                             }
                         });
@@ -896,7 +857,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                 } catch (RemoteException exc) {
                     return RESULT_REMOTE_EXCEPTION;
                 }
-                deleteProgressdialog.setProgress(++progress);
+                deleteProgressDialog.setProgress(++progress);
             }
             return count;
         }
