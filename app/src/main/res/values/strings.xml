@@ -48,7 +48,7 @@
     <string name="save_success">Save successful</string>
     <string name="save_fail">Save failed!</string>
     <string name="share_chooser_title">Select how you want to share the text</string>
-    <string name="progress_start">starting</string>
+    <string name="progress_start">Starting</string>
     <string name="download_language">Download</string>
     <string name="progress_dewarp">Straightening text</string>
     <string name="progress_ocr">Reading text</string>
@@ -75,7 +75,7 @@
     <string name="delete_dialog_message">Deleting Documents..</string>
     <string name="progress_pfd_creation">Creating page %1$d/%2$d for %3$s.</string>
     <string name="option_text">Text settings</string>
-    <string name="option_content" translatable="false">Table of contents</string>
+    <string name="option_content">Table of contents</string>
     <string name="option_line_spacing">Line spacing</string>
     <string name="option_text_alignment">Text alignment</string>
     <string name="options_preview_text">This is a preview of your current text settings. Press the back key to continue reading.\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</string>
@@ -199,4 +199,5 @@
     <string name="ocr_tip_6">I\'m best at recognizing Text from books, magazines or new papers. Ornate or colorful letters are problematic for me.</string>
     <string name="ocr_tip_7">I\'m having equally difficulties when reading light text from dark backgrounds.</string>
     <string name="crop_image_tutorial">0tcFdaDuLTs</string>
+    <string name="image_source">Pick image source.</string>
 </resources>

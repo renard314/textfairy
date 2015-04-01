@@ -199,5 +199,6 @@
     <string name="ocr_tip_6">Ich bin darauf trainiert Text zu erkennen wie er in Büchern, Magazinen und Zeitungsartikeln vorkommt. Verschnörkelte und bunte Schriftzeichen kann ich leider nicht so gut erkennen.</string>
     <string name="ocr_tip_7">Genauso schwierig ist es für mich hellen Text zu erkennen der auf dunklem Untergrund gedruckt ist.</string>
     <string name="ocr_tip_heading">Wie ich die Texterkennung verbessern kann:</string>
+    <string name="image_source">Wähle Bildquelle.</string>
 
 </resources>
