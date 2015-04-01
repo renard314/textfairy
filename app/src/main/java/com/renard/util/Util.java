@@ -284,95 +284,49 @@ public class Util {
 			return uri.getPath();
 		}
 		if (scheme.equals("content")) {
-			ContentResolver resolver = context.getContentResolver();
-			if (resolver == null) {
-				return null;
-			}
-			Cursor cursor = resolver.query(uri, null, null, null, null);
-			try {
-				if (cursor.moveToFirst()) {
-					final int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-					if (idx != -1) {
-						String absoluteFilePath = cursor.getString(idx);
-						return absoluteFilePath;
-					}
-				}
-				return null;
-			} finally {
-				cursor.close();
-			}
-		} else if (scheme.equals("file")) {
+            ContentResolver resolver = context.getContentResolver();
+            if (resolver == null) {
+                return null;
+            }
+            Cursor cursor = null;
+            try {
+                cursor = resolver.query(uri, null, null, null, null);
+                if (cursor.moveToFirst()) {
+                    final int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                    if (idx != -1) {
+                        String absoluteFilePath = cursor.getString(idx);
+                        return absoluteFilePath;
+                    }
+                }
+                return null;
+            } catch(SecurityException securityException) {
+                return null;
+            }finally {
+                cursor.close();
+            }
+        } else if (scheme.equals("file")) {
 			return uri.getPath();
 		}
 		return null;
 
 	}
 
-	/**
-	 * reads the orientiation from the exif data
-	 * 
-	 * @param filepath
-	 * @return
-	 */
-	public static int getExifOrientation(String filepath) {
-		int degree = 0;
-		ExifInterface exif = null;
-		try {
-			exif = new ExifInterface(filepath);
-		} catch (IOException ex) {
-			Log.e("", "cannot read exif", ex);
-		}
-		if (exif != null) {
-			int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
-			if (orientation != -1) {
-				// We only recognize a subset of orientation tag values.
-				switch (orientation) {
-				case ExifInterface.ORIENTATION_ROTATE_90:
-					degree = 90;
-					break;
-				case ExifInterface.ORIENTATION_ROTATE_180:
-					degree = 180;
-					break;
-				case ExifInterface.ORIENTATION_ROTATE_270:
-					degree = 270;
-					break;
-				}
-			}
-		}
-		return degree;
-	}
 
 	public static File savePixToSD(final Pix pix, final String name) throws IOException {
 		final String fileName = name + ".png";
 
-		File picdir = new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY);
-		if (!picdir.exists()) {
-			if (picdir.mkdirs() || picdir.isDirectory()) {
-                createNoMediaFile(picdir);
+		File picDir = new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY);
+		if (!picDir.exists()) {
+			if (picDir.mkdirs() || picDir.isDirectory()) {
+                createNoMediaFile(picDir);
 			} else {
                 throw new IOException();
             }
 		}
-		File image = new File(picdir, fileName);
+		File image = new File(picDir, fileName);
         image.createNewFile();
 		try {
 			boolean result = WriteFile.writeImpliedFormat(pix, image, 85, true);
-			Log.i("RENARD",""+result);
-//            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//                WriteFile.writeImpliedFormat(pix, image, 85, true);
-//
-//            } else {
-//
-//                final Bitmap bitmap = WriteFile.writeBitmap(pix);
-//                if (bitmap!=null) {
-//                    FileOutputStream out = new FileOutputStream(image);
-//                    bitmap.compress(Bitmap.CompressFormat.PNG, 85, out);
-//                    bitmap.recycle();
-//                    out.close();
-//                } else {
-//                    throw new IOException();
-//                }
-//            }
         } catch (Exception e) {
             throw new IOException(e);
 		}
@@ -461,145 +415,7 @@ public class Util {
 
 	}
 
-	// public static File saveImageToSD(Context context, byte[] jpegData, String
-	// id) {
-	// final String fileName = "Scan" + id + ".jpg";
-	// Toast errortToast = Toast.makeText(context,
-	// context.getText(R.string.error_create_file), Toast.LENGTH_LONG);
-	//
-	// // FileOutputStream out = openFileOutput(fileName,
-	// // MODE_WORLD_WRITEABLE);
-	// File dir =
-	// Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES
-	// + "/ScanDroid");
-	// if (!dir.exists()) {
-	// if (!dir.mkdir()) {
-	// errortToast.sho// public static void updateDocumentWithImageUri(Context
-	// context, Uri docUri, Uri imageUri) {
-	// ContentValues v = new ContentValues();
-	// v.put(Columns.PHOTO_URI, imageUri.toString());
-	// context.getContentResolver().update(docUri, v, null, null);
-	// }
 
-	// public static Uri addImageToGallery(Context context, File imageFile/*
-	// * ,
-	// * int[]
-	// * degree
-	// */) {
-	//
-	// // int degree[] = new int[1];
-	// // degree[0]= getExifOrientation(imageFile.getPath());
-	// long size = imageFile.length();
-	// ContentValues values = new ContentValues(7);
-	//
-	// // That filename is what will be handed to Gmail when a user shares a
-	// // photo. Gmail gets the name of the picture attachment from the
-	// // "DISPLAY_NAME" field.
-	// values.put(Images.Media.DISPLAY_NAME, imageFile.getName());
-	// values.put(Images.Media.DATE_TAKEN, System.currentTimeMillis());
-	// values.put(Images.Media.MIME_TYPE, "image/jpeg");
-	// // values.put(Images.Media.ORIENTATION, degree[0]);
-	// values.put(Images.Media.DATA, imageFile.getPath());
-	// values.put(Images.Media.SIZE, size);
-	// return
-	// context.getContentResolver().insert(Images.Media.EXTERNAL_CONTENT_URI,
-	// values);
-	// }w();
-	// return null;
-	// }
-	// }
-	// File image = new File(dir, fileName);
-	// OutputStream outputStream = null;
-	//
-	// try {
-	// outputStream = new FileOutputStream(image);
-	// outputStream.write(jpegData);
-	// return image;
-	// } catch (FileNotFoundException exc) {
-	// errortToast.show();
-	// exc.printStackTrace();
-	// } catch (IOException exc) {
-	// errortToast.show();
-	// exc.printStackTrace();
-	// } finally {
-	// if (outputStream != null) {
-	// try {
-	// outputStream.close();
-	// } catch (IOException exc) {
-	// // ignore
-	// }
-	// }
-	// }
-	// return null;
-	// }
-
-	// public static void updateDocumentWithImageUri(Context context, Uri
-	// docUri, Uri imageUri) {
-	// ContentValues v = new ContentValues();
-	// v.put(Columns.PHOTO_URI, imageUri.toString());
-	// context.getContentResolver().update(docUri, v, null, null);
-	// }
-
-	// public static Uri addImageToGallery(Context context, File imageFile/*
-	// * ,
-	// * int[]
-	// * degree
-	// */) {
-	//
-	// // int degree[] = new int[1];
-	// // degree[0]= getExifOrientation(imageFile.getPath());
-	// long size = imageFile.length();
-	// ContentValues values = new ContentValues(7);
-	//
-	// // That filename is what will be handed to Gmail when a user shares a
-	// // photo. Gmail gets the name of the picture attachment from the
-	// // "DISPLAY_NAME" field.
-	// values.put(Images.Media.DISPLAY_NAME, imageFile.getName());
-	// values.put(Images.Media.DATE_TAKEN, System.currentTimeMillis());
-	// values.put(Images.Media.MIME_TYPE, "image/jpeg");
-	// // values.put(Images.Media.ORIENTATION, degree[0]);
-	// values.put(Images.Media.DATA, imageFile.getPath());
-	// values.put(Images.Media.SIZE, size);
-	// return
-	// context.getContentResolver().insert(Images.Media.EXTERNAL_CONTENT_URI,
-	// values);
-	// }
-
-	// /**
-	// * saves the image on the sd card and adds it to the gallery
-	// *
-	// * @param context
-	// * @param jpegData
-	// * @param docUri
-	// * uri to the document
-	// * @param degree
-	// * return value for the orientation of the picture
-	// * @return
-	// */
-	// public static Pix saveImage(Context context, byte[] jpegData, Uri docUri,
-	// int[] degree) {
-	// File imageFile = saveImageToSD(context, jpegData,
-	// docUri.getLastPathSegment());
-	// Uri imageUri = addImageToGallery(context, imageFile);
-	// updateDocumentWithImageUri(context, docUri, imageUri);
-	// return ReadFile.readMem(jpegData);
-	// }
-	// ContentResolver crThumb = context.getContentResolver();
-	// BitmapFactory.Options options = new BitmapFactory.Options();
-	// options.inSampleSize = 2;
-	// long id = Long.valueOf(uri.getLastPathSegment());
-	// Bitmap thumb = MediaStore.Images.Thumbnails.getThumbnail(crThumb, id,
-	// MediaStore.Images.Thumbnails.MINI_KIND, null);
-	// if (thumb != null) {
-	// return ImageUtils.adjustBitmapSize(150, 150, thumb);
-	// } else {
-	// return null;
-	// }
-	// public static Bitmap loadBitmap(int width, int height, Uri imageUri,
-	// Context c) {
-	// String imagePath = getPathForUri(c, imageUri);
-	// return loadBitmap(width, height, imagePath);
-	// }
 	/*
 	 * Compute the sample size as a function of minSideLength and
 	 * maxNumOfPixels. minSideLength is used to specify that minimal width or
@@ -677,14 +493,7 @@ public class Util {
 		return b2;
 	}
 
-	/**
-	 * Creates a centered bitmap of the desired size. Recycles the input.
-	 * 
-	 * @param source
-	 */
-	public static Bitmap extractMiniThumb(Bitmap source, int width, int height) {
-		return Util.extractMiniThumb(source, width, height, true);
-	}
+
 
 	public static Bitmap extractMiniThumb(Bitmap source, int width, int height, boolean recycle) {
 		if (source == null) {

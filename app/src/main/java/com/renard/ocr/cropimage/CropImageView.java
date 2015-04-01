@@ -204,8 +204,11 @@ public class CropImageView extends ImageViewTouchBase {
 		}
 	}
 
+
+
 	public void add(HighlightView hv) {
 		mHighlightView = hv;
 		invalidate();
 	}
+
 }

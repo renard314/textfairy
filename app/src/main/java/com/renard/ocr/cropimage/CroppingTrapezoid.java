@@ -53,70 +53,71 @@ public class CroppingTrapezoid {
     private float[] getBoundingPoints(Matrix matrix) {
         final Rect boundingRect = getBoundingRect(mPoints);
         float[] points = new float[4];
-        points[0]= boundingRect.left;
-        points[1]= boundingRect.top;
-        points[2]= boundingRect.right;
-        points[3]= boundingRect.bottom;
+        points[0] = boundingRect.left;
+        points[1] = boundingRect.top;
+        points[2] = boundingRect.right;
+        points[3] = boundingRect.bottom;
         matrix.mapPoints(points);
         return points;
     }
 
-    public Rect getPerspectiveCorrectedBoundingRect(){
+    public Rect getPerspectiveCorrectedBoundingRect() {
         float[] p = mMappedPoints;
-        System.arraycopy(mPoints,0,p,0,8);
-        float w1= p[2]-p[0];
-        float w2 = p[4]-p[6];
-        float h1 =  p[7]-p[1];
-        float h2 = p[5]-p[3];
-        float diffH = w1-w2;
-        float diffV = h1-h2;
-        if(diffH<0){
-            float scale = (Math.abs(diffH)+w2)/w2;
-            h1*=(scale);
-            h2*=(scale);
+        System.arraycopy(mPoints, 0, p, 0, 8);
+        float w1 = p[2] - p[0];
+        float w2 = p[4] - p[6];
+        float h1 = p[7] - p[1];
+        float h2 = p[5] - p[3];
+        float diffH = w1 - w2;
+        float diffV = h1 - h2;
+        if (diffH < 0) {
+            float scale = (Math.abs(diffH) + w2) / w2;
+            h1 *= (scale);
+            h2 *= (scale);
             //move top up
-            p[1]=p[7]-h1;
-            p[3]=p[5]-h2;
+            p[1] = p[7] - h1;
+            p[3] = p[5] - h2;
         } else {
-            float scale = (diffH+w1)/w1;
-            h1*=scale;
-            h2*=scale;
+            float scale = (diffH + w1) / w1;
+            h1 *= scale;
+            h2 *= scale;
             //move bottom down
-            p[7] = p[1]+h1;
-            p[5] = p[3]+h2;
+            p[7] = p[1] + h1;
+            p[5] = p[3] + h2;
         }
-        if(diffV<0){
-            float scale = (Math.abs(diffV)+h2)/h2;
-            w1*=scale;
-            w2*=scale;
+        if (diffV < 0) {
+            float scale = (Math.abs(diffV) + h2) / h2;
+            w1 *= scale;
+            w2 *= scale;
             //move left to left
-            p[0]=p[2]-w1;
-            p[6]=p[4]-w2;
+            p[0] = p[2] - w1;
+            p[6] = p[4] - w2;
         } else {
-            float scale = (diffV+h1)/h1;
-            w1*=scale;
-            w2*=scale;
+            float scale = (diffV + h1) / h1;
+            w1 *= scale;
+            w2 *= scale;
             //move right to right
-            p[2]=p[0]+w1;
-            p[4]=p[6]+w2;
+            p[2] = p[0] + w1;
+            p[4] = p[6] + w2;
         }
         return getBoundingRect(mMappedPoints);
     }
 
     public Rect getBoundingRect(Matrix matrix) {
         float[] points = getBoundingPoints(matrix);
-        int left = (int) Math.min(points[0],points[2]);
-        int right = (int) Math.max(points[0],points[2]);
-        int top = (int) Math.min(points[1],points[3]);
-        int bottom = (int) Math.max(points[1],points[3]);
+        int left = (int) Math.min(points[0], points[2]);
+        int right = (int) Math.max(points[0], points[2]);
+        int top = (int) Math.min(points[1], points[3]);
+        int bottom = (int) Math.max(points[1], points[3]);
 
-        return new Rect(left,top,right, bottom);
+        return new Rect(left, top, right, bottom);
     }
 
     public float[] getScreenPoints(Matrix matrix) {
         matrix.mapPoints(mMappedPoints, mPoints);
         return mMappedPoints;
     }
+
     public float[] getPoints() {
         return mPoints;
     }
@@ -140,10 +141,8 @@ public class CroppingTrapezoid {
     // moves the cropping trapezoid by (dx, dy) in image space.
     public void moveBy(float dx, float dy) {
         final Rect boundingRect = getBoundingRect();
-        dx = Math.min(dx, mImageRect.right - boundingRect.right);
-        dx = Math.max(dx, mImageRect.left - boundingRect.left);
-        dy = Math.min(dy, mImageRect.bottom - boundingRect.bottom);
-        dy = Math.max(dy, mImageRect.top - boundingRect.top);
+        dx = capDx(dx, boundingRect);
+        dy = capDy(dy, boundingRect);
 
         for (int i = 0; i < 8; i += 2) {
             mPoints[i] += dx;
@@ -152,22 +151,31 @@ public class CroppingTrapezoid {
         capPoints(GROW_NONE);
     }
 
+    private float capDy(float dy, Rect boundingRect) {
+        if ((boundingRect.bottom + dy) >= mImageRect.bottom) {
+            dy = mImageRect.bottom-boundingRect.bottom;
+        } else if ((boundingRect.top + dy) <= mImageRect.top) {
+            dy = mImageRect.top-boundingRect.top;
+        }
+        return dy;
+    }
+
+    private float capDx(float dx, Rect boundingRect) {
+        if ((boundingRect.right + dx) >= mImageRect.right) {
+            dx = mImageRect.right-boundingRect.right;
+        } else if (mImageRect.left >= (boundingRect.left + dx)) {
+            dx = mImageRect.left-boundingRect.left;
+        }
+        return dx;
+    }
+
 
     // Grows the cropping trapezoid by (dx, dy) in image space.
     public void growBy(int edge, float dx, float dy) {
+//        final Rect boundingRect = getBoundingRect();
+//        dx = capDx(dx, boundingRect);
+//        dy = capDy(dy, boundingRect);
 
-        // Don't let the cropping rectangle grow too fast.
-        // Grow at most half of the difference between the image rectangle and
-        // the cropping rectangle.
-//        Rect r = getBoundingRect();
-//        if (dx > 0F && r.width() + 2 * dx > mImageRect.width()) {
-//            float adjustment = (mImageRect.width() - r.width()) / 2F;
-//            dx = adjustment;
-//        }
-//        if (dy > 0F && r.height() + 2 * dy > mImageRect.height()) {
-//            float adjustment = (mImageRect.height() - r.height()) / 2F;
-//            dy = adjustment;
-//        }
 
         if ((GROW_LEFT_EDGE | GROW_TOP_EDGE) == edge) {
             mPoints[0] += dx;
@@ -219,16 +227,6 @@ public class CroppingTrapezoid {
         }
 
 
-//        // TODO Don't let the cropping rectangle shrink too fast.
-//        final float widthCap = 25F;
-//        r = getBoundingRect();
-//        if (r.width() < widthCap) {
-//            //r.inset(-(widthCap - r.width()) / 2F, 0F);
-//        }
-//        float heightCap = widthCap;
-//        if (r.height() < heightCap) {
-//            //r.inset(0F, -(heightCap - r.height()) / 2F);
-//        }
         capPoints(edge);
     }
 
@@ -257,22 +255,22 @@ public class CroppingTrapezoid {
             return GROW_LEFT_EDGE | GROW_BOTTOM_EDGE;
         }
 
-        final double topDistance = calculcateDistanceToLine(mPoints[0], mPoints[1], mPoints[2], mPoints[3], x, y);
+        final double topDistance = calculateDistanceToLine(mPoints[0], mPoints[1], mPoints[2], mPoints[3], x, y);
         if (topDistance <= hysteresis) {
             Log.i(LOG_TAG, "top");
             retval |= GROW_TOP_EDGE;
         }
-        final double rightDistance = calculcateDistanceToLine(mPoints[2], mPoints[3], mPoints[4], mPoints[5], x, y);
+        final double rightDistance = calculateDistanceToLine(mPoints[2], mPoints[3], mPoints[4], mPoints[5], x, y);
         if (rightDistance <= hysteresis) {
             Log.i(LOG_TAG, "right");
             retval |= GROW_RIGHT_EDGE;
         }
-        final double bottomDistance = calculcateDistanceToLine(mPoints[6], mPoints[7], mPoints[4], mPoints[5], x, y);
+        final double bottomDistance = calculateDistanceToLine(mPoints[6], mPoints[7], mPoints[4], mPoints[5], x, y);
         if (bottomDistance <= hysteresis) {
             Log.i(LOG_TAG, "bottom");
             retval |= GROW_BOTTOM_EDGE;
         }
-        final double leftDistance = calculcateDistanceToLine(mPoints[0], mPoints[1], mPoints[6], mPoints[7], x, y);
+        final double leftDistance = calculateDistanceToLine(mPoints[0], mPoints[1], mPoints[6], mPoints[7], x, y);
         if (leftDistance <= hysteresis) {
             Log.i(LOG_TAG, "left");
             retval |= GROW_LEFT_EDGE;
@@ -355,7 +353,7 @@ public class CroppingTrapezoid {
 
     }
 
-    private double calculcateDistanceToLine(float x1, float y1, float x2, float y2, float x, float y) {
+    private double calculateDistanceToLine(float x1, float y1, float x2, float y2, float x, float y) {
         if ((x > x1 && x < x2) || (y > y1 && y < y2)) {
             if (x1 == x2) {
                 return Math.abs(x1 - x);

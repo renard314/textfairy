@@ -154,6 +154,7 @@ public abstract class ImageViewTouchBase extends ImageView {
     // of the bitmap, and optionally reset the supplementary matrix.
     public void setImageBitmapResetBase(final Bitmap bitmap, final boolean resetSupp, int rotation) {
         setImageRotateBitmapResetBase(new RotateBitmap(bitmap, rotation), resetSupp);
+
     }
 
     public void setImageRotateBitmapResetBase(final RotateBitmap bitmap, final boolean resetSupp) {
