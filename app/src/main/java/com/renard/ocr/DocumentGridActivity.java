@@ -63,6 +63,7 @@ import com.renard.ocr.help.AppOptionsActivity;
 import com.renard.ocr.help.ContributeActivity;
 import com.renard.ocr.help.HelpActivity;
 import com.renard.ocr.help.HintDialog;
+import com.renard.ocr.help.OCRLanguageActivity;
 import com.renard.ocr.help.ReleaseNoteDialog;
 import com.renard.util.Util;
 
@@ -102,7 +103,6 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 	private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 	private final Handler mScrollHandler = new ScrollHandler();
 	private boolean mPendingThumbnailUpdate = false;
-	Uri mUri;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +118,17 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
         final int columnWidth = Util.determineThumbnailSize(this, null);
         Util.setThumbnailSize(columnWidth, columnWidth, this);
         checkForImageIntent();
-	}
+
+        //setup the load language button that is shown when the grid is empty
+        final View viewById = findViewById(R.id.install_language_button);
+        viewById.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(DocumentGridActivity.this, OCRLanguageActivity.class);
+                startActivity(i);
+            }
+        });
+    }
 
     private void checkForImageIntent() {
         Intent intent = getIntent();
@@ -529,11 +539,6 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 
 	}
 
-	@Override
-	protected void onDestroy() {
-		// ViewServer.get(this).removeWindow(this);
-		super.onDestroy();
-	}
 
 	private void initGridView() {
 		mGridView = (GridView) findViewById(R.id.gridview);

@@ -54,6 +54,7 @@
         android:text="@string/empty_grid_camera" />
 
     <TextView
+        android:layout_marginBottom="@dimen/default_element_padding"
         android:layout_marginTop="@dimen/default_element_padding"
         android:layout_marginRight="@dimen/default_padding"
         android:layout_toLeftOf="@+id/camera_hint_arrow"
@@ -64,6 +65,30 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="@string/empty_grid_gallery" />
+
+    <TextView
+        android:layout_marginTop="@dimen/default_element_padding"
+        android:layout_below="@+id/gallery_hint"
+        android:id="@+id/install_language"
+        android:layout_marginRight="@dimen/default_padding"
+        android:textSize="20dp"
+        android:textColor="@color/grey3"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/empty_grid_language" />
+
+    <TextView
+        android:background="@drawable/btn_start_activity2"
+        android:clickable="true"
+        android:layout_below="@+id/install_language"
+        android:id="@+id/install_language_button"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:drawableLeft="@drawable/ic_action_language"
+        android:textColor="@color/grey2"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/empty_grid_download_language" />
 
     <TextView
         android:id="@+id/fairy_hint"

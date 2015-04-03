@@ -156,7 +156,7 @@
     <string name="product_tour">Produkttour</string>
     <string name="empty_grid_greeting">Hallo</string>
     <string name="empty_grid_camera">Hier tippen um Text auf einem neuem Bild zu erkennen.</string>
-    <string name="empty_grid_gallery">Und hier tippen um Text auf einem Bild aus deiner Galerie zu erkennen.</string>
+    <string name="empty_grid_gallery">Hier tippen um Text auf einem Bild aus deiner Galerie zu erkennen.</string>
     <string name="empty_grid_fairy">PS: Tippe auf die Fee für noch mehr Infos.</string>
     <string name="contribute_title">Verbessere die App</string>
     <string name="contribute_text">Eine OCR-App zu programmieren nicht leicht. Aber Du kannst mir helfen, die App zu verbessern</string>
@@ -203,4 +203,6 @@
     <string name="promo_video_title">Eine kurze Einführung auf Youtube.</string>
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Hallo</string>
+    <string name="empty_grid_download_language">Lade weitere Sprache.</string>
+    <string name="empty_grid_language">Ich kann deutschen und englischen Text lesen aber auch zusätzliche Sprachen lernen.</string>
 </resources>
