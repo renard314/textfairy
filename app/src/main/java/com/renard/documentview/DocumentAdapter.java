@@ -128,6 +128,13 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
         return null;
     }
 
+    public int getId(int position){
+        if(mCursor.moveToPosition(position)){
+            return mCursor.getInt(mIndexId);
+        }
+        return -1;
+    }
+
 	public String getLongTitle(int position) {
 		if (mCursor.moveToPosition(position)) {
 			return mCursor.getString(mIndexTitle);

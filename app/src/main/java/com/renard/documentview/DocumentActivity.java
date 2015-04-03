@@ -36,6 +36,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,8 +66,6 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
         public void setCursor(final Cursor cursor);
 
-        public String getTextOfCurrentlyShownDocument();
-
         public String getTextOfAllDocuments();
 
         void setShowText(boolean text);
@@ -81,7 +80,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     private int mParentId;
     private Cursor mCursor;
-    View mFragmentFrame;
+    private View mFragmentFrame;
     private boolean mResultDialogShown = false;
     private TtsActionCallback mActionCallback;
 
@@ -120,6 +119,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
             mResultDialogShown = true;
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
         }
+        setIntent(intent);
+
     }
 
     @Override
@@ -276,7 +277,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
             switch (requestCode) {
                 case REQUEST_CODE_TABLE_OF_CONTENTS:
                     int documentPos = data.getIntExtra(TableOfContentsActivity.EXTRA_DOCUMENT_POS, -1);
-                    DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
+                    DocumentContainerFragment fragment = getDocumentContainer();
                     if (fragment != null) {
                         ((DocumentPagerFragment) fragment).setDisplayedPage(documentPos);
                     }
@@ -333,7 +334,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     private void setDocumentFragmentType() {
         // Check what fragment is shown, replace if needed.
-        DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
+        DocumentContainerFragment fragment = getDocumentContainer();
         DocumentContainerFragment newFragment = null;
         if (fragment == null) {
             newFragment = new DocumentPagerFragment();
@@ -355,9 +356,16 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        Log.i(LOG_TAG, "onLoadFinished");
         mCursor = cursor;
         DocumentContainerFragment frag = getDocumentContainer();
         frag.setCursor(cursor);
+        if(getIntent().getData()!=null) {
+            String id = getIntent().getData().getLastPathSegment();
+            DocumentPagerFragment documentContainer = (DocumentPagerFragment) getDocumentContainer();
+            documentContainer.setDisplayedPageByDocumentId(Integer.parseInt(id));
+        }
+
     }
 
     @Override
@@ -367,6 +375,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        Log.i(LOG_TAG, "onCreateLoader");
+
         return new CursorLoader(this, DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?", new String[]{String.valueOf(mParentId),
                 String.valueOf(mParentId)}, "created ASC");
     }

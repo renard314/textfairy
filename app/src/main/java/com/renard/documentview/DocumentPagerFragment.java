@@ -89,6 +89,16 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     public void setDisplayedPage(final int pageno) {
         mPager.setCurrentItem(pageno, true);
     }
+    public void setDisplayedPageByDocumentId(final int documentId) {
+        final int count = mAdapter.getCount();
+        for(int i = 0; i < count; i++){
+            final int id = mAdapter.getId(i);
+            if(documentId==id) {
+                mPager.setCurrentItem(i, false);
+                return;
+            }
+        }
+    }
 
     private void initPager() {
 
@@ -187,10 +197,4 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
         return mAdapter.getShowText();
     }
 
-    @Override
-    public String getTextOfCurrentlyShownDocument() {
-        DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
-        int currentItem = mPager.getCurrentItem();
-        return adapter.getText(currentItem);
-    }
 }
