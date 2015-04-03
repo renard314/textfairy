@@ -23,16 +23,16 @@
     <string name="leptonica_summary">Leptonica is a pedagogically-oriented open source site containing software that is broadly useful for image processing and image analysis applications.</string>
     <string name="tesseract_ocr_title"><a href="https://code.google.com/p/tesseract-ocr/">tesseract-ocr</a></string>
     <string name="tesseract_ocr_summary">Tesseract is probably the most accurate open source OCR engine available.</string>
-    <string name="contact_welcome_text">Hi, my name is Renard. I have created the text fairy in my free time. I hope she is of use to you.</string>
+    <string name="contact_welcome_text">Hi, my name is Renard. I have created the Text Fairy in my free time. I hope she useful for you.</string>
     <string name="download_failed">Downloading of %1$s failed!</string>
     <string name="language_downloaded">%1$s language data downloaded</string>
     <string name="app_name">Text Fairy</string>
     <string name="tips">Tips</string>
     <string name="ocr_language_delete">Delete</string>
     <string name="download_title">Language data for %s</string>
-    <string name="ocr_language_title">Choose OCR Language</string>
+    <string name="ocr_language_title">Manage Languages</string>
     <string name="pref_summary_rate">Rate the text fairy</string>
-    <string name="pref_summary_license">Learn about the software that was used to create the Textfairy.</string>
+    <string name="pref_summary_license">Learn about the software that was used to create the Text Fairy.</string>
     <string name="pref_summary_contact">Learn about the creator and supply feedback.</string>
     <string name="pref_summary_default_ocr_lang">Download and manage languages for text recognition.</string>
     <string name="pref_summary_data_directory">Specify the directory where the text fairy should look for language files. Only change this if you know what you are doing.</string>
@@ -50,6 +50,7 @@
     <string name="share_chooser_title">Select how you want to share the text</string>
     <string name="progress_start">Starting</string>
     <string name="download_language">Download</string>
+    <string name="empty_grid_download_language">Download a language.</string>
     <string name="progress_dewarp">Straightening text</string>
     <string name="progress_ocr">Reading text</string>
     <string name="delete">Delete </string>
@@ -128,7 +129,7 @@
     <string name="start_text_19">No one would build a robot to do nothing.</string>
     <string name="start_text_20">A robot walks into a bar…</string>
     <string name="start_text_21">He looks at the bartender and says "Can I get a screwdriver?"</string>
-    <string name="document_list_help_title">Here you can manage your scanned documents</string>
+    <string name="document_list_help_title">Manage your scanned documents here.</string>
     <string name="toc_help_title">Here you see a list of all pages in the document</string>
     <string name="no_ocr">No processing. Save image unchanged.</string>
     <string name="crop_help_title">You can crop and rotate your photo now</string>
@@ -143,7 +144,7 @@
     <string name="ocr_result_is_ok">I think i got most of the text.</string>
     <string name="ocr_result_is_good">Yeah I\'m happy with my reading skills!</string>
     <string name="play">Play</string>
-    <string name="stop">stop</string>
+    <string name="stop">Stop</string>
     <string name="tts_init_error">Text to speech could not load.</string>
     <string name="open_settings">speech settings</string>
     <string name="set_tts_language">Please set the appropriate language in your text to speech settings.</string>
@@ -156,12 +157,12 @@
     <string name="product_tour">Product tour</string>
     <string name="empty_grid_greeting">Hello</string>
     <string name="empty_grid_camera">Tap here to convert text from a new image.</string>
-    <string name="empty_grid_gallery">And tap here to convert text from an existing image.</string>
+    <string name="empty_grid_gallery">Tap here to convert text from an existing image.</string>
     <string name="empty_grid_fairy">P.S. Tap on the fairy for more info.</string>
     <string name="contribute_title">Improve the app</string>
     <string name="contribute_text">Creating an OCR app is hard. But you can help me to improve the app.</string>
     <string name="rating_title">Rate the app</string>
-    <string name="rating_text">The app is useful to you? I\'m always happy about helpful reviews.</string>
+    <string name="rating_text">The app is useful to you? Review it on the Play Store.</string>
     <string name="feedback_title">Send feedback</string>
     <string name="feedback_text_1">The app is not working as expected?</string>
     <string name="feedback_text_2">You have a feature suggestion?</string>
@@ -182,21 +183,21 @@
     <string name="join_beta_test_community">Join the beta testers community.</string>
     <string name="join_beta_program">Become a beta tester</string>
     <string name="follow_steps">Please follow these steps</string>
-    <string name="click_image_below">Once you are a member click on the image below</string>
+    <string name="click_image_below">Once you are a member click on the image below.</string>
     <string name="first_step">First step</string>
     <string name="second_step">Second step</string>
     <string name="first_step_detail">If you are not a member the second step won\'t work.</string>
     <string name="second_step_first_detail">You can opt out of the beta program anytime.</string>
     <string name="second_step_second_detail">Please drop me a mail if you find a bug.</string>
-    <string name="explanation_crop_video">(Video) How to fix the view point.</string>
+    <string name="explanation_crop_video">(Video) How to fix the viewpoint</string>
     <string name="ocr_tip_1">Good lightning is most important. Use the flashlight if possible.</string>
     <string name="ocr_tip_2">Blurry text is hard to read for me. Make sure that the camera has properly focused the text.</string>
     <string name="ocr_tip_3">Experiment with different iso values. High iso values can lead to image noise that makes it harder to recognize the letters</string>
     <string name="ocr_tip_4">Most of the time 5 to 7 megapixels is enough resolution to get good results. Higher values will often only increase the processing time.</string>
-    <string name="ocr_tip_heading">How to improve text recognition.</string>
-    <string name="additional_tips">Additional tips.</string>
-    <string name="ocr_tip_5">You can speed up the text recognition by cropping the taken photo</string>
-    <string name="ocr_tip_6">I\'m best at recognizing Text from books, magazines or new papers. Ornate or colorful letters are problematic for me.</string>
+    <string name="ocr_tip_heading">How to improve text recognition</string>
+    <string name="additional_tips">Additional tips</string>
+    <string name="ocr_tip_5">You can speed up the text recognition by cropping the taken photo.</string>
+    <string name="ocr_tip_6">I\'m best at recognizing text from books, magazines or new papers. Ornate or colorful letters are problematic for me.</string>
     <string name="ocr_tip_7">I\'m having equally difficulties when reading light text from dark backgrounds.</string>
     <string name="crop_image_tutorial">0tcFdaDuLTs</string>
     <string name="image_source">Pick image source.</string>
@@ -204,4 +205,5 @@
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Hello</string>
     <string name="text_is_in">Text is in</string>
+    <string name="empty_grid_language">I can read German and English but you can download more languages.</string>
 </resources>
