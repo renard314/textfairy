@@ -156,8 +156,8 @@
     <string name="product_tour">Product tour</string>
     <string name="empty_grid_greeting">Hello</string>
     <string name="empty_grid_camera">Tap here to convert text from a new image.</string>
-    <string name="empty_grid_gallery">And tap here to convert text from an existing image</string>
-    <string name="empty_grid_fairy">PS: Tap on the fairy for even more info.</string>
+    <string name="empty_grid_gallery">And tap here to convert text from an existing image.</string>
+    <string name="empty_grid_fairy">P.S. Tap on the fairy for more info.</string>
     <string name="contribute_title">Improve the app</string>
     <string name="contribute_text">Creating an OCR app is hard. But you can help me to improve the app.</string>
     <string name="rating_title">Rate the app</string>
@@ -190,7 +190,7 @@
     <string name="second_step_second_detail">Please drop me a mail if you find a bug.</string>
     <string name="explanation_crop_video">(Video) How to fix the view point.</string>
     <string name="ocr_tip_1">Good lightning is most important. Use the flashlight if possible.</string>
-    <string name="ocr_tip_2">Blurry text is hard to read for me. Make sure that the camera has properly focussed the text</string>
+    <string name="ocr_tip_2">Blurry text is hard to read for me. Make sure that the camera has properly focused the text.</string>
     <string name="ocr_tip_3">Experiment with different iso values. High iso values can lead to image noise that makes it harder to recognize the letters</string>
     <string name="ocr_tip_4">Most of the time 5 to 7 megapixels is enough resolution to get good results. Higher values will often only increase the processing time.</string>
     <string name="ocr_tip_heading">How to improve text recognition.</string>
@@ -200,4 +200,7 @@
     <string name="ocr_tip_7">I\'m having equally difficulties when reading light text from dark backgrounds.</string>
     <string name="crop_image_tutorial">0tcFdaDuLTs</string>
     <string name="image_source">Pick image source.</string>
+    <string name="promo_video_title">A short introduction on Youtube.</string>
+    <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
+    <string name="greeting">Hello</string>
 </resources>

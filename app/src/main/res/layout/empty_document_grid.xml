@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="@dimen/default_padding"
-        android:text="Hallo" />
+        android:text="@string/greeting" />
 
     <TextView
         android:layout_marginRight="@dimen/default_padding"
