@@ -240,11 +240,8 @@ public class OCRActivity extends MonitoredActivity {
 
                         try {
 
-                            documentUri = saveDocumentToDB(imageFile,
-                                    hocrString, utf8String);
-                            Util.createThumbnail(OCRActivity.this, imageFile,
-                                    Integer.valueOf(documentUri
-                                            .getLastPathSegment()));
+                            documentUri = saveDocumentToDB(imageFile, hocrString, utf8String);
+                            Util.createThumbnail(OCRActivity.this, imageFile, Integer.valueOf(documentUri.getLastPathSegment()));
                         } catch (RemoteException e) {
                             e.printStackTrace();
 
@@ -263,12 +260,15 @@ public class OCRActivity extends MonitoredActivity {
                                 pix.recycle();
                             }
                             if (documentUri != null) {
-                                Intent i = new Intent(OCRActivity.this,
-                                        DocumentActivity.class);
-                                i.putExtra(DocumentActivity.EXTRA_ACCURACY,
-                                        accuracy);
+                                Intent i;
+                                if(utf8String==null || utf8String.isEmpty()){
+                                    i = new Intent(OCRActivity.this, DocumentGridActivity.class);
+                                } else {
+                                    i = new Intent(OCRActivity.this, DocumentActivity.class);
+                                    i.putExtra(DocumentActivity.EXTRA_ACCURACY, accuracy);
+                                    i.setData(documentUri);
+                                }
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                i.setData(documentUri);
                                 startActivity(i);
                                 finish();
                                 Screen.unlockOrientation(OCRActivity.this);
