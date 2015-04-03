@@ -40,13 +40,11 @@ public class OCRResultDialog extends DialogFragment implements View.OnClickListe
         } else if (accuracy < 83) {
             speech.setText(R.string.ocr_result_is_ok);
         } else {
+            speech.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_fairy_happy,0,0,0);
             speech.setText(R.string.ocr_result_is_good);
             hideTips(view);
         }
         setButtonListeners(view);
-        TextView accuracyView = (TextView) view.findViewById(R.id.accuracy_title);
-        final String accuracyString = getActivity().getString(R.string.ocr_accuracy, accuracy);
-        accuracyView.setText(accuracyString);
         builder.setNegativeButton(android.R.string.ok, null);
         builder.setView(view);
         return builder.create();

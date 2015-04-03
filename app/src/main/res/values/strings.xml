@@ -140,9 +140,9 @@
     <string name="action_settings">Settings</string>
     <string name="ocr_accuracy">OCR accuracy: %1$d</string>
     <string name="text_to_speech">Speak text</string>
-    <string name="ocr_result_is_bad">That did not go so well. I hope the tips help.</string>
+    <string name="ocr_result_is_bad">That did not go so well. Please read the tips.</string>
     <string name="ocr_result_is_ok">I think i got most of the text.</string>
-    <string name="ocr_result_is_good">Yeah I\'m happy with my reading skills!</string>
+    <string name="ocr_result_is_good">I\'m happy with the result.</string>
     <string name="play">Play</string>
     <string name="stop">Stop</string>
     <string name="tts_init_error">Text to speech could not load.</string>

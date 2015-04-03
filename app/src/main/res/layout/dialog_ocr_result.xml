@@ -6,18 +6,6 @@
     android:orientation="vertical"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/accuracy_title"
-        android:padding="8dp"
-        android:background="@color/dark_grey"
-        android:textColor="@color/primary_text_btn_main"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="@string/ocr_accuracy" />
-    <!--android:layout_marginLeft="@dimen/activity_vertical_margin"-->
-    <!--android:layout_marginRight="@dimen/activity_vertical_margin"-->
     <include
         android:id="@+id/help_header"
         android:background="#F1F1F1"

@@ -141,7 +141,7 @@
     <string name="text_to_speech">Text vorlesen</string>
     <string name="ocr_result_is_bad">Ich konnte nicht viel erkennen. Ich hoffe die Tipps helfen.</string>
     <string name="ocr_result_is_ok">Ich denke ich konnte das meiste lesen.</string>
-    <string name="ocr_result_is_good">Juhu, das lief ganz gut!</string>
+    <string name="ocr_result_is_good">Das lief ganz gut!</string>
     <string name="play">Play</string>
     <string name="stop">stop</string>
     <string name="tts_init_error">Sprachmodul konnte nicht geladen werden.</string>
