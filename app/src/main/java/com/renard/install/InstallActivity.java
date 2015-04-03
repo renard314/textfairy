@@ -118,6 +118,7 @@ public class InstallActivity extends Activity {
         if (mTask == null) {
             mTask = new InstallTask(this);
             mTask.execute();
+            startInstallAnimation();
         } else {
             mTask.attach(this);
             updateProgress(mTask.getProgress());
@@ -131,9 +132,15 @@ public class InstallActivity extends Activity {
                     result = new InstallResult(Result.UNSPEZIFIED_ERROR);
                 }
                 markAsDone(result);
+            } else {
+                startInstallAnimation();
+
             }
         }
 
+    }
+
+    private void startInstallAnimation() {
         mImageViewFairy.post(new Runnable() {
 
             @Override
@@ -184,7 +191,7 @@ public class InstallActivity extends Activity {
 		 * (IOException ignore) { } } } return ret;
 		 */
         // return 5374633;
-        return 24320801;
+        return 24314653;
     }
 
     public void markAsDone(InstallResult result) {
