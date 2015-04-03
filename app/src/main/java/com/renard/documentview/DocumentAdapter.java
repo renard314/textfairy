@@ -123,7 +123,10 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
 
 
     public String getLanguage(int position){
-        return mCursor.getString(mIndexLanguage);
+        if(mCursor.moveToPosition(position)){
+            return mCursor.getString(mIndexLanguage);
+        }
+        return null;
     }
 
 	public String getLongTitle(int position) {
