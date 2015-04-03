@@ -65,7 +65,6 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
         mCursor = cursor;
         mIndexOCRText = mCursor.getColumnIndex(Columns.OCR_TEXT);
         mIndexImagePath = mCursor.getColumnIndex(Columns.PHOTO_PATH);
-        // mIndexCreated = mCursor.getColumnIndex(Columns.CREATED);
         mIndexTitle = mCursor.getColumnIndex(Columns.TITLE);
         mIndexId = mCursor.getColumnIndex(Columns.ID);
         mIndexLanguage = mCursor.getColumnIndex(Columns.OCR_LANG);

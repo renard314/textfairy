@@ -57,8 +57,8 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        boolean isKeyboardHidden = Configuration.KEYBOARDHIDDEN_YES == newConfig.hardKeyboardHidden || Configuration.HARDKEYBOARDHIDDEN_YES == newConfig.hardKeyboardHidden;
-        boolean isKeyboardShown = Configuration.KEYBOARDHIDDEN_NO == newConfig.hardKeyboardHidden || Configuration.HARDKEYBOARDHIDDEN_NO == newConfig.hardKeyboardHidden;
+        boolean isKeyboardHidden = Configuration.KEYBOARDHIDDEN_YES == newConfig.hardKeyboardHidden;
+        boolean isKeyboardShown = Configuration.KEYBOARDHIDDEN_NO == newConfig.hardKeyboardHidden;
         if (isKeyboardShown) {
             showTitleIndicator(false);
         } else if (isKeyboardHidden) {
@@ -68,7 +68,7 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 
 
     private void showTitleIndicator(final boolean show) {
-        if (mIsTitleIndicatorVisible == true) {
+        if (mIsTitleIndicatorVisible) {
             if (show) {
                 mTitleIndicator.setVisibility(View.VISIBLE);
             } else {
