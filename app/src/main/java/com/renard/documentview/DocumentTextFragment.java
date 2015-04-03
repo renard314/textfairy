@@ -90,7 +90,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 
 		@Override
 		protected Spanned doInBackground(String... params) {
-			if (params != null && params.length > 0) {
+			if (params != null && params.length > 0 && params[0]!=null && params[0].length()>0) {
 				return Html.fromHtml(params[0]);
 			}
 			return null;
@@ -112,11 +112,6 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 
 	}
 
-//	@Override
-//	public void onDestroy() {
-//		super.onDestroy();
-//		saveIfTextHasChanged(true);
-//	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
