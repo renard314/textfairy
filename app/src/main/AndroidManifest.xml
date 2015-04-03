@@ -4,7 +4,7 @@
     package="com.renard.ocr"
     android:installLocation="auto"
     android:versionCode="30"
-    android:versionName="2.0.0">
+    android:versionName="2.0.1">
 
     <uses-sdk
         android:minSdkVersion="9"
