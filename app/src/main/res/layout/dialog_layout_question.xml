@@ -1,106 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="@dimen/activity_horizontal_margin"
     android:id="@+id/fairy_animation"
-    android:paddingBottom="5dp"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
+
+    <ViewFlipper
+        android:inAnimation="@anim/push_down_in"
+        android:outAnimation="@anim/abc_fade_out"
+
+        android:id="@+id/layout_title"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:gravity="center_vertical|left"
+            style="@android:style/TextAppearance.Medium"
+            android:text="@string/document_layout_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:gravity="center_vertical|left"
+            style="@android:style/TextAppearance.Medium"
+            android:text="@string/layout_simple"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:gravity="center_vertical|left"
+            style="@android:style/TextAppearance.Medium"
+            android:text="@string/layout_complex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+    </ViewFlipper>
+
+    <LinearLayout
+        android:layout_below="@+id/layout_title"
+        android:weightSum="3"
+        android:layout_marginBottom="32dp"
+        android:id="@+id/layout_container"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/column_layout"
+            android:layout_weight="1"
+            android:src="@drawable/column_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageSwitcher
+            android:layout_weight="1"
+            android:id="@+id/fairy_layout"
+            android:src="@drawable/fairy_looks_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/page_layout"
+            android:layout_weight="1"
+            android:src="@drawable/page_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
 
     <TextView
-        android:id="@+id/help_header"
-        android:text="@string/document_layout_dialog"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:drawableLeft="@drawable/fairy_question"
-        android:drawablePadding="@dimen/default_padding"
-        android:gravity="center_vertical|left"
-        android:layout_margin="@dimen/default_padding"
-        android:textAppearance="@style/FairySpeechbubble" >
-
-    </TextView>
-
-
-    <RadioGroup
-        android:id="@+id/radioGroup_layout_buttons"
+        style="@android:style/TextAppearance.Medium"
+        android:id="@+id/textview_ocr_language"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/help_header"
-        android:layout_centerHorizontal="true" >
-
-        <RadioButton
-            android:id="@+id/radio_simple"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/layout_simple" />
-
-        <RadioButton
-            android:id="@+id/radio_complex"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/layout_complex" />
-
-        <RadioButton
-            android:id="@+id/radio_no_ocr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/no_ocr" />
-    </RadioGroup>
-
-    <TextView
-        android:id="@+id/textview_ocr_language"
-        style="@style/OptionsText"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/radioGroup_layout_buttons"
-        android:layout_marginTop="5dp"
+        android:layout_below="@+id/layout_container"
+        android:layout_alignBaseline="@+id/button_language"
         android:gravity="center_horizontal"
-        android:text="@string/pref_title_default_ocr_lang"
-        android:textStyle="bold" />
+        android:text="@string/text_is_in" />
 
-    <Button
+    <Spinner
+        tools:listitem="@android:layout/simple_spinner_item"
         android:id="@+id/button_language"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textview_ocr_language"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dip"
-        android:background="@drawable/btn_start_activity"
-        android:gravity="center"
-        android:minWidth="150dip"
-        android:text="@android:string/ok"
-        android:textSize="20sp" />
+        android:layout_below="@+id/layout_container"
+        android:drawSelectorOnTop="true"
+        android:layout_toRightOf="@+id/textview_ocr_language"
+        android:layout_toEndOf="@+id/textview_ocr_language" />
 
-    <View
-        android:id="@+id/line"
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/button_language"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/dark_grey" />
-
-    <Button
-        android:id="@+id/button_load_language"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/line"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/btn_start_activity"
-        android:drawableLeft="@drawable/ic_download"
-        android:gravity="center"
-        android:minWidth="150dip"
-        android:text="@string/get_more_languages"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/button_load_language"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="2dp"
-        android:gravity="center_horizontal"
-        android:text="@string/aborts_scan" />
 
 </RelativeLayout>

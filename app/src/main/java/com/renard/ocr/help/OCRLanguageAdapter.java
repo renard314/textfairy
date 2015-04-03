@@ -109,6 +109,11 @@ public class OCRLanguageAdapter extends BaseAdapter implements ListAdapter {
             dest.writeString(mValue);
             dest.writeString(mDisplayText);
         }
+
+        @Override
+        public String toString() {
+            return mDisplayText;
+        }
     }
 
 	private static class ViewHolder {

@@ -64,9 +64,9 @@
     <string name="error_load_file">I\'m sorry but I was not able to find the file. Maybe it was deleted?</string>
     <string name="pdf_creation_message">Creating  your PDF!</string>
     <string name="option_view_mode">Switch view</string>
-    <string name="document_layout_dialog">What shall I do?</string>
-    <string name="layout_complex">Scan multiple columns of text</string>
-    <string name="layout_simple">Scan a single column of text</string>
+    <string name="document_layout_dialog">How many columns?</string>
+    <string name="layout_complex">More than one column.</string>
+    <string name="layout_simple">One column.</string>
     <string name="saving_document">Saving Document</string>
     <string name="button_column_pick_completed">start text recognition</string>
     <string name="export_as_pdf">Create PDF</string>
@@ -203,4 +203,5 @@
     <string name="promo_video_title">A short introduction on Youtube.</string>
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Hello</string>
+    <string name="text_is_in">Text is in</string>
 </resources>
