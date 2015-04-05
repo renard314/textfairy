@@ -23,7 +23,7 @@
     <string name="leptonica_summary">Leptonica is a pedagogically-oriented open source site containing software that is broadly useful for image processing and image analysis applications.</string>
     <string name="tesseract_ocr_title"><a href="https://code.google.com/p/tesseract-ocr/">tesseract-ocr</a></string>
     <string name="tesseract_ocr_summary">Tesseract is probably the most accurate open source OCR engine available.</string>
-    <string name="contact_welcome_text">Hi, my name is Renard. I have created the Text Fairy in my free time. I hope she useful for you.</string>
+    <string name="contact_welcome_text">Hi, my name is Renard. I have created the Text Fairy in my free time. I hope she is useful for you.</string>
     <string name="download_failed">Downloading of %1$s failed!</string>
     <string name="language_downloaded">%1$s language data downloaded</string>
     <string name="app_name">Text Fairy</string>
