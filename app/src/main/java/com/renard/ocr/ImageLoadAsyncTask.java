@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -102,7 +103,9 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
     protected void onPostExecute(Pair<Pix, PixLoadStatus> p) {
         Log.i(LOG_TAG, "onPostExecute");
         Intent intent = new Intent(ACTION_IMAGE_LOADED);
-        intent.putExtra(EXTRA_PIX, p.first.getNativePix());
+        if(p.second==PixLoadStatus.SUCCESS) {
+            intent.putExtra(EXTRA_PIX, p.first.getNativePix());
+        }
         intent.putExtra(EXTRA_STATUS, p.second.ordinal());
         intent.putExtra(EXTRA_SKIP_CROP, skipCrop);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
