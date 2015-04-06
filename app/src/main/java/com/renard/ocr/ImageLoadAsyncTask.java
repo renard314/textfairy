@@ -16,10 +16,12 @@ import android.util.Pair;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.leptonica.android.Rotate;
+import com.googlecode.leptonica.android.WriteFile;
 import com.renard.util.Util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -40,7 +42,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
     final static String EXTRA_SKIP_CROP = "skip_crop";
     final static String ACTION_IMAGE_LOADED = ImageLoadAsyncTask.class.getName() + ".image.loaded";
     final static String ACTION_IMAGE_LOADING_START = ImageLoadAsyncTask.class.getName() + ".image.loading.start";
-
+    final private static String TMP_FILE_NAME = "loadfiletmp";
     private final boolean skipCrop;
     private final ContentResolver contentResolver;
     private final Context context;
@@ -151,8 +153,25 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                     return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
                 }
             } else if (cameraPicUri.toString().startsWith("content")) {
-                InputStream stream = contentResolver.openInputStream(cameraPicUri);
-                p = ReadFile.readMem(Util.toByteArray(stream));
+                InputStream stream = null;
+                FileOutputStream fileOut = null;
+                try {
+                    stream = contentResolver.openInputStream(cameraPicUri);
+                    fileOut = context.openFileOutput(TMP_FILE_NAME, Context.MODE_PRIVATE);
+                    Util.copy(stream, fileOut);
+                    File file = context.getFileStreamPath(TMP_FILE_NAME);
+                    p = ReadFile.readFile(file);
+                    Log.i(LOG_TAG,"" + p.getDepth());
+                    Log.i(LOG_TAG,"" + p.getWidth());
+                } finally {
+                    if (stream != null) {
+                        stream.close();
+                    }
+                    if (fileOut != null) {
+                        fileOut.close();
+                    }
+                    context.deleteFile(TMP_FILE_NAME);
+                }
                 if (p == null) {
                     return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
                 }
