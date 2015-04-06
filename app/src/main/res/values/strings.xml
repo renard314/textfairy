@@ -177,7 +177,7 @@
     <string name="beta_test_subject">Text fairy beta test</string>
     <string name="app_version">Version %s</string>
     <string name="image_not_32_bit">Image needs to be 32 bit.</string>
-    <string name="image_format_unsupported">Image format not recognized. Only png, jpeg or bmp files are currently supported.</string>
+    <string name="image_format_unsupported">Image format not recognized. Only png or jpeg files are currently supported.</string>
     <string name="tts_not_available">Text to Speech is not available on your phone.</string>
     <string name="empty_document">Document contains no text.</string>
     <string name="join_beta_test_community">Join the beta testers community.</string>

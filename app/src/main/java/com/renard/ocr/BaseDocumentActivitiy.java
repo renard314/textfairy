@@ -138,7 +138,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     protected void startGallery() {
         cameraPicUri = null;
         Intent i = new Intent(Intent.ACTION_GET_CONTENT, null);
-        i.setType("image/png,image/jpg,image/bmp");
+        i.setType("image/png,image/jpg, image/jpeg");
         Intent chooser = Intent.createChooser(i, getString(R.string.image_source));
 
         // File photo = getTmpPhotoFile();
