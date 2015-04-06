@@ -54,11 +54,16 @@ void bookpage(Pix* pixOrg, Pix** pixText, void (*messageJavaCallback)(int), void
 	if (depth == 32) {
 		log("converting from 32 to 8 bit");
 		pixsg = pixConvertRGBToLuminance(pixOrg);
+		binarize(pixsg, NULL, &pixb);
+	    pixDestroy(&pixsg);
+	} else if(depth==1){
+		pixb = pixClone(pixOrg);
 	} else {
 		pixsg = pixClone(pixOrg);
+		binarize(pixsg, NULL, &pixb);
+	    pixDestroy(&pixsg);
 	}
 
-	binarize(pixsg, NULL, &pixb);
 	pixJavaCallback(pixb);
 
 	if (debug>0){
@@ -80,7 +85,6 @@ void bookpage(Pix* pixOrg, Pix** pixText, void (*messageJavaCallback)(int), void
 		*pixText = pixDewarped;
 	}
     pixDestroy(&pixb);
-    pixDestroy(&pixsg);
 }
 
 /**
