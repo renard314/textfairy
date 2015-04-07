@@ -13,7 +13,7 @@
 #include <ocrclass.h>
 #include "binarize.h"
 #include "dewarp_textfairy.h"
-
+#include "RunningStats.h"
 using namespace std;
 
 static Pixa* pixaDebugDisplay = pixaCreate(0);
@@ -132,6 +132,65 @@ void perspective(){
 	pixDestroy(&pixBilinar);
 }
 
+bool numaGetStdDeviationOnInterval(Numa* na, l_int32 start, l_int32 end, l_float32* stdDev, l_float32* errorPercentage, l_float32* mean){
+	l_int32 n = numaGetCount(na);
+	if (n < 2) {
+		return false;
+	}
+	if(end>n){
+		return false;
+	}
+
+	l_int32 val;
+	RunningStats stats;
+	for (int i = start; i < end; i++) {
+		numaGetIValue(na, i, &val);
+		stats.Push(val);
+	}
+	if (stdDev != NULL) {
+		*stdDev = stats.PopulationStandardDeviation();
+	}
+	if(errorPercentage!=NULL){
+		if(stats.Mean()>0){
+			*errorPercentage = stats.PopulationStandardDeviation() / fabs(stats.Mean());
+		} else {
+			*errorPercentage = 0;
+		}
+	}
+	if(mean!=NULL){
+		*mean = stats.Mean();
+	}
+	return true;
+}
+
+
+bool numaGetStdDeviation(Numa* na, l_float32* stdDev, l_float32* errorPercentage, l_float32* mean) {
+	l_int32 n = numaGetCount(na);
+	return numaGetStdDeviationOnInterval(na,0,n,stdDev,errorPercentage,mean);
+}
+
+void pixBlurDebug(Pix* pix){
+	Pix* pixsg = pixConvertRGBToLuminance(pix);
+	Pix* pixEdge = pixTwoSidedEdgeFilter(pixsg, L_VERTICAL_EDGES);
+	NUMA* histo = pixGetGrayHistogram(pixEdge, 1);
+	pixWrite("lines.png",pixEdge,IFF_PNG);
+	Numa*  histonorm = numaNormalizeHistogram(histo,1);
+	l_float32 stdDev, mean, error;
+	numaGetStdDeviation(histonorm,&stdDev,&error, &mean);
+	log("stdDev =%f ,mean=%f, blur = %f", stdDev,mean, mean*stdDev );
+	pixDestroy(&pixEdge);
+	pixDestroy(&pixsg);
+	numaDestroy(&histonorm);
+
+}
+
+void blurDetect(){
+	Pix* pixOrg = pixRead("images/renard.png");
+	pixBlurDebug(pixOrg);
+	pixDestroy(&pixOrg);
+
+}
+
 void dewarp(){
 	Pix* pixOrg = pixRead("images/renard.png");
 	Pix* pixsg = pixConvertRGBToLuminance(pixOrg);
@@ -173,7 +232,7 @@ void dewarp(){
 }
 
 int main() {
-	doOcr();
+	blurDetect();
 
 	return 0;
 }
