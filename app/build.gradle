@@ -8,47 +8,13 @@ import org.apache.tools.ant.taskdefs.condition.Os
 task ndkBuild(type: Exec,description: 'run ndk-build') {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         workingDir 'src/main/jni'
-        commandLine 'ndk-build.cmd', '-j' , Runtime.runtime.availableProcessors()
+        commandLine 'ndk-build.cmd', '-j', Runtime.runtime.availableProcessors()
 
     } else {
         workingDir 'src/main/jni'
         commandLine "$ndkDir/ndk-build", '-j', Runtime.runtime.availableProcessors()
     }
 }
-tasks.withType(JavaCompile) {
-    compileTask -> compileTask.dependsOn(ndkBuild)
-}
-
-
-// Task to put native libs into a jar file
-/*
-task nativeArmV5LibsToJar(type: Zip, description: 'create a jar archive of the native armeabi libs') {
-    destinationDir file("$buildDir/native-libs")
-    baseName 'armeabi'
-    extension 'jar'
-    from fileTree(dir: 'libs', include: 'armeabi/*.so')
-    into 'lib/'
-}
-task nativeArmV7LibsToJar(type: Zip, description: 'create a jar archive of the native armeabiv7a libs') {
-    destinationDir file("$buildDir/native-libs")
-    baseName 'armeabiv7a'
-    extension 'jar'
-    from fileTree(dir: 'libs', include: 'armeabi-v7a/*.so')
-    into 'lib/'
-}
-task nativeX86LibsToJar(type: Zip, description: 'create a jar archive of the native x86 libs') {
-    destinationDir file("$buildDir/native-libs")
-    baseName 'x86'
-    extension 'jar'
-    from fileTree(dir: 'libs', include: 'x86/*.so')
-    into 'lib/'
-}
-
-
-nativeArmV5LibsToJar.dependsOn(ndkBuild)
-nativeArmV7LibsToJar.dependsOn(ndkBuild)
-nativeX86LibsToJar.dependsOn(ndkBuild)
-*/
 
 tasks.withType(JavaCompile) {
     compileTask -> compileTask.dependsOn(ndkBuild)
@@ -136,7 +102,7 @@ if (propFile.canRead()) {
 }
 
 dependencies {
-    compile fileTree(dir: 'src/main/lib', include: '*.jar')
+    compile fileTree(dir: 'src/main/libs', include: '*.jar')
     compile 'com.viewpagerindicator:library:2.4.1@aar'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.google.code.findbugs:jsr305:2.0.2'
