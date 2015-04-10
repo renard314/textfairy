@@ -1,6 +1,6 @@
 /*
  * The ExactImage library's hOCR to PDF parser
- * Copyright (C) 2008-2009 René Rebe, ExactCODE GmbH Germany
+ * Copyright (C) 2008-2009 Ren�� Rebe, ExactCODE GmbH Germany
  * Copyright (C) 2008 Archivista
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -156,6 +156,8 @@ struct Textline {
 	BBox bbox;
 	int size;
 	int descenders;
+	float baseline1;
+	float baseline2;
 
 	bool hasDescenders(std::string word){
 		//const char* descenders = "qpgjy";
@@ -189,15 +191,30 @@ struct Textline {
 
 		whitespace_cleaned:
 
+		/*
+		double x1 = 72. * bbox.x1 / res;
+		double x2 = 72. * bbox.x2 / res;
+		double y1 = 72. * bbox.y1 / res;
+		double y2 = 72. * bbox.y2 / res;
+		pdfContext->moveTo(x1, y2);
+		pdfContext->addLineTo(x2, y2);
+		pdfContext->addLineTo(x2, y1);
+		pdfContext->addLineTo(x1, y1);
+		pdfContext->addLineTo(x1, y2);
+		pdfContext->showPath();
+		*/
 
-		//std::cout << bbox.x1 <<","<<bbox.y1 << "	" << bbox.x2 <<","<<bbox.y2<<"\n";
-//		int height = (int) round(std::abs(bbox.y2 - bbox.y1) * 72. / res);
-//		if (height < 8) // TODO: allow configuration?
-//			height = 8;
-//		//height=50;
-//
-//		std::cout << "first height " << height << "\n";
-		int height = size *	72.0 / res;
+		float b = (bbox.x1 * baseline1 + baseline2);
+		std::cout <<"baseline mod = "<<b<<"\n";
+
+		int height = 0;
+		if(size>0){
+			height = size *	72.0 / res;
+		} else {
+			double y1 = 72. * bbox.y1 / res;
+			double y2 = 72. * ((b/2) + bbox.y2) / res;
+			height = y2-y1;
+		}
 //		std::cout << "second height " << height << "\n";
 
 		for (span_iterator it = spans.begin(); it!= spans.end(); ++it, ++n) {
@@ -218,21 +235,9 @@ struct Textline {
 			default:
 				; // already initialized
 			}
-
-//			double x1 = 72. * spanbbox.x1 / res;
-//			double x2 = 72. * spanbbox.x2 / res;
-//			double y1 = 72. * spanbbox.y1 / res;
-//			double y2 = 72. * spanbbox.y2 / res;
-//			pdfContext->moveTo(x1, y2);
-//			pdfContext->addLineTo(x2, y2);
-//			pdfContext->addLineTo(x2, y1);
-//			pdfContext->addLineTo(x1, y1);
-//			pdfContext->addLineTo(x1, y2);
-//			pdfContext->showPath();
-
-			double y;
+		double y;
 			if (::straightenTextLines==true){
-				y = 72. * bbox.y2 / res; //use y value from bounding box of the line
+				y =  (72. * (b+bbox.y2) / res); //use y value from bounding box of the line
 			} else {
 				double t = spanbbox.y2;
 				if (hasDescenders(text)){
@@ -241,7 +246,7 @@ struct Textline {
 				y = 72. * t / res;
 			}
 
-			std::cout <<text <<"\t"<< " x="<<(72. * spanbbox.x1  / res) <<"\ty="<< y << " height="<<height<<"\n";
+			std::cout <<text <<" "<< " x="<<(72. * spanbbox.x1  / res) <<"  y="<< y << " height="<<height<<"\n";
 			pdfContext->textTo(72. * spanbbox.x1 / res, y);
 			pdfContext->showText(font, text, height);
 			if (txtStream) {
@@ -254,100 +259,6 @@ struct Textline {
 
 	}
 
-	//	void draw() {
-	//		double y1 = 0, y2 = 0, yavg = 0;
-	//		int n = 0;
-	//		for (span_iterator it = spans.begin(); it != spans.end(); ++it, ++n) {
-	//			if (it == spans.begin()) {
-	//				y1 = it->bbox.y1;
-	//				yavg = y2 = it->bbox.y2;
-	//			} else {
-	//				if (it->bbox.y1 < y1)
-	//					y1 = it->bbox.y1;
-	//				if (it->bbox.y2 > y2)
-	//					y2 = it->bbox.y2;
-	//				yavg += it->bbox.y2;
-	//			}
-	//		}
-	//		if (n > 0)
-	//			yavg /= n;
-	//
-	//		int height = (int) round(std::abs(y2 - y1) * 72. / res);
-	//		if (height < 8) // TODO: allow configuration?
-	//			height = 8;
-	//		//height=50;
-	//
-	//		std::cerr << "drawing with height: " << height << std::endl;
-	//
-	//		// remove trailing whitespace
-	//		for (span_iterator it = spans.end(); it != spans.begin(); --it) {
-	//			span_iterator it2 = it;
-	//			--it2;
-	//			for (int i = it2->text.size() - 1; i >= 0; --i) {
-	//				if (isMyBlank(it2->text[i]))
-	//					it2->text.erase(i);
-	//				else
-	//					goto whitespace_cleaned;
-	//			}
-	//		}
-	//
-	//		whitespace_cleaned:
-	//
-	//		for (span_iterator it = spans.begin(); it != spans.end(); ++it, ++n) {
-	//			// escape decoding, TODO: maybe change our SAX parser to emmit a single
-	//			// text element, and thus decode it earlier
-	//			std::string text = htmlDecode(it->text);
-	//			BBox bbox = it->bbox;
-	//
-	//			// one might imprecicely place text sloppily in favour of "sometimes"
-	//			// improved cut'n paste-able text in not so advanced PDF Viewers
-	//			if (sloppy) {
-	//				span_iterator it2 = it;
-	//				for (++it2; it2 != spans.end(); ++it2) {
-	//					if (it->style != it2->style)
-	//						break;
-	//
-	//					std::string nextText = htmlDecode(it2->text);
-	//
-	//					// TODO: in theory expand bbox, if later needed
-	//					text += nextText;
-	//
-	//					// stop on whitespaces to sync on gaps in justified text
-	//					if (nextText != peelWhitespaceStr(nextText)) {
-	//						++it2; // we consumed the glyph, so proceeed
-	//						break;
-	//					}
-	//				}
-	//				it = --it2;
-	//			}
-	//
-	//			const char* font = "Helvetica";
-	//			switch (it->style) {
-	//			case Bold:
-	//				font = "Helvetica-Bold";
-	//				break;
-	//			case Italic:
-	//				font = "Helvetica-Oblique";
-	//				break;
-	//			case BoldItalic:
-	//				font = "Helvetica-BoldOblique";
-	//				break;
-	//			default:
-	//				; // already initialized
-	//			}
-	//
-	//			//std::cerr << "(" << text << ") ";
-	//
-	//			pdfContext->textTo(72. * bbox.x1 / res, 72. * yavg / res);
-	//			pdfContext->showText(font, text, height);
-	//
-	//			if (txtStream)
-	//				txtString += text;
-	//		}
-	//		if (txtStream)
-	//			txtString += "\n";
-	//		//std::cerr << std::endl;
-	//	}
 
 	void flush() {
 		if (!spans.empty())
@@ -390,6 +301,18 @@ bool isNewLine(std::string attr) {
 		return true;
 	}
 }
+
+void parseBaseline(std::string attr, Textline& line) {
+	const char* ocr_line = "baseline";
+	std::string::size_type i = attr.find(ocr_line);
+	if (i == std::string::npos) {
+		return;
+	}
+	std::stringstream stream(attr.substr(i + strlen(ocr_line)));
+
+	stream >> line.baseline1>>line.baseline2;
+}
+
 int parseDescenders(std::string s) {
 	const char* tS = "descenders='";
 	std::string::size_type i = s.find(tS);
@@ -406,6 +329,8 @@ int parseDescenders(std::string s) {
 	return result;
 }
 int parseSize(std::string s) {
+	std::cout <<"parseSize"<< " "<<s<<"\n";;
+
 	const char* tS = "size='";
 	std::string::size_type i = s.find(tS);
 	if (i == std::string::npos)
@@ -418,25 +343,26 @@ int parseSize(std::string s) {
 	std::istringstream converter(sizeStr);
 	int result;
 	converter >> result;
+	std::cout <<"size = "<< result <<"\n";;
+
 	return result;
 }
 
 BBox parseBBox(std::string s) {
 	BBox b; // self initialized to zero
-
-	const char* tS = "title=\"";
+	//std::cout <<"parseBBox"<< " "<<s<<"\n";;
+	const char* tS = "bbox ";
 
 	std::string::size_type i = s.find(tS);
-	if (i == std::string::npos)
+	if (i == std::string::npos) {
 		return b;
+	}
+//	std::cout <<"found box\n";
 
-	std::string::size_type i2 = s.find("\"", i + strlen(tS));
-	if (i2 == std::string::npos)
-		return b;
+	std::stringstream stream(s.substr(i + strlen(tS)));
+	stream >> b.x1 >> b.y1 >> b.x2 >> b.y2;
 
-	std::stringstream stream(s.substr(i + strlen(tS), i2 - i - strlen(tS)));
-	std::string dummy;
-	stream >> dummy >> b.x1 >> b.y1 >> b.x2 >> b.y2;
+	//std::cout <<"x1="<<b.x1<<"\n";
 
 	return b;
 }
@@ -447,8 +373,9 @@ void elementStart(const std::string& _name, const std::string& _attr = "") {
 	//std::cerr << "elementStart: '" << name << "', attr: '" << attr << "'" << std::endl;
 
 	BBox bbox = parseBBox(attr);
-	if (bbox.x2 > 0 && bbox.y2 > 0)
+	if (bbox.x2 > 0 && bbox.y2 > 0) {
 		lastBBox = bbox;
+	}
 
 	bool newLine = isNewLine(attr);
 	if (newLine==true) {
@@ -456,19 +383,7 @@ void elementStart(const std::string& _name, const std::string& _attr = "") {
 		textline.size = parseSize(attr);
 		textline.descenders = parseDescenders(attr);
 		textline.bbox = bbox;
-//		std::cout << attr<< "\n";
-//		std::cout << bbox.x1 <<","<<bbox.y1 << "	" << bbox.x2 <<","<<bbox.y2<<"\n";
-//		pdfContext->setLineWidth(1);
-//		double x1 = 72. * bbox.x1 / res;
-//		double x2 = 72. * bbox.x2 / res;
-//		double y1 = 72. * bbox.y1 / res;
-//		double y2 = 72. * bbox.y2 / res;
-//		pdfContext->moveTo(x1, y2);
-//		pdfContext->addLineTo(x2, y2);
-//		pdfContext->addLineTo(x2, y1);
-//		pdfContext->addLineTo(x1, y1);
-//		pdfContext->addLineTo(x1, y2);
-//		pdfContext->showPath();
+		parseBaseline(attr, textline);
 	}
 
 	if (name == "b" || name == "strong")

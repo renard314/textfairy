@@ -16,6 +16,7 @@
 package com.renard.pdf;
 
 
+import java.io.UnsupportedEncodingException;
 
 public class Hocr2Pdf {
     static {
@@ -35,7 +36,16 @@ public class Hocr2Pdf {
     }
 
     public void hocr2pdf(String[] images, String[] hocr, String pdfFileName, boolean sloppy, boolean overlayImage) {
-        nativeHocr2pdf(images, hocr, pdfFileName, sloppy, overlayImage);
+        byte[][] hocrBytes = new byte[hocr.length][];
+        for(int i = 0; i<hocr.length; i++){
+            try {
+                hocrBytes[i] = hocr[i].getBytes("UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                hocrBytes[i] = "".getBytes();
+            }
+
+        }
+        nativeHocr2pdf(images, hocrBytes, pdfFileName, sloppy, overlayImage);
     }
     
     private void onProgress(int pageNumber) {
@@ -44,5 +54,5 @@ public class Hocr2Pdf {
     	}
     }
     
-    private native void nativeHocr2pdf( String[] images, String[] hocr, String pdfFileName, boolean sloppy, boolean overlayImage);
+    private native void nativeHocr2pdf( String[] images, byte[][] hocr, String pdfFileName, boolean sloppy, boolean overlayImage);
 }

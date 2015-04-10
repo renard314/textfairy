@@ -231,8 +231,57 @@ void dewarp(){
 
 }
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+#include "Codecs.hh"
+#include "pdf.hh"
+#include "hocr.hh"
+#include "jpeg.hh"
+
+void createPdf(const char* imagePath, const char* hocrPath) {
+	printf("%s", "creating pdf");
+
+	ofstream pdfOutStream("test.pdf");
+	PDFCodec* pdfContext = new PDFCodec(&pdfOutStream);
+	bool sloppy = false;
+	bool overlayImage = true;
+	Image image;
+	image.w = image.h = 0;
+	std::string fileName(imagePath);
+	if (!ImageCodec::Read(fileName, image)) {
+		std::cout << "Error reading input file.";
+	}
+
+	if (image.resolutionX() <= 0 || image.resolutionY() <= 0) {
+		std::cout << "Warning: Image x/y resolution not set, defaulting to: 300 ";
+		image.setResolution(300, 300);
+	}
+
+	unsigned int res = image.resolutionX();
+
+	std::ifstream file( hocrPath );
+	std::stringstream hocr;
+
+	if(file) {
+		hocr << file.rdbuf();
+		file.close();
+		pdfContext->beginPage(72. * image.w / res, 72. * image.h / res);
+		pdfContext->setFillColor(0, 0, 0);
+		hocr2pdf(hocr, pdfContext, res, sloppy, !overlayImage);
+
+		if (overlayImage) {
+			pdfContext->showImage(image, 0, 0, 72. * image.w / res, 72. * image.h / res);
+		}
+	}
+
+
+	delete pdfContext;
+}
+
 int main() {
-	blurDetect();
+	createPdf("images/5.png","images/scan_test.html");
 
 	return 0;
 }

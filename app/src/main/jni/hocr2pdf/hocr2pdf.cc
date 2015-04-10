@@ -19,7 +19,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <fstream>
 #include <iomanip>
 #include <cmath>
 #include <cctype>
@@ -37,7 +36,9 @@ extern "C" {
 #endif
 
 int hocr2pdf(const char* imageFileName, const char* hocrText, PDFCodec* pdfContext, bool sloppy, bool overlayImage) {
-	  // load the image, if specified and possible
+	  LOGI("hocr2pdf %s",hocrText);
+
+	// load the image, if specified and possible
 
 	  Image image; image.w = image.h = 0;
 	  std::string fileName(imageFileName);
@@ -80,7 +81,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 }
 
 
-void Java_com_renard_pdf_Hocr2Pdf_nativeHocr2pdf( JNIEnv* env, jobject thiz, jobjectArray imageStrings, jobjectArray hocrStrings, jstring out, jboolean sloppy, jboolean overlayImage)
+void Java_com_renard_pdf_Hocr2Pdf_nativeHocr2pdf( JNIEnv* env, jobject thiz, jobjectArray imageStrings, jobjectArray hocrBytes, jstring out, jboolean sloppy, jboolean overlayImage)
 {
   LOGI("Java_com_renard_pdf_Hocr2Pdf_nativeHocr2pdf");
 
@@ -101,19 +102,25 @@ void Java_com_renard_pdf_Hocr2Pdf_nativeHocr2pdf( JNIEnv* env, jobject thiz, job
   unsigned int numImages = env->GetArrayLength( imageStrings );
   for (int i = 0; i< numImages; i++) {
 	  jstring image = (jstring) env->GetObjectArrayElement( imageStrings, i );
-	  jstring hocr = (jstring)env->GetObjectArrayElement( hocrStrings, i );
+	  jbyteArray hocr = (jbyteArray)env->GetObjectArrayElement( hocrBytes, i );
 
 	  const char *c_image = env->GetStringUTFChars(image, NULL);
-	  const char *c_hocr = env->GetStringUTFChars(hocr, NULL);
+	  jbyte* javaStringByte = env->GetByteArrayElements(hocr,0);
+	  jsize javaStringlen = env->GetArrayLength(hocr);
+	  std::string cString((char*)javaStringByte, javaStringlen);
 
+	  //const char *c_hocr = env->GetStringUTFChars(hocr, NULL);
+
+	  LOGI("size of string = %i",cString.length());
 	  if (useCallbacks) {
 		  env->CallVoidMethod(thiz, mid, i);
 	  }
 
-	  int r = hocr2pdf(c_image, c_hocr, pdfContext, c_sloppy,c_overlay);
-
+	  int r = hocr2pdf(c_image, cString.c_str(), pdfContext, c_sloppy,c_overlay);
 	  env->ReleaseStringUTFChars(image, c_image);
-	  env->ReleaseStringUTFChars(hocr, c_hocr);
+	  env->ReleaseByteArrayElements(hocr,javaStringByte,JNI_ABORT);
+	  env->DeleteLocalRef(hocr);
+	  env->DeleteLocalRef(image);
   }
   delete pdfContext;
 
