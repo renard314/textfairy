@@ -39,6 +39,7 @@ import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.text.Html;
@@ -316,9 +317,6 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         boolean isExploreByTouchEnabled = AccessibilityManagerCompat.isTouchExplorationEnabled(am);
         final boolean skipCrop = isExploreByTouchEnabled && isAccessibilityEnabled;
 
-        if (mBitmapLoadTask != null) {
-            mBitmapLoadTask.cancel(false);
-        }
         registerImageLoaderReceiver();
         mBitmapLoadTask = new ImageLoadAsyncTask(this, skipCrop, rotateXDegrees, cameraPicUri).execute();
 
@@ -370,8 +368,9 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         startActivityForResult(intent, REQUEST_CODE_OCR);
     }
 
-    protected void onPostResume() {
-        super.onPostResume();
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
         if (mCameraResult != null) {
             onTakePhotoActivityResult(mCameraResult.mRequestCode, mCameraResult.mResultCode, mCameraResult.mData);
             mCameraResult = null;
@@ -382,15 +381,21 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i(LOG_TAG, "onReceive " + BaseDocumentActivitiy.this);
-            if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADED)) {
-                unRegisterImageLoadedReceiver();
-                final long nativePix = intent.getLongExtra(ImageLoadAsyncTask.EXTRA_PIX, 0);
-                final int statusNumber = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_STATUS, PixLoadStatus.SUCCESS.ordinal());
-                final boolean skipCrop = intent.getBooleanExtra(ImageLoadAsyncTask.EXTRA_SKIP_CROP, false);
-                handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop);
-            } else if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START)) {
-                showLoadingImageProgressDialog();
+            //I get quite a number of crash reports here saying that I cannot show a dialog after onSaveInstanceState.
+            //However the broadcastReceiver gets unregistered in onSaveInstanceState before i call super().
+            //As a workaround I check for the flag if the receiver is registered
+            //Additionally i use commitAllowStateLoss as its not terribly important to preserve the state of the loading dialog
+            if(mReceiverRegistered) {
+                Log.i(LOG_TAG, "onReceive " + BaseDocumentActivitiy.this);
+                if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADED)) {
+                    unRegisterImageLoadedReceiver();
+                    final long nativePix = intent.getLongExtra(ImageLoadAsyncTask.EXTRA_PIX, 0);
+                    final int statusNumber = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_STATUS, PixLoadStatus.SUCCESS.ordinal());
+                    final boolean skipCrop = intent.getBooleanExtra(ImageLoadAsyncTask.EXTRA_SKIP_CROP, false);
+                    handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop);
+                } else if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START)) {
+                    showLoadingImageProgressDialog();
+                }
             }
         }
     };
@@ -426,8 +431,11 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
     private void showLoadingImageProgressDialog() {
         Log.i(LOG_TAG,"showLoadingImageProgressDialog");
-        ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image).show(getSupportFragmentManager(), IMAGE_LOAD_PROGRESS_TAG);
-
+        //dialog.show(getSupportFragmentManager(), null);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        final ProgressDialogFragment dialog = ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image);
+        ft.add(dialog, IMAGE_LOAD_PROGRESS_TAG);
+        ft.commitAllowingStateLoss();
     }
 
     void showFileError(PixLoadStatus status) {
