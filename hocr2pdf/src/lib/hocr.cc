@@ -31,6 +31,7 @@
 #include "../codecs/pdf.hh"
 
 #include "hocr.hh"
+#include "entities.h"
 
 static int res = 300;
 static bool sloppy = false;
@@ -78,6 +79,8 @@ std::string sanitizeStr(const std::string& _s) {
 // HTML decode
 
 std::string htmlDecode(const std::string& _s) {
+	/*
+
 	std::string s(_s);
 	std::string::size_type i;
 
@@ -93,8 +96,15 @@ std::string htmlDecode(const std::string& _s) {
 	while ((i = s.find("&quot;")) != std::string::npos)
 		s.replace(i, 6, "\"");
 
-	// TODO: '&8212;' and more - when implemented, best locked on
-	// each '&' and matched to the next ';'
+
+	while ((i = s.find("&#39;")) != std::string::npos)
+		s.replace(i, 5, "'");
+	*/
+
+	char* dest = new char[_s.length()+1];
+	decode_html_entities_utf8(dest,_s.c_str());
+	std::string s(dest);
+	delete[] dest;
 	return s;
 }
 
@@ -204,8 +214,12 @@ struct Textline {
 		pdfContext->showPath();
 		*/
 
-		float b = (bbox.x1 * baseline1 + baseline2);
+		//the baseline params should be interpreted like this:
+		//float b = (bbox.x1 * baseline1 + baseline2);
+		//but we try to keep a perfect straight line to make some pdf readers happy
+		float b = (baseline2);
 		std::cout <<"baseline mod = "<<b<<"\n";
+
 
 		int height = 0;
 		if(size>0){
@@ -215,7 +229,6 @@ struct Textline {
 			double y2 = 72. * ((b/2) + bbox.y2) / res;
 			height = y2-y1;
 		}
-//		std::cout << "second height " << height << "\n";
 
 		for (span_iterator it = spans.begin(); it!= spans.end(); ++it, ++n) {
 			std::string text = htmlDecode(it->text);

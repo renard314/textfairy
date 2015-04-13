@@ -76,3 +76,4 @@ signing.properties
 makefile.static
 config.status
 libjpeg.9.dylib
+test.pdf

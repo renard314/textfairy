@@ -18,6 +18,7 @@ LOCAL_SRC_FILES := \
   lib/rotate.cc \
   lib/Colorspace.cc \
   lib/hocr.cc \
+  lib/entities.cc \
   codecs/Codecs.cc \
   codecs/pdf.cc \
   codecs/png.cc \

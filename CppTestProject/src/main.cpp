@@ -246,7 +246,7 @@ void createPdf(const char* imagePath, const char* hocrPath) {
 	ofstream pdfOutStream("test.pdf");
 	PDFCodec* pdfContext = new PDFCodec(&pdfOutStream);
 	bool sloppy = false;
-	bool overlayImage = true;
+	bool overlayImage = false;
 	Image image;
 	image.w = image.h = 0;
 	std::string fileName(imagePath);
