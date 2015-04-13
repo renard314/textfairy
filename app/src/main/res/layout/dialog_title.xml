@@ -7,6 +7,7 @@
     android:drawableLeft="@drawable/warte3"
     android:drawablePadding="@dimen/default_padding"
     android:gravity="center_vertical|left"
+    android:textStyle="bold"
     android:layout_margin="@dimen/default_padding"
     android:textAppearance="@style/FairySpeechbubble" >
 
