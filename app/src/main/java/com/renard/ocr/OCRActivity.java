@@ -396,6 +396,7 @@ public class OCRActivity extends MonitoredActivity {
                 || mLanguage.equalsIgnoreCase("kor")
                 || mLanguage.equalsIgnoreCase("hin")
                 || mLanguage.equalsIgnoreCase("heb")
+                || mLanguage.equalsIgnoreCase("jap")
                 || mLanguage.equalsIgnoreCase("ell")
                 || mLanguage.equalsIgnoreCase("bel")
                 || mLanguage.equalsIgnoreCase("ara")
