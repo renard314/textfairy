@@ -14,6 +14,8 @@
 #include "binarize.h"
 #include "dewarp_textfairy.h"
 #include "RunningStats.h"
+#include <stdlib.h>
+#include <algorithm>    // std::max
 using namespace std;
 
 static Pixa* pixaDebugDisplay = pixaCreate(0);
@@ -42,8 +44,23 @@ bool cancelFunc(void* cancel_this, int words) {
 	return false;
 }
 
+void testScaleWithBitmap(){
+	Pix* pixOrg = pixRead("images/bmpfile.bmp");
+    Pix* pixd = pixRemoveColormap(pixOrg, REMOVE_CMAP_BASED_ON_SRC);
+    if(pixd==NULL){
+    	fprintf(stderr, "converting to grey");
+    	pixd=pixConvertTo8(pixOrg, false);
+    }
+	l_int32 d = pixGetDepth(pixd);
+	fprintf(stderr, "d = %i.",d);
+
+	pixd = pixScaleGeneral(pixd, 0.5, 0.5,0, 0);
+	pixDisplay(pixd,0,0);
+
+}
+
 void doOcr(){
-	Pix* pixOrg = pixRead("images/renard.png");
+	Pix* pixOrg = pixRead("images/bmpfile.bmp");
 	Pix* pixText;
 	pixJavaCallback(pixOrg);
 
@@ -184,9 +201,65 @@ void pixBlurDebug(Pix* pix){
 
 }
 
+
 void blurDetect(){
-	Pix* pixOrg = pixRead("images/renard.png");
-	pixBlurDebug(pixOrg);
+	Pix* pixOrg = pixRead("images/blurred.jpg");
+	Pix* pixGrey = pixConvertRGBToGrayFast(pixOrg);
+	Pix* pixMedian = pixMedianFilter(pixGrey,2,2);
+	Pix* edges = pixTwoSidedEdgeFilter(pixMedian, L_VERTICAL_EDGES);
+	l_int32    wd, hd, wm, hm, w, h, d, wpld, wplm, wpls;
+	l_int32    i, j, x;
+	l_uint32  *datad, *datam, *datas, *lined, *linem, *lines;
+	w = pixGetWidth(edges);
+	h = pixGetHeight(edges);
+	Pix* blurMeasure = pixCreate(w,h,8);
+
+	NUMA* na = pixGetGrayHistogram(edges, 4);
+	int thresh;
+	numaSplitDistribution(na, 0.1, &thresh, NULL, NULL, NULL, NULL, NULL);
+	numaDestroy(&na);
+	Pix* pixBinary = pixThresholdToBinary(edges, thresh);
+	pixInvert(pixBinary, pixBinary);
+
+
+    datad = pixGetData(blurMeasure);
+    datam = pixGetData(pixBinary);
+    datas = pixGetData(pixMedian);
+    wpld = pixGetWpl(blurMeasure);
+    wplm = pixGetWpl(pixBinary);
+    wpls = pixGetWpl(pixMedian);
+    RunningStats stats;
+    l_uint32 k= 2;
+    for (i = k; i < h-k; i++) {
+        lined = datad + i * wpld;
+        linem = datam + i * wplm;
+        lines = datas + i * wpls;
+        for (j = k; j < w-k; j++) {
+            if (GET_DATA_BIT(linem, j)) {
+            	l_uint32 dom = 0;
+            	l_uint32 contrast = 0;
+            	for(x = j-k;x <=j+k; x++){
+            		dom+= abs((GET_DATA_BYTE(lines,x+2) - GET_DATA_BYTE(lines,x))-(GET_DATA_BYTE(lines,x) - GET_DATA_BYTE(lines,x-2)));
+                	contrast+= abs(GET_DATA_BYTE(lines,x) - GET_DATA_BYTE(lines,x-1));
+            	}
+            	double sharpness = (((float)dom)/((float)contrast))*50;
+            	stats.Push(sharpness);
+            	float val = min(255.0, sharpness);
+            	SET_DATA_BYTE(lined,j, val);
+            } else {
+            	SET_DATA_BYTE(lined,j, 0xff);
+            }
+        }
+    }
+
+
+    pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
+    pixWrite("pixGrey.png",pixGrey, IFF_PNG);
+    pixBlendColorByChannel(pixOrg,pixOrg,blurMeasure,0,0,1,0,0,0,0x00ffff00);
+    printf("sharpness = %f, stddev = %f",stats.Mean() ,stats.PopulationStandardDeviation());
+//	pixSetMasked(pixGrey,pixEdgeMask,0);
+	pixDisplay(blurMeasure,0,0);
+	//pixDisplay(pixOrg,0,0);
 	pixDestroy(&pixOrg);
 
 }
@@ -281,7 +354,8 @@ void createPdf(const char* imagePath, const char* hocrPath) {
 }
 
 int main() {
-	createPdf("images/5.png","images/scan_test.html");
-
+	//createPdf("images/5.png","images/scan_test.html");
+	//testScaleWithBitmap();
+	blurDetect();
 	return 0;
 }
