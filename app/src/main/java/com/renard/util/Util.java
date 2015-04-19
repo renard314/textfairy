@@ -294,16 +294,17 @@ public class Util {
                 if (cursor.moveToFirst()) {
                     final int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
                     if (idx != -1) {
-                        String absoluteFilePath = cursor.getString(idx);
-                        return absoluteFilePath;
+						return cursor.getString(idx);
                     }
                 }
                 return null;
             } catch(SecurityException securityException) {
                 return null;
             }finally {
-                cursor.close();
-            }
+				if (cursor != null) {
+					cursor.close();
+				}
+			}
         } else if (scheme.equals("file")) {
 			return uri.getPath();
 		}
