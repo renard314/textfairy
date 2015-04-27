@@ -16,6 +16,7 @@
 #include "RunningStats.h"
 #include <stdlib.h>
 #include <algorithm>    // std::max
+#include <math.h>       /* pow */
 using namespace std;
 
 static Pixa* pixaDebugDisplay = pixaCreate(0);
@@ -201,66 +202,103 @@ void pixBlurDebug(Pix* pix){
 
 }
 
+void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue) {
+  int bR = 255; int bG = 0; int bB=0;    // RGB for our 2nd color (red in this case).
 
-void blurDetect(){
-	Pix* pixOrg = pixRead("images/blurred.jpg");
+  red   = (float)(bR - r) * value + r;      // Evaluated as -255*value + 255.
+  green = (float)(bG - g) * value + g;      // Evaluates as 0.
+  blue  = (float)(bB - b) * value + b;      // Evaluates as 255*value + 0.
+}
+
+
+void blurDetect(const char* image){
+	Pix* pixOrg = pixRead(image);
 	Pix* pixGrey = pixConvertRGBToGrayFast(pixOrg);
-	Pix* pixMedian = pixMedianFilter(pixGrey,2,2);
-	Pix* edges = pixTwoSidedEdgeFilter(pixMedian, L_VERTICAL_EDGES);
-	l_int32    wd, hd, wm, hm, w, h, d, wpld, wplm, wpls;
-	l_int32    i, j, x;
-	l_uint32  *datad, *datam, *datas, *lined, *linem, *lines;
+	Pix* pixMedian = pixMedianFilter(pixGrey,3,3);
+	Pix* edges = pixSobelEdgeFilter(pixMedian,L_ALL_EDGES);
+	//Pix* edges = pixTwoSidedEdgeFilter(pixMedian, L_VERTICAL_EDGES);
+	l_int32    w, h, wpld, wplb, wplm, wplo,wpls;
+	l_int32    i, j, x, rval, gval, bval;
+	l_uint32  *datad, *datab, *datas,*datao,*datam, *lined, *lineb, *lines, *lineo, *linem;
 	w = pixGetWidth(edges);
 	h = pixGetHeight(edges);
 	Pix* blurMeasure = pixCreate(w,h,8);
-
+	//Pix* pixBinary;
+	//pixOtsuAdaptiveThreshold(edges,300,300,0,0,0.1,NULL, &pixBinary);
 	NUMA* na = pixGetGrayHistogram(edges, 4);
 	int thresh;
-	numaSplitDistribution(na, 0.1, &thresh, NULL, NULL, NULL, NULL, NULL);
+	numaSplitDistribution(na, 0.05, &thresh, NULL, NULL, NULL, NULL, NULL);
 	numaDestroy(&na);
 	Pix* pixBinary = pixThresholdToBinary(edges, thresh);
-	pixInvert(pixBinary, pixBinary);
+	//expand the pixels so that blurriness around edges is measured too.
+	//pixAddBo
+	//pixErodeBrick(pixBinary,pixBinary,6,6);
+	//pixInvert(pixBinary, pixBinary);
 
 
+    datao = pixGetData(pixOrg);
+    datas = pixGetData(pixGrey);
     datad = pixGetData(blurMeasure);
-    datam = pixGetData(pixBinary);
-    datas = pixGetData(pixMedian);
+    datab = pixGetData(pixBinary);
+    datam = pixGetData(pixMedian);
+    wplo = pixGetWpl(pixOrg);
+    wpls = pixGetWpl(pixGrey);
     wpld = pixGetWpl(blurMeasure);
-    wplm = pixGetWpl(pixBinary);
-    wpls = pixGetWpl(pixMedian);
+    wplb = pixGetWpl(pixBinary);
+    wplm = pixGetWpl(pixMedian);
     RunningStats stats;
     l_uint32 k= 2;
     for (i = k; i < h-k; i++) {
+        lineo = datao + i * wplo;
         lined = datad + i * wpld;
+        lineb = datab + i * wplb;
         linem = datam + i * wplm;
         lines = datas + i * wpls;
         for (j = k; j < w-k; j++) {
-            if (GET_DATA_BIT(linem, j)) {
+            if (!GET_DATA_BIT(lineb, j)) {
             	l_uint32 dom = 0;
             	l_uint32 contrast = 0;
             	for(x = j-k;x <=j+k; x++){
-            		dom+= abs((GET_DATA_BYTE(lines,x+2) - GET_DATA_BYTE(lines,x))-(GET_DATA_BYTE(lines,x) - GET_DATA_BYTE(lines,x-2)));
+            		dom+= abs((GET_DATA_BYTE(linem,x+2) - GET_DATA_BYTE(linem,x))-(GET_DATA_BYTE(linem,x) - GET_DATA_BYTE(linem,x-2)));
                 	contrast+= abs(GET_DATA_BYTE(lines,x) - GET_DATA_BYTE(lines,x-1));
             	}
-            	double sharpness = (((float)dom)/((float)contrast))*50;
-            	stats.Push(sharpness);
-            	float val = min(255.0, sharpness);
-            	SET_DATA_BYTE(lined,j, val);
+            	if(contrast>0){
+					double sharpness = (((float)dom)/((float)contrast));
+					stats.Push(sharpness);
+					float val = min(255.0, sharpness*50);
+					SET_DATA_BYTE(lined,j, val);
+					extractRGBValues(lineo[j], &rval, &gval, &bval);
+					double fraction = val/255;
+					//fraction = pow(fraction,2.4);
+					//float)Math.pow(input, mDoubleFactor);
+					int red, green, blue;
+					getValueBetweenTwoFixedColors(fraction,rval,gval,bval,red, green, blue);
+					composeRGBPixel(red, green, blue, lineo + j);
+            	}
+
             } else {
-            	SET_DATA_BYTE(lined,j, 0xff);
+            	//SET_DATA_BYTE(lined,j, 0xff);
             }
         }
     }
 
-
     pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
-    pixWrite("pixGrey.png",pixGrey, IFF_PNG);
-    pixBlendColorByChannel(pixOrg,pixOrg,blurMeasure,0,0,1,0,0,0,0x00ffff00);
-    printf("sharpness = %f, stddev = %f",stats.Mean() ,stats.PopulationStandardDeviation());
+    pixWrite("binary.png",pixBinary, IFF_PNG);
+    pixWrite("edges.png",edges, IFF_PNG);
+    pixWrite("median.png",pixMedian, IFF_PNG);
+    //pixWrite("pixOrg.png",pixOrg, IFF_PNG);
+    //pixBlendColorByChannel(pixOrg,pixOrg,blurMeasure,0,0,0.5,2,2,1,0xff);
+    printf("%s = %f, stddev = %f\n",image, stats.Mean() ,stats.PopulationStandardDeviation());
 //	pixSetMasked(pixGrey,pixEdgeMask,0);
-	pixDisplay(blurMeasure,0,0);
+	//pixDisplay(pixBinary,0,0);
+	//pixDisplay(pixOrg,0,0);
 	//pixDisplay(pixOrg,0,0);
 	pixDestroy(&pixOrg);
+	pixDestroy(&pixGrey);
+	pixDestroy(&pixMedian);
+	pixDestroy(&pixBinary);
+	pixDestroy(&blurMeasure);
+	pixDestroy(&edges);
 
 }
 
@@ -356,6 +394,7 @@ void createPdf(const char* imagePath, const char* hocrPath) {
 int main() {
 	//createPdf("images/5.png","images/scan_test.html");
 	//testScaleWithBitmap();
-	blurDetect();
+	blurDetect("images/62.jpg");
+	//blurDetect("images/blurred.jpg");
 	return 0;
 }
