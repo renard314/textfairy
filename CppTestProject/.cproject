@@ -41,6 +41,7 @@
 								<option id="macosx.cpp.link.option.libs.1848847119" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="z"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jpeg"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="png"/>
 								</option>
 								<option id="macosx.cpp.link.option.paths.124992044" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/usr/local/lib"/>
@@ -53,6 +54,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug.675411651" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.exe.debug">
 								<option id="gnu.both.asm.option.include.paths.754636759" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/hocr_lib}&quot;"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/libpng-android/jni"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.504712870" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -82,6 +84,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/hocr_codecs}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/hocr_lib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/hocr_utility}&quot;"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/libpng-android/jni"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.543365784" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="USE_STD_NAMESPACE=1"/>
@@ -95,6 +98,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/png_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CppTestProject/hocr_lib}&quot;"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/libpng-android/jni"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.724703398" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -146,6 +150,7 @@
 								<option id="gnu.both.asm.option.include.paths.1600920078" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/libpng-android/jni"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.806279004" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -156,6 +161,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1208867319" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/libpng-android/jni"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1826399187" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -165,6 +171,7 @@
 								<option id="gnu.c.compiler.option.include.paths.1433199303" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/libpng-android/jni"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.5463121" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -232,6 +239,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/image_processing_src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/libpng-android/jni"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.364419395" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -260,6 +268,7 @@
 									<listOptionValue builtIn="false" value="/Users/renard/devel/android-ndk-r9c/platforms/android-19/arch-arm/usr/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/libpng-android/jni"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.448175147" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="USE_STD_NAMESPACE=1"/>
@@ -291,6 +300,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/image_processing_src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HelloWorld2/jpeg_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
+									<listOptionValue builtIn="false" value="/Users/renard/devel/textfairy/libpng-android/jni"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1082754977" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -312,7 +322,17 @@
 		<project id="HelloWorld2.cdt.managedbuild.target.macosx.exe.684103316" name="Executable" projectType="cdt.managedbuild.target.macosx.exe"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/CppTestProject"/>
+		</configuration>
+		<configuration configurationName="android">
+			<resource resourceType="PROJECT" workspacePath="/CppTestProject"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/CppTestProject"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>

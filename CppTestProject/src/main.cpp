@@ -390,10 +390,10 @@ Pix* binarizeEdges(Pix* edges){
 	return pixThresholdToBinary(edges, thresh);
 }
 
-Pix* blurVertical(Pix* pixGrey, Pix* pixMedian,const char* name) {
+Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, const char* name) {
 
 	l_int32    width, height, wpld, wplbx, wplby, wplm, wplo,wpls;
-	l_int32    i, j, k, rval, gval, bval;
+	l_int32    y, x, k, rval, gval, bval;
 	l_uint32  *datad, *databx,*databy, *datas,*datao,*datam, *lined, *linebx, *lineby, *lines, *lineo, *linem;
 
 	Pix* edgesx = pixTwoSidedEdgeFilter(pixMedian, L_VERTICAL_EDGES);
@@ -405,14 +405,15 @@ Pix* blurVertical(Pix* pixGrey, Pix* pixMedian,const char* name) {
 	Pix* pixBinaryy = binarizeEdges(edgesy);
 
 	//pixCloseBrickDwa(pixBinary,pixBinary,2,2);
+	Pix* pixOrg = pixConvert8To32(pixGrey);
 
-    //datao = pixGetData(pixOrg);
+    datao = pixGetData(pixOrg);
     datas = pixGetData(pixGrey);
     datad = pixGetData(blurMeasure);
     databx = pixGetData(pixBinaryx);
     databy = pixGetData(pixBinaryy);
     datam = pixGetData(pixMedian);
-    //wplo = pixGetWpl(pixOrg);
+    wplo = pixGetWpl(pixOrg);
     wpls = pixGetWpl(pixGrey);
     wpld = pixGetWpl(blurMeasure);
     wplbx = pixGetWpl(pixBinaryx);
@@ -420,39 +421,43 @@ Pix* blurVertical(Pix* pixGrey, Pix* pixMedian,const char* name) {
     wplm = pixGetWpl(pixMedian);
     RunningStats stats;
     Numa* numaValues = numaCreate(0);
-    l_uint32 w= 2;
-    for (i = w; i < height-w; i++) {
-        //lineo = datao + i * wplo;
-        linem = datam + i * wplm;
-        lined = datad + i * wpld;
-        linebx = databx + i * wplbx;
-        lineby = databy + i * wplby;
-        lines = datas + i * wpls;
-        for (j = w; j < width-w; j++) {
-        	bool hasx = !GET_DATA_BIT(linebx, j);
-        	bool hasy = !GET_DATA_BIT(lineby, j);
+    l_int32 w = 2;
+    l_int32 w2 = w*2;
+    bool paintBlurMask = true;
+    for (y = w2; y < height-w2; y++) {
+        lineo = datao + y * wplo;
+        linem = datam + y * wplm;
+        lined = datad + y * wpld;
+        linebx = databx + y * wplbx;
+        lineby = databy + y * wplby;
+        lines = datas + y * wpls;
+        for (x = w2; x < width-w2; x++) {
+        	bool hasx = !GET_DATA_BIT(linebx, x);
+        	bool hasy = !GET_DATA_BIT(lineby, x);
             if (hasx||hasy) {
             	l_uint32 domx = 0;
             	l_uint32 contrastx = 0;
             	l_uint32 domy = 0;
             	l_uint32 contrasty = 0;
-            	for(k = i-w;k <=i+w; k++){
+            	for(k = -w;k <=w; k++){
             		//vertical dom
             		if(hasy){
-						l_uint8 y1 = GET_DATA_BYTE(datam + (k+2) * wplm,j);
-						l_uint8 y2 = GET_DATA_BYTE(datam + k * wplm,j);
-						l_uint8 y3 = GET_DATA_BYTE(datam + (k-2) * wplm,j);
+            			l_uint32 row = y+k;
+						l_uint8 y1 = GET_DATA_BYTE(datam + (row+2) * wplm,x);
+						l_uint8 y2 = GET_DATA_BYTE(datam + row * wplm,x);
+						l_uint8 y3 = GET_DATA_BYTE(datam + (row-2) * wplm,x);
 						domy+=abs((y1-y2)-(y2-y3));
-						y1 = GET_DATA_BYTE(datas + (k-1) * wpls,j);
-						y2 = GET_DATA_BYTE(datas + (k) * wpls,j);
+						y1 = GET_DATA_BYTE(datas + (row-1) * wpls,x);
+						y2 = GET_DATA_BYTE(datas + (row) * wpls,x);
 						contrasty+= abs(y1-y2);
             		}
 
                     //horizontal dom
             		if(hasx){
-						//domx+= abs((GET_DATA_BYTE(lines,k+2) - GET_DATA_BYTE(lines,k))-(GET_DATA_BYTE(lines,k) - GET_DATA_BYTE(lines,k-2)));
-						domx+= abs((GET_DATA_BYTE(linem,k+2) - GET_DATA_BYTE(linem,k))-(GET_DATA_BYTE(linem,k) - GET_DATA_BYTE(linem,k-2)));
-						contrastx+= abs(GET_DATA_BYTE(lines,k) - GET_DATA_BYTE(lines,k-1));
+            			l_uint32 column = x+k;
+            			l_uint8 x1=GET_DATA_BYTE(linem,column);
+						domx+= abs((GET_DATA_BYTE(linem,column+2) - x1)-(x1 - GET_DATA_BYTE(linem,column-2)));
+						contrastx+= abs(x1 - GET_DATA_BYTE(lines,column-1));
             		}
 
             	}
@@ -468,6 +473,7 @@ Pix* blurVertical(Pix* pixGrey, Pix* pixMedian,const char* name) {
 
             	if(sharpnessx>0 && sharpnessy>0){
             		sharpness = sqrt(sharpnessx*sharpnessx + sharpnessy * sharpnessy);
+            		//printf("x= %f, y = %f, total = %f, hasx=%i, hasy=%i\n",sharpnessx,sharpnessy,sharpness, hasx, hasy);
             	} else if(sharpnessx>0){
             		sharpness= sharpnessx;
             	} else {
@@ -475,27 +481,38 @@ Pix* blurVertical(Pix* pixGrey, Pix* pixMedian,const char* name) {
             	}
 				numaAddNumber(numaValues,sharpness);
 				stats.Push(sharpness);
-				float val = min(255.0, sharpness*40);
-				SET_DATA_BYTE(lined,j, val);
-				/*
-				extractRGBValues(lineo[j], &rval, &gval, &bval);
-				double fraction = val/255;
-				//fraction = pow(fraction,2.4);
-				//float)Math.pow(input, mDoubleFactor);
-				int red, green, blue;
-				getValueBetweenTwoFixedColors(fraction,rval,gval,bval,red, green, blue);
-				composeRGBPixel(red, green, blue, lineo + j);
-				*/
+				float val = min(255.0, (sharpness)*40);
+				SET_DATA_BYTE(lined,x, val);
+				if(paintBlurMask){
+					extractRGBValues(lineo[x], &rval, &gval, &bval);
+					//3= sharp, 1 not sharp
+					double maxSharpness = 3.0;
+					double minSharpness = 1.0;
+					double clamped = min(maxSharpness,sharpness);
+					clamped = max(minSharpness,clamped);
+					//scale range to 0-1
+					clamped = (clamped-minSharpness)/(maxSharpness-minSharpness);
+					//clamped = pow(clamped,2.4);
+					int red, green, blue;
+					//printf("sharpness = %f, fraction = %f\n",sharpness, clamped);
+					getValueBetweenTwoFixedColors(1-clamped,rval,gval,bval,red, green, blue);
+					composeRGBPixel(red, green, blue, lineo + x);
+				}
 
             }
         }
     }
 
+    printf("1\n");
+
     //pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
     pixWrite("binaryx.png",pixBinaryx, IFF_PNG);
+    printf("2\n");
     pixWrite("binaryy.png",pixBinaryy, IFF_PNG);
     pixWrite("edgesx.png",edgesx, IFF_PNG);
     pixWrite("edgesy.png",edgesy, IFF_PNG);
+	pixWrite("blurBended.png",pixOrg, IFF_PNG);
+    printf("3\n");
     l_float32 val;
     numaGetRankValue(numaValues,0.5,NULL,0,&val);
     printf(" %s = %f, rank = %f\n",name, stats.Mean(), val);
@@ -520,7 +537,7 @@ void blurDetect(const char* image){
 			break;
 	}
 	Pix* pixMedian = pixMedianFilter(pixGrey,4,4);
-	Pix* blurMeasure = blurVertical(pixGrey, pixMedian, image);
+	Pix* blurMeasure = pixMakeBlurMask(pixGrey, pixMedian, image);
     pixWrite("median.png",pixMedian, IFF_PNG);
     pixWrite("grey.png",pixGrey, IFF_PNG);
     pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
@@ -550,10 +567,10 @@ void testAllBlur(){
 int main() {
 	//createPdf("images/5.png","images/scan_test.html");
 	//testScaleWithBitmap();
-	//blurDetect("images/sharp2.jpg");
-
-	testAllBlur();
-	//blurDetect("images/blur2.jpg");
+	blurDetect("images/53.jpg");
+	//blurDetect("images/blur3.jpg");
+	//testAllBlur();
+	//blurDetect("images/blur3.jpg");
 
 
 	return 0;
