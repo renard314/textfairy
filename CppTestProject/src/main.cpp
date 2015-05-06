@@ -291,6 +291,72 @@ void createPdf(const char* imagePath, const char* hocrPath) {
 	delete pdfContext;
 }
 
+l_int32
+pixGetAverageValueInRectIgnoreBlack(PIX       *pixs,
+                     BOX       *box,
+                     l_float32  *pavgval)
+{
+l_int32    i, j, w, h, d, wpl, bw, bh;
+l_int32    xstart, ystart, xend, yend;
+l_uint32   sum, sumCount;
+l_uint32  *data, *line;
+
+    PROCNAME("pixGetAverageValueInRect");
+
+    if (!pavgval)
+        return ERROR_INT("nothing to do", procName, 1);
+    if (pavgval) *pavgval = 0;
+    if (!pixs)
+        return ERROR_INT("pixs not defined", procName, 1);
+    if (pixGetColormap(pixs) != NULL)
+        return ERROR_INT("pixs has colormap", procName, 1);
+    pixGetDimensions(pixs, &w, &h, &d);
+    if (d != 8 && d != 32)
+        return ERROR_INT("pixs not 8 or 32 bpp", procName, 1);
+
+    xstart = ystart = 0;
+    xend = w - 1;
+    yend = h - 1;
+    if (box) {
+        boxGetGeometry(box, &xstart, &ystart, &bw, &bh);
+        xend = xstart + bw - 1;
+        yend = ystart + bh - 1;
+    }
+
+    data = pixGetData(pixs);
+    wpl = pixGetWpl(pixs);
+    sum = 0;
+    sumCount=0;
+    for (i = ystart; i <= yend; i++) {
+        line = data + i * wpl;
+        for (j = xstart; j <= xend; j++) {
+            if (d == 8){
+            	l_uint8 data_byte = GET_DATA_BYTE(line, j);
+            	if(data_byte>0){
+            		sum += data_byte;
+            		sumCount++;
+            	}
+            } else { /* d == 32 */
+            	l_uint32 color = line[j];
+            	if(color>0){
+                	sum += color;
+            		sumCount++;
+            	}
+            }
+
+        }
+    }
+
+    if (pavgval) {
+    	if(sumCount>0){
+    		*pavgval = sum / sumCount;
+    	} else {
+    		*pavgval = 0;
+    	}
+    }
+    return 0;
+}
+
 
 
 void blurDetect(const char* image){
@@ -317,9 +383,40 @@ void blurDetect(const char* image){
 //    pixWrite("binary.png",pixb, IFF_PNG);
 
 	timer = startTimerNested();
-	Pix* blurMeasure = pixMakeBlurMask(pixGrey, pixMedian,&blurValue);
+	Pix* pixBinaryText;
+
+	Pix* blurMeasure = pixMakeBlurMask(pixGrey, pixMedian,&blurValue, &pixBinaryText);
 	printf("blur mask: %f in %f\n", blurValue, stopTimerNested(timer));
 	timer = startTimerNested();
+
+	//get blurriness for each connected component
+	Pixa* comps;
+	pixInvert(pixBinaryText,pixBinaryText);
+	Boxa* boxa =pixConnComp(pixBinaryText,&comps,4);
+
+	Pixa* componentBlurMask = pixaCreateFromBoxa(blurMeasure,boxa,NULL);
+	l_int32 compCount = pixaGetCount(comps);
+	for(int i = 0; i<compCount; i++){
+
+		Pix* pixBlurComp = pixaGetPix(componentBlurMask,i,L_CLONE);
+		Pix* pixComp = pixaGetPix(comps,i,L_CLONE);
+		Box* box = pixaGetBox(comps,i,L_CLONE);
+
+		l_float32 mean;
+		pixGetAverageMasked(pixBlurComp,pixComp,0,0,1,L_MEAN_ABSVAL,&mean);
+
+		pixSetAllGray(pixBlurComp,mean);
+		/*
+		pixSetAll(pixBlurComp);
+		pixSetMasked(pixBlurComp,pixComp,mean);
+		*/
+		pixDestroy(&pixComp);
+		pixDestroy(&pixBlurComp);
+		boxDestroy(&box);
+
+	}
+	Pix* test = pixaDisplay(componentBlurMask,0,0);
+	pixWrite("meanBLurMask.png",test, IFF_PNG);
 
 	Pix* pixBlendMask = pixBlockconvGray(blurMeasure,NULL,2,2);
 	Pix* pixBlended = pixConvert8To32(pixGrey);
@@ -329,6 +426,7 @@ void blurDetect(const char* image){
 	//printf("%s = %f",image, blurValue);
 
     pixWrite("mask.png",pixBlendMask, IFF_PNG);
+    pixWrite("text.png",pixBinaryText, IFF_PNG);
 
 
     pixWrite("blended.png",pixBlended, IFF_PNG);

@@ -28,7 +28,7 @@
 /**
  * Creates a mask which signifies the blurred regions of pixGrey. 255-->very blurred.
  */
-Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue);
+Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** pixBinary);
 
 
 /**

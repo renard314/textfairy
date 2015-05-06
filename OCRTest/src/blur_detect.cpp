@@ -22,10 +22,39 @@
 #include <sstream>
 using namespace std;
 
+
+Pix* pixApplyThreshold(Pix* pixs, Pix* pixth, const l_uint32 tileSize){
+	L_TIMER timer = startTimerNested();
+	l_int32 w, h;
+	ostringstream s;
+	pixGetDimensions(pixs, &w, &h, NULL);
+	l_int32 nx = L_MAX(1, w / tileSize);
+	l_int32 ny = L_MAX(1, h / tileSize);
+	Pix* pixt;
+	PIXTILING* pt = pixTilingCreate(pixs, nx, ny, 0, 0, 0, 0);
+	Pix* pixb = pixCreate(w, h, 1);
+	l_uint32 val;
+	for (int i = 0; i < ny; i++) {
+		for (int j = 0; j < nx; j++) {
+			pixt = pixTilingGetTile(pt, i, j);
+			pixGetPixel(pixth, j, i, &val);
+			Pix* pixbTile = pixThresholdToBinary(pixt, val);
+			pixTilingPaintTile(pixb, i, j, pixbTile, pt);
+			pixDestroy(&pixt);
+			pixDestroy(&pixbTile);
+		}
+	}
+	pixTilingDestroy(&pt);
+	s << "local threshhold application: " << stopTimerNested(timer) << endl;
+	printf("%s", s.str().c_str());
+	return pixb;
+}
+
+
 /**
  * determines and applies a threshold for each tile separately
  */
-Pix* binarizeEdgeTiled(Pix* pixs, const l_uint32 tileSize) {
+Pix* binarizeEdgeTiled(Pix* pixs, const l_uint32 tileSize, Pix** pixThresh) {
 	L_TIMER timer = startTimerNested();
 	l_int32 w, h;
 	Pix* pixb;
@@ -54,28 +83,16 @@ Pix* binarizeEdgeTiled(Pix* pixs, const l_uint32 tileSize) {
 	}
 	pixTilingDestroy(&pt);
 	s << "local threshhold determination: " << stopTimerNested(timer) << std::endl;
-	timer = startTimerNested();
-
-	pt = pixTilingCreate(pixs, nx, ny, 0, 0, 0, 0);
-	pixb = pixCreate(w, h, 1);
-	l_uint32 val;
-	for (int i = 0; i < ny; i++) {
-		for (int j = 0; j < nx; j++) {
-			pixt = pixTilingGetTile(pt, i, j);
-			pixGetPixel(pixth, j, i, &val);
-			Pix* pixbTile = pixThresholdToBinary(pixt, val);
-			pixTilingPaintTile(pixb, i, j, pixbTile, pt);
-			pixDestroy(&pixt);
-			pixDestroy(&pixbTile);
-		}
-	}
-	pixTilingDestroy(&pt);
-	pixDestroy(&pixth);
-	s << "local threshhold application: " << stopTimerNested(timer) << std::endl;
 	printf("%s", s.str().c_str());
+	pixb = pixApplyThreshold(pixs,pixth,tileSize);
+	if(pixThresh!=NULL){
+		*pixThresh=pixClone(pixth);
+	}
+	pixDestroy(&pixth);
 
 	return pixb;
 }
+
 
 
 void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue) {
@@ -89,7 +106,7 @@ void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, i
 
 
 
-Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue) {
+Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** pixBinary) {
 	l_int32    width, height, wpld, wplbx, wplby, wplm,wpls;
 	l_int32    y, x, k;
 	l_uint32  *datad, *databx,*databy, *datas,*datam, *lined, *linebx, *lineby, *lines, *linem;
@@ -101,8 +118,12 @@ Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue) {
 	width = pixGetWidth(edgesx);
 	height = pixGetHeight(edgesx);
 	Pix* blurMeasure = pixCreate(width,height,8);
-	Pix* pixBinaryx = binarizeEdgeTiled(edgesx,64);
-	Pix* pixBinaryy = binarizeEdgeTiled(edgesy,64);
+	Pix* pixBinaryx = binarizeEdgeTiled(edgesx,64,NULL);
+	Pix* pixBinaryy = binarizeEdgeTiled(edgesy,64, NULL);
+	if(pixBinary!=NULL){
+		*pixBinary =pixAnd(NULL,pixBinaryx, pixBinaryy);
+	}
+
 
     datas = pixGetData(pixGrey);
     datad = pixGetData(blurMeasure);

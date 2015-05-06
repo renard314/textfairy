@@ -211,7 +211,7 @@ Pix* binarizeTiled(Pix* pixs, const l_uint32 tileSize) {
 void binarize(Pix* pixGrey, Pix* pixhm, Pix** pixb) {
 	Pix* pixEdgeMask;
 	l_int32 width = pixGetWidth(pixGrey);
-	const l_uint32 tileSize = width/5; //size of tile during threshholding
+	const l_uint32 tileSize = width/15; //size of tile during threshholding
 	L_TIMER timer = startTimerNested();
 	ostringstream s;
 
