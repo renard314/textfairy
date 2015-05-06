@@ -56,6 +56,8 @@ build.xml
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+# Avoid ignoring YouTubeAndroidPlayerApi.jar (.jar files are usually ignored)
+!YouTubeAndroidPlayerApi.jar
 
 libjpeg/testoutt.jpg
 libjpeg/testoutp.ppm
