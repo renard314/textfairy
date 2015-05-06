@@ -395,7 +395,7 @@ public class OCRActivity extends MonitoredActivity {
         if (mLanguage.startsWith("chi") || mLanguage.equalsIgnoreCase("tha")
                 || mLanguage.equalsIgnoreCase("kor")
                 || mLanguage.equalsIgnoreCase("hin")
-                || mLanguage.equalsIgnoreCase("heb")
+                //|| mLanguage.equalsIgnoreCase("heb")
                 || mLanguage.equalsIgnoreCase("jap")
                 || mLanguage.equalsIgnoreCase("ell")
                 || mLanguage.equalsIgnoreCase("bel")
