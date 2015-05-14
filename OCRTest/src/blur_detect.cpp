@@ -45,9 +45,31 @@ Pix* pixApplyThreshold(Pix* pixs, Pix* pixth, const l_uint32 tileSize){
 		}
 	}
 	pixTilingDestroy(&pt);
-	s << "local threshhold application: " << stopTimerNested(timer) << endl;
+	//s << "local threshhold application: " << stopTimerNested(timer) << endl;
 	printf("%s", s.str().c_str());
 	return pixb;
+}
+
+Pix* binarizeEdge(Pix* pixs) {
+	NUMA* histo = pixGetGrayHistogram(pixs, 8);
+	NUMA* norm = numaNormalizeHistogram(histo, 1.0);
+	l_float32 median, mean, variance;
+	numaGetHistogramStats(norm, 0, 1, &mean, &median, NULL, &variance);
+	l_int32 thresh = 0;
+	if (variance < 1.0) {
+		thresh = 3;
+	} else {
+		thresh = 4;
+	}
+	printf("mean = %f, median = %f, variance = %f, thresh = %i\n", mean, median,variance, thresh);
+
+	Pix* pixForeground = pixThresholdToBinary(pixs, thresh);
+
+	numaDestroy(&histo);
+	numaDestroy(&norm);
+
+	return pixForeground;
+
 }
 
 
@@ -59,6 +81,7 @@ Pix* binarizeEdgeTiled(Pix* pixs, const l_uint32 tileSize, Pix** pixThresh) {
 	l_int32 w, h;
 	Pix* pixb;
 	ostringstream s;
+
 	pixGetDimensions(pixs, &w, &h, NULL);
 	l_int32 nx = L_MAX(1, w / tileSize);
 	l_int32 ny = L_MAX(1, h / tileSize);
@@ -83,7 +106,7 @@ Pix* binarizeEdgeTiled(Pix* pixs, const l_uint32 tileSize, Pix** pixThresh) {
 	}
 	pixTilingDestroy(&pt);
 	s << "local threshhold determination: " << stopTimerNested(timer) << std::endl;
-	printf("%s", s.str().c_str());
+	//printf("%s", s.str().c_str());
 	pixb = pixApplyThreshold(pixs,pixth,tileSize);
 	if(pixThresh!=NULL){
 		*pixThresh=pixClone(pixth);
@@ -114,15 +137,43 @@ Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** p
 
 	Pix* edgesx = pixSobelEdgeFilter(pixMedian, L_VERTICAL_EDGES);
 	Pix* edgesy = pixSobelEdgeFilter(pixMedian, L_HORIZONTAL_EDGES);
+	//Pix* test;
+	//pixOtsuAdaptiveThreshold(edgesx, 1,1,1,1,0.5,NULL,&test);
+	//pixWrite("otsu.png",test, IFF_PNG);
+
+/*
+	NUMA* na = pixGetGrayHistogram(pixMedian, 8);
+	int thresh;
+	numaSplitDistribution(na, 0.1, &thresh, NULL, NULL, NULL, NULL, NULL);
+	numaDestroy(&na);
+	Pix* test = pixThresholdToBinary(pixMedian,thresh);
+	pixWrite("pixBinarMedian.png",test,IFF_PNG);
+	*/
+
+
 
 	width = pixGetWidth(edgesx);
 	height = pixGetHeight(edgesx);
+	l_uint8 tileSize = max(30,width/6);
 	Pix* blurMeasure = pixCreate(width,height,8);
-	Pix* pixBinaryx = binarizeEdgeTiled(edgesx,64,NULL);
-	Pix* pixBinaryy = binarizeEdgeTiled(edgesy,64, NULL);
+	//Pix* pixBinaryx = binarizeEdge(edgesx);
+	//Pix* pixBinaryy = binarizeEdge(edgesy);
+	Pix* pixBinaryx = binarizeEdgeTiled(edgesx,tileSize,NULL);
+	Pix* pixBinaryy = binarizeEdgeTiled(edgesy,tileSize, NULL);
+/*
+	Pix* pixThinx= pixThin(pixBinaryx, L_THIN_BG, 4, 0);
+	Pix* pixThiny = pixThin(pixBinaryy,L_THIN_BG, 4, 0);
+
+	pixBinaryx = pixClone(pixThinx);
+	pixBinaryy = pixClone(pixThiny);
+
+	pixDestroy(&pixThinx);
+	pixDestroy(&pixThiny);
+*/
 	if(pixBinary!=NULL){
 		*pixBinary =pixAnd(NULL,pixBinaryx, pixBinaryy);
 	}
+	pixWrite("pixBinaryy.png",pixBinaryy,IFF_PNG);
 
 
     datas = pixGetData(pixGrey);
@@ -139,13 +190,15 @@ Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** p
     Numa* numaValues = numaCreate(0);
     l_int32 w = 2;
     l_int32 w2 = w*2;
-    for (y = w2; y < height-w2; y++) {
+    l_int32 w3 = 6;
+    l_int32 w4 = w3*2;
+    for (y = w4; y < height-w4; y++) {
         linem = datam + y * wplm;
         lined = datad + y * wpld;
         linebx = databx + y * wplbx;
         lineby = databy + y * wplby;
         lines = datas + y * wpls;
-        for (x = w2; x < width-w2; x++) {
+        for (x = w4; x < width-w4; x++) {
         	bool hasx = !GET_DATA_BIT(linebx, x);
         	bool hasy = !GET_DATA_BIT(lineby, x);
             if (hasx||hasy) {
@@ -157,24 +210,37 @@ Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** p
             		//vertical dom
             		if(hasy){
             			l_uint32 row = y+k;
-						l_uint8 y1 = GET_DATA_BYTE(datam + (row+2) * wplm,x);
+						l_uint8 y1 = GET_DATA_BYTE(datam + (row+w3) * wplm,x);
 						l_uint8 y2 = GET_DATA_BYTE(datam + row * wplm,x);
-						l_uint8 y3 = GET_DATA_BYTE(datam + (row-2) * wplm,x);
+						l_uint8 y3 = GET_DATA_BYTE(datam + (row-w3) * wplm,x);
 						domy+=abs((y1-y2)-(y2-y3));
-						y1 = GET_DATA_BYTE(datas + (row-1) * wpls,x);
-						y2 = GET_DATA_BYTE(datas + (row) * wpls,x);
+						y1 = GET_DATA_BYTE(datam + (row-1) * wpls,x);
+						y2 = GET_DATA_BYTE(datam + (row) * wpls,x);
 						contrasty+= abs(y1-y2);
+	                	if(x==44 && y==33){
+	                		//printf("(%i,%i) =  %i\n", x, row,y2);
+	                	}
+
             		}
 
                     //horizontal dom
             		if(hasx){
             			l_uint32 column = x+k;
-            			l_uint8 x1=GET_DATA_BYTE(linem,column);
-						domx+= abs((GET_DATA_BYTE(linem,column+2) - x1)-(x1 - GET_DATA_BYTE(linem,column-2)));
-						contrastx+= abs(x1 - GET_DATA_BYTE(lines,column-1));
+            			l_uint8 x1 = GET_DATA_BYTE(linem,column);
+            			l_uint8 x2 = GET_DATA_BYTE(linem,column+w3);
+            			l_uint8 x3 = GET_DATA_BYTE(linem,column-w3);
+
+            			domx+= abs((x2 - x1)-(x1 - x3));
+
+						x1 = GET_DATA_BYTE(linem,column);
+						x2 = GET_DATA_BYTE(linem,column-1);
+						contrastx+= abs(x1-x2);
             		}
 
+
             	}
+            	//if(x==44 && y==33){
+            	//}
             	double sharpnessx = 0;
             	double sharpnessy = 0;
             	double sharpness = 0;
@@ -193,16 +259,21 @@ Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** p
             	} else {
             		sharpness= sharpnessy;
             	}
+            	if(domy>0){
+            		//printf("(%i,%i) -> blur = %f, d = %i, c = %i\n", x,y,sharpnessy, domy, contrasty);
+            	}
+
 				numaAddNumber(numaValues,sharpness);
 				stats.Push(sharpness);
-				//3= sharp, 1 not sharp
-				double maxSharpness = 4.0;
-				double minSharpness = .5;
+				//3= sharp, 1.2 not sharp
+				double maxSharpness = 5.0;
+				double minSharpness = 1.0;
 				double clamped = min(maxSharpness,sharpness);
 				clamped = max(minSharpness,clamped);
 				//scale range to 0-1
-				clamped = (clamped-minSharpness)/(maxSharpness-minSharpness);
-				clamped = pow(1-clamped,2.8);
+				clamped = 1-(clamped-minSharpness)/(maxSharpness-minSharpness);
+				//clamped = pow(clamped,2);
+				//float val = clamped*255;
 				float val = clamped*255;
 				SET_DATA_BYTE(lined,x, val);
             }
@@ -213,8 +284,8 @@ Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** p
     	*blurValue = stats.Mean();
     	//numaGetRankValue(numaValues,0.5,NULL,0,blurValue);
     }
-    pixWrite("binary.png",pixBinaryx, IFF_PNG);
-    pixWrite("edge.png",edgesx, IFF_PNG);
+    pixWrite("pixBinaryx.png",pixBinaryx, IFF_PNG);
+    pixWrite("edgesx.png",edgesx, IFF_PNG);
 
 	pixDestroy(&pixBinaryx);
 	pixDestroy(&pixBinaryy);
