@@ -433,8 +433,6 @@ void blurDetect(const char* image){
 
 	Pix* blurMeasure = pixMakeBlurMask(pixGrey, pixMedian, &blurValue, &pixBinaryEdges);
 	printf("blur mask: %f in %f\n", blurValue, stopTimerNested(timer));
-	pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
-	pixWrite("pixBinaryEdges.png",pixBinaryEdges, IFF_PNG);
 
 	timer = startTimerNested();
 
@@ -470,14 +468,18 @@ void blurDetect(const char* image){
 	pixTintMasked(pixBlended,pixBlendMask);
 	printf("paint mask: %f\n", stopTimerNested(timer));
 /*
+	pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
+	pixWrite("pixBinaryEdges.png",pixBinaryEdges, IFF_PNG);
 	pixWrite("meanBlurMask.png",test, IFF_PNG);
     pixWrite("mask.png",blurMeasure, IFF_PNG);
     pixWrite("blended.png",pixBlended, IFF_PNG);
     pixWrite("textEdges.png",pixBinaryEdges, IFF_PNG);
     */
 
+	boxaDestroy(&boxa);
     pixDestroy(&test);
     pixDestroy(&pixMedian);
+    pixDestroy(&pixBinaryEdges);
     pixaDestroy(&componentEdgeMask);
     pixaDestroy(&componentBlurMask);
 	pixDestroy(&pixBlendMask);
