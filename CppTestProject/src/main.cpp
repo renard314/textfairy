@@ -357,7 +357,56 @@ l_uint32  *data, *line;
     return 0;
 }
 
+l_int32
+pixGetAverage(PIX        *pixs,  l_float32  *pval)
+{
+l_int32    i, j, w, h, d, wm, wplg, val, count;
+l_uint32  *datag, *lineg;
+l_float64  sumave, summs, ave;
+PIX       *pixg;
 
+    PROCNAME("pixGetAverage");
+
+    if (!pval)
+        return ERROR_INT("&val not defined", procName, 1);
+    *pval = 0.0;
+    if (!pixs)
+        return ERROR_INT("pixs not defined", procName, 1);
+    d = pixGetDepth(pixs);
+    if (d != 8 )
+        return ERROR_INT("pixs not 8", procName, 1);
+
+    if (pixGetColormap(pixs))
+        pixg = pixRemoveColormap(pixs, REMOVE_CMAP_TO_GRAYSCALE);
+    else
+        pixg = pixClone(pixs);
+
+    pixGetDimensions(pixg, &w, &h, &d);
+    datag = pixGetData(pixg);
+    wplg = pixGetWpl(pixg);
+
+    sumave = summs = 0.0;
+    count = 0;
+	for (i = 0; i < h; i++) {
+		lineg = datag + i * wplg;
+		for (j = 0; j < w; j++) {
+			val = GET_DATA_BYTE(lineg, j);
+			if(val>0){
+				sumave += val;
+				count++;
+			}
+		}
+	}
+
+
+    pixDestroy(&pixg);
+    if (count == 0) {
+        return 1;
+    }
+    ave = sumave / (l_float64)count;
+	*pval = (l_float32)ave;
+    return 0;
+}
 
 void blurDetect(const char* image){
 	Pix* pixOrg = pixRead(image);
@@ -375,87 +424,62 @@ void blurDetect(const char* image){
 	}
 	L_TIMER timer = startTimerNested();
 	Pix* pixMedian = pixMedianFilter(pixGrey,4,4);
+	//Pix* pixMedian = pixClone(pixGrey);
 	//printf("median: %f\n", stopTimerNested(timer));
-
 	l_float32 blurValue;
 
 	timer = startTimerNested();
 	Pix* pixBinaryEdges;
 
 	Pix* blurMeasure = pixMakeBlurMask(pixGrey, pixMedian, &blurValue, &pixBinaryEdges);
-	pixWrite("pixGrey.png",pixGrey, IFF_PNG);
-	pixWrite("pixMedian.png",pixMedian, IFF_PNG);
+	printf("blur mask: %f in %f\n", blurValue, stopTimerNested(timer));
 	pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
 	pixWrite("pixBinaryEdges.png",pixBinaryEdges, IFF_PNG);
-	printf("blur mask: %f in %f\n", blurValue, stopTimerNested(timer));
-	return;
-
-	Pix *pixBinary;
-	Pix *pixMedianCopy = pixCopy(NULL,pixMedian);
-	binarize(pixMedianCopy,NULL,&pixBinary);
-	pixDestroy(&pixMedianCopy);
 
 	timer = startTimerNested();
 
-	//pixSetMasked(blurMeasure, pixBinary,0);
-
 	//get blurriness for each connected component (word or character)
-	Pixa* textMask;
 	pixInvert(pixBinaryEdges,pixBinaryEdges);
 
-	//pixAnd(pixBinaryEdges, pixBinaryEdges, pixBinary);
-
-	//pixOr(pixBinary,pixBinary,pixBinaryEdges);
-
-	Boxa* boxa =pixConnComp(pixBinary,&textMask,4);
+	Pixa* componentEdgeMask;
+	Boxa* boxa =pixConnCompPixa(pixBinaryEdges,&componentEdgeMask,4);
 	Pixa* componentBlurMask = pixaCreateFromBoxa(blurMeasure,boxa,NULL);
-	Pixa* edgeMask = pixaCreateFromBoxa(pixBinaryEdges,boxa,NULL);
-
-	l_int32 compCount = pixaGetCount(textMask);
+	l_int32 compCount = pixaGetCount(componentEdgeMask);
 	for(int i = 0; i<compCount; i++){
 
 		Pix* pixBlurComp = pixaGetPix(componentBlurMask,i,L_CLONE);
-		Pix* pixEdgemask = pixaGetPix(edgeMask,i,L_CLONE);
-		Pix* pixTextMask = pixaGetPix(textMask,i,L_CLONE);
-		Box* box = pixaGetBox(textMask,i,L_CLONE);
+		Pix* pixEdgeMask = pixaGetPix(componentEdgeMask,i,L_CLONE);
 
 		l_float32 mean;
 		l_uint32 grayValue = 0;
-		l_uint32 error = pixGetAverageMasked(pixBlurComp,pixEdgemask,0,0,1,L_MEAN_ABSVAL,&mean);
+		l_uint32 error = pixGetAverage(pixBlurComp,&mean);
 		if(!error){
-			 grayValue = lept_roundftoi(mean);
-			//pixSetAllGray(pixBlurComp,grayValue);
-			//pixSetAll(pixBlurComp);
+			grayValue = lept_roundftoi(mean);
+//			printf("mean = %i\n", grayValue);
 			pixClearAll(pixBlurComp);
-			pixSetMasked(pixBlurComp,pixEdgemask,grayValue);
-			pixSetMasked(pixBlurComp,pixTextMask,grayValue);
-			pixInvert(pixBlurComp,pixBlurComp);
+			pixSetMasked(pixBlurComp,pixEdgeMask,grayValue);
 		}
 
-		pixDestroy(&pixEdgemask);
-		pixDestroy(&pixTextMask);
+		pixDestroy(&pixEdgeMask);
 		pixDestroy(&pixBlurComp);
-		boxDestroy(&box);
-
 	}
-	Pix* test = pixaDisplay(componentBlurMask,0,0);
-	pixWrite("meanBlurMask.png",test, IFF_PNG);
-	pixInvert(test,test);
+	Pix* test = pixaDisplayOnColor(componentBlurMask,0,0,0);
 
 	Pix* pixBlendMask = pixBlockconvGray(test,NULL,2,2);
 	Pix* pixBlended = pixConvert8To32(pixGrey);
 	pixTintMasked(pixBlended,pixBlendMask);
 	printf("paint mask: %f\n", stopTimerNested(timer));
-
-	//printf("%s = %f",image, blurValue);
-
+/*
+	pixWrite("meanBlurMask.png",test, IFF_PNG);
     pixWrite("mask.png",blurMeasure, IFF_PNG);
-    pixWrite("text.png",pixBinary, IFF_PNG);
-
-
     pixWrite("blended.png",pixBlended, IFF_PNG);
     pixWrite("textEdges.png",pixBinaryEdges, IFF_PNG);
+    */
 
+    pixDestroy(&test);
+    pixDestroy(&pixMedian);
+    pixaDestroy(&componentEdgeMask);
+    pixaDestroy(&componentBlurMask);
 	pixDestroy(&pixBlendMask);
 	pixDestroy(&pixBlended);
 	pixDestroy(&pixOrg);
@@ -473,9 +497,11 @@ void testAllBlur(){
 	blurDetect("images/sharp6.png");
 	blurDetect("images/sharp7.png");
 	blurDetect("images/sharp8.png");
+	blurDetect("images/sharp9.png");
 	printf("BLURRED\n");
 	blurDetect("images/blur1.jpg");
 	blurDetect("images/blur2.jpg");
+	blurDetect("images/blur5.jpg");
 
 }
 int main() {
@@ -484,7 +510,7 @@ int main() {
 	//blurDetect("images/sharp9.jpg");
 	//blurDetect("images/48.jpg");
 	//testAllBlur();
-	blurDetect("images/blur2.jpg");
+	blurDetect("images/47.jpg");
 
 
 	return 0;

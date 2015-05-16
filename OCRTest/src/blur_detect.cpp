@@ -23,99 +23,29 @@
 using namespace std;
 
 
-Pix* pixApplyThreshold(Pix* pixs, Pix* pixth, const l_uint32 tileSize){
-	L_TIMER timer = startTimerNested();
-	l_int32 w, h;
-	ostringstream s;
-	pixGetDimensions(pixs, &w, &h, NULL);
-	l_int32 nx = L_MAX(1, w / tileSize);
-	l_int32 ny = L_MAX(1, h / tileSize);
-	Pix* pixt;
-	PIXTILING* pt = pixTilingCreate(pixs, nx, ny, 0, 0, 0, 0);
-	Pix* pixb = pixCreate(w, h, 1);
-	l_uint32 val;
-	for (int i = 0; i < ny; i++) {
-		for (int j = 0; j < nx; j++) {
-			pixt = pixTilingGetTile(pt, i, j);
-			pixGetPixel(pixth, j, i, &val);
-			Pix* pixbTile = pixThresholdToBinary(pixt, val);
-			pixTilingPaintTile(pixb, i, j, pixbTile, pt);
-			pixDestroy(&pixt);
-			pixDestroy(&pixbTile);
-		}
-	}
-	pixTilingDestroy(&pt);
-	//s << "local threshhold application: " << stopTimerNested(timer) << endl;
-	printf("%s", s.str().c_str());
-	return pixb;
-}
-
-Pix* binarizeEdge(Pix* pixs) {
-	NUMA* histo = pixGetGrayHistogram(pixs, 8);
+Pix* makeEdgeMask(Pix* pixs) {
+	Pix* pixConv = pixBlockconvGray(pixs, NULL, 4, 1);
+	Pix* pixConvEdges = pixTwoSidedEdgeFilter(pixConv,L_VERTICAL_EDGES);
+	NUMA* histo = pixGetGrayHistogram(pixConvEdges, 8);
 	NUMA* norm = numaNormalizeHistogram(histo, 1.0);
 	l_float32 median, mean, variance;
 	numaGetHistogramStats(norm, 0, 1, &mean, &median, NULL, &variance);
 	l_int32 thresh = 0;
-	if (variance < 1.0) {
-		thresh = 3;
+	double stdev  = sqrt(variance);
+	//printf("mean=%f, stdev=%f\n",mean, stdev);
+	if (stdev < 1.5) {
+		thresh = 1;
 	} else {
-		thresh = 4;
+		thresh = 2;
 	}
-	printf("mean = %f, median = %f, variance = %f, thresh = %i\n", mean, median,variance, thresh);
-
-	Pix* pixForeground = pixThresholdToBinary(pixs, thresh);
-
+	//pixWrite("pixConvEdges.png",pixConvEdges,IFF_PNG);
+	Pix* pixForeground = pixThresholdToBinary(pixConvEdges, thresh);
+	pixDestroy(&pixConvEdges);
+	pixDestroy(&pixConv);
 	numaDestroy(&histo);
 	numaDestroy(&norm);
-
 	return pixForeground;
-
 }
-
-
-/**
- * determines and applies a threshold for each tile separately
- */
-Pix* binarizeEdgeTiled(Pix* pixs, const l_uint32 tileSize, Pix** pixThresh) {
-	L_TIMER timer = startTimerNested();
-	l_int32 w, h;
-	Pix* pixb;
-	ostringstream s;
-
-	pixGetDimensions(pixs, &w, &h, NULL);
-	l_int32 nx = L_MAX(1, w / tileSize);
-	l_int32 ny = L_MAX(1, h / tileSize);
-	l_int32 ox = L_MAX(1,nx/6);
-	l_int32 oy = L_MAX(1,ny/6);
-	PIXTILING* pt = pixTilingCreate(pixs, nx, ny, 0, 0, ox, oy);
-	Pix* pixth = pixCreate(nx, ny, 8);
-	Pix* pixt;
-	for (int i = 0; i < ny; i++) {
-		for (int j = 0; j < nx; j++) {
-			pixt = pixTilingGetTile(pt, i, j);
-			NUMA* na = pixGetGrayHistogram(pixt, 1);
-			int thresh;
-			numaSplitDistribution(na, 0.1, &thresh, NULL, NULL, NULL, NULL, NULL);
-			if(thresh==1){
-				thresh++;
-			}
-			numaDestroy(&na);
-			pixSetPixel(pixth, j, i, thresh);
-			pixDestroy(&pixt);
-		}
-	}
-	pixTilingDestroy(&pt);
-	s << "local threshhold determination: " << stopTimerNested(timer) << std::endl;
-	//printf("%s", s.str().c_str());
-	pixb = pixApplyThreshold(pixs,pixth,tileSize);
-	if(pixThresh!=NULL){
-		*pixThresh=pixClone(pixth);
-	}
-	pixDestroy(&pixth);
-
-	return pixb;
-}
-
 
 
 void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue) {
@@ -130,151 +60,54 @@ void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, i
 
 
 Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** pixBinary) {
-	l_int32    width, height, wpld, wplbx, wplby, wplm,wpls;
-	l_int32    y, x, k;
-	l_uint32  *datad, *databx,*databy, *datas,*datam, *lined, *linebx, *lineby, *lines, *linem;
-
-
-	Pix* edgesx = pixSobelEdgeFilter(pixMedian, L_VERTICAL_EDGES);
-	Pix* edgesy = pixSobelEdgeFilter(pixMedian, L_HORIZONTAL_EDGES);
-	//Pix* test;
-	//pixOtsuAdaptiveThreshold(edgesx, 1,1,1,1,0.5,NULL,&test);
-	//pixWrite("otsu.png",test, IFF_PNG);
-
-/*
-	NUMA* na = pixGetGrayHistogram(pixMedian, 8);
-	int thresh;
-	numaSplitDistribution(na, 0.1, &thresh, NULL, NULL, NULL, NULL, NULL);
-	numaDestroy(&na);
-	Pix* test = pixThresholdToBinary(pixMedian,thresh);
-	pixWrite("pixBinarMedian.png",test,IFF_PNG);
-	*/
-
-
-
-	width = pixGetWidth(edgesx);
-	height = pixGetHeight(edgesx);
-	l_uint8 tileSize = max(30,width/6);
+	l_int32    width, height, wpld, wplbx, wplm;
+	l_int32    y, x;
+	l_uint32  *datad, *databx,*datam, *lined, *linebx, *linem;
+	width = pixGetWidth(pixMedian);
+	height = pixGetHeight(pixMedian);
 	Pix* blurMeasure = pixCreate(width,height,8);
-	//Pix* pixBinaryx = binarizeEdge(edgesx);
-	//Pix* pixBinaryy = binarizeEdge(edgesy);
-	Pix* pixBinaryx = binarizeEdgeTiled(edgesx,tileSize,NULL);
-	Pix* pixBinaryy = binarizeEdgeTiled(edgesy,tileSize, NULL);
-/*
-	Pix* pixThinx= pixThin(pixBinaryx, L_THIN_BG, 4, 0);
-	Pix* pixThiny = pixThin(pixBinaryy,L_THIN_BG, 4, 0);
-
-	pixBinaryx = pixClone(pixThinx);
-	pixBinaryy = pixClone(pixThiny);
-
-	pixDestroy(&pixThinx);
-	pixDestroy(&pixThiny);
-*/
+	Pix* pixBinaryx = makeEdgeMask(pixMedian);
+	pixDilateBrickDwa(pixBinaryx,pixBinaryx,3,3);
+	//pixCloseBrickDwa(pixBinaryx,pixBinaryx,3,3);
 	if(pixBinary!=NULL){
-		*pixBinary =pixAnd(NULL,pixBinaryx, pixBinaryy);
+		*pixBinary =pixClone(pixBinaryx);
 	}
-	pixWrite("pixBinaryy.png",pixBinaryy,IFF_PNG);
 
-
-    datas = pixGetData(pixGrey);
     datad = pixGetData(blurMeasure);
     databx = pixGetData(pixBinaryx);
-    databy = pixGetData(pixBinaryy);
     datam = pixGetData(pixMedian);
-    wpls = pixGetWpl(pixGrey);
     wpld = pixGetWpl(blurMeasure);
     wplbx = pixGetWpl(pixBinaryx);
-    wplby = pixGetWpl(pixBinaryy);
     wplm = pixGetWpl(pixMedian);
     RunningStats stats;
-    Numa* numaValues = numaCreate(0);
-    l_int32 w = 2;
-    l_int32 w2 = w*2;
-    l_int32 w3 = 6;
-    l_int32 w4 = w3*2;
-    for (y = w4; y < height-w4; y++) {
+    for (y = 1; y < height-1; y++) {
         linem = datam + y * wplm;
         lined = datad + y * wpld;
         linebx = databx + y * wplbx;
-        lineby = databy + y * wplby;
-        lines = datas + y * wpls;
-        for (x = w4; x < width-w4; x++) {
+        for (x = 1; x < width-1; x++) {
         	bool hasx = !GET_DATA_BIT(linebx, x);
-        	bool hasy = !GET_DATA_BIT(lineby, x);
-            if (hasx||hasy) {
-            	l_uint32 domx = 0;
-            	l_uint32 contrastx = 0;
-            	l_uint32 domy = 0;
-            	l_uint32 contrasty = 0;
-            	for(k = -w;k <=w; k++){
-            		//vertical dom
-            		if(hasy){
-            			l_uint32 row = y+k;
-						l_uint8 y1 = GET_DATA_BYTE(datam + (row+w3) * wplm,x);
-						l_uint8 y2 = GET_DATA_BYTE(datam + row * wplm,x);
-						l_uint8 y3 = GET_DATA_BYTE(datam + (row-w3) * wplm,x);
-						domy+=abs((y1-y2)-(y2-y3));
-						y1 = GET_DATA_BYTE(datam + (row-1) * wpls,x);
-						y2 = GET_DATA_BYTE(datam + (row) * wpls,x);
-						contrasty+= abs(y1-y2);
-	                	if(x==44 && y==33){
-	                		//printf("(%i,%i) =  %i\n", x, row,y2);
-	                	}
+            if (hasx) {
+        		l_int32 right;
+                pixGetLastOffPixelInRun(pixBinaryx, x, y, L_FROM_LEFT, &right);
+        		l_uint8 edgeWidth = (right - x)+1;
+                l_uint8 leftColor = GET_DATA_BYTE(datam + (y) * wplm,right+1);
+				l_uint8 rightColor = GET_DATA_BYTE(datam + (y) * wplm,x-1);
+                int intensity = abs((int)(rightColor-leftColor));
+                double slope = (intensity/edgeWidth)/255.0;
+                //printf("(%i,%i) with=%i, intensity diff = %i, slope=%f\n", x,y, edgeWidth, intensity, slope);
+				stats.Push(slope);
+				x=right;
 
-            		}
-
-                    //horizontal dom
-            		if(hasx){
-            			l_uint32 column = x+k;
-            			l_uint8 x1 = GET_DATA_BYTE(linem,column);
-            			l_uint8 x2 = GET_DATA_BYTE(linem,column+w3);
-            			l_uint8 x3 = GET_DATA_BYTE(linem,column-w3);
-
-            			domx+= abs((x2 - x1)-(x1 - x3));
-
-						x1 = GET_DATA_BYTE(linem,column);
-						x2 = GET_DATA_BYTE(linem,column-1);
-						contrastx+= abs(x1-x2);
-            		}
-
-
-            	}
-            	//if(x==44 && y==33){
-            	//}
-            	double sharpnessx = 0;
-            	double sharpnessy = 0;
-            	double sharpness = 0;
-            	if(contrastx>0){
-    				sharpnessx = (((float)domx)/((float)contrastx));
-            	}
-            	if(contrasty>0){
-    				sharpnessy = (((float)domy)/((float)contrasty));
-            	}
-
-            	if(sharpnessx>0 && sharpnessy>0){
-            		sharpness = sqrt(sharpnessx*sharpnessx + sharpnessy * sharpnessy);
-            		//printf("x= %f, y = %f, total = %f, hasx=%i, hasy=%i\n",sharpnessx,sharpnessy,sharpness, hasx, hasy);
-            	} else if(sharpnessx>0){
-            		sharpness= sharpnessx;
-            	} else {
-            		sharpness= sharpnessy;
-            	}
-            	if(domy>0){
-            		//printf("(%i,%i) -> blur = %f, d = %i, c = %i\n", x,y,sharpnessy, domy, contrasty);
-            	}
-
-				numaAddNumber(numaValues,sharpness);
-				stats.Push(sharpness);
-				//3= sharp, 1.2 not sharp
-				double maxSharpness = 5.0;
-				double minSharpness = 1.0;
-				double clamped = min(maxSharpness,sharpness);
+				double maxSharpness = 0.040;
+				double minSharpness = 0.01;
+				double clamped = min(maxSharpness,slope);
 				clamped = max(minSharpness,clamped);
 				//scale range to 0-1
 				clamped = 1-(clamped-minSharpness)/(maxSharpness-minSharpness);
-				//clamped = pow(clamped,2);
+				clamped = pow(clamped,5);
 				//float val = clamped*255;
-				float val = clamped*255;
+				double val = max(1.0,clamped*255);
+				//printf("slope = %f -> %f\n",slope,val);
 				SET_DATA_BYTE(lined,x, val);
             }
         }
@@ -282,15 +115,8 @@ Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** p
 
     if(blurValue!=NULL){
     	*blurValue = stats.Mean();
-    	//numaGetRankValue(numaValues,0.5,NULL,0,blurValue);
     }
-    pixWrite("pixBinaryx.png",pixBinaryx, IFF_PNG);
-    pixWrite("edgesx.png",edgesx, IFF_PNG);
-
 	pixDestroy(&pixBinaryx);
-	pixDestroy(&pixBinaryy);
-	pixDestroy(&edgesx);
-	pixDestroy(&edgesy);
 	return blurMeasure;
 }
 
