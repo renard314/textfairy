@@ -144,7 +144,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                     if (rotateXDegrees == -1) {
                         rotateXDegrees = getRotationFromFile(pathForUri);
                     }
-                    p = ReadFile.readFile(imageFile);
+                    p = ReadFile.readFile(context, imageFile);
 
                     if (p == null) {
                         return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
@@ -160,9 +160,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                     fileOut = context.openFileOutput(TMP_FILE_NAME, Context.MODE_PRIVATE);
                     Util.copy(stream, fileOut);
                     File file = context.getFileStreamPath(TMP_FILE_NAME);
-                    p = ReadFile.readFile(file);
-                    Log.i(LOG_TAG,"" + p.getDepth());
-                    Log.i(LOG_TAG,"" + p.getWidth());
+                    p = ReadFile.readFile(context, file);
                 } finally {
                     if (stream != null) {
                         stream.close();
