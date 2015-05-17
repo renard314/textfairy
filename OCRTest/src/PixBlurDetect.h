@@ -25,16 +25,40 @@
 
 #include <allheaders.h>
 
-/**
- * Creates a mask which signifies the blurred regions of pixGrey. 255-->very blurred.
- */
-Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** pixBinary);
+
+class PixBlurDetect {
+public:
+	PixBlurDetect(bool debug);
+	Pix* makeBlurIndicator(Pix* pix, l_float32* blurValue);
+	virtual ~PixBlurDetect();
+
+private:
+	/**
+	 * Creates a mask which signifies the blurred regions of pixGrey. 255-->very blurred.
+	 */
+	Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** pixBinary);
+
+	/**
+	 * Gets the average intensity ignoring OFF pixels.
+	 */
+	l_int32 pixGetAverage(Pix *pixs,  l_float32  *pval);
+
+	/**
+	 * Tints pixd according to the intensity values in pixmask
+	 */
+	void pixTintMasked(Pix* pixd, Pix* pixmask);
+
+	/**
+	 * Creates a binary mask that covers the vertical edges.
+	 */
+	Pix* makeEdgeMask(Pix* pixs);
+
+	void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue);
 
 
-/**
- * tints pixd according to the intensity values in pixmask
- */
-void pixTintMasked(Pix* pixd, Pix* pixmask);
+
+	bool mDebug;
+};
 
 
 

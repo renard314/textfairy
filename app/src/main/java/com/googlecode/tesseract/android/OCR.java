@@ -24,7 +24,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.googlecode.leptonica.android.Box;
 import com.googlecode.leptonica.android.Boxa;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
@@ -33,9 +32,6 @@ import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.Util;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgressListener {
 
@@ -62,9 +58,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     }
 
-    private Pix pixResult;
-    private String ocrResult;
-    private String utf8Result;
     private int mPreviewWith;
     private int mPreviewHeight;
     private int mOriginalWidth;
@@ -73,7 +66,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private RectF mOCRBoundingBox = new RectF();
     private Messenger mMessenger;
     private boolean mIsActivityAttached = false;
-    private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
     protected TessBaseAPI mTess;
     private boolean mStopped;

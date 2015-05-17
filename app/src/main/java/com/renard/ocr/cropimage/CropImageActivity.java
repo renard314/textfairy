@@ -30,13 +30,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
-import com.googlecode.leptonica.android.Projective;
 import com.googlecode.leptonica.android.Box;
 import com.googlecode.leptonica.android.Clip;
 import com.googlecode.leptonica.android.Pix;
+import com.googlecode.leptonica.android.Projective;
 import com.googlecode.leptonica.android.Rotate;
 import com.googlecode.leptonica.android.Scale;
 import com.googlecode.leptonica.android.WriteFile;
+import com.renard.image_processing.Blur;
 import com.renard.ocr.DocumentGridActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.help.HintDialog;
@@ -82,24 +83,10 @@ public class CropImageActivity extends MonitoredActivity {
                     // mSaveUri = Uri.fromFile(new File(mImagePath));
                     // mBitmap = getBitmap(mImagePath);
                     mPix = new Pix(extras.getLong(DocumentGridActivity.EXTRA_NATIVE_PIX));
+                    Pix blurMask = Blur.blurDetext(mPix);
 
                     // scale it so that it fits the screen
-                    float bestScale = 1 / getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
-                    mScaleFactor = Util.determineScaleFactor(mPix.getWidth(), mPix.getHeight(), mImageView.getWidth(), mImageView.getHeight());
-
-                    if (mScaleFactor == 0) {
-                        mScaleFactor = 1;
-                    } else {
-                        if (bestScale < 1 && bestScale > 0.5f) {
-                            mScaleFactor = (float) (1 / Math.pow(2, 0.5f));
-                        } else if (bestScale <= 0.5f) {
-                            mScaleFactor = (float) (1 / Math.pow(2, 0.25f));
-                        } else {
-                            mScaleFactor = 1 / mScaleFactor;
-                        }
-                    }
-
-                    mPixScaled = Scale.scaleWithoutFiltering(mPix, mScaleFactor);
+                    mPixScaled = scaleForCrop(blurMask);
 
                     mBitmap = WriteFile.writeBitmap(mPixScaled);
                     mRotation = extras.getInt(DocumentGridActivity.EXTRA_ROTATION) / 90;
@@ -118,6 +105,25 @@ public class CropImageActivity extends MonitoredActivity {
         });
 
         initAppIcon(this, HINT_DIALOG_ID);
+    }
+
+    private Pix scaleForCrop(Pix pix) {
+        float bestScale = 1 / getScaleFactorToFitScreen(pix, mImageView.getWidth(), mImageView.getHeight());
+        mScaleFactor = Util.determineScaleFactor(pix.getWidth(), pix.getHeight(), mImageView.getWidth(), mImageView.getHeight());
+
+        if (mScaleFactor == 0) {
+            mScaleFactor = 1;
+        } else {
+            if (bestScale < 1 && bestScale > 0.5f) {
+                mScaleFactor = (float) (1 / Math.pow(2, 0.5f));
+            } else if (bestScale <= 0.5f) {
+                mScaleFactor = (float) (1 / Math.pow(2, 0.25f));
+            } else {
+                mScaleFactor = 1 / mScaleFactor;
+            }
+        }
+
+        return Scale.scaleWithoutFiltering(pix, mScaleFactor);
     }
 
     private float getScaleFactorToFitScreen(Pix mPix, int vwidth, int vheight) {
@@ -220,7 +226,7 @@ public class CropImageActivity extends MonitoredActivity {
                     final float[] trapezoid = mCrop.getTrapezoid();
                     final RectF perspectiveCorrectedBoundingRect = new RectF(mCrop.getPerspectiveCorrectedBoundingRect());
                     scaleMatrix.mapRect(perspectiveCorrectedBoundingRect);
-                    Box bb = new Box((int)perspectiveCorrectedBoundingRect.left,(int)perspectiveCorrectedBoundingRect.top,(int)perspectiveCorrectedBoundingRect.width(),(int)perspectiveCorrectedBoundingRect.height());
+                    Box bb = new Box((int) perspectiveCorrectedBoundingRect.left, (int) perspectiveCorrectedBoundingRect.top, (int) perspectiveCorrectedBoundingRect.width(), (int) perspectiveCorrectedBoundingRect.height());
                     Pix croppedPix = Clip.clipRectangle2(mPix, bb);
                     if (croppedPix == null) {
                         throw new IllegalStateException();

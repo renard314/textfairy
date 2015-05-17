@@ -25,6 +25,7 @@
 #include <cmath>
 #include "binarize.h"
 #include "pageseg.h"
+#include "PixBlurDetect.h"
 #include <image_processing_util.h>
 
 using namespace std;
@@ -304,6 +305,17 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeAnalyseLayout(JNIEnv *env, 
 
 	resetStateVariables();
 	return (jint) 0;
+}
+
+jlong Java_com_renard_image_1processing_Blur_nativeBlurDetect(JNIEnv *env, jobject thiz, jlong nativePix) {
+	Pix *pixOrg = (PIX *) nativePix;
+	PixBlurDetect blurDetector(true);
+	l_float32 blurValue;
+	Pix* pixBlended = blurDetector.makeBlurIndicator(pixOrg,&blurValue);
+	printf("blur=%f\n",blurValue);
+	pixDestroy(&pixOrg);
+
+	return (jlong)pixBlended;
 }
 
 

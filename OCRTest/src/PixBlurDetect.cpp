@@ -13,7 +13,7 @@
  You should have received a copy of the GNU General Public License
  along with Text Fairy.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "blur_detect.h"
+#include "PixBlurDetect.h"
 #include <algorithm>    // std::max
 #include <math.h>       /* pow */
 #include "RunningStats.h"
@@ -23,7 +23,144 @@
 using namespace std;
 
 
-Pix* makeEdgeMask(Pix* pixs) {
+PixBlurDetect::PixBlurDetect(bool debug) {
+	mDebug= debug;
+}
+
+PixBlurDetect::~PixBlurDetect() {
+}
+
+
+Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue) {
+	Pix* pixGrey;
+	switch(pixGetDepth(pixOrg)){
+		case 1:
+			pixGrey = pixConvert1To8(NULL,pixOrg,0,255);
+			break;
+		case 8:
+			pixGrey = pixClone(pixOrg);
+			break;
+		case 32:
+			pixGrey = pixConvertRGBToGrayFast(pixOrg);
+			break;
+	}
+	L_TIMER timer;
+	if(mDebug){
+		timer = startTimerNested();
+	}
+	//Pix* pixMedian = pixMedianFilter(pixGrey,4,4);
+	Pix* pixMedian = pixClone(pixGrey);
+	if(mDebug){
+		printf("%s, median: %f\n", __FUNCTION__, stopTimerNested(timer));
+		timer = startTimerNested();
+	}
+	Pix* pixBinaryEdges;
+	Pix* blurMeasure = pixMakeBlurMask(pixGrey, pixMedian, blurValue, &pixBinaryEdges);
+
+	if(mDebug){
+		printf("%s, blur mask: %f\n", __FUNCTION__, stopTimerNested(timer));
+		timer = startTimerNested();
+	}
+
+	//Use blur mask to paint the edge mask to indicate blurry regions.
+	pixInvert(pixBinaryEdges,pixBinaryEdges);
+	Pixa* componentEdgeMask;
+	Boxa* boxa =pixConnCompPixa(pixBinaryEdges,&componentEdgeMask,4);
+	Pixa* componentBlurMask = pixaCreateFromBoxa(blurMeasure,boxa,NULL);
+	l_int32 compCount = pixaGetCount(componentEdgeMask);
+	for(int i = 0; i<compCount; i++) {
+		Pix* pixBlurComp = pixaGetPix(componentBlurMask,i,L_CLONE);
+		Pix* pixEdgeMask = pixaGetPix(componentEdgeMask,i,L_CLONE);
+		l_float32 mean;
+		l_uint32 grayValue = 0;
+		l_uint32 error = pixGetAverage(pixBlurComp,&mean);
+		if(!error){
+			grayValue = lept_roundftoi(mean);
+			pixClearAll(pixBlurComp);
+			pixSetMasked(pixBlurComp,pixEdgeMask,grayValue);
+		}
+
+		pixDestroy(&pixEdgeMask);
+		pixDestroy(&pixBlurComp);
+	}
+	Pix* test = pixaDisplayOnColor(componentBlurMask,0,0,0);
+
+	Pix* pixBlendMask = pixBlockconvGray(test,NULL,2,2);
+	Pix* pixBlended = pixConvert8To32(pixGrey);
+	pixTintMasked(pixBlended,pixBlendMask);
+	if(mDebug){
+		printf("paint mask: %f\n", stopTimerNested(timer));
+	}
+	/*
+	pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
+	pixWrite("pixBinaryEdges.png",pixBinaryEdges, IFF_PNG);
+	pixWrite("meanBlurMask.png",test, IFF_PNG);
+    pixWrite("mask.png",blurMeasure, IFF_PNG);
+    pixWrite("blended.png",pixBlended, IFF_PNG);
+    pixWrite("textEdges.png",pixBinaryEdges, IFF_PNG);
+    */
+	boxaDestroy(&boxa);
+    pixDestroy(&test);
+    pixDestroy(&pixMedian);
+    pixDestroy(&pixBinaryEdges);
+    pixaDestroy(&componentEdgeMask);
+    pixaDestroy(&componentBlurMask);
+	pixDestroy(&pixBlendMask);
+	pixDestroy(&pixGrey);
+	pixDestroy(&blurMeasure);
+	return pixBlended;
+}
+
+l_int32 PixBlurDetect::pixGetAverage(PIX *pixs,  l_float32  *pval) {
+l_int32    i, j, w, h, d, wplg, val, count;
+l_uint32  *datag, *lineg;
+l_float64  sumave, summs, ave;
+PIX       *pixg;
+
+    PROCNAME("pixGetAverage");
+
+    if (!pval)
+        return ERROR_INT("&val not defined", procName, 1);
+    *pval = 0.0;
+    if (!pixs)
+        return ERROR_INT("pixs not defined", procName, 1);
+    d = pixGetDepth(pixs);
+    if (d != 8 )
+        return ERROR_INT("pixs not 8", procName, 1);
+
+    if (pixGetColormap(pixs))
+        pixg = pixRemoveColormap(pixs, REMOVE_CMAP_TO_GRAYSCALE);
+    else
+        pixg = pixClone(pixs);
+
+    pixGetDimensions(pixg, &w, &h, &d);
+    datag = pixGetData(pixg);
+    wplg = pixGetWpl(pixg);
+
+    sumave = summs = 0.0;
+    count = 0;
+	for (i = 0; i < h; i++) {
+		lineg = datag + i * wplg;
+		for (j = 0; j < w; j++) {
+			val = GET_DATA_BYTE(lineg, j);
+			if(val>0){
+				sumave += val;
+				count++;
+			}
+		}
+	}
+
+
+    pixDestroy(&pixg);
+    if (count == 0) {
+        return 1;
+    }
+    ave = sumave / (l_float64)count;
+	*pval = (l_float32)ave;
+    return 0;
+}
+
+Pix* PixBlurDetect::makeEdgeMask(Pix* pixs) {
 	Pix* pixConv = pixBlockconvGray(pixs, NULL, 4, 1);
 	Pix* pixConvEdges = pixTwoSidedEdgeFilter(pixConv,L_VERTICAL_EDGES);
 	NUMA* histo = pixGetGrayHistogram(pixConvEdges, 8);
@@ -48,7 +185,7 @@ Pix* makeEdgeMask(Pix* pixs) {
 }
 
 
-void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue) {
+void PixBlurDetect::getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue) {
   int bR = 255; int bG = 0; int bB=0;    // RGB for our 2nd color (red in this case).
 
   red   = (float)(bR - r) * value + r;      // Evaluated as -255*value + 255.
@@ -59,7 +196,7 @@ void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, i
 
 
 
-Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** pixBinary) {
+Pix* PixBlurDetect::pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** pixBinary) {
 	l_int32    width, height, wpld, wplbx, wplm;
 	l_int32    y, x;
 	l_uint32  *datad, *databx,*datam, *lined, *linebx, *linem;
@@ -120,7 +257,7 @@ Pix* pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** p
 	return blurMeasure;
 }
 
-void pixTintMasked(Pix* pixd, Pix* pixmask) {
+void PixBlurDetect::pixTintMasked(Pix* pixd, Pix* pixmask) {
 	l_int32    width, height, wpld, wplm;
 	l_int32    y, x, rval, gval, bval;
 	l_uint32  *datad, *lined, *datam, *linem;
