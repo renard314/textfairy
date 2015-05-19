@@ -361,12 +361,12 @@ l_uint32  *data, *line;
 
 void blurDetect(const char* image){
 	Pix* pixOrg = pixRead(image);
-	PixBlurDetect blurDetector(true);
+	PixBlurDetect blurDetector(false);
 
 	l_float32 blurValue;
 	Pix* pixBlended = blurDetector.makeBlurIndicator(pixOrg,&blurValue);
 	printf("blur=%f\n",blurValue);
-	pixWrite("pixBlended.jpg",pixBlended,IFF_JFIF_JPEG);
+	pixWrite("image.jpg",pixBlended,IFF_PNG);
 
 	pixDestroy(&pixBlended);
 	pixDestroy(&pixOrg);
@@ -386,6 +386,8 @@ void testAllBlur(){
 	printf("BLURRED\n");
 	blurDetect("images/blur1.jpg");
 	blurDetect("images/blur2.jpg");
+	blurDetect("images/blur3.jpg");
+	blurDetect("images/blur4.jpg");
 	blurDetect("images/blur5.jpg");
 
 }
@@ -394,8 +396,8 @@ int main() {
 	//testScaleWithBitmap();
 	//blurDetect("images/sharp9.jpg");
 	//blurDetect("images/48.jpg");
-	//testAllBlur();
-	blurDetect("images/61.jpg");
+	testAllBlur();
+	//blurDetect("images/61.jpg");
 
 
 	return 0;

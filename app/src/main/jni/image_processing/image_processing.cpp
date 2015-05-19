@@ -311,10 +311,10 @@ jlong Java_com_renard_image_1processing_Blur_nativeBlurDetect(JNIEnv *env, jobje
 	Pix *pixOrg = (PIX *) nativePix;
 	PixBlurDetect blurDetector(true);
 	l_float32 blurValue;
+	L_TIMER timer = startTimerNested();
 	Pix* pixBlended = blurDetector.makeBlurIndicator(pixOrg,&blurValue);
-	printf("blur=%f\n",blurValue);
-	pixDestroy(&pixOrg);
 
+	log("blur=%f, time %f\n",blurValue,stopTimerNested(timer));
 	return (jlong)pixBlended;
 }
 

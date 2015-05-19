@@ -32,6 +32,7 @@ PixBlurDetect::~PixBlurDetect() {
 
 
 Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue) {
+
 	Pix* pixGrey;
 	switch(pixGetDepth(pixOrg)){
 		case 1:
@@ -44,20 +45,31 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue) {
 			pixGrey = pixConvertRGBToGrayFast(pixOrg);
 			break;
 	}
+	Pix* pixScaled;
+	if(pixGetWidth(pixGrey)>=800){
+	    pixScaled = pixScaleBySamplingToSize(pixGrey,800,0);
+	} else {
+		pixScaled = pixClone(pixGrey);
+	}
+
 	L_TIMER timer;
 	if(mDebug){
 		timer = startTimerNested();
 	}
-	//Pix* pixMedian = pixMedianFilter(pixGrey,4,4);
-	Pix* pixMedian = pixClone(pixGrey);
+	//Pix* pixMedian = pixMedianFilter(pixScaled,4,4);
+	Pix* pixMedian = pixClone(pixScaled);
 	if(mDebug){
 		printf("%s, median: %f\n", __FUNCTION__, stopTimerNested(timer));
 		timer = startTimerNested();
 	}
 	Pix* pixBinaryEdges;
-	Pix* blurMeasure = pixMakeBlurMask(pixGrey, pixMedian, blurValue, &pixBinaryEdges);
+	Pix* blurMeasure = pixMakeBlurMask(pixScaled, pixMedian, blurValue, &pixBinaryEdges);
 
 	if(mDebug){
+		Pix* pixEdgeMasked = pixCopy(NULL,pixScaled);
+		pixSetMasked(pixEdgeMasked,pixBinaryEdges,255);
+		pixWrite("pixEdgesMasked.png",pixEdgeMasked,IFF_PNG);
+		pixDestroy(&pixEdgeMasked);
 		printf("%s, blur mask: %f\n", __FUNCTION__, stopTimerNested(timer));
 		timer = startTimerNested();
 	}
@@ -86,19 +98,17 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue) {
 	Pix* test = pixaDisplayOnColor(componentBlurMask,0,0,0);
 
 	Pix* pixBlendMask = pixBlockconvGray(test,NULL,2,2);
-	Pix* pixBlended = pixConvert8To32(pixGrey);
+	Pix* pixBlended = pixConvert8To32(pixScaled);
 	pixTintMasked(pixBlended,pixBlendMask);
 	if(mDebug){
 		printf("paint mask: %f\n", stopTimerNested(timer));
 	}
-	/*
 	pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
 	pixWrite("pixBinaryEdges.png",pixBinaryEdges, IFF_PNG);
 	pixWrite("meanBlurMask.png",test, IFF_PNG);
     pixWrite("mask.png",blurMeasure, IFF_PNG);
     pixWrite("blended.png",pixBlended, IFF_PNG);
     pixWrite("textEdges.png",pixBinaryEdges, IFF_PNG);
-    */
 	boxaDestroy(&boxa);
     pixDestroy(&test);
     pixDestroy(&pixMedian);
@@ -107,6 +117,7 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue) {
     pixaDestroy(&componentBlurMask);
 	pixDestroy(&pixBlendMask);
 	pixDestroy(&pixGrey);
+	pixDestroy(&pixScaled);
 	pixDestroy(&blurMeasure);
 	return pixBlended;
 }
@@ -161,26 +172,23 @@ PIX       *pixg;
 }
 
 Pix* PixBlurDetect::makeEdgeMask(Pix* pixs) {
-	Pix* pixConv = pixBlockconvGray(pixs, NULL, 4, 1);
-	Pix* pixConvEdges = pixTwoSidedEdgeFilter(pixConv,L_VERTICAL_EDGES);
+	//pixContrastTRC(pixs,pixs,1);
+	Pix* pixConv = pixBlockconvGray(pixs, NULL, 0, 2);
+	Pix* pixConvEdges = pixTwoSidedEdgeFilter(pixConv,L_HORIZONTAL_EDGES);
+	//Pix* pixConvEdges = pixSobelEdgeFilter(pixConv,L_HORIZONTAL_EDGES);
+
 	NUMA* histo = pixGetGrayHistogram(pixConvEdges, 8);
-	NUMA* norm = numaNormalizeHistogram(histo, 1.0);
-	l_float32 median, mean, variance;
-	numaGetHistogramStats(norm, 0, 1, &mean, &median, NULL, &variance);
-	l_int32 thresh = 0;
-	double stdev  = sqrt(variance);
-	//printf("mean=%f, stdev=%f\n",mean, stdev);
-	if (stdev < 1.5) {
-		thresh = 1;
-	} else {
-		thresh = 2;
+	l_int32 thresh = 2;
+	numaSplitDistribution(histo,0.01,&thresh,NULL,NULL,NULL,NULL,NULL);
+	if(mDebug){
+		printf("thresh=%i\n",thresh);
 	}
-	//pixWrite("pixConvEdges.png",pixConvEdges,IFF_PNG);
 	Pix* pixForeground = pixThresholdToBinary(pixConvEdges, thresh);
+	//pixWrite("pixForeground.png",pixForeground,IFF_PNG);
+	//pixWrite("pixConvEdges.png",pixConvEdges,IFF_PNG);
 	pixDestroy(&pixConvEdges);
 	pixDestroy(&pixConv);
 	numaDestroy(&histo);
-	numaDestroy(&norm);
 	return pixForeground;
 }
 
@@ -199,15 +207,16 @@ void PixBlurDetect::getValueBetweenTwoFixedColors(float value, int r, int g, int
 Pix* PixBlurDetect::pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blurValue, Pix** pixBinary) {
 	l_int32    width, height, wpld, wplbx, wplm;
 	l_int32    y, x;
-	l_uint32  *datad, *databx,*datam, *lined, *linebx, *linem;
+	l_uint32  *datad, *databx,*datam;
 	width = pixGetWidth(pixMedian);
 	height = pixGetHeight(pixMedian);
 	Pix* blurMeasure = pixCreate(width,height,8);
 	Pix* pixBinaryx = makeEdgeMask(pixMedian);
-	pixDilateBrickDwa(pixBinaryx,pixBinaryx,3,3);
-	//pixCloseBrickDwa(pixBinaryx,pixBinaryx,3,3);
+	//pixBinaryx = pixMorphCompSequenceDwa(pixBinaryx,"o1.4+c1.3",0);
+	//pixDilateBrickDwa(pixBinaryx,pixBinaryx,1,3);
+	//pixCloseBrickDwa(pixBinaryx,pixBinaryx,1,3);
 	if(pixBinary!=NULL){
-		*pixBinary =pixClone(pixBinaryx);
+		*pixBinary =pixCopy(NULL,pixBinaryx);
 	}
 
     datad = pixGetData(blurMeasure);
@@ -217,35 +226,33 @@ Pix* PixBlurDetect::pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blu
     wplbx = pixGetWpl(pixBinaryx);
     wplm = pixGetWpl(pixMedian);
     RunningStats stats;
-    for (y = 1; y < height-1; y++) {
-        linem = datam + y * wplm;
-        lined = datad + y * wpld;
-        linebx = databx + y * wplbx;
-        for (x = 1; x < width-1; x++) {
-        	bool hasx = !GET_DATA_BIT(linebx, x);
-            if (hasx) {
-        		l_int32 right;
-                pixGetLastOffPixelInRun(pixBinaryx, x, y, L_FROM_LEFT, &right);
-        		l_uint8 edgeWidth = (right - x)+1;
-                l_uint8 leftColor = GET_DATA_BYTE(datam + (y) * wplm,right+1);
-				l_uint8 rightColor = GET_DATA_BYTE(datam + (y) * wplm,x-1);
+    for (x = 1; x < width-1; x++) {
+        for (y = 1; y < height-1; y++) {
+        	bool hasy = !GET_DATA_BIT(databx + y * wplbx, x);
+            if (hasy) {
+        		l_int32 bottom;
+                pixGetLastOffPixelInRun(pixBinaryx, x, y, L_FROM_TOP, &bottom);
+        		l_uint8 edgeWidth = (bottom - y)+1;
+                l_uint8 leftColor = GET_DATA_BYTE(datam + (y-1) * wplm,x);
+				l_uint8 rightColor = GET_DATA_BYTE(datam + (bottom+1) * wplm,x);
                 int intensity = abs((int)(rightColor-leftColor));
                 double slope = (intensity/edgeWidth)/255.0;
-                //printf("(%i,%i) with=%i, intensity diff = %i, slope=%f\n", x,y, edgeWidth, intensity, slope);
 				stats.Push(slope);
-				x=right;
+				for(int i = y; i<=bottom; i++){
+					SET_DATA_BIT(databx + i * wplbx,x);
+				}
 
-				double maxSharpness = 0.040;
-				double minSharpness = 0.01;
+				double maxSharpness = 0.045;
+				double minSharpness = 0.02;
 				double clamped = min(maxSharpness,slope);
 				clamped = max(minSharpness,clamped);
 				//scale range to 0-1
 				clamped = 1-(clamped-minSharpness)/(maxSharpness-minSharpness);
-				clamped = pow(clamped,5);
+				//clamped = pow(clamped,5);
 				//float val = clamped*255;
 				double val = max(1.0,clamped*255);
-				//printf("slope = %f -> %f\n",slope,val);
-				SET_DATA_BYTE(lined,x, val);
+				//printf("slope = %f -> %f; intensity = %i, length = %i\n",slope,val,intensity,edgeWidth);
+				SET_DATA_BYTE(datad + y * wpld,x, val);
             }
         }
     }
