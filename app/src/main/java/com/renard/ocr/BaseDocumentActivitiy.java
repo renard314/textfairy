@@ -33,6 +33,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.RemoteException;
@@ -52,6 +53,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -139,7 +141,13 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     protected void startGallery() {
         cameraPicUri = null;
         Intent i = new Intent(Intent.ACTION_GET_CONTENT, null);
-        i.setType("image/png,image/jpg, image/jpeg");
+        if(Build.VERSION.SDK_INT >=19){
+            i.setType("image/*");
+            i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/png", "image/jpg", "image/jpeg"});
+        } else {
+            i.setType("image/png,image/jpg, image/jpeg");
+        }
+
         Intent chooser = Intent.createChooser(i, getString(R.string.image_source));
 
         // File photo = getTmpPhotoFile();
