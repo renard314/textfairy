@@ -53,7 +53,8 @@ private:
 	 */
 	Pix* makeEdgeMask(Pix* pixs);
 
-	void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue);
+	//void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue);
+	void getValueBetweenTwoFixedColors(float value, int h1, int s1, int v1, int h2, int s2, int v2, int &red, int &green, int &blue);
 
 
 

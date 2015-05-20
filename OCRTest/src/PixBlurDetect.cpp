@@ -105,7 +105,7 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue) {
 	}
 	pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
 	pixWrite("pixBinaryEdges.png",pixBinaryEdges, IFF_PNG);
-	pixWrite("meanBlurMask.png",test, IFF_PNG);
+	pixWrite("meanBlurMask.png",pixBlendMask, IFF_PNG);
     pixWrite("mask.png",blurMeasure, IFF_PNG);
     pixWrite("blended.png",pixBlended, IFF_PNG);
     pixWrite("textEdges.png",pixBinaryEdges, IFF_PNG);
@@ -193,12 +193,20 @@ Pix* PixBlurDetect::makeEdgeMask(Pix* pixs) {
 }
 
 
-void PixBlurDetect::getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue) {
-  int bR = 255; int bG = 0; int bB=0;    // RGB for our 2nd color (red in this case).
+void PixBlurDetect::getValueBetweenTwoFixedColors(float value, int h1, int s1, int v1, int h2, int s2, int v2, int &red, int &green, int &blue) {
 
-  red   = (float)(bR - r) * value + r;      // Evaluated as -255*value + 255.
-  green = (float)(bG - g) * value + g;      // Evaluates as 0.
-  blue  = (float)(bB - b) * value + b;      // Evaluates as 255*value + 0.
+    // adjust so that the shortest path on the color wheel will be taken
+    if (h1 - h2 > 120) {
+        h2 += 240;
+    } else if (h2 - h1 > 120) {
+        h1 += 240;
+    }
+
+    // Interpolate using calculated ratio
+    int h3 = (h2-h1) * (value) + h1;
+    int s3 = (s2-s1) * (value) + s1;
+    int v3 = (v2-v1) * (value) + v1;
+    convertHSVToRGB(h3,s3,v3,&red,&green,&blue);
 }
 
 
@@ -243,7 +251,7 @@ Pix* PixBlurDetect::pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blu
 				}
 
 				double maxSharpness = 0.045;
-				double minSharpness = 0.02;
+				double minSharpness = 0.03;
 				double clamped = min(maxSharpness,slope);
 				clamped = max(minSharpness,clamped);
 				//scale range to 0-1
@@ -268,7 +276,9 @@ void PixBlurDetect::pixTintMasked(Pix* pixd, Pix* pixmask) {
 	l_int32    width, height, wpld, wplm;
 	l_int32    y, x, rval, gval, bval;
 	l_uint32  *datad, *lined, *datam, *linem;
-	int red, green, blue;
+	int red = 0;
+	int green = 255;
+	int blue =0;
     datad = pixGetData(pixd);
     wpld = pixGetWpl(pixd);
     datam = pixGetData(pixmask);
@@ -277,6 +287,16 @@ void PixBlurDetect::pixTintMasked(Pix* pixd, Pix* pixmask) {
 
 	width = pixGetWidth(pixd);
 	height = pixGetHeight(pixd);
+	int r1 = 40;
+	int g1= 110;
+	int b1= 0;
+	int r2 = 255;
+	int g2= 0;
+	int b2= 0;
+	int h1, s1, v1, h2, s2, v2;
+	convertRGBToHSV(r1,g1,b1,&h1, &s1, &v1);
+	convertRGBToHSV(r2,g2,b2,&h2, &s2, &v2);
+
 	for (y = 0; y < height; y++) {
 		lined = datad + y * wpld;
 		linem = datam + y * wplm;
@@ -285,7 +305,7 @@ void PixBlurDetect::pixTintMasked(Pix* pixd, Pix* pixmask) {
 			l_uint8 blurriness=GET_DATA_BYTE(linem,x);
 			if(blurriness>0){
 				float frac = ((float)blurriness)/255.0;
-				getValueBetweenTwoFixedColors(frac,rval,gval,bval,red, green, blue);
+				getValueBetweenTwoFixedColors(frac,h1,s1,v1,h2,s2,v2,red,green,blue);
 				composeRGBPixel(red, green, blue, lined + x);
 			}
 		}
