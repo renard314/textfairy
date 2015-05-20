@@ -306,6 +306,10 @@ void PixBlurDetect::pixTintMasked(Pix* pixd, Pix* pixmask) {
 			if(blurriness>0){
 				float frac = ((float)blurriness)/255.0;
 				getValueBetweenTwoFixedColors(frac,h1,s1,v1,h2,s2,v2,red,green,blue);
+				frac = min(0.9,double(frac*3));
+				red   = (float)(red - rval) * frac + rval;
+				green = (float)(green - gval) * frac + gval;
+				blue  = (float)(blue - bval) * frac + bval;
 				composeRGBPixel(red, green, blue, lined + x);
 			}
 		}
