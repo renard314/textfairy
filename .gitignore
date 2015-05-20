@@ -58,6 +58,8 @@ build.xml
 !gradle-wrapper.jar
 # Avoid ignoring YouTubeAndroidPlayerApi.jar (.jar files are usually ignored)
 !YouTubeAndroidPlayerApi.jar
+# Avoid ignoring testate.zip
+!tessdata.zip
 
 libjpeg/testoutt.jpg
 libjpeg/testoutp.ppm
