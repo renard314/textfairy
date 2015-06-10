@@ -206,4 +206,5 @@
     <string name="greeting">Hello</string>
     <string name="text_is_in">Text is in</string>
     <string name="empty_grid_language">I can read German and English but you can download more languages.</string>
+    <string name="error_tess_init">Internal OCR Error. Please reinstall the app or the language data.</string>
 </resources>

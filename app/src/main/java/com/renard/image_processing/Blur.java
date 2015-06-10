@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Google Inc.
+ * Copyright (C) 2015 Renard Wellnitz.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -28,21 +28,16 @@ public class Blur {
     }
 
 
-    public static Pix blurDetext(Pix pixs) {
+    public static BlurDetectionResult blurDetect(Pix pixs) {
         if (pixs == null) {
             throw new IllegalArgumentException("Source pix must be non-null");
         }
-        final long result = nativeBlurDetect(pixs.getNativePix());
-        if(result!=0){
-            return new Pix(result);
-        } else {
-            return null;
-        }
+        return nativeBlurDetect(pixs.getNativePix());
     }
 
 
     // ***************
     // * NATIVE CODE *
     // ***************
-    private static native long nativeBlurDetect(long pix );
+    private static native BlurDetectionResult nativeBlurDetect(long pix);
 }

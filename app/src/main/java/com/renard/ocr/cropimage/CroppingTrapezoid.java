@@ -21,7 +21,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
 
-import static com.renard.ocr.cropimage.HighlightView.*;
+import static com.renard.ocr.cropimage.CropHighlightView.*;
 
 /**
  * Created by renard on 26/02/15.

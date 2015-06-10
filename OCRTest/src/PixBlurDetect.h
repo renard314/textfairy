@@ -29,7 +29,7 @@
 class PixBlurDetect {
 public:
 	PixBlurDetect(bool debug);
-	Pix* makeBlurIndicator(Pix* pix, l_float32* blurValue);
+	Pix* makeBlurIndicator(Pix* pix, l_float32* blurValue, Box** maxBlurBounds);
 	virtual ~PixBlurDetect();
 
 private:
@@ -41,7 +41,7 @@ private:
 	/**
 	 * Gets the average intensity ignoring OFF pixels.
 	 */
-	l_int32 pixGetAverage(Pix *pixs,  l_float32  *pval);
+	l_int32 pixGetAverageMasked(Pix *pixs, Pix* pixm,  l_float32  *pval);
 
 	/**
 	 * Tints pixd according to the intensity values in pixmask
@@ -55,6 +55,10 @@ private:
 
 	//void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue);
 	void getValueBetweenTwoFixedColors(float value, int h1, int s1, int v1, int h2, int s2, int v2, int &red, int &green, int &blue);
+
+	void getCenterOfGravity(Pix* pixs, l_uint32* cx, l_uint32* cy );
+	Pix* blurTileTest(Pix* pixs, Pix* pixBlurMeasure);
+
 
 
 

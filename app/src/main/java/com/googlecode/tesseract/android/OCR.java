@@ -377,7 +377,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                         mTess = new TessBaseAPI(OCR.this);
                         boolean result = mTess.init(tessDir, lang);
                         if (!result) {
-                            sendMessage(MESSAGE_ERROR);
+                            sendMessage(MESSAGE_ERROR,R.string.error_tess_init);
                             return;
                         }
 

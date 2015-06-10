@@ -206,4 +206,5 @@
     <string name="text_is_in">Text ist in</string>
     <string name="empty_grid_download_language">Lade weitere Sprache.</string>
     <string name="empty_grid_language">Ich kann deutschen und englischen Text lesen aber auch zusätzliche Sprachen lernen.</string>
+    <string name="error_tess_init">Interner Fehler. Lösche die Daten der App in den Systemsettings und versuche es erneut.</string>
 </resources>

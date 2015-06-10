@@ -39,6 +39,11 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.1"
 
+    defaultConfig {
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        //testHandleProfiling true
+        //testFunctionalTest true
+    }
     signingConfigs {
         release
     }
@@ -106,6 +111,8 @@ dependencies {
     compile 'com.viewpagerindicator:library:2.4.1@aar'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.google.code.findbugs:jsr305:2.0.2'
+    compile "com.google.guava:guava:18.0"
+    //compile 'com.android.support:design:22.2.0'
     compile 'com.nineoldandroids:library:2.4.0+'
     compile 'com.android.support:appcompat-v7:19.0.+'
     compile 'org.apache.commons:commons-compress:1.5'
@@ -113,16 +120,18 @@ dependencies {
     compile project(":ViewPager3D:ViewPager3D")
     compile project(":tess-two:tess-two")
     compile 'com.android.support:cardview-v7:21.0.+'
+
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
+    androidTestCompile 'org.mockito:mockito-core:1.10.17'
+    androidTestCompile 'junit:junit:4.12'
+
+
     testCompile 'junit:junit:4.12'
-    testCompile "org.robolectric:robolectric:3.0-SNAPSHOT"
-    testCompile "org.mockito:mockito-core:1.9.5"
-    testCompile 'org.mockito:mockito-all:1.9.5'
-    testCompile 'org.powermock:powermock-api-mockito:1.5.6'
-    testCompile 'org.powermock:powermock-module-junit4:1.5.6'
-    testCompile 'org.powermock:powermock-core:1.5.6'
-    testCompile 'org.powermock:powermock-module-junit4-rule:1.5.6'
-    testCompile 'org.powermock:powermock-classloading-base:1.5.6'
-    testCompile 'org.powermock:powermock-classloading-xstream:1.5.6'
-    testCompile 'com.thoughtworks.xstream:xstream:1.4.7'
+    testCompile "org.mockito:mockito-all:1.10.19"
+    testCompile("org.robolectric:robolectric:3.0-rc2") {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+
 
 }
