@@ -316,6 +316,7 @@ jobject Java_com_renard_image_1processing_Blur_nativeBlurDetect(JNIEnv *env, job
 	Pix* pixBlended = blurDetector.makeBlurIndicator(pixOrg,&blurValue, &maxBlurLoc);
 	l_int32 w,h,x,y;
 	boxGetGeometry(maxBlurLoc,&x,&y,&w,&h);
+	//pixRenderBox(pixBlended,maxBlurLoc,2,L_SET_PIXELS);
 	log("pix = %p, blur=%f, box=(%i,%i - %i,%i)processing time %f\n",pixBlended, blurValue,x,y,w,h,stopTimerNested(timer));
 	//create result
 	jclass cls = env->FindClass("com/renard/image_processing/BlurDetectionResult");

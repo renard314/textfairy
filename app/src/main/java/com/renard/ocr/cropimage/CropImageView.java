@@ -22,6 +22,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 /**
@@ -192,6 +193,7 @@ public class CropImageView extends ImageViewTouchBase {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (!isInEditMode() && mCropHighlightView.isPresent()) {
+            Log.i(CropImageView.class.getSimpleName(), getScale() + " - " + maxZoom());
             mCropHighlightView.get().draw(canvas);
         }
     }
@@ -202,4 +204,11 @@ public class CropImageView extends ImageViewTouchBase {
         invalidate();
     }
 
+    public void setMaxZoom(int maxZoom) {
+        mMaxZoom = maxZoom;
+    }
+
+    public void resetMaxZoom() {
+        mMaxZoom = maxZoom();
+    }
 }

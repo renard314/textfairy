@@ -37,7 +37,7 @@ def getVersionCodeFromManifest(String prefix) {
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
@@ -48,6 +48,9 @@ android {
         release
     }
     buildTypes {
+        debug {
+            debuggable true
+        }
         release {
 	        //runProguard true
             proguardFile file('android.pro')
@@ -113,7 +116,7 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:2.0.2'
     compile "com.google.guava:guava:18.0"
     //compile 'com.android.support:design:22.2.0'
-    compile 'com.nineoldandroids:library:2.4.0+'
+    compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:appcompat-v7:19.0.+'
     compile 'org.apache.commons:commons-compress:1.5'
     compile project(":FileExplorer")

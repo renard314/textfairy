@@ -48,7 +48,8 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 /**
  * The activity can crop specific region of interest from an image.
  */
-public class CropImageActivity extends MonitoredActivity {
+public class CropImageActivity extends MonitoredActivity implements ImageBlurredDialog.BlurDialogClickListener{
+    public static final int RESULT_NEW_IMAGE = RESULT_FIRST_USER + 1;
     private static final int HINT_DIALOG_ID = 2;
 
     private final Handler mHandler = new Handler();
@@ -67,11 +68,8 @@ public class CropImageActivity extends MonitoredActivity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
         getWindow().setFormat(PixelFormat.RGBA_8888);
-        // requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_cropimage);
-        final View cropLayout = findViewById(R.id.crop_layout);
 
         mImageView = (CropImageView) findViewById(R.id.image);
         mImageView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
@@ -99,16 +97,18 @@ public class CropImageActivity extends MonitoredActivity {
                             mImageView.setImageBitmapResetBase(mBitmap, true, mRotation * 90);
                             showDefaultCroppingRectangle();
                             break;
+                        case MEDIUM_BLUR:
                         case STRONG_BLUR:
                             mScaleResult = scaler.scale(mPix, mImageView.getWidth(), mImageView.getHeight());
                             //mScaleResult = scaler.scale(blurDetectionResult.getPixBlur(), mImageView.getWidth(), mImageView.getHeight());
                             mBitmap = WriteFile.writeBitmap(mScaleResult.getPix());
                             mImageView.setImageBitmapResetBase(mBitmap, true, mRotation * 90);
-                            android.graphics.Point center = blurDetectionResult.getMostBlurredRegion().getCenter();
-                            mImageView.zoomTo(3, center.x, center.y, 2000);
                             supportInvalidateOptionsMenu();
                             showBlurRectangle(blurDetectionResult);
-                        case MEDIUM_BLUR:
+                            setTitle(R.string.image_is_blurred);
+                            ImageBlurredDialog dialog = ImageBlurredDialog.newInstance((float) blurDetectionResult.getBlurValue());
+                            dialog.show(getSupportFragmentManager(), ImageBlurredDialog.TAG);
+                            supportInvalidateOptionsMenu();
                             break;
                     }
                     mImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
@@ -118,7 +118,6 @@ public class CropImageActivity extends MonitoredActivity {
 
                 if (mBitmap == null) {
                     finish();
-                    return;
                 }
 
             }
@@ -128,10 +127,6 @@ public class CropImageActivity extends MonitoredActivity {
         initAppIcon(this, HINT_DIALOG_ID);
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
-    }
 
     @Override
     protected Dialog onCreateDialog(int id, Bundle args) {
@@ -255,19 +250,23 @@ public class CropImageActivity extends MonitoredActivity {
 
     private void showBlurRectangle(BlurDetectionResult blurDetectionResult) {
         float width = blurDetectionResult.getPixBlur().getWidth();
-        float height = blurDetectionResult.getPixBlur().getWidth();
-        float widthScale = width/ mBitmap.getWidth();
-        float heightScale = height/mBitmap.getHeight();
+        float height = blurDetectionResult.getPixBlur().getHeight();
+        float widthScale = width / mBitmap.getWidth();
+        float heightScale = height / mBitmap.getHeight();
         final Point c = blurDetectionResult.getMostBlurredRegion().getCenter();
-        int w = Math.min(mBitmap.getWidth(), mBitmap.getHeight()) * 2 / 5;
-        Rect focusArea = new Rect((int) ((c.x-w)*widthScale), (int) ((c.y-1)*heightScale), (int) ((c.x+w)*widthScale), (int) ((c.y+w)*heightScale));
+        c.set((int) (c.x / widthScale), (int) (c.y / heightScale));
+        float[] pts = {c.x, c.y};
+        mImageView.getImageMatrix().mapPoints(pts);
+        //int w = (Math.min(mBitmap.getWidth(), mBitmap.getHeight())) / 25;
+        //Rect focusArea = new Rect((int) (Math.max(c.x-w,0)*widthScale), (int) (Math.max(c.y-w,0)*heightScale), (int) (Math.min(c.x+w,mBitmap.getWidth())*widthScale), (int) (Math.min(c.y+w,mBitmap.getHeight())*heightScale));
 
-        final int progressColor = getResources().getColor(R.color.progress_color);
-        final int edgeWidth = getResources().getDimensionPixelSize(R.dimen.crop_edge_width);
+        //final int progressColor = getResources().getColor(R.color.progress_color);
+        //final int edgeWidth = getResources().getDimensionPixelSize(R.dimen.crop_edge_width);
 
-        BlurHighLightView hv = new BlurHighLightView(focusArea,progressColor,edgeWidth);
-        mImageView.add(hv);
-        mImageView.invalidate();
+        //BlurHighLightView hv = new BlurHighLightView(focusArea,progressColor,edgeWidth, mImageView.getImageMatrix());
+        //mImageView.add(hv);
+        mImageView.setMaxZoom(6);
+        mImageView.zoomTo(6, pts[0], pts[1], 1000);
     }
 
 
@@ -290,11 +289,25 @@ public class CropImageActivity extends MonitoredActivity {
 
         CropHighlightView hv = new CropHighlightView(mImageView, imageRect, cropRect);
 
+        mImageView.resetMaxZoom();
         mImageView.add(hv);
         mImageView.invalidate();
         mCrop = hv;
         mCrop.setFocus(true);
     }
 
+    @Override
+    public void onContinueClicked() {
+        showDefaultCroppingRectangle();
+        setTitle(R.string.crop_title);
+        mImageView.zoomTo(1,500);
+    }
+
+    @Override
+    public void onNewImageClicked() {
+        setResult(RESULT_NEW_IMAGE);
+        mPix.recycle();
+        finish();
+    }
 }
 

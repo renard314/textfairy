@@ -9,12 +9,12 @@ import android.view.MotionEvent;
  * Created by renard on 07/06/15.
  */
 public interface HighLightView {
-    public static final int GROW_NONE = 0;
-    public static final int GROW_LEFT_EDGE = (1 << 1);
-    public static final int GROW_RIGHT_EDGE = (1 << 2);
-    public static final int GROW_TOP_EDGE = (1 << 3);
-    public static final int GROW_BOTTOM_EDGE = (1 << 4);
-    public static final int MOVE = (1 << 5);
+    int GROW_NONE = 0;
+    int GROW_LEFT_EDGE = (1 << 1);
+    int GROW_RIGHT_EDGE = (1 << 2);
+    int GROW_TOP_EDGE = (1 << 3);
+    int GROW_BOTTOM_EDGE = (1 << 4);
+    int MOVE = (1 << 5);
 
 
     /**

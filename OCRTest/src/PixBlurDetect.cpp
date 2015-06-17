@@ -159,10 +159,33 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue, Box** m
 	pixInvert(pixBinaryEdges,pixBinaryEdges);
 	Pixa* componentEdgeMask;
 	Boxa* boxa =pixConnCompPixa(pixBinaryEdges,&componentEdgeMask,4);
+
+	//filter components by size
+	Numa* naw;
+	Numa* nah;
+	Numa *na1, *na2, *na3,*na4, *nad;
+
+	pixaFindDimensions(componentEdgeMask, &naw, &nah);
+	l_float32 widthMedian = 0;
+	l_float32 heightMedian = 0;
+
+	//numaGetRankValue(naw, .7,NULL,1,&widthMedian);
+	//numaGetRankValue(nah, .7,NULL,1,&heightMedian);
+	na1 = numaCreate(0);
+	na2 = numaCreate(0);
+	//Pixa* pixaFiltered = pixaSelectBySize(componentEdgeMask,widthMedian,heightMedian,L_SELECT_IF_BOTH,L_SELECT_IF_GTE,NULL);
+
+
+	numaGetMedian(naw, &widthMedian);
+	numaGetMedian(nah, &heightMedian);
+	if(mDebug){
+		//printf("median w/h = %f,%f\n",widthMedian, heightMedian);
+	}
+	//Pixa* pixaFiltered = pixaSelectBySize(componentEdgeMask,widthMedian,heightMedian,L_SELECT_IF_BOTH,L_SELECT_IF_GTE,NULL);
+	//Boxa* boxaFiltered = pixaGetBoxa(pixaFiltered,L_CLONE);
+
 	Pixa* componentBlurMask = pixaCreateFromBoxa(blurMeasure,boxa,NULL);
-	l_int32 compCount = pixaGetCount(componentEdgeMask);
-    l_uint32 maxval = 0;
-    l_int32 maxloc = -1;
+	l_int32 compCount = pixaGetCount(componentBlurMask);
 	for(int i = 0; i<compCount; i++) {
 		Pix* pixBlurComp = pixaGetPix(componentBlurMask,i,L_CLONE);
 		Pix* pixEdgeMask = pixaGetPix(componentEdgeMask,i,L_CLONE);
@@ -170,13 +193,12 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue, Box** m
 		l_int32 w,h;
 		pixGetDimensions(pixEdgeMask,&w,&h,NULL);
 		l_uint32 grayValue = 0;
-		//TODO erase pixBlurComp
 		l_uint32 error = pixGetAverageMasked(pixBlurComp,pixEdgeMask, &mean);
 		if(!error){
 			grayValue = lept_roundftoi(mean);
-			if(grayValue>maxval){
-				maxval=grayValue;
-				maxloc = i;
+			if(w>=widthMedian && h>=heightMedian){
+				numaAddNumber(na1,grayValue);
+				numaAddNumber(na2,i);
 			}
 			pixSetMasked(pixBlurComp,pixEdgeMask,grayValue);
 		}
@@ -184,7 +206,22 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue, Box** m
 		pixDestroy(&pixEdgeMask);
 		pixDestroy(&pixBlurComp);
 	}
-	if(maxBlurBounds!=NULL && maxloc>=0){
+	//get the average of the top 33% of the blur regions
+	Numa* sortIndex = numaGetSortIndex(na1,L_SORT_INCREASING);
+	na3 = numaSortByIndex(na1,sortIndex);
+	na4 = numaSortByIndex(na2,sortIndex); //the last if this is the box with the highest blur
+	l_int32 n = numaGetCount(na3);
+	l_float32 fract = 0.8;
+	l_int32 index = (l_int32)(fract * (l_float32)(n - 1) + 0.5);
+	l_float32 blur=0;
+	numaGetSumOnInterval(na3, index, n,&blur);
+	blur/=(n-index);
+	*blurValue = blur/256;
+
+	if(maxBlurBounds!=NULL){
+		l_int32 lastIndex = numaGetCount(na4)-1;
+	    l_int32 maxloc = -1;
+		numaGetIValue(na4,lastIndex,&maxloc);
 		*maxBlurBounds = boxaGetBox(boxa,maxloc,L_COPY);
 	}
 	Pix* test = pixaDisplayOnColor(componentBlurMask,0,0,0);
@@ -201,9 +238,16 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue, Box** m
 		pixWrite("meanBlurMask.png",pixBlendMask, IFF_PNG);
 	    pixWrite("mask.png",blurMeasure, IFF_PNG);
 	    pixWrite("blended.png",pixBlended, IFF_PNG);
+	    pixWrite("blurMaskSource.png",test, IFF_PNG);
 	    pixWrite("textEdges.png",pixBinaryEdges, IFF_PNG);
 	}
 	boxaDestroy(&boxa);
+	numaDestroy(&naw);
+	numaDestroy(&nah);
+	numaDestroy(&na1);
+	numaDestroy(&na2);
+	numaDestroy(&na3);
+	numaDestroy(&na4);
     pixDestroy(&test);
     pixDestroy(&pixMedian);
     pixDestroy(&pixBinaryEdges);

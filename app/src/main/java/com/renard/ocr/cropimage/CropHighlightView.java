@@ -46,6 +46,9 @@ class CropHighlightView implements HighLightView {
     private final Rect mRightRect = new Rect();
     private final Rect mTopRect = new Rect();
     private final Rect mBottomRect = new Rect();
+    private final RectF mPathBounds = new RectF();
+    private final Rect mPathBoundsRounded = new Rect();
+    private final Rect mCanvasCLipRect = new Rect();
 
     private final CroppingTrapezoid mTrapzoid;
     boolean mIsFocused;
@@ -59,8 +62,6 @@ class CropHighlightView implements HighLightView {
     private final int mCropCornerHandleRadius;
     private final int mCropEdgeHandleRadius;
     private final float mHysteresis;
-
-
 
 
     public CropHighlightView(ImageView ctx, Rect imageRect, RectF cropRect) {
@@ -101,6 +102,20 @@ class CropHighlightView implements HighLightView {
     }
 
     private void drawEdges(Canvas canvas) {
+        final float[] p = mTrapzoid.getScreenPoints(getMatrix());
+        Path path = new Path();
+        path.moveTo((int) p[0], (int) p[1]);
+        path.lineTo((int) p[2], (int) p[3]);
+        path.lineTo((int) p[4], (int) p[5]);
+        path.lineTo((int) p[6], (int) p[7]);
+        path.close();
+        path.computeBounds(mPathBounds, false);
+        mPathBounds.round(mPathBoundsRounded);
+        canvas.getClipBounds(mCanvasCLipRect);
+        if (!mCanvasCLipRect.contains(mPathBoundsRounded)) {
+            return;
+        }
+
         mContext.getDrawingRect(mViewDrawingRect);
         mTopRect.set(0, 0, mViewDrawingRect.right, getDrawRect().top);
         mRightRect.set(0, getDrawRect().top, getDrawRect().left, getDrawRect().bottom);
@@ -124,13 +139,6 @@ class CropHighlightView implements HighLightView {
         canvas.drawRect(mBottomRect, mFocusPaint);
         canvas.save();
         canvas.clipRect(getDrawRect());
-        final float[] p = mTrapzoid.getScreenPoints(getMatrix());
-        Path path = new Path();
-        path.moveTo((int) p[0], (int) p[1]);
-        path.lineTo((int) p[2], (int) p[3]);
-        path.lineTo((int) p[4], (int) p[5]);
-        path.lineTo((int) p[6], (int) p[7]);
-        path.close();
         path.setFillType(Path.FillType.INVERSE_EVEN_ODD);
         canvas.drawPath(path, mFocusPaint);
         canvas.restore();

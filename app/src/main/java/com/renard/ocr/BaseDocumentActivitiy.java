@@ -16,6 +16,15 @@
 
 package com.renard.ocr;
 
+import com.googlecode.leptonica.android.Pix;
+import com.renard.documentview.DocumentActivity;
+import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.cropimage.CropImageActivity;
+import com.renard.ocr.cropimage.MonitoredActivity;
+import com.renard.pdf.Hocr2Pdf;
+import com.renard.pdf.Hocr2Pdf.PDFProgressListener;
+import com.renard.util.Util;
+
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -53,18 +62,8 @@ import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.googlecode.leptonica.android.Pix;
-import com.renard.documentview.DocumentActivity;
-import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.cropimage.CropImageActivity;
-import com.renard.ocr.cropimage.MonitoredActivity;
-import com.renard.pdf.Hocr2Pdf;
-import com.renard.pdf.Hocr2Pdf.PDFProgressListener;
-import com.renard.util.Util;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -117,18 +116,21 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     private static final String ROTATE_X_DEGREES_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.ROTATE_X_DEGREES_STATE";
     private static int rotateXDegrees = 0;
     private boolean mReceiverRegistered = false;
+    private ImageSource mImageSource;
 
 
     private static class CameraResult {
-        public CameraResult(int requestCode, int resultCode, Intent data) {
+        public CameraResult(int requestCode, int resultCode, Intent data, ImageSource source) {
             mRequestCode = requestCode;
             mResultCode = resultCode;
             mData = data;
+            mSource = source;
         }
 
         private int mRequestCode;
         private int mResultCode;
         private Intent mData;
+        private final ImageSource mSource;
     }
 
     protected abstract int getParentId();
@@ -141,7 +143,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     protected void startGallery() {
         cameraPicUri = null;
         Intent i = new Intent(Intent.ACTION_GET_CONTENT, null);
-        if(Build.VERSION.SDK_INT >=19){
+        if (Build.VERSION.SDK_INT >= 19) {
             i.setType("image/*");
             i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/png", "image/jpg", "image/jpeg"});
         } else {
@@ -190,7 +192,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         Log.i(LOG_TAG, "onSaveInstanceState" + this);
         //remember to register the receiver again in #onRestoreInstanceState
-        savedInstanceState.putBoolean(STATE_RECEIVER_REGISTERED,mReceiverRegistered);
+        savedInstanceState.putBoolean(STATE_RECEIVER_REGISTERED, mReceiverRegistered);
         unRegisterImageLoadedReceiver();
         //unregister receiver before onSaveInstanceState is called!
         super.onSaveInstanceState(savedInstanceState);
@@ -228,7 +230,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
         rotateXDegrees = savedInstanceState.getInt(ROTATE_X_DEGREES_STATE);
 
-        if(savedInstanceState.getBoolean(STATE_RECEIVER_REGISTERED)){
+        if (savedInstanceState.getBoolean(STATE_RECEIVER_REGISTERED)) {
             registerImageLoaderReceiver();
         }
 
@@ -254,10 +256,10 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         return true;
     }
 
-    private void onTakePhotoActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (resultCode == RESULT_OK) {
+    private void onTakePhotoActivityResult(CameraResult cameraResult) {
+        if (cameraResult.mResultCode == RESULT_OK) {
             rotateXDegrees = -1;
-            if (requestCode == REQUEST_CODE_MAKE_PHOTO) {
+            if (cameraResult.mRequestCode == REQUEST_CODE_MAKE_PHOTO) {
                 Cursor myCursor = null;
                 Date dateOfPicture = null;
                 //check if there is a file at the uri we specified
@@ -266,7 +268,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     if (f.isFile() && f.exists() && f.canRead()) {
                         //all is well
                         Log.i(LOG_TAG, "onTakePhotoActivityResult");
-                        loadBitmapFromContentUri(cameraPicUri);
+                        loadBitmapFromContentUri(cameraPicUri, ImageSource.CAMERA);
                         return;
                     }
 
@@ -283,13 +285,10 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     // image.
                     String largeImagePath = myCursor.getString(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
                     Uri tempCameraPicUri = Uri.fromFile(new File(largeImagePath));
-                    if (tempCameraPicUri != null) {
-                        dateOfPicture = new Date(myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)));
-
-                        if (dateOfPicture.getTime() == 0 || (dateOfPicture != null && dateOfPicture.after(dateCameraIntentStarted))) {
-                            cameraPicUri = tempCameraPicUri;
-                            rotateXDegrees = myCursor.getInt(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.ORIENTATION));
-                        }
+                    dateOfPicture = new Date(myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)));
+                    if (dateOfPicture.getTime() == 0 || (dateOfPicture.after(dateCameraIntentStarted))) {
+                        cameraPicUri = tempCameraPicUri;
+                        rotateXDegrees = myCursor.getInt(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.ORIENTATION));
                     }
                 } catch (Exception e) {
                 } finally {
@@ -301,22 +300,22 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
             if (cameraPicUri == null) {
                 try {
-                    cameraPicUri = intent.getData();
+                    cameraPicUri = mCameraResult.mData.getData();
                 } catch (Exception e) {
                     showFileError(PixLoadStatus.CAMERA_APP_ERROR);
                 }
             }
 
             if (cameraPicUri != null) {
-                loadBitmapFromContentUri(cameraPicUri);
-                return;
+                loadBitmapFromContentUri(cameraPicUri, mCameraResult.mSource);
             } else {
                 showFileError(PixLoadStatus.CAMERA_NO_IMAGE_RETURNED);
             }
         }
     }
 
-    protected void loadBitmapFromContentUri(final Uri cameraPicUri) {
+    protected void loadBitmapFromContentUri(final Uri cameraPicUri, ImageSource source) {
+        mImageSource = source;
         if (mBitmapLoadTask != null) {
             mBitmapLoadTask.cancel(true);
         }
@@ -332,7 +331,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
     private synchronized void unRegisterImageLoadedReceiver() {
         if (mReceiverRegistered) {
-            Log.i(LOG_TAG,"unRegisterImageLoadedReceiver "+mMessageReceiver);
+            Log.i(LOG_TAG, "unRegisterImageLoadedReceiver " + mMessageReceiver);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             mReceiverRegistered = false;
         }
@@ -340,8 +339,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
 
     private synchronized void registerImageLoaderReceiver() {
-        if(!mReceiverRegistered){
-            Log.i(LOG_TAG,"registerImageLoaderReceiver "+mMessageReceiver);
+        if (!mReceiverRegistered) {
+            Log.i(LOG_TAG, "registerImageLoaderReceiver " + mMessageReceiver);
             final IntentFilter intentFilter = new IntentFilter(ImageLoadAsyncTask.ACTION_IMAGE_LOADED);
             intentFilter.addAction(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START);
             LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, intentFilter);
@@ -361,10 +360,25 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     break;
                 }
                 case REQUEST_CODE_MAKE_PHOTO:
+                    mCameraResult = new CameraResult(requestCode, resultCode, data, ImageSource.CAMERA);
+                    break;
                 case REQUEST_CODE_PICK_PHOTO:
-                    mCameraResult = new CameraResult(requestCode, resultCode, data);
+                    mCameraResult = new CameraResult(requestCode, resultCode, data, ImageSource.PICK);
                     break;
             }
+        } else if (CropImageActivity.RESULT_NEW_IMAGE == resultCode) {
+            switch (mImageSource) {
+                case PICK:
+                    startGallery();
+                    break;
+                case INTENT:
+                    finish();
+                    break;
+                case CAMERA:
+                    startCamera();
+                    break;
+            }
+
         }
     }
 
@@ -380,7 +394,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     protected void onResumeFragments() {
         super.onResumeFragments();
         if (mCameraResult != null) {
-            onTakePhotoActivityResult(mCameraResult.mRequestCode, mCameraResult.mResultCode, mCameraResult.mData);
+            onTakePhotoActivityResult(mCameraResult);
             mCameraResult = null;
         }
     }
@@ -393,14 +407,16 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             //However the broadcastReceiver gets unregistered in onSaveInstanceState before i call super().
             //As a workaround I check for the flag if the receiver is registered
             //Additionally i use commitAllowStateLoss as its not terribly important to preserve the state of the loading dialog
-            if(mReceiverRegistered) {
+            if (mReceiverRegistered) {
                 Log.i(LOG_TAG, "onReceive " + BaseDocumentActivitiy.this);
                 if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADED)) {
                     unRegisterImageLoadedReceiver();
                     final long nativePix = intent.getLongExtra(ImageLoadAsyncTask.EXTRA_PIX, 0);
                     final int statusNumber = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_STATUS, PixLoadStatus.SUCCESS.ordinal());
                     final boolean skipCrop = intent.getBooleanExtra(ImageLoadAsyncTask.EXTRA_SKIP_CROP, false);
-                    handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop);
+                    final int intExtra = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_SKIP_CROP, ImageSource.CAMERA.ordinal());
+                    final ImageSource imageSource = ImageSource.values()[intExtra];
+                    handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop, imageSource);
                 } else if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START)) {
                     showLoadingImageProgressDialog();
                 }
@@ -408,7 +424,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
     };
 
-    private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop) {
+    private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop, ImageSource imageSource) {
         PixLoadStatus status = pixLoadStatus;
         dismissLoadingImageProgressDialog();
 
@@ -438,7 +454,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
     }
 
     private void showLoadingImageProgressDialog() {
-        Log.i(LOG_TAG,"showLoadingImageProgressDialog");
+        Log.i(LOG_TAG, "showLoadingImageProgressDialog");
         //dialog.show(getSupportFragmentManager(), null);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final ProgressDialogFragment dialog = ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image);
@@ -930,8 +946,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                 if (mTitle != null) {
                     values.put(Columns.TITLE, mTitle);
                 }
-
-                onProgressUpdate(i);
+                publishProgress(i);
                 result += mContext.getContentResolver().update(uri, values, null, null);
             }
             return result;

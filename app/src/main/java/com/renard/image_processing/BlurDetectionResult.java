@@ -56,12 +56,12 @@ public class BlurDetectionResult {
     }
 
     public Blurriness getBlurriness() {
-        if(mBlurValue<0.02){
-            return Blurriness.STRONG_BLUR;
-        } else if(mBlurValue<0.028) {
+        if(mBlurValue<0.5){
+            return Blurriness.NOT_BLURRED;
+        } else if(mBlurValue<0.67) {
             return Blurriness.MEDIUM_BLUR;
         } else {
-            return Blurriness.NOT_BLURRED;
+            return Blurriness.STRONG_BLUR;
         }
     }
 

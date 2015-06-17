@@ -138,7 +138,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (imageUri != null) {
-                loadBitmapFromContentUri(imageUri);
+                loadBitmapFromContentUri(imageUri, ImageSource.INTENT);
             } else {
                 showFileError(PixLoadStatus.IMAGE_COULD_NOT_BE_READ, new DialogInterface.OnClickListener() {
 

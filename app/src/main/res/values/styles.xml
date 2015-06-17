@@ -2,7 +2,13 @@
 <resources>
 
     <style name="contribute_bullet_point">
+        <item name="android:textAppearance">@android:style/TextAppearance.Small</item>
+        <item name="android:drawableLeft">@drawable/ic_bullet_point_2</item>
+        <item name="android:drawablePadding">12dp</item>
+        <item name="android:textColor">@color/grey2</item>
+    </style>
 
+    <style name="blur_warning_bullet_point">
         <item name="android:textAppearance">@android:style/TextAppearance.Small</item>
         <item name="android:drawableLeft">@drawable/ic_bullet_point_2</item>
         <item name="android:drawablePadding">12dp</item>

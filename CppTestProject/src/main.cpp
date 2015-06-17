@@ -368,7 +368,9 @@ void blurDetect(const char* image){
 	Box* maxBlurLoc = NULL;
 	Pix* pixBlended = blurDetector.makeBlurIndicator(pixOrg,&blurValue,&maxBlurLoc);
 	pixRenderBox(pixBlended,maxBlurLoc,2,L_SET_PIXELS);
-	printf("blur=%f, %f\n",blurValue, stopTimer());
+	l_int32 x,y,w,h;
+	boxGetGeometry(maxBlurLoc,&x,&y,&w,&h);
+	printf("blur=%f, blur loc = (%i,%i - %i,%i),%f\n",blurValue,x,y,w,h,stopTimer());
 	pixWrite("image.jpg",pixBlended,IFF_PNG);
 
 	boxDestroy(&maxBlurLoc);
@@ -393,6 +395,8 @@ void testAllBlur(){
 	blurDetect("images/blur3.jpg");
 	blurDetect("images/blur4.jpg");
 	blurDetect("images/blur5.jpg");
+	blurDetect("images/blur6.jpg");
+	blurDetect("images/blur7.jpg");
 
 }
 int main() {
@@ -401,7 +405,7 @@ int main() {
 	//blurDetect("images/sharp9.jpg");
 	//blurDetect("images/48.jpg");
 	//testAllBlur();
-	blurDetect("images/61.jpg");
+	blurDetect("images/blur7.jpg");
 
 
 	return 0;
