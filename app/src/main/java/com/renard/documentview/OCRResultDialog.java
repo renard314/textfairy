@@ -1,5 +1,8 @@
 package com.renard.documentview;
 
+import com.renard.ocr.R;
+import com.renard.ocr.help.HelpActivity;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -8,11 +11,8 @@ import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.TextView;
 
-import com.renard.ocr.R;
-import com.renard.ocr.help.HelpActivity;
-
 /**
- * Created by renard on 12/11/13.
+ * @author renard
  */
 public class OCRResultDialog extends DialogFragment implements View.OnClickListener {
 
@@ -40,7 +40,7 @@ public class OCRResultDialog extends DialogFragment implements View.OnClickListe
         } else if (accuracy < 83) {
             speech.setText(R.string.ocr_result_is_ok);
         } else {
-            speech.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_fairy_happy,0,0,0);
+            speech.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_fairy_happy, 0, 0, 0);
             speech.setText(R.string.ocr_result_is_good);
             hideTips(view);
         }
