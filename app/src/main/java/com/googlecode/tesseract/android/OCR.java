@@ -15,15 +15,6 @@
  */
 package com.googlecode.tesseract.android;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.RectF;
-import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.util.Log;
-
 import com.googlecode.leptonica.android.Boxa;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
@@ -32,6 +23,15 @@ import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.Util;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.RectF;
+import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.util.Log;
 
 public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgressListener {
 
@@ -119,8 +119,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
      * MESSAGE_IMAGE_DEWARP = 1; static const int MESSAGE_OCR = 2; static const
      * int MESSAGE_ASSEMBLE_PIX = 3; static const int MESSAGE_ANALYSE_LAYOUT =
      * 4;
-     *
-     * @param id
      */
 
     private void onProgressText(int id) {
@@ -264,12 +262,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     Pix pixOcr;
                     synchronized (OCR.this) {
 
-                        mTess = new TessBaseAPI(OCR.this);
-                        boolean result = mTess.init(tessDir, lang);
-                        if (!result) {
-                            sendMessage(MESSAGE_ERROR);
-                            return;
-                        }
+                        if (!initTessApi(tessDir, lang)) return;
                         pixOcr = new Pix(pixOcrPointer);
                         mTess.setPageSegMode(PageSegMode.PSM_SINGLE_BLOCK);
                         mTess.setImage(pixOcr);
@@ -323,6 +316,17 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         }).start();
     }
 
+    private boolean initTessApi(String tessDir, String lang) {
+        mTess = new TessBaseAPI(OCR.this);
+        boolean result = mTess.init(tessDir, lang);
+        mTess.ReadConfigFile("no_ligature");
+        if (!result) {
+            sendMessage(MESSAGE_ERROR, R.string.error_tess_init);
+            return false;
+        }
+        return true;
+    }
+
     /**
      * native code takes care of the Pix, do not use it after calling this
      * function
@@ -374,12 +378,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
                     sendMessage(MESSAGE_FINAL_IMAGE, (int) nativeTextPix);
                     synchronized (OCR.this) {
-                        mTess = new TessBaseAPI(OCR.this);
-                        boolean result = mTess.init(tessDir, lang);
-                        if (!result) {
-                            sendMessage(MESSAGE_ERROR,R.string.error_tess_init);
-                            return;
-                        }
+                        if (!initTessApi(tessDir, lang)) return;
 
                         mTess.setPageSegMode(PageSegMode.PSM_AUTO);
                         mTess.setImage(pixText);
