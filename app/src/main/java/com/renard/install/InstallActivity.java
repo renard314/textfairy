@@ -126,9 +126,7 @@ public class InstallActivity extends Activity {
                 InstallResult result;
                 try {
                     result = mTask.get();
-                } catch (InterruptedException e) {
-                    result = new InstallResult(Result.UNSPEZIFIED_ERROR);
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     result = new InstallResult(Result.UNSPEZIFIED_ERROR);
                 }
                 markAsDone(result);

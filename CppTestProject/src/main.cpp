@@ -361,7 +361,7 @@ l_uint32  *data, *line;
 
 void blurDetect(const char* image){
 	Pix* pixOrg = pixRead(image);
-	PixBlurDetect blurDetector(true);
+	PixBlurDetect blurDetector(false);
 
 	startTimer();
 	l_float32 blurValue;
@@ -370,7 +370,7 @@ void blurDetect(const char* image){
 	pixRenderBox(pixBlended,maxBlurLoc,2,L_SET_PIXELS);
 	l_int32 x,y,w,h;
 	boxGetGeometry(maxBlurLoc,&x,&y,&w,&h);
-	printf("blur=%f, blur loc = (%i,%i - %i,%i),%f\n",blurValue,x,y,w,h,stopTimer());
+	printf("blur=%f, \n",blurValue);
 	pixWrite("image.jpg",pixBlended,IFF_PNG);
 
 	boxDestroy(&maxBlurLoc);
@@ -405,7 +405,7 @@ int main() {
 	//blurDetect("images/sharp9.jpg");
 	//blurDetect("images/48.jpg");
 	//testAllBlur();
-	blurDetect("images/blur7.jpg");
+	blurDetect("images/66.jpg");
 
 
 	return 0;
