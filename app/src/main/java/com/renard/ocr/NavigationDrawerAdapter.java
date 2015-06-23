@@ -47,8 +47,8 @@ public class NavigationDrawerAdapter extends BaseAdapter implements ListAdapter 
                 iconId = R.drawable.ic_whats_new;
                 break;
             case 1:
-                textId = R.string.option_preference_title;
-                iconId = R.drawable.ic_action_preferences;
+                textId = R.string.nav_drawer_download_language;
+                iconId = R.drawable.ic_action_language;
                 break;
             case 2:
                 textId = R.string.pref_title_help;

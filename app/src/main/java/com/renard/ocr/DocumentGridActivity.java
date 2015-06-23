@@ -209,7 +209,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
                         new ReleaseNoteDialog().show(supportFragmentManager, ReleaseNoteDialog.TAG);
                         break;
                     case 1:
-                        Intent i = new Intent(DocumentGridActivity.this, AppOptionsActivity.class);
+                        Intent i = new Intent(DocumentGridActivity.this, OCRLanguageActivity.class);
                         startActivity(i);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
