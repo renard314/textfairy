@@ -41,7 +41,7 @@ import java.util.List;
 public class DocumentTextFragment extends Fragment implements TextWatcher {
 
     private final static String LOG_TAG = DocumentTextFragment.class.getSimpleName();
-
+    private final static String IS_STATE_SAVED = "is_state_saved";
     private EditText mEditText;
     private int mDocumentId;
     private boolean mHasTextChanged;
@@ -52,7 +52,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("text", mEditText.getText().toString());
+        outState.putBoolean(IS_STATE_SAVED, true);
     }
 
     public static DocumentTextFragment newInstance(final String text, Integer documentId, final String imagePath) {
@@ -64,12 +64,6 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
         args.putString("image_path", imagePath);
         f.setArguments(args);
         return f;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //setRetainInstance(true); // keep fragment alive because saving edited html text is costly.
     }
 
     public Spanned getDocumentText() {
@@ -90,10 +84,8 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
         saveIfTextHasChanged();
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         String text = getArguments().getString("text");
         mDocumentId = getArguments().getInt("id");
         View view = inflater.inflate(R.layout.fragment_document, container, false);
@@ -102,7 +94,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
         if (mHtmlTask != null) {
             mHtmlTask.cancel(true);
         }
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || !savedInstanceState.getBoolean(IS_STATE_SAVED)) {
             mHtmlTask = new HtmlToSpannedAsyncTask(mEditText, mViewSwitcher, this);
             mHtmlTask.execute(text);
         } else {
@@ -116,7 +108,6 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 
 
     void saveIfTextHasChanged() {
-
         if (mHasTextChanged) {
             mHasTextChanged = false;
             final Uri uri = Uri.withAppendedPath(DocumentContentProvider.CONTENT_URI, String.valueOf(mDocumentId));
