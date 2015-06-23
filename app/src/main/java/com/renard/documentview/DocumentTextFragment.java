@@ -16,6 +16,11 @@
 
 package com.renard.documentview;
 
+import com.renard.ocr.BaseDocumentActivitiy;
+import com.renard.ocr.DocumentContentProvider;
+import com.renard.ocr.R;
+import com.renard.util.PreferencesUtils;
+
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,171 +29,160 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ViewSwitcher;
 
-import com.renard.ocr.BaseDocumentActivitiy;
-import com.renard.ocr.DocumentContentProvider;
-import com.renard.ocr.R;
-import com.renard.util.PreferencesUtils;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class DocumentTextFragment extends Fragment implements TextWatcher {
 
-	private final static String LOG_TAG = DocumentTextFragment.class.getSimpleName();
+    private final static String LOG_TAG = DocumentTextFragment.class.getSimpleName();
 
-	private EditText mEditText;
-	private int mDocumentId;
-	private boolean mHasTextChanged;
-	private ViewSwitcher mViewSwitcher;
-	private HtmlToSpannedAsyncTask mHtmlTask;
-	private BaseDocumentActivitiy.SaveDocumentTask saveTask;
+    private EditText mEditText;
+    private int mDocumentId;
+    private boolean mHasTextChanged;
+    private ViewSwitcher mViewSwitcher;
+    private HtmlToSpannedAsyncTask mHtmlTask;
+    private BaseDocumentActivitiy.SaveDocumentTask saveTask;
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putString("text",mEditText.getText().toString());
-	}
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("text", mEditText.getText().toString());
+    }
 
-	public static DocumentTextFragment newInstance(final String text, Integer documentId, final String imagePath) {
-		DocumentTextFragment f = new DocumentTextFragment();
-		// Supply text input as an argument.
-		Bundle args = new Bundle();
-		args.putString("text", text);
-		args.putInt("id", documentId);
-		args.putString("image_path", imagePath);
-		f.setArguments(args);
-		return f;
-	}
+    public static DocumentTextFragment newInstance(final String text, Integer documentId, final String imagePath) {
+        DocumentTextFragment f = new DocumentTextFragment();
+        // Supply text input as an argument.
+        Bundle args = new Bundle();
+        args.putString("text", text);
+        args.putInt("id", documentId);
+        args.putString("image_path", imagePath);
+        f.setArguments(args);
+        return f;
+    }
 
-	private static class HtmlToSpannedAsyncTask extends AsyncTask<String, Void, Spanned> {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //setRetainInstance(true); // keep fragment alive because saving edited html text is costly.
+    }
 
-		private final EditText mEditText;
-		private final ViewSwitcher mViewSwitcher;
-		private final TextWatcher mTextWatcher;
+    public Spanned getDocumentText() {
+        return mEditText.getText();
+    }
 
-		private HtmlToSpannedAsyncTask(final EditText editText, ViewSwitcher viewSwitcher, TextWatcher textWatcher) {
-			mEditText = editText;
-			mViewSwitcher = viewSwitcher;
-			mTextWatcher = textWatcher;
-		}
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mHtmlTask != null) {
+            mHtmlTask.cancel(true);
+        }
+    }
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			mViewSwitcher.setDisplayedChild(0);
-		}
-
-		@Override
-		protected Spanned doInBackground(String... params) {
-			if (params != null && params.length > 0 && params[0]!=null && params[0].length()>0) {
-				return Html.fromHtml(params[0]);
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Spanned spanned) {
-			super.onPostExecute(spanned);
-			mEditText.setText(spanned);
-			mEditText.addTextChangedListener(mTextWatcher);
-			mViewSwitcher.setDisplayedChild(1);
-		}
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		saveIfTextHasChanged(false);
-
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveIfTextHasChanged();
+    }
 
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		String text = getArguments().getString("text");
-		if (savedInstanceState!=null && savedInstanceState.containsKey("text")){
-			text = savedInstanceState.getString("text");
-		}
-		final String imagePath = getArguments().getString("image_path");
-		mDocumentId = getArguments().getInt("id");
-		View view = inflater.inflate(R.layout.fragment_document, container, false);
-		mEditText = (EditText) view.findViewById(R.id.editText_document);
-		mViewSwitcher = (ViewSwitcher) view.findViewById(R.id.viewSwitcher);
-		if (mHtmlTask != null) {
-			mHtmlTask.cancel(true);
-		}
-		mHtmlTask = new HtmlToSpannedAsyncTask(mEditText, mViewSwitcher, this);
-		mHtmlTask.execute(text);
+        String text = getArguments().getString("text");
+        mDocumentId = getArguments().getInt("id");
+        View view = inflater.inflate(R.layout.fragment_document, container, false);
+        mEditText = (EditText) view.findViewById(R.id.editText_document);
+        mViewSwitcher = (ViewSwitcher) view.findViewById(R.id.viewSwitcher);
+        if (mHtmlTask != null) {
+            mHtmlTask.cancel(true);
+        }
+        if (savedInstanceState == null) {
+            mHtmlTask = new HtmlToSpannedAsyncTask(mEditText, mViewSwitcher, this);
+            mHtmlTask.execute(text);
+        } else {
+            mViewSwitcher.setDisplayedChild(1);
+        }
 
-		PreferencesUtils.applyTextPreferences(mEditText, getActivity());
+        PreferencesUtils.applyTextPreferences(mEditText, getActivity());
 
-		return view;
-	}
-
-
-	void saveIfTextHasChanged(boolean block) {
-		if (saveTask!=null && block && saveTask.getStatus()!= AsyncTask.Status.FINISHED){
-			//block currently running task
-			waitForTask(saveTask);
-			saveTask = null;
-		}
-
-		if (mHasTextChanged) {
-			mHasTextChanged = false;
-			final Uri uri = Uri.withAppendedPath(DocumentContentProvider.CONTENT_URI, String.valueOf(mDocumentId));
-			List<Uri> ids = new ArrayList<Uri>();
-			List<Spanned> texts = new ArrayList<Spanned>();
-			ids.add(uri);
-			texts.add(mEditText.getText());
-			saveTask = new BaseDocumentActivitiy.SaveDocumentTask(getActivity(), ids, texts);
-			saveTask.execute();
-			if (block){
-				waitForTask(saveTask);
-			}
-		}
-	}
-
-	private void waitForTask(BaseDocumentActivitiy.SaveDocumentTask saveTask) {
-		try {
-			Log.i(LOG_TAG,"Blocking saving");
-			saveTask.get(3000, TimeUnit.MILLISECONDS);
-			saveTask=null;
-		} catch (InterruptedException ignore) {
-		} catch (ExecutionException ignore) {
-		} catch (TimeoutException ignore) {
-		}
-		return;
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		PreferencesUtils.applyTextPreferences(mEditText, getActivity());
-	}
+        return view;
+    }
 
 
-	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    void saveIfTextHasChanged() {
 
-	}
-	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		mHasTextChanged = true;
-	}
+        if (mHasTextChanged) {
+            mHasTextChanged = false;
+            final Uri uri = Uri.withAppendedPath(DocumentContentProvider.CONTENT_URI, String.valueOf(mDocumentId));
+            List<Uri> ids = new ArrayList<>();
+            List<Spanned> texts = new ArrayList<>();
+            ids.add(uri);
+            texts.add(mEditText.getText());
+            saveTask = new BaseDocumentActivitiy.SaveDocumentTask(getActivity(), ids, texts);
+            saveTask.execute();
+        }
+    }
 
-	@Override
-	public void afterTextChanged(Editable s) {
+    @Override
+    public void onStart() {
+        super.onStart();
+        PreferencesUtils.applyTextPreferences(mEditText, getActivity());
+    }
 
-	}
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        mHasTextChanged = true;
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
+
+    private static class HtmlToSpannedAsyncTask extends AsyncTask<String, Void, Spanned> {
+
+        private final EditText mEditText;
+        private final ViewSwitcher mViewSwitcher;
+        private final TextWatcher mTextWatcher;
+
+        private HtmlToSpannedAsyncTask(final EditText editText, ViewSwitcher viewSwitcher, TextWatcher textWatcher) {
+            mEditText = editText;
+            mViewSwitcher = viewSwitcher;
+            mTextWatcher = textWatcher;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mViewSwitcher.setDisplayedChild(0);
+        }
+
+        @Override
+        protected Spanned doInBackground(String... params) {
+            if (params != null && params.length > 0 && params[0] != null && params[0].length() > 0) {
+                return Html.fromHtml(params[0]);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Spanned spanned) {
+            super.onPostExecute(spanned);
+            mEditText.setText(spanned);
+            mEditText.addTextChangedListener(mTextWatcher);
+            mViewSwitcher.setDisplayedChild(1);
+        }
+    }
 }

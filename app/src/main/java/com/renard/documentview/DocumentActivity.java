@@ -62,11 +62,11 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
 
     public interface DocumentContainerFragment {
-        public String getLangOfCurrentlyShownDocument();
+        String getLangOfCurrentlyShownDocument();
 
-        public void setCursor(final Cursor cursor);
+        void setCursor(final Cursor cursor);
 
-        public String getTextOfAllDocuments();
+        String getTextOfAllDocuments();
 
         void setShowText(boolean text);
 
@@ -80,7 +80,6 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     private int mParentId;
     private Cursor mCursor;
-    private View mFragmentFrame;
     private boolean mResultDialogShown = false;
     private TtsActionCallback mActionCallback;
 
@@ -92,7 +91,6 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_document);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mFragmentFrame = findViewById(R.id.document_fragment_container);
         init();
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
         if (savedInstanceState != null) {
@@ -111,6 +109,10 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     }
 
 
+    public void reloadCursor(){
+        getSupportLoaderManager().restartLoader(0, null, this);
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -120,7 +122,6 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
         }
         setIntent(intent);
-
     }
 
     @Override
@@ -137,7 +138,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     }
 
     void exportAsPdf() {
-        Set<Integer> idForPdf = new HashSet<Integer>();
+        Set<Integer> idForPdf = new HashSet<>();
         idForPdf.add(getParentId());
         new CreatePDFTask(idForPdf).execute();
     }
@@ -166,7 +167,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
             startActivityForResult(tocIndent, REQUEST_CODE_TABLE_OF_CONTENTS);
             return true;
         } else if (itemId == R.id.item_delete) {
-            Set<Integer> idToDelete = new HashSet<Integer>();
+            Set<Integer> idToDelete = new HashSet<>();
             idToDelete.add(getParentId());
             new DeleteDocumentTask(idToDelete, true).execute();
             return true;
@@ -213,7 +214,6 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     }
 
     String getPlainDocumentText() {
-        //final String htmlText = getDocumentContainer().getTextOfCurrentlyShownDocument();
         final String htmlText = getDocumentContainer().getTextOfAllDocuments();
         if (htmlText!=null){
             return Html.fromHtml(htmlText).toString();
@@ -247,7 +247,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     @SuppressWarnings("deprecation")
     private void copyTextToClipboard(String text) {
         android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        clipboard.setText("text");
+        clipboard.setText(text);
     }
 
     public void onTtsLanguageChosen(OCRLanguageAdapter.OCRLanguage lang) {
@@ -304,6 +304,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         } else {
             mParentId = parentId;
         }
+
         getSupportLoaderManager().initLoader(0, null, this);
 
     }
@@ -328,8 +329,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     }
 
     public DocumentContainerFragment getDocumentContainer() {
-        DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
-        return fragment;
+        return (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
     }
 
     private void setDocumentFragmentType() {
