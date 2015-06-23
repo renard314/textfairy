@@ -207,8 +207,14 @@
     <string name="text_is_in">Text is in</string>
     <string name="empty_grid_language">I can read German and English but you can download more languages.</string>
     <string name="error_tess_init">Internal OCR Error. Please reinstall the app or the language data.</string>
-    <string name="image_is_blurred">The image is blurred.</string>
-    <string name="new_image">new image</string>
+    <string name="image_is_blurred">I have a problem.</string>
+    <string name="new_image">New image</string>
     <string name="keep_camera_steady">Keep the camera steady.</string>
     <string name="image_not_too_dark">Make sure the image is not too dark.</string>
+    <string name="text_is_very_blurry">The image is very blurry. I won\'t be able to read the text
+        correctly.
+    </string>
+    <string name="text_is_blurry">The image is a bit blurry. I will take me a while to read the text
+        and I will make some mistakes doing so.
+    </string>
 </resources>

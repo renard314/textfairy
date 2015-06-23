@@ -7,13 +7,16 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 /**
  * Created by renard on 12/11/13.
  */
-public class ImageBlurredDialog extends DialogFragment implements DialogInterface.OnClickListener {
+public class ImageBlurredDialog extends DialogFragment implements DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
 
     public static final String TAG = ImageBlurredDialog.class.getSimpleName();
 
@@ -32,6 +35,13 @@ public class ImageBlurredDialog extends DialogFragment implements DialogInterfac
         }
     }
 
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        BlurDialogClickListener listener = (BlurDialogClickListener) getActivity();
+        listener.onContinueClicked();
+
+    }
 
     interface BlurDialogClickListener {
         void onContinueClicked();
@@ -49,20 +59,27 @@ public class ImageBlurredDialog extends DialogFragment implements DialogInterfac
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity(), R.style.DialogSlideAnim);
         builder.setCancelable(true);
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_blur_warning, null);
-        final float blurrines = getArguments().getFloat(EXTRA_BLURRINES);
+        final float blurriness = getArguments().getFloat(EXTRA_BLURRINES);
         TextView titleTextView = (TextView) view.findViewById(R.id.blur_warning_title);
-        if (blurrines < 55) {
-            titleTextView.setText("The image is very blurry.");
+        if (blurriness < .55) {
+            titleTextView.setText(R.string.text_is_very_blurry);
         } else {
-            titleTextView.setText("The image is a bit blurry.");
+            titleTextView.setText(R.string.text_is_blurry);
         }
         builder.setView(view);
+        builder.setCancelable(false);
+        builder.setOnCancelListener(this);
         builder.setNegativeButton(R.string.continue_ocr, this);
         builder.setPositiveButton(R.string.new_image, this);
-        return builder.create();
+        final AlertDialog alertDialog = builder.create();
+        Window window = alertDialog.getWindow();
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.BOTTOM;
+        window.setAttributes(wlp);
+        return alertDialog;
     }
 
 

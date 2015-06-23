@@ -108,7 +108,6 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
                             setTitle(R.string.image_is_blurred);
                             ImageBlurredDialog dialog = ImageBlurredDialog.newInstance((float) blurDetectionResult.getBlurValue());
                             dialog.show(getSupportFragmentManager(), ImageBlurredDialog.TAG);
-                            supportInvalidateOptionsMenu();
                             break;
                     }
                     mImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
@@ -257,16 +256,20 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
         c.set((int) (c.x / widthScale), (int) (c.y / heightScale));
         float[] pts = {c.x, c.y};
         mImageView.getImageMatrix().mapPoints(pts);
-        //int w = (Math.min(mBitmap.getWidth(), mBitmap.getHeight())) / 25;
-        //Rect focusArea = new Rect((int) (Math.max(c.x-w,0)*widthScale), (int) (Math.max(c.y-w,0)*heightScale), (int) (Math.min(c.x+w,mBitmap.getWidth())*widthScale), (int) (Math.min(c.y+w,mBitmap.getHeight())*heightScale));
+        /*
+        int w = (Math.min(mBitmap.getWidth(), mBitmap.getHeight())) / 25;
+
+        Rect focusArea = new Rect((int) (Math.max(c.x-w,0)*widthScale), (int) (Math.max(c.y-w,0)*heightScale), (int) (Math.min(c.x+w,mBitmap.getWidth())*widthScale), (int) (Math.min(c.y+w,mBitmap.getHeight())*heightScale));
 
         //final int progressColor = getResources().getColor(R.color.progress_color);
         //final int edgeWidth = getResources().getDimensionPixelSize(R.dimen.crop_edge_width);
+        Clip.clipRectangle2();
 
-        //BlurHighLightView hv = new BlurHighLightView(focusArea,progressColor,edgeWidth, mImageView.getImageMatrix());
-        //mImageView.add(hv);
+        BlurHighLightView hv = new BlurHighLightView(focusArea,progressColor,edgeWidth, mImageView.getImageMatrix());
+        mImageView.add(hv);
+        */
         mImageView.setMaxZoom(6);
-        mImageView.zoomTo(6, pts[0], pts[1], 1000);
+        mImageView.zoomTo(6, pts[0], pts[1], 2000);
     }
 
 

@@ -2,6 +2,7 @@
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:clickable="true"
+        android:padding="@dimen/default_padding"
         android:paddingLeft="@dimen/default_padding_half"
         android:layout_height="wrap_content"
         android:layout_width="match_parent" android:orientation="vertical">
@@ -12,7 +13,7 @@
             android:layout_marginBottom="@dimen/default_padding"
             android:gravity="left|center_vertical"
             android:drawableLeft="@drawable/ic_alert_warning"
-            android:text="@string/dialog_blur_warning"
+            android:text="@string/image_is_blurred"
             android:id="@+id/blur_warning_title"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 

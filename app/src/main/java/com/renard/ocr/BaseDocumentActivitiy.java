@@ -110,13 +110,14 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
     private static final String DATE_CAMERA_INTENT_STARTED_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.dateCameraIntentStarted";
     private static final String STATE_RECEIVER_REGISTERED = "state_receiver_registered";
+    private static final String IMAGE_SOURCE = "image_source";
     private static Date dateCameraIntentStarted = null;
     private static final String CAMERA_PIC_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
     private static Uri cameraPicUri = null;
     private static final String ROTATE_X_DEGREES_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.ROTATE_X_DEGREES_STATE";
     private static int rotateXDegrees = 0;
     private boolean mReceiverRegistered = false;
-    private ImageSource mImageSource;
+    private ImageSource mImageSource = ImageSource.CAMERA;
 
 
     private static class CameraResult {
@@ -151,9 +152,6 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
 
         Intent chooser = Intent.createChooser(i, getString(R.string.image_source));
-
-        // File photo = getTmpPhotoFile();
-        // i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
         startActivityForResult(chooser, REQUEST_CODE_PICK_PHOTO);
     }
 
@@ -202,6 +200,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         if (cameraPicUri != null) {
             savedInstanceState.putString(CAMERA_PIC_URI_STATE, cameraPicUri.toString());
         }
+        savedInstanceState.putInt(IMAGE_SOURCE, mImageSource.ordinal());
 
         savedInstanceState.putInt(ROTATE_X_DEGREES_STATE, rotateXDegrees);
 
@@ -233,7 +232,8 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         if (savedInstanceState.getBoolean(STATE_RECEIVER_REGISTERED)) {
             registerImageLoaderReceiver();
         }
-
+        final int index = savedInstanceState.getInt(IMAGE_SOURCE);
+        mImageSource = ImageSource.values()[index];
     }
 
     @Override
@@ -414,9 +414,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     final long nativePix = intent.getLongExtra(ImageLoadAsyncTask.EXTRA_PIX, 0);
                     final int statusNumber = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_STATUS, PixLoadStatus.SUCCESS.ordinal());
                     final boolean skipCrop = intent.getBooleanExtra(ImageLoadAsyncTask.EXTRA_SKIP_CROP, false);
-                    final int intExtra = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_SKIP_CROP, ImageSource.CAMERA.ordinal());
-                    final ImageSource imageSource = ImageSource.values()[intExtra];
-                    handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop, imageSource);
+                    handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop);
                 } else if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START)) {
                     showLoadingImageProgressDialog();
                 }
@@ -424,7 +422,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         }
     };
 
-    private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop, ImageSource imageSource) {
+    private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop) {
         PixLoadStatus status = pixLoadStatus;
         dismissLoadingImageProgressDialog();
 
@@ -899,9 +897,9 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
 
         private final Context mContext;
         private ContentValues values = new ContentValues();
-        private ArrayList<Uri> mDocumentUri = new ArrayList<Uri>();
+        private ArrayList<Uri> mDocumentUri = new ArrayList<>();
         private String mTitle;
-        private ArrayList<Spanned> mOcrText = new ArrayList<Spanned>();
+        private ArrayList<Spanned> mOcrText = new ArrayList<>();
         private Toast mSaveToast;
 
         public SaveDocumentTask(Context context, List<Uri> documentUri, List<Spanned> ocrText) {
