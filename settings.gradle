@@ -1,5 +1,4 @@
 include ':FileExplorer', ':testapp'
-include ':ViewPager3D:ViewPager3D'
 include ':tess-two:tess-two'
 include ':app'
 

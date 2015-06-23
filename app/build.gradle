@@ -120,7 +120,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:19.0.+'
     compile 'org.apache.commons:commons-compress:1.5'
     compile project(":FileExplorer")
-    compile project(":ViewPager3D:ViewPager3D")
     compile project(":tess-two:tess-two")
     compile 'com.android.support:cardview-v7:21.0.+'
 
