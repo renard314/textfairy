@@ -70,7 +70,6 @@ public class ImageBlurredDialog extends DialogFragment implements DialogInterfac
             titleTextView.setText(R.string.text_is_blurry);
         }
         builder.setView(view);
-        builder.setCancelable(false);
         builder.setOnCancelListener(this);
         builder.setNegativeButton(R.string.continue_ocr, this);
         builder.setPositiveButton(R.string.new_image, this);
@@ -79,6 +78,8 @@ public class ImageBlurredDialog extends DialogFragment implements DialogInterfac
         WindowManager.LayoutParams wlp = window.getAttributes();
         wlp.gravity = Gravity.BOTTOM;
         window.setAttributes(wlp);
+        setCancelable(false);
+        alertDialog.setCanceledOnTouchOutside(false);
         return alertDialog;
     }
 
