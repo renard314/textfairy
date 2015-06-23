@@ -213,6 +213,6 @@
     <string name="image_not_too_dark">Achte darauf, dass das Bild möglichst hell ist.</string>
     <string name="text_is_very_blurry">Das Bild ist sehr unscharf. Ich kann den Text kaum erkennen.</string>
     <string name="text_is_blurry">Das Bild ist teilweise unscharf. Ich werde den Text nicht fehlerfrei lesen können.</string>
-
+    <string name="nav_drawer_download_language">Lade Sprachen</string>
 
 </resources>

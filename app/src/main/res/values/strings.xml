@@ -217,4 +217,5 @@
     <string name="text_is_blurry">The image is a bit blurry. I will take me a while to read the text
         and I will make some mistakes doing so.
     </string>
+    <string name="nav_drawer_download_language">Add language</string>
 </resources>
