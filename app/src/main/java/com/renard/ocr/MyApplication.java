@@ -15,33 +15,47 @@
  */
 package com.renard.ocr;
 
-import java.lang.reflect.Field;
+import com.renard.util.PreferencesUtils;
 
 import android.app.Application;
+import android.os.StrictMode;
 import android.view.ViewConfiguration;
 
-import com.renard.util.PreferencesUtils;
+import java.lang.reflect.Field;
 
 //@ReportsCrashes(formKey = "dDZFZXFpU1NocWUwZ0x0aURsVUhNSXc6MQ", socketTimeout = 10000)
 public class MyApplication extends Application {
 
-	public void onCreate() {
-		PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
+    public void onCreate() {
+        super.onCreate();
 
-		// force overflow button for actionbar for devices with hardware option
-		// button
-		try {
-			ViewConfiguration config = ViewConfiguration.get(this);
-			Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
-			if (menuKeyField != null) {
-				menuKeyField.setAccessible(true);
-				menuKeyField.setBoolean(config, false);
-			}
-		} catch (Exception ex) {
-			// Ignore
-		}
-		// ACRA.init(this);
+        PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
 
-	};
+        if (BuildConfig.DEBUG) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build();
+            StrictMode.setThreadPolicy(policy);
+
+        }
+
+        // force overflow button for actionbar for devices with hardware option
+        // button
+        try {
+            ViewConfiguration config = ViewConfiguration.get(this);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            if (menuKeyField != null) {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        } catch (Exception ex) {
+            // Ignore
+        }
+        // ACRA.init(this);
+
+    }
+
+    ;
 
 }
