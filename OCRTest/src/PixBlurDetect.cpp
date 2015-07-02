@@ -229,7 +229,8 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue, Box** m
 	pixMultConstantGray(pixBlendMask,1.5);
 
 	Pix* pixBlended = pixConvert8To32(pixScaled);
-	pixTintMasked(pixBlended,pixBlendMask);
+	//TODO reactivate if blur heatmap is needed.
+	//pixTintMasked(pixBlended,pixBlendMask);
 	if(mDebug){
 		printf("paint mask: %f\n", stopTimerNested(timer));
 		//pixWrite("pixBlendedTiles.png",pixBlendedTiles, IFF_PNG);
