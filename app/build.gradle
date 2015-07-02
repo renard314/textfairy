@@ -115,6 +115,7 @@ dependencies {
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.google.code.findbugs:jsr305:2.0.2'
     compile "com.google.guava:guava:18.0"
+    compile 'de.greenrobot:eventbus:2.4.0'
     //compile 'com.android.support:design:22.2.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:appcompat-v7:19.0.+'

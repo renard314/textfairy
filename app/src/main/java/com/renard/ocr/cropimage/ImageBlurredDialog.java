@@ -1,5 +1,6 @@
 package com.renard.ocr.cropimage;
 
+import com.renard.documentview.TopDialogFragment;
 import com.renard.ocr.R;
 
 import android.app.AlertDialog;
@@ -16,7 +17,7 @@ import android.widget.TextView;
 /**
  * Created by renard on 12/11/13.
  */
-public class ImageBlurredDialog extends DialogFragment implements DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
+public class ImageBlurredDialog extends TopDialogFragment implements DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
 
     public static final String TAG = ImageBlurredDialog.class.getSimpleName();
 
@@ -64,7 +65,7 @@ public class ImageBlurredDialog extends DialogFragment implements DialogInterfac
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_blur_warning, null);
         final float blurriness = getArguments().getFloat(EXTRA_BLURRINES);
         TextView titleTextView = (TextView) view.findViewById(R.id.blur_warning_title);
-        if (blurriness < .55) {
+        if (blurriness > .75) {
             titleTextView.setText(R.string.text_is_very_blurry);
         } else {
             titleTextView.setText(R.string.text_is_blurry);
@@ -80,6 +81,7 @@ public class ImageBlurredDialog extends DialogFragment implements DialogInterfac
         window.setAttributes(wlp);
         setCancelable(false);
         alertDialog.setCanceledOnTouchOutside(false);
+        positionDialogAtTop(alertDialog);
         return alertDialog;
     }
 

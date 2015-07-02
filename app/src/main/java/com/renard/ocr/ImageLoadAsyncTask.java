@@ -3,6 +3,7 @@ package com.renard.ocr;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.leptonica.android.Rotate;
+import com.googlecode.tesseract.android.OCR;
 import com.renard.util.Util;
 
 import android.content.ContentResolver;
@@ -31,7 +32,7 @@ enum PixLoadStatus {
 
 
 /**
- * Created by renard on 31/03/15.
+ * @author renard
  */
 public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadStatus>> {
 
@@ -111,7 +112,6 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
-
     @Override
     protected Pair<Pix, PixLoadStatus> doInBackground(Void... params) {
         Log.i(LOG_TAG, "doInBackground");
@@ -181,7 +181,6 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                 p = pix;
                 rotateXDegrees = 0;
             }
-
             return Pair.create(p, PixLoadStatus.SUCCESS);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

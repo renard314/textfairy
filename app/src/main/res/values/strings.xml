@@ -112,7 +112,7 @@
     <string name="start_text_2">I extract editable text from pictures. Tap on me to learn more…</string>
     <string name="start_text_3">Take a new picture or chose one from your gallery…</string>
     <string name="start_text_4">Crop the picture and tell me if it contains more than one column of text…</string>
-    <string name="start_text_5">You can now edit the scanned document or send it away as pdf file…</string>
+    <string name="start_text_5">You can now edit the text or convert it to a pdf file. How was you experience using this app?</string>
     <string name="start_text_6">Try it out! I will be helping you if you got question…</string>
     <string name="start_text_7">… but do not forget:  even  androids are not perfekt. Not every picture can be converted to text…</string>
     <string name="start_text_8">But i\'ll do my best…</string>
@@ -142,7 +142,7 @@
     <string name="text_to_speech">Speak text</string>
     <string name="ocr_result_is_bad">That did not go so well. Please read the tips.</string>
     <string name="ocr_result_is_ok">I think i got most of the text.</string>
-    <string name="ocr_result_is_good">I\'m happy with the result.</string>
+    <string name="ocr_result_is_good">That went well.</string>
     <string name="play">Play</string>
     <string name="stop">Stop</string>
     <string name="tts_init_error">Text to speech could not load.</string>
@@ -155,7 +155,7 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="product_tour">Product tour</string>
-    <string name="empty_grid_greeting">Hello</string>
+    <string name="empty_grid_greeting">Welcome</string>
     <string name="empty_grid_camera">Tap here to convert text from a new image.</string>
     <string name="empty_grid_gallery">Tap here to convert text from an existing image.</string>
     <string name="empty_grid_fairy">P.S. Tap on the fairy for more info.</string>
@@ -218,4 +218,12 @@
         and I will make some mistakes doing so.
     </string>
     <string name="nav_drawer_download_language">Add language</string>
+    <string name="first_scan_successful">Congratulation, you scanned your first image.</string>
+    <string name="love_it">Love it!</string>
+    <string name="could_be_better">Could be better</string>
+    <string name="continue_editing">Continue</string>
+    <string name="feedback_description">How was your experience using this app?</string>
+    <string name="first_time_bad_result">Please read the tips or send me your feedback and I\'ll try to help you.
+    </string>
+    <string name="first_scan_unsuccessful">Oops. Something doesn\'t seem right</string>
 </resources>

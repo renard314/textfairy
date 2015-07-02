@@ -16,8 +16,17 @@
 
 package com.renard.documentview;
 
+import com.renard.ocr.BaseDocumentActivitiy;
+import com.renard.ocr.BuildConfig;
+import com.renard.ocr.DocumentContentProvider;
+import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.DocumentGridActivity;
+import com.renard.ocr.R;
+import com.renard.ocr.help.HintDialog;
+import com.renard.ocr.help.OCRLanguageAdapter;
+import com.renard.util.PreferencesUtils;
+
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -35,30 +44,19 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
-import com.renard.ocr.BaseDocumentActivitiy;
-import com.renard.ocr.DocumentContentProvider;
-import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.R;
-import com.renard.ocr.help.HintDialog;
-import com.renard.ocr.help.OCRLanguageAdapter;
-
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-public class DocumentActivity extends BaseDocumentActivitiy implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DocumentActivity extends BaseDocumentActivitiy implements LoaderManager.LoaderCallbacks<Cursor>, FeedbackDialog.FeedbackDialogClickListener {
 
-    private static final String STATE_DIALOG_SHOWN = "state_dialog_shown";
     private final static String LOG_TAG = DocumentActivity.class.getSimpleName();
+
 
 
     public interface DocumentContainerFragment {
@@ -80,54 +78,38 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     private int mParentId;
     private Cursor mCursor;
-    private boolean mResultDialogShown = false;
     private TtsActionCallback mActionCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		setVolumeControlStream(AudioManager.STREAM_ALARM);
+        setVolumeControlStream(AudioManager.STREAM_ALARM);
 
-		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_document);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         init();
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
-        if (savedInstanceState != null) {
-            mResultDialogShown = savedInstanceState.getBoolean(STATE_DIALOG_SHOWN);
-        }
-        if (accuracy > 0 && !mResultDialogShown) {
-            mResultDialogShown = true;
+
+        if (savedInstanceState == null && !PreferencesUtils.hasAskedForFeedback(getApplicationContext())) {
+            PreferencesUtils.setHasAskedForFeedback(getApplicationContext(), true);
+            FeedbackDialog.newInstance(accuracy).show(getSupportFragmentManager(), FeedbackDialog.TAG);
+        } else if (accuracy > 0 && savedInstanceState == null) {
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
-        }
-        if (accuracy == 0) {
-            mResultDialogShown = true;
         }
         setDocumentFragmentType();
         initAppIcon(this, HINT_DIALOG_ID);
         mActionCallback = new TtsActionCallback(this);
     }
 
-
-    public void reloadCursor(){
-        getSupportLoaderManager().restartLoader(0, null, this);
-    }
-
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
+    public void onContinueClicked() {
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
-        if (accuracy > 0 && !mResultDialogShown) {
-            mResultDialogShown = true;
+        //don't show the result dialog if the accuracy was really bad
+        if(accuracy>=OCRResultDialog.LOW_ACCURACY){
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
         }
-        setIntent(intent);
-    }
 
-    @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putBoolean(STATE_DIALOG_SHOWN, mResultDialogShown);
     }
 
     @Override
@@ -154,7 +136,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
         if (itemId == R.id.item_view_mode) {
             DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
-             fragment.setShowText(!fragment.getShowText());
+            fragment.setShowText(!fragment.getShowText());
             return true;
         } else if (itemId == R.id.item_text_options) {
             Intent i = new Intent(this, TextOptionsActivity.class);
@@ -215,7 +197,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     String getPlainDocumentText() {
         final String htmlText = getDocumentContainer().getTextOfAllDocuments();
-        if (htmlText!=null){
+        if (htmlText != null) {
             return Html.fromHtml(htmlText).toString();
         } else {
             return null;
@@ -224,8 +206,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     void shareText() {
         String shareBody = getPlainDocumentText();
-        if (shareBody==null){
-            Toast.makeText(DocumentActivity.this,R.string.empty_document,Toast.LENGTH_LONG).show();
+        if (shareBody == null) {
+            Toast.makeText(DocumentActivity.this, R.string.empty_document, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -344,14 +326,11 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
                 newFragment.setCursor(mCursor);
             }
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            if (fragment != null) {
-                ft.remove((Fragment) fragment);
-            }
             ft.add(R.id.document_fragment_container, (Fragment) newFragment);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.commit();
         }
-        
+
     }
 
     @Override
@@ -360,7 +339,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         mCursor = cursor;
         DocumentContainerFragment frag = getDocumentContainer();
         frag.setCursor(cursor);
-        if(getIntent().getData()!=null) {
+        if (getIntent().getData() != null) {
             String id = getIntent().getData().getLastPathSegment();
             DocumentPagerFragment documentContainer = (DocumentPagerFragment) getDocumentContainer();
             documentContainer.setDisplayedPageByDocumentId(Integer.parseInt(id));

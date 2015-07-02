@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:clickable="true"
+        android:background="#FFFFFF"
+        android:padding="@dimen/default_padding"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" android:orientation="vertical">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/fairy_text"
+              android:textSize="18sp"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:drawablePadding="@dimen/default_padding"
+              android:gravity="center_vertical|left"
+              android:textStyle="bold"
+              android:text="@string/first_scan_successful"
+              android:layout_marginTop="@dimen/default_padding_half"
+              android:textAppearance="@style/FairySpeechbubble">
+
+    </TextView>
+    <View
+            android:layout_marginTop="@dimen/default_padding_half"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:id="@+id/divider1"
+            android:background="@color/grey6"/>
+
+    <TextView android:text="@string/start_text_5"
+              android:textSize="16sp"
+              android:id="@+id/explanation_text"
+              android:layout_marginTop="@dimen/default_padding"
+              android:layout_marginBottom="@dimen/default_padding"
+              android:background="@android:color/white"
+              android:padding="@dimen/default_padding_half"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"/>
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:id="@+id/divider2"
+            android:background="@color/grey6"/>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_marginTop="@dimen/default_padding_half"
+                  android:orientation="horizontal"
+                  android:layout_height="@dimen/button_height">
+        <Button android:layout_weight="1"
+                android:textSize="14sp"
+                android:id="@+id/could_be_better"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/could_be_better"/>
+        <View android:layout_width="1dp"
+              android:id="@+id/button_divider"
+              android:layout_marginLeft="@dimen/default_padding_half"
+              android:layout_marginRight="@dimen/default_padding_half"
+              android:layout_height="@dimen/button_height"
+              android:background="@color/grey6"/>
+        <Button android:layout_weight="1"
+                android:textSize="14sp"
+                android:id="@+id/love_it"
+                style="?android:attr/borderlessButtonStyle"
+                android:drawableLeft="@drawable/ic_heart"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/love_it"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
