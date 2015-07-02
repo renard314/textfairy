@@ -148,7 +148,7 @@ public class InstallActivity extends Activity {
         });
     }
 
-    public void watchYoutubeVideo(String id) {
+    private void watchYoutubeVideo(String id) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(id));
         startActivity(intent);
     }

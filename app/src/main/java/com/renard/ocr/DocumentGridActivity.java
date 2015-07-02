@@ -158,7 +158,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
     private void startInstallActivityIfNeeded() {
         final String state = Environment.getExternalStorageState();
         if (state.equals(Environment.MEDIA_MOUNTED)) {
-            if (InstallActivity.IsInstalled(this) == false) {
+            if (!InstallActivity.IsInstalled(this)) {
                 // install the languages if needed, create directory structure
                 // (one
                 // time)
@@ -180,7 +180,6 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
             alert.show();
         }
     }
-
 
     private void initNavigationDrawer() {
         final ListView drawer = (ListView) findViewById(R.id.left_drawer);
