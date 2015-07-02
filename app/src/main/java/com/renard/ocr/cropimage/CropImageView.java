@@ -145,6 +145,13 @@ public class CropImageView extends ImageViewTouchBase {
         return true;
     }
 
+    @Override
+    public void onZoomFinished() {
+        if(mCropHighlightView.isPresent()){
+            ensureVisible(mCropHighlightView.get());
+        }
+    }
+
     // Pan the displayed image to make sure the cropping rectangle is visible.
     private void ensureVisible(HighLightView hv) {
         Rect r = hv.getDrawRect();

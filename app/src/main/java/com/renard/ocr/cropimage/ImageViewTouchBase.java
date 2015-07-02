@@ -340,10 +340,14 @@ public abstract class ImageViewTouchBase extends ImageView {
 
                 if (currentMs < durationMs) {
                     mHandler.post(this);
+                } else {
+                    onZoomFinished();
                 }
             }
         });
     }
+
+    public abstract void onZoomFinished();
 
     protected void zoomTo(float scale) {
         float cx = getWidth() / 2F;
