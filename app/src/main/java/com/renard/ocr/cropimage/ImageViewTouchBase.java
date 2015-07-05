@@ -308,7 +308,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
         float fw = (float) mBitmapDisplayed.getWidth() / (float) mThisWidth;
         float fh = (float) mBitmapDisplayed.getHeight() / (float) mThisHeight;
-        float max = Math.max(fw, fh) * 2;
+        float max = Math.max(fw, fh) * 4;
         return max;
     }
 
@@ -340,16 +340,26 @@ public abstract class ImageViewTouchBase extends ImageView {
 
                 if (currentMs < durationMs) {
                     mHandler.post(this);
+                } else {
+                    onZoomFinished();
                 }
             }
         });
     }
+
+    public abstract void onZoomFinished();
 
     protected void zoomTo(float scale) {
         float cx = getWidth() / 2F;
         float cy = getHeight() / 2F;
 
         zoomTo(scale, cx, cy);
+    }
+    protected void zoomTo(float scale, final float durationMs) {
+        float cx = getWidth() / 2F;
+        float cy = getHeight() / 2F;
+
+        zoomTo(scale, cx, cy, durationMs);
     }
 
     protected void zoomIn() {

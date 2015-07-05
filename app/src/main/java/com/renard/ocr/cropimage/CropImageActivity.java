@@ -17,11 +17,25 @@
 
 package com.renard.ocr.cropimage;
 
+import com.google.common.base.Optional;
+
+import com.googlecode.leptonica.android.Box;
+import com.googlecode.leptonica.android.Clip;
+import com.googlecode.leptonica.android.Pix;
+import com.googlecode.leptonica.android.Projective;
+import com.googlecode.leptonica.android.Rotate;
+import com.googlecode.tesseract.android.OCR;
+import com.renard.ocr.DocumentGridActivity;
+import com.renard.ocr.R;
+import com.renard.ocr.help.HintDialog;
+import com.renard.util.Util;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
@@ -29,89 +43,49 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.ViewSwitcher;
 
-import com.googlecode.leptonica.android.Projective;
-import com.googlecode.leptonica.android.Box;
-import com.googlecode.leptonica.android.Clip;
-import com.googlecode.leptonica.android.Pix;
-import com.googlecode.leptonica.android.Rotate;
-import com.googlecode.leptonica.android.Scale;
-import com.googlecode.leptonica.android.WriteFile;
-import com.renard.ocr.DocumentGridActivity;
-import com.renard.ocr.R;
-import com.renard.ocr.help.HintDialog;
-import com.renard.util.Util;
+import de.greenrobot.event.EventBus;
 
 /**
  * The activity can crop specific region of interest from an image.
  */
-public class CropImageActivity extends MonitoredActivity {
+public class CropImageActivity extends MonitoredActivity implements ImageBlurredDialog.BlurDialogClickListener {
+    public static final int RESULT_NEW_IMAGE = RESULT_FIRST_USER + 1;
     private static final int HINT_DIALOG_ID = 2;
-
     private final Handler mHandler = new Handler();
 
     private int mRotation = 0;
-
     boolean mSaving; // Whether the "save" button is already clicked.
     private Pix mPix; // original Picture
-    private Pix mPixScaled; // scaled Picture
     private CropImageView mImageView;
-
-    private Bitmap mBitmap;
-    private HighlightView mCrop;
-    private float mScaleFactor = 1;
+    private ViewSwitcher mViewSwitcher;
+    private CropHighlightView mCrop;
+    private Optional<CropData> mCropData = Optional.absent();
+    private Optional<PreparePixForCropTask> mPrepareTask = Optional.absent();
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
+        EventBus.getDefault().register(this);
         getWindow().setFormat(PixelFormat.RGBA_8888);
-        // requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_cropimage);
-
         mImageView = (CropImageView) findViewById(R.id.image);
+        mViewSwitcher = (ViewSwitcher) findViewById(R.id.crop_layout);
         mImageView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
             @Override
             public void onGlobalLayout() {
-                //TODO not run on UI Thread
-                Intent intent = getIntent();
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    // mImagePath = extras.getString("image-path");
-                    // mSaveUri = Uri.fromFile(new File(mImagePath));
-                    // mBitmap = getBitmap(mImagePath);
-                    mPix = new Pix(extras.getLong(DocumentGridActivity.EXTRA_NATIVE_PIX));
+                Bundle extras = getIntent().getExtras();
+                extras.getLong(DocumentGridActivity.EXTRA_NATIVE_PIX);
+                extras.getInt(DocumentGridActivity.EXTRA_ROTATION);
+                final int width = mImageView.getWidth();
+                final int height = mImageView.getHeight();
 
-                    // scale it so that it fits the screen
-                    float bestScale = 1 / getScaleFactorToFitScreen(mPix, mImageView.getWidth(), mImageView.getHeight());
-                    mScaleFactor = Util.determineScaleFactor(mPix.getWidth(), mPix.getHeight(), mImageView.getWidth(), mImageView.getHeight());
-
-                    if (mScaleFactor == 0) {
-                        mScaleFactor = 1;
-                    } else {
-                        if (bestScale < 1 && bestScale > 0.5f) {
-                            mScaleFactor = (float) (1 / Math.pow(2, 0.5f));
-                        } else if (bestScale <= 0.5f) {
-                            mScaleFactor = (float) (1 / Math.pow(2, 0.25f));
-                        } else {
-                            mScaleFactor = 1 / mScaleFactor;
-                        }
-                    }
-
-                    mPixScaled = Scale.scaleWithoutFiltering(mPix, mScaleFactor);
-
-                    mBitmap = WriteFile.writeBitmap(mPixScaled);
-                    mRotation = extras.getInt(DocumentGridActivity.EXTRA_ROTATION) / 90;
-                }
-
-                if (mBitmap == null) {
-                    finish();
-                    return;
-                }
-
-                mImageView.setImageBitmapResetBase(mBitmap, true, mRotation * 90);
-                makeDefault();
+                mPix = new Pix(extras.getLong(DocumentGridActivity.EXTRA_NATIVE_PIX));
+                mRotation = extras.getInt(DocumentGridActivity.EXTRA_ROTATION) / 90;
+                mPrepareTask = Optional.of(new PreparePixForCropTask(mPix, width, height));
+                mPrepareTask.get().execute();
                 mImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
             }
 
@@ -120,17 +94,38 @@ public class CropImageActivity extends MonitoredActivity {
         initAppIcon(this, HINT_DIALOG_ID);
     }
 
-    private float getScaleFactorToFitScreen(Pix mPix, int vwidth, int vheight) {
-        float scale;
-        int dWidth = mPix.getWidth();
-        int dHeight = mPix.getHeight();
-        if (dWidth <= vwidth && dHeight <= vheight) {
-            scale = 1.0f;
-        } else {
-            scale = Math.min((float) vwidth / (float) dWidth, (float) vheight / (float) dHeight);
-        }
-        return scale;
+    @SuppressWarnings("unused")
+    public void onEventMainThread(final CropData cropData) {
+        supportInvalidateOptionsMenu();
+        mCropData = Optional.of(cropData);
+        mViewSwitcher.setDisplayedChild(1);
+
+        mImageView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                mImageView.setImageBitmapResetBase(cropData.getBitmap(), true, mRotation * 90);
+
+                switch (cropData.getBlurrines().getBlurriness()) {
+                    case NOT_BLURRED:
+                        showDefaultCroppingRectangle(cropData.getBitmap());
+                        break;
+                    case MEDIUM_BLUR:
+                    case STRONG_BLUR:
+                        zoomToBlurredRegion(cropData);
+                        setTitle(R.string.image_is_blurred);
+                        ImageBlurredDialog dialog = ImageBlurredDialog.newInstance((float) cropData.getBlurrines().getBlurValue());
+                        dialog.show(getSupportFragmentManager(), ImageBlurredDialog.TAG);
+                        break;
+                }
+
+                mImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+
+        });
+
     }
+
 
     @Override
     protected Dialog onCreateDialog(int id, Bundle args) {
@@ -158,69 +153,57 @@ public class CropImageActivity extends MonitoredActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.crop_image_options, menu);
         return true;
     }
 
-    private void onRotateClicked(int delta) {
-        if (delta < 0) {
-            delta = -delta * 3;
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mCropData.isPresent()) {
+            menu.findItem(R.id.item_rotate_left).setVisible(true);
+            menu.findItem(R.id.item_rotate_right).setVisible(true);
+            menu.findItem(R.id.item_save).setVisible(true);
+            return true;
+        } else {
+            menu.findItem(R.id.item_rotate_left).setVisible(false);
+            menu.findItem(R.id.item_rotate_right).setVisible(false);
+            menu.findItem(R.id.item_save).setVisible(false);
+            return true;
         }
-        mRotation += delta;
-        mRotation = mRotation % 4;
-        mImageView.setImageBitmapResetBase(mBitmap, false, mRotation * 90);
-        makeDefault();
     }
 
-    private Box adjustBoundsToMultipleOf4(float f, float g, float h, float j) {
-        int newLeft = (int) f;
-        int newTop = (int) g;
-        int newRight = (int) (f + h);
-        int newBottom = (int) (g + j);
-
-        int wDiff = ((int) h) % 4;
-        int hDiff = ((int) j) % 4;
-        for (int i = 0; i < wDiff; i++) {
-            if (i % 2 == 0) {
-                newLeft++;
-            } else {
-                newRight--;
+    private void onRotateClicked(int delta) {
+        if (mCropData.isPresent()) {
+            if (delta < 0) {
+                delta = -delta * 3;
             }
+            mRotation += delta;
+            mRotation = mRotation % 4;
+            mImageView.setImageBitmapResetBase(mCropData.get().getBitmap(), false, mRotation * 90);
+            showDefaultCroppingRectangle(mCropData.get().getBitmap());
         }
-        for (int i = 0; i < hDiff; i++) {
-            if (i % 2 == 0) {
-                newTop++;
-            } else {
-                newBottom--;
-            }
-        }
-        return new Box(newLeft, newTop, newRight - newLeft, newBottom - newTop);
-
     }
 
     private void onSaveClicked() {
-        if (mSaving)
-            return;
-
-        if (mCrop == null) {
+        if (!mCropData.isPresent() || mSaving || (mCrop == null)) {
             return;
         }
-
         mSaving = true;
 
         Util.startBackgroundJob(this, null, getText(R.string.cropping_image).toString(), new Runnable() {
             public void run() {
                 try {
-                    float scale = 1f / mScaleFactor;
+                    float scale = 1f / mCropData.get().getScaleResult().getScaleFactor();
                     Matrix scaleMatrix = new Matrix();
                     scaleMatrix.setScale(scale, scale);
 
                     final float[] trapezoid = mCrop.getTrapezoid();
                     final RectF perspectiveCorrectedBoundingRect = new RectF(mCrop.getPerspectiveCorrectedBoundingRect());
                     scaleMatrix.mapRect(perspectiveCorrectedBoundingRect);
-                    Box bb = new Box((int)perspectiveCorrectedBoundingRect.left,(int)perspectiveCorrectedBoundingRect.top,(int)perspectiveCorrectedBoundingRect.width(),(int)perspectiveCorrectedBoundingRect.height());
+                    Box bb = new Box((int) perspectiveCorrectedBoundingRect.left, (int) perspectiveCorrectedBoundingRect.top, (int) perspectiveCorrectedBoundingRect.width(), (int) perspectiveCorrectedBoundingRect.height());
                     Pix croppedPix = Clip.clipRectangle2(mPix, bb);
                     if (croppedPix == null) {
                         throw new IllegalStateException();
@@ -247,6 +230,7 @@ public class CropImageActivity extends MonitoredActivity {
                         throw new IllegalStateException();
                     }
                     Intent result = new Intent();
+                    OCR.savePixToCacheDir(CropImageActivity.this, bilinear.copy());
                     result.putExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, bilinear.getNativePix());
                     setResult(RESULT_OK, result);
                 } catch (IllegalStateException e) {
@@ -261,11 +245,6 @@ public class CropImageActivity extends MonitoredActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
         setResult(RESULT_CANCELED);
@@ -274,15 +253,47 @@ public class CropImageActivity extends MonitoredActivity {
 
     @Override
     protected void onDestroy() {
-        mPixScaled.recycle();
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
+        if (mPrepareTask.isPresent()) {
+            mPrepareTask.get().cancel(false);
+            mPrepareTask = Optional.absent();
+        }
+        if (mCropData.isPresent()) {
+            mCropData.get().recylce();
+            mCropData = Optional.absent();
+        }
     }
 
-    // Create a default HightlightView if we found no face in the picture.
-    private void makeDefault() {
+    private void zoomToBlurredRegion(CropData data) {
+        float width = data.getBlurrines().getPixBlur().getWidth();
+        float height = data.getBlurrines().getPixBlur().getHeight();
+        float widthScale = width / data.getBitmap().getWidth();
+        float heightScale = height / data.getBitmap().getHeight();
+        final Point c = data.getBlurrines().getMostBlurredRegion().getCenter();
+        c.set((int) (c.x / widthScale), (int) (c.y / heightScale));
+        float[] pts = {c.x, c.y};
+        mImageView.getImageMatrix().mapPoints(pts);
+        /*
+        int w = (Math.min(mBitmap.getWidth(), mBitmap.getHeight())) / 25;
 
-        int width = mBitmap.getWidth();
-        int height = mBitmap.getHeight();
+        Rect focusArea = new Rect((int) (Math.max(c.x-w,0)*widthScale), (int) (Math.max(c.y-w,0)*heightScale), (int) (Math.min(c.x+w,mBitmap.getWidth())*widthScale), (int) (Math.min(c.y+w,mBitmap.getHeight())*heightScale));
+
+        //final int progressColor = getResources().getColor(R.color.progress_color);
+        //final int edgeWidth = getResources().getDimensionPixelSize(R.dimen.crop_edge_width);
+        Clip.clipRectangle2();
+
+        BlurHighLightView hv = new BlurHighLightView(focusArea,progressColor,edgeWidth, mImageView.getImageMatrix());
+        mImageView.add(hv);
+        */
+        mImageView.setMaxZoom(6);
+        mImageView.zoomTo(6, pts[0], pts[1], 2000);
+    }
+
+
+    private void showDefaultCroppingRectangle(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
 
         Rect imageRect = new Rect(0, 0, width, height);
 
@@ -296,13 +307,31 @@ public class CropImageActivity extends MonitoredActivity {
 
         RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
 
-        HighlightView hv = new HighlightView(mImageView, imageRect, cropRect);
+        CropHighlightView hv = new CropHighlightView(mImageView, imageRect, cropRect);
 
+        mImageView.resetMaxZoom();
         mImageView.add(hv);
-        mImageView.invalidate();
         mCrop = hv;
         mCrop.setFocus(true);
+        mImageView.invalidate();
+        //hack until i refactor the crop image package
+        //mImageView.zoomTo(1, 10);
     }
 
+    @Override
+    public void onContinueClicked() {
+        if (mCropData.isPresent()) {
+            showDefaultCroppingRectangle(mCropData.get().getBitmap());
+            setTitle(R.string.crop_title);
+            mImageView.zoomTo(1, 500);
+        }
+    }
+
+    @Override
+    public void onNewImageClicked() {
+        setResult(RESULT_NEW_IMAGE);
+        mPix.recycle();
+        finish();
+    }
 }
 

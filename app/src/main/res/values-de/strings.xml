@@ -139,7 +139,7 @@
     <string name="continue_ocr">Weiter</string>
     <string name="ocr_accuracy">OCR Genauigkeit: %1$d</string>
     <string name="text_to_speech">Text vorlesen</string>
-    <string name="ocr_result_is_bad">Ich konnte nicht viel erkennen. Ich hoffe die Tipps helfen.</string>
+    <string name="ocr_result_is_bad">Ups, da lief etwas schief! Ich konnte nicht viel erkennen.</string>
     <string name="ocr_result_is_ok">Ich denke ich konnte das meiste lesen.</string>
     <string name="ocr_result_is_good">Das lief ganz gut!</string>
     <string name="play">Play</string>
@@ -205,5 +205,22 @@
     <string name="greeting">Hallo</string>
     <string name="text_is_in">Text ist in</string>
     <string name="empty_grid_download_language">Lade weitere Sprache.</string>
-    <string name="empty_grid_language">Ich kann deutschen und englischen Text lesen aber auch zusätzliche Sprachen lernen.</string>
+    <string name="empty_grid_language">Ich kann deutschen und englischen Text lesen, aber auch zusätzliche Sprachen lernen.</string>
+    <string name="error_tess_init">Interner Fehler. Lösche die Daten der App in den Systemsettings und versuche es erneut.</string>
+    <string name="image_is_blurred">Es gibt ein Problem.</string>
+    <string name="new_image">Neues Bild</string>
+    <string name="keep_camera_steady">Halte die Kamera ruhig.</string>
+    <string name="image_not_too_dark">Achte darauf, dass das Bild möglichst hell ist.</string>
+    <string name="text_is_very_blurry">Das Bild ist sehr unscharf. Ich kann den Text kaum erkennen.</string>
+    <string name="text_is_blurry">Das Bild ist teilweise unscharf. Ich werde den Text nicht fehlerfrei lesen können.</string>
+    <string name="nav_drawer_download_language">Lade Sprachen</string>
+    <string name="love_it">sehr gut</string>
+    <string name="continue_editing">Weiter</string>
+    <string name="could_be_better">könnte besser sein</string>
+    <string name="feedback_description">Wie sind deine Erfahrungen mit der App bisher?</string>
+    <string name="first_scan_successful">Gratuliere, das läuft sehr gut.</string>
+    <string name="first_time_bad_result">Bitte lies die Tipps oder sende mir Feedback damit ich dir
+        helfen kann.
+    </string>
+
 </resources>

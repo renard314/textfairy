@@ -9,6 +9,8 @@ LOCAL_MODULE := libimage_processing_jni
 LOCAL_SRC_FILES += \
   $(IMAGE_PROCESSING_PATH)/binarize.cpp \
   $(IMAGE_PROCESSING_PATH)/pageseg.cpp \
+  $(IMAGE_PROCESSING_PATH)/RunningStats.cpp \
+  $(IMAGE_PROCESSING_PATH)/PixBlurDetect.cpp \
   $(IMAGE_PROCESSING_PATH)/image_processing_util.cpp \
   $(IMAGE_PROCESSING_PATH)/dewarp.cpp \
   image_processing.cpp

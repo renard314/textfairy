@@ -1,97 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="@dimen/activity_horizontal_margin"
-    android:id="@+id/fairy_animation"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-    <ViewFlipper
-        android:inAnimation="@anim/push_down_in"
-        android:outAnimation="@anim/abc_fade_out"
 
-        android:id="@+id/layout_title"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <RelativeLayout
+            xmlns:tools="http://schemas.android.com/tools"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:id="@+id/fairy_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+        <ViewFlipper
+                android:inAnimation="@anim/push_down_in"
+                android:outAnimation="@anim/abc_fade_out"
+
+                android:id="@+id/layout_title"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:gravity="center_vertical|left"
+                    style="@android:style/TextAppearance.Medium"
+                    android:text="@string/document_layout_dialog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            <TextView
+                    android:gravity="center_vertical|left"
+                    style="@android:style/TextAppearance.Medium"
+                    android:text="@string/layout_simple"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            <TextView
+                    android:gravity="center_vertical|left"
+                    style="@android:style/TextAppearance.Medium"
+                    android:text="@string/layout_complex"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+
+        </ViewFlipper>
+
+        <LinearLayout
+                android:layout_below="@+id/layout_title"
+                android:weightSum="3"
+                android:layout_marginBottom="32dp"
+                android:id="@+id/layout_container"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <ImageView
+                    android:id="@+id/column_layout"
+                    android:layout_weight="1"
+                    android:src="@drawable/column_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            <ImageSwitcher
+                    android:layout_weight="1"
+                    android:id="@+id/fairy_layout"
+                    android:src="@drawable/fairy_looks_center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            <ImageView
+                    android:id="@+id/page_layout"
+                    android:layout_weight="1"
+                    android:src="@drawable/page_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
 
         <TextView
-            android:gravity="center_vertical|left"
-            style="@android:style/TextAppearance.Medium"
-            android:text="@string/document_layout_dialog"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+                style="@android:style/TextAppearance.Medium"
+                android:id="@+id/textview_ocr_language"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layout_container"
+                android:layout_alignBaseline="@+id/button_language"
+                android:gravity="center_horizontal"
+                android:text="@string/text_is_in"/>
 
-        <TextView
-            android:gravity="center_vertical|left"
-            style="@android:style/TextAppearance.Medium"
-            android:text="@string/layout_simple"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:gravity="center_vertical|left"
-            style="@android:style/TextAppearance.Medium"
-            android:text="@string/layout_complex"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-
-    </ViewFlipper>
-
-    <LinearLayout
-        android:layout_below="@+id/layout_title"
-        android:weightSum="3"
-        android:layout_marginBottom="32dp"
-        android:id="@+id/layout_container"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/column_layout"
-            android:layout_weight="1"
-            android:src="@drawable/column_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageSwitcher
-            android:layout_weight="1"
-            android:id="@+id/fairy_layout"
-            android:src="@drawable/fairy_looks_center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageView
-            android:id="@+id/page_layout"
-            android:layout_weight="1"
-            android:src="@drawable/page_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <Spinner
+                tools:listitem="@android:layout/simple_spinner_item"
+                android:id="@+id/button_language"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layout_container"
+                android:drawSelectorOnTop="true"
+                android:layout_toRightOf="@+id/textview_ocr_language"
+                android:layout_toEndOf="@+id/textview_ocr_language"/>
 
 
-    </LinearLayout>
-
-
-    <TextView
-        style="@android:style/TextAppearance.Medium"
-        android:id="@+id/textview_ocr_language"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_container"
-        android:layout_alignBaseline="@+id/button_language"
-        android:gravity="center_horizontal"
-        android:text="@string/text_is_in" />
-
-    <Spinner
-        tools:listitem="@android:layout/simple_spinner_item"
-        android:id="@+id/button_language"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_container"
-        android:drawSelectorOnTop="true"
-        android:layout_toRightOf="@+id/textview_ocr_language"
-        android:layout_toEndOf="@+id/textview_ocr_language" />
-
-
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>

@@ -15,6 +15,11 @@
  */
 package com.renard.ocr.help;
 
+import com.renard.ocr.R;
+import com.renard.ocr.cropimage.MonitoredActivity;
+import com.renard.ocr.help.OCRLanguageAdapter.OCRLanguage;
+import com.renard.util.Util;
+
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.DownloadManager;
@@ -29,7 +34,6 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.util.Pair;
 import android.view.MenuItem;
@@ -39,11 +43,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
-
-import com.renard.ocr.R;
-import com.renard.ocr.cropimage.MonitoredActivity;
-import com.renard.ocr.help.OCRLanguageAdapter.OCRLanguage;
-import com.renard.util.Util;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -62,9 +61,9 @@ public class OCRLanguageActivity extends MonitoredActivity {
     private OCRLanguageAdapter mAdapter;
     private ViewSwitcher mSwitcher;
     private BroadcastReceiver mFailedReceiver;
-	private boolean mReceiverRegistered;
+    private boolean mReceiverRegistered;
 
-	private class LoadListAsyncTask extends AsyncTask<Void, Void, OCRLanguageAdapter> {
+    private class LoadListAsyncTask extends AsyncTask<Void, Void, OCRLanguageAdapter> {
 
 
         @Override
@@ -162,14 +161,18 @@ public class OCRLanguageActivity extends MonitoredActivity {
     private Uri getDownloadUri(OCRLanguage language) {
         final String part1;
         final String part2;
-        if("deu-frak".equalsIgnoreCase(language.getValue())){
+        if ("deu-frak".equalsIgnoreCase(language.getValue())) {
             part1 = "https://tesseract-ocr.googlecode.com/files/";
             part2 = ".traineddata.gz";
+        } else if("guj".equalsIgnoreCase(language.getValue())){
+            part1 = "https://parichit.googlecode.com/files/";
+            part2 = ".traineddata";
+
         } else {
             part1 = "http://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.";
             part2 = ".tar.gz";
-
         }
+
         return Uri.parse(part1 + language.mValue + part2);
     }
 
@@ -215,7 +218,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
         return adapter;
     }
 
-    public static boolean isLanguageInstalled(final String ocrLang,Context appContext){
+    public static boolean isLanguageInstalled(final String ocrLang, Context appContext) {
         final File tessDir = Util.getTrainingDataDir(appContext);
         if (!tessDir.exists()) {
             return false;
@@ -232,7 +235,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
             }
         });
 
-        return languageFiles!=null && languageFiles.length>=1;
+        return languageFiles != null && languageFiles.length >= 1;
 
     }
 
@@ -300,8 +303,8 @@ public class OCRLanguageActivity extends MonitoredActivity {
     public static final List<OCRLanguage> getInstalledOCRLanguages(Context appContext) {
         final List<OCRLanguage> ocrLanguages = getAllOCRLanguages(appContext);
         final List<OCRLanguage> result = new ArrayList<OCRLanguage>();
-        for(OCRLanguage lang:ocrLanguages){
-            if(lang.mDownloaded){
+        for (OCRLanguage lang : ocrLanguages) {
+            if (lang.mDownloaded) {
                 result.add(lang);
             }
         }
@@ -311,11 +314,11 @@ public class OCRLanguageActivity extends MonitoredActivity {
     @Override
     protected synchronized void onDestroy() {
         super.onDestroy();
-		if(mReceiverRegistered) {
-			unregisterReceiver(mDownloadReceiver);
-			unregisterReceiver(mFailedReceiver);
-			mReceiverRegistered = false;
-		}
+        if (mReceiverRegistered) {
+            unregisterReceiver(mDownloadReceiver);
+            unregisterReceiver(mFailedReceiver);
+            mReceiverRegistered = false;
+        }
     }
 
     // @Override
@@ -364,7 +367,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
         };
         registerReceiver(mFailedReceiver, new IntentFilter(OCRLanguageInstallService.ACTION_INSTALL_FAILED));
         registerReceiver(mDownloadReceiver, new IntentFilter(OCRLanguageInstallService.ACTION_INSTALL_COMPLETED));
-		mReceiverRegistered = true;
+        mReceiverRegistered = true;
     }
 
     protected void updateLanguageListByDisplayValue(String displayValue, int status) {

@@ -15,6 +15,18 @@
  */
 package com.renard.ocr;
 
+import com.googlecode.leptonica.android.Pix;
+import com.googlecode.leptonica.android.Pixa;
+import com.googlecode.leptonica.android.WriteFile;
+import com.googlecode.tesseract.android.OCR;
+import com.renard.documentview.DocumentActivity;
+import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.LayoutQuestionDialog.LayoutChoseListener;
+import com.renard.ocr.LayoutQuestionDialog.LayoutKind;
+import com.renard.ocr.cropimage.MonitoredActivity;
+import com.renard.util.Screen;
+import com.renard.util.Util;
+
 import android.app.AlertDialog;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
@@ -36,18 +48,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.googlecode.leptonica.android.Pix;
-import com.googlecode.leptonica.android.Pixa;
-import com.googlecode.leptonica.android.WriteFile;
-import com.googlecode.tesseract.android.OCR;
-import com.renard.documentview.DocumentActivity;
-import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.LayoutQuestionDialog.LayoutChoseListener;
-import com.renard.ocr.LayoutQuestionDialog.LayoutKind;
-import com.renard.ocr.cropimage.MonitoredActivity;
-import com.renard.util.Screen;
-import com.renard.util.Util;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,7 +94,7 @@ public class OCRActivity extends MonitoredActivity {
 
         private String hocrString;
         private String utf8String;
-        private int layoutPix;
+        private long layoutPix;
         private int mPreviewWith;
         private int mPreviewHeight;
 
@@ -118,7 +118,7 @@ public class OCRActivity extends MonitoredActivity {
                     break;
                 }
                 case OCR.MESSAGE_FINAL_IMAGE: {
-                    int nativePix = msg.arg1;
+                    long nativePix = (long) msg.obj;
 
                     if (nativePix != 0) {
                         mFinalPix = new Pix(nativePix);
@@ -126,7 +126,7 @@ public class OCRActivity extends MonitoredActivity {
                     break;
                 }
                 case OCR.MESSAGE_LAYOUT_PIX: {
-                    layoutPix = msg.arg1;
+                    layoutPix = (long) msg.obj;
                     if (layoutPix != 0) {
                         Pix pix = new Pix(layoutPix);
                         final Bitmap preview = WriteFile.writeBitmap(pix);
@@ -154,7 +154,7 @@ public class OCRActivity extends MonitoredActivity {
                     }
                     mImageView.setImageRects(scaledBoxes);
                     boxes = texts.getBoxRects();
-                    scaledBoxes = new ArrayList<RectF>(boxes.size());
+                    scaledBoxes = new ArrayList<>(boxes.size());
                     for (Rect r : boxes) {
                         scaledBoxes.add(new RectF(r.left * xScale, r.top * yScale,
                                 r.right * xScale, r.bottom * yScale));
@@ -256,17 +256,16 @@ public class OCRActivity extends MonitoredActivity {
                                 }
                             });
                         } finally {
-                            if (pix != null) {
-                                pix.recycle();
-                            }
+                            recycleResultPix(pix);
                             if (documentUri != null) {
                                 Intent i;
-                                if(utf8String==null || utf8String.isEmpty()){
+                                if (utf8String == null || utf8String.isEmpty()) {
                                     i = new Intent(OCRActivity.this, DocumentGridActivity.class);
                                 } else {
                                     i = new Intent(OCRActivity.this, DocumentActivity.class);
                                     i.putExtra(DocumentActivity.EXTRA_ACCURACY, accuracy);
                                     i.setData(documentUri);
+                                    i.putExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, pix.getNativePix());
                                 }
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(i);
@@ -277,6 +276,12 @@ public class OCRActivity extends MonitoredActivity {
                     }
                 }, new Handler());
 
+    }
+
+    private void recycleResultPix(Pix pix) {
+        if (pix != null) {
+            pix.recycle();
+        }
     }
 
 
@@ -363,7 +368,7 @@ public class OCRActivity extends MonitoredActivity {
                                 mOCR.startOCRForSimpleLayout(OCRActivity.this, determineOcrLanguage(ocrLanguage), pixOrg);
                             } else if (layoutKind == LayoutKind.COMPLEX) {
                                 mAccuracy = 0;
-                                mOCR.startLayoutAnalysis(pixOrg);
+                                mOCR.startLayoutAnalysis(OCRActivity.this, pixOrg);
                             }
                         }
                     }

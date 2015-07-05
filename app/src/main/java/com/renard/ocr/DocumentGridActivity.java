@@ -138,7 +138,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (imageUri != null) {
-                loadBitmapFromContentUri(imageUri);
+                loadBitmapFromContentUri(imageUri, ImageSource.INTENT);
             } else {
                 showFileError(PixLoadStatus.IMAGE_COULD_NOT_BE_READ, new DialogInterface.OnClickListener() {
 
@@ -158,7 +158,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
     private void startInstallActivityIfNeeded() {
         final String state = Environment.getExternalStorageState();
         if (state.equals(Environment.MEDIA_MOUNTED)) {
-            if (InstallActivity.IsInstalled(this) == false) {
+            if (!InstallActivity.IsInstalled(this)) {
                 // install the languages if needed, create directory structure
                 // (one
                 // time)
@@ -180,7 +180,6 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
             alert.show();
         }
     }
-
 
     private void initNavigationDrawer() {
         final ListView drawer = (ListView) findViewById(R.id.left_drawer);
@@ -209,7 +208,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
                         new ReleaseNoteDialog().show(supportFragmentManager, ReleaseNoteDialog.TAG);
                         break;
                     case 1:
-                        Intent i = new Intent(DocumentGridActivity.this, AppOptionsActivity.class);
+                        Intent i = new Intent(DocumentGridActivity.this, OCRLanguageActivity.class);
                         startActivity(i);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;

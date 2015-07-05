@@ -312,27 +312,29 @@ public class Util {
 
 	}
 
-
-	public static File savePixToSD(final Pix pix, final String name) throws IOException {
+	public static File savePixToDir(final Pix pix, final String name, File picDir) throws IOException {
 		final String fileName = name + ".png";
-
-		File picDir = new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY);
 		if (!picDir.exists()) {
 			if (picDir.mkdirs() || picDir.isDirectory()) {
-                createNoMediaFile(picDir);
+				createNoMediaFile(picDir);
 			} else {
-                throw new IOException();
-            }
+				throw new IOException();
+			}
 		}
 		File image = new File(picDir, fileName);
-        image.createNewFile();
+		image.createNewFile();
 		try {
 			boolean result = WriteFile.writeImpliedFormat(pix, image, 85, true);
-        } catch (Exception e) {
-            throw new IOException(e);
+		} catch (Exception e) {
+			throw new IOException(e);
 		}
 
 		return image;
+	}
+
+	public static File savePixToSD(final Pix pix, final String name) throws IOException {
+		File picDir = new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY);
+		return savePixToDir(pix, name, picDir);
 	}
 
 	private static void createNoMediaFile(final File parentDir) {
@@ -581,7 +583,7 @@ public class Util {
 	}
 
 	public static void startBackgroundJob(MonitoredActivity activity, String title, String message, Runnable job, Handler handler) {
-		// Make the progress dialog uncancelable, so that we can gurantee
+		// Make the progress dialog uncancelable, so that we can guarantee
 		// the thread will be done before the activity getting destroyed.
 		ProgressDialog dialog = ProgressDialog.show(activity, title, message, true, false);
 		new Thread(new BackgroundJob(activity, job, dialog, handler)).start();

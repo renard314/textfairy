@@ -23,6 +23,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -126,7 +127,7 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
                     if (mLastPosition != -1) {
                         final DocumentTextFragment fragment = mAdapter.getFragment(mLastPosition);
                         if(fragment!=null) {
-                            fragment.saveIfTextHasChanged(false);
+                            fragment.saveIfTextHasChanged();
                         }
                     }
                     mLastPosition = position;
@@ -169,14 +170,17 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 		}
 
 		final DocumentTextFragment fragment = mAdapter.getFragment(position);
-		if(fragment!=null) {
-			fragment.saveIfTextHasChanged(true);
-		}
+
         DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
         final int count = adapter.getCount();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < count; i++) {
-            String text = adapter.getText(i);
+            String text;
+            if(i==position){
+                text = Html.toHtml(fragment.getDocumentText());
+            } else {
+                text = adapter.getText(i);
+            }
             if (text != null) {
                 if (sb.length() > 0) {
                     sb.append("\n");

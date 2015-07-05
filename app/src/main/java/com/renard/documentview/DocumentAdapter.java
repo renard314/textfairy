@@ -16,38 +16,17 @@
 
 package com.renard.documentview;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.renard.ocr.DocumentContentProvider.Columns;
 
-import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.text.Editable;
-import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.TextWatcher;
-import android.util.Pair;
-import android.util.SparseArray;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
-import com.renard.ocr.DocumentContentProvider;
-import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.R;
-import com.renard.util.PreferencesUtils;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DocumentAdapter extends FragmentStatePagerAdapter {
     private int mIndexLanguage;
@@ -57,7 +36,7 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
 	private int mIndexId;
 
 	Cursor mCursor;
-    private Map<Integer, DocumentTextFragment> mPageReferenceMap = new HashMap<Integer, DocumentTextFragment>();
+    private Map<Integer, DocumentTextFragment> mPageReferenceMap = new HashMap<>();
     private boolean mShowText = true;
 
     public DocumentAdapter(FragmentManager fm, final Cursor cursor) {

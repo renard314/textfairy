@@ -25,6 +25,7 @@
 #include <cmath>
 #include "binarize.h"
 #include "pageseg.h"
+#include "PixBlurDetect.h"
 #include <image_processing_util.h>
 
 using namespace std;
@@ -304,6 +305,23 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeAnalyseLayout(JNIEnv *env, 
 
 	resetStateVariables();
 	return (jint) 0;
+}
+
+jobject Java_com_renard_image_1processing_Blur_nativeBlurDetect(JNIEnv *env, jobject thiz, jlong nativePix) {
+	Pix *pixOrg = (PIX *) nativePix;
+	PixBlurDetect blurDetector(true);
+	l_float32 blurValue;
+	L_TIMER timer = startTimerNested();
+	Box* maxBlurLoc = NULL;
+	Pix* pixBlended = blurDetector.makeBlurIndicator(pixOrg,&blurValue, &maxBlurLoc);
+	l_int32 w,h,x,y;
+	boxGetGeometry(maxBlurLoc,&x,&y,&w,&h);
+	//pixRenderBox(pixBlended,maxBlurLoc,2,L_SET_PIXELS);
+	log("pix = %p, blur=%f, box=(%i,%i - %i,%i)processing time %f\n",pixBlended, blurValue,x,y,w,h,stopTimerNested(timer));
+	//create result
+	jclass cls = env->FindClass("com/renard/image_processing/BlurDetectionResult");
+	jmethodID constructor = env->GetMethodID(cls, "<init>", "(JDJ)V");
+	return env->NewObject(cls, constructor, (jlong)pixBlended, (jdouble)blurValue, (jlong)maxBlurLoc);
 }
 
 

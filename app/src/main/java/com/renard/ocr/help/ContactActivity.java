@@ -15,24 +15,31 @@
  */
 package com.renard.ocr.help;
 
+import com.renard.ocr.R;
+import com.renard.ocr.cropimage.MonitoredActivity;
+
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.FileProvider;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-import com.renard.ocr.R;
-import com.renard.ocr.cropimage.MonitoredActivity;
+import java.io.File;
 
 public class ContactActivity extends MonitoredActivity {
 
-	public static Intent getFeedbackIntent(Context context) {
-		Intent intent = new Intent(context,BetaTestActivity.class);
-		return intent;
-	}
+    private static final String FEEDBACK_MAIL = "renard.wellnitz+textfairy@googlemail.com";
+
+    public static Intent getFeedbackIntent(Context context) {
+        Intent intent = new Intent(context, BetaTestActivity.class);
+        return intent;
+    }
+
     public static Intent getFeedbackIntent(String subject, String body) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
@@ -42,7 +49,22 @@ public class ContactActivity extends MonitoredActivity {
         if (body != null) {
             intent.putExtra(Intent.EXTRA_TEXT, body);
         }
-        intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"renard.wellnitz+textfairy@googlemail.com"});
+        intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{FEEDBACK_MAIL});
+        return intent;
+    }
+
+    public static Intent getFeedbackIntent(Context context, String subject, File file) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc822");
+        if (subject != null) {
+            intent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+        }
+        if (file.exists()) {
+            final Uri uriForFile = FileProvider.getUriForFile(context, context.getString(R.string.config_share_file_auth), file);
+            intent.putExtra(Intent.EXTRA_STREAM, uriForFile);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{FEEDBACK_MAIL});
         return intent;
     }
 
@@ -58,7 +80,7 @@ public class ContactActivity extends MonitoredActivity {
 
             @Override
             public void onClick(View v) {
-				Intent intent = getFeedbackIntent(getString(R.string.feedback_subject), null);
+                Intent intent = getFeedbackIntent(getString(R.string.feedback_subject), null);
                 startActivity(intent);
             }
         });

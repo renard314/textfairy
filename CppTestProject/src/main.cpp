@@ -15,7 +15,8 @@
 #include "dewarp_textfairy.h"
 #include "RunningStats.h"
 #include <stdlib.h>
-#include <algorithm>    // std::max
+#include "PixBlurDetect.h"
+
 using namespace std;
 
 static Pixa* pixaDebugDisplay = pixaCreate(0);
@@ -201,69 +202,6 @@ void pixBlurDebug(Pix* pix){
 
 }
 
-
-void blurDetect(){
-	Pix* pixOrg = pixRead("images/blurred.jpg");
-	Pix* pixGrey = pixConvertRGBToGrayFast(pixOrg);
-	Pix* pixMedian = pixMedianFilter(pixGrey,2,2);
-	Pix* edges = pixTwoSidedEdgeFilter(pixMedian, L_VERTICAL_EDGES);
-	l_int32    wd, hd, wm, hm, w, h, d, wpld, wplm, wpls;
-	l_int32    i, j, x;
-	l_uint32  *datad, *datam, *datas, *lined, *linem, *lines;
-	w = pixGetWidth(edges);
-	h = pixGetHeight(edges);
-	Pix* blurMeasure = pixCreate(w,h,8);
-
-	NUMA* na = pixGetGrayHistogram(edges, 4);
-	int thresh;
-	numaSplitDistribution(na, 0.1, &thresh, NULL, NULL, NULL, NULL, NULL);
-	numaDestroy(&na);
-	Pix* pixBinary = pixThresholdToBinary(edges, thresh);
-	pixInvert(pixBinary, pixBinary);
-
-
-    datad = pixGetData(blurMeasure);
-    datam = pixGetData(pixBinary);
-    datas = pixGetData(pixMedian);
-    wpld = pixGetWpl(blurMeasure);
-    wplm = pixGetWpl(pixBinary);
-    wpls = pixGetWpl(pixMedian);
-    RunningStats stats;
-    l_uint32 k= 2;
-    for (i = k; i < h-k; i++) {
-        lined = datad + i * wpld;
-        linem = datam + i * wplm;
-        lines = datas + i * wpls;
-        for (j = k; j < w-k; j++) {
-            if (GET_DATA_BIT(linem, j)) {
-            	l_uint32 dom = 0;
-            	l_uint32 contrast = 0;
-            	for(x = j-k;x <=j+k; x++){
-            		dom+= abs((GET_DATA_BYTE(lines,x+2) - GET_DATA_BYTE(lines,x))-(GET_DATA_BYTE(lines,x) - GET_DATA_BYTE(lines,x-2)));
-                	contrast+= abs(GET_DATA_BYTE(lines,x) - GET_DATA_BYTE(lines,x-1));
-            	}
-            	double sharpness = (((float)dom)/((float)contrast))*50;
-            	stats.Push(sharpness);
-            	float val = min(255.0, sharpness);
-            	SET_DATA_BYTE(lined,j, val);
-            } else {
-            	SET_DATA_BYTE(lined,j, 0xff);
-            }
-        }
-    }
-
-
-    pixWrite("blurMeasure.png",blurMeasure, IFF_PNG);
-    pixWrite("pixGrey.png",pixGrey, IFF_PNG);
-    pixBlendColorByChannel(pixOrg,pixOrg,blurMeasure,0,0,1,0,0,0,0x00ffff00);
-    printf("sharpness = %f, stddev = %f",stats.Mean() ,stats.PopulationStandardDeviation());
-//	pixSetMasked(pixGrey,pixEdgeMask,0);
-	pixDisplay(blurMeasure,0,0);
-	//pixDisplay(pixOrg,0,0);
-	pixDestroy(&pixOrg);
-
-}
-
 void dewarp(){
 	Pix* pixOrg = pixRead("images/renard.png");
 	Pix* pixsg = pixConvertRGBToLuminance(pixOrg);
@@ -353,9 +291,122 @@ void createPdf(const char* imagePath, const char* hocrPath) {
 	delete pdfContext;
 }
 
+l_int32
+pixGetAverageValueInRectIgnoreBlack(PIX       *pixs,
+                     BOX       *box,
+                     l_float32  *pavgval)
+{
+l_int32    i, j, w, h, d, wpl, bw, bh;
+l_int32    xstart, ystart, xend, yend;
+l_uint32   sum, sumCount;
+l_uint32  *data, *line;
+
+    PROCNAME("pixGetAverageValueInRect");
+
+    if (!pavgval)
+        return ERROR_INT("nothing to do", procName, 1);
+    if (pavgval) *pavgval = 0;
+    if (!pixs)
+        return ERROR_INT("pixs not defined", procName, 1);
+    if (pixGetColormap(pixs) != NULL)
+        return ERROR_INT("pixs has colormap", procName, 1);
+    pixGetDimensions(pixs, &w, &h, &d);
+    if (d != 8 && d != 32)
+        return ERROR_INT("pixs not 8 or 32 bpp", procName, 1);
+
+    xstart = ystart = 0;
+    xend = w - 1;
+    yend = h - 1;
+    if (box) {
+        boxGetGeometry(box, &xstart, &ystart, &bw, &bh);
+        xend = xstart + bw - 1;
+        yend = ystart + bh - 1;
+    }
+
+    data = pixGetData(pixs);
+    wpl = pixGetWpl(pixs);
+    sum = 0;
+    sumCount=0;
+    for (i = ystart; i <= yend; i++) {
+        line = data + i * wpl;
+        for (j = xstart; j <= xend; j++) {
+            if (d == 8){
+            	l_uint8 data_byte = GET_DATA_BYTE(line, j);
+            	if(data_byte>0){
+            		sum += data_byte;
+            		sumCount++;
+            	}
+            } else { /* d == 32 */
+            	l_uint32 color = line[j];
+            	if(color>0){
+                	sum += color;
+            		sumCount++;
+            	}
+            }
+
+        }
+    }
+
+    if (pavgval) {
+    	if(sumCount>0){
+    		*pavgval = sum / sumCount;
+    	} else {
+    		*pavgval = 0;
+    	}
+    }
+    return 0;
+}
+
+
+
+void blurDetect(const char* image){
+	Pix* pixOrg = pixRead(image);
+	PixBlurDetect blurDetector(false);
+
+	startTimer();
+	l_float32 blurValue;
+	Box* maxBlurLoc = NULL;
+	Pix* pixBlended = blurDetector.makeBlurIndicator(pixOrg,&blurValue,&maxBlurLoc);
+	pixRenderBox(pixBlended,maxBlurLoc,2,L_SET_PIXELS);
+	l_int32 x,y,w,h;
+	boxGetGeometry(maxBlurLoc,&x,&y,&w,&h);
+	printf("blur=%f, \n",blurValue);
+	pixWrite("image.jpg",pixBlended,IFF_PNG);
+
+	boxDestroy(&maxBlurLoc);
+	pixDestroy(&pixBlended);
+	pixDestroy(&pixOrg);
+}
+
+
+void testAllBlur(){
+
+	blurDetect("images/sharp2.png");
+	blurDetect("images/sharp3.png");
+	blurDetect("images/sharp4.png");
+	blurDetect("images/sharp5.png");
+	blurDetect("images/sharp6.png");
+	blurDetect("images/sharp7.png");
+	blurDetect("images/sharp8.png");
+	blurDetect("images/sharp9.png");
+	printf("BLURRED\n");
+	blurDetect("images/blur1.jpg");
+	blurDetect("images/blur2.jpg");
+	blurDetect("images/blur3.jpg");
+	blurDetect("images/blur4.jpg");
+	blurDetect("images/blur5.jpg");
+	blurDetect("images/blur6.jpg");
+	blurDetect("images/blur7.jpg");
+
+}
 int main() {
 	//createPdf("images/5.png","images/scan_test.html");
 	//testScaleWithBitmap();
-	blurDetect();
+	//blurDetect("images/sharp9.jpg");
+	//blurDetect("images/48.jpg");
+	//testAllBlur();
+	blurDetect("images/66.jpg");
+
+
 	return 0;
 }

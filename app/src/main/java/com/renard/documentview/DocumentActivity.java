@@ -16,8 +16,15 @@
 
 package com.renard.documentview;
 
+import com.renard.ocr.BaseDocumentActivitiy;
+import com.renard.ocr.DocumentContentProvider;
+import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.R;
+import com.renard.ocr.help.HintDialog;
+import com.renard.ocr.help.OCRLanguageAdapter;
+import com.renard.util.PreferencesUtils;
+
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -35,38 +42,27 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
-import com.renard.ocr.BaseDocumentActivitiy;
-import com.renard.ocr.DocumentContentProvider;
-import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.R;
-import com.renard.ocr.help.HintDialog;
-import com.renard.ocr.help.OCRLanguageAdapter;
-
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-public class DocumentActivity extends BaseDocumentActivitiy implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DocumentActivity extends BaseDocumentActivitiy implements LoaderManager.LoaderCallbacks<Cursor>, FeedbackDialog.FeedbackDialogClickListener {
 
-    private static final String STATE_DIALOG_SHOWN = "state_dialog_shown";
     private final static String LOG_TAG = DocumentActivity.class.getSimpleName();
 
 
+
     public interface DocumentContainerFragment {
-        public String getLangOfCurrentlyShownDocument();
+        String getLangOfCurrentlyShownDocument();
 
-        public void setCursor(final Cursor cursor);
+        void setCursor(final Cursor cursor);
 
-        public String getTextOfAllDocuments();
+        String getTextOfAllDocuments();
 
         void setShowText(boolean text);
 
@@ -80,53 +76,53 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     private int mParentId;
     private Cursor mCursor;
-    private View mFragmentFrame;
-    private boolean mResultDialogShown = false;
     private TtsActionCallback mActionCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		setVolumeControlStream(AudioManager.STREAM_ALARM);
+        setVolumeControlStream(AudioManager.STREAM_ALARM);
 
-		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_document);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mFragmentFrame = findViewById(R.id.document_fragment_container);
         init();
-        int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
-        if (savedInstanceState != null) {
-            mResultDialogShown = savedInstanceState.getBoolean(STATE_DIALOG_SHOWN);
-        }
-        if (accuracy > 0 && !mResultDialogShown) {
-            mResultDialogShown = true;
-            OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
-        }
-        if (accuracy == 0) {
-            mResultDialogShown = true;
+
+        if(savedInstanceState==null){
+            showResultDialog();
         }
         setDocumentFragmentType();
         initAppIcon(this, HINT_DIALOG_ID);
         mActionCallback = new TtsActionCallback(this);
     }
 
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if(intent.getExtras()!=null){
+            setIntent(intent);
+            showResultDialog();
+        }
+    }
+
+    private void showResultDialog() {
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
-        if (accuracy > 0 && !mResultDialogShown) {
-            mResultDialogShown = true;
+        int numberOfSuccessfulScans = PreferencesUtils.getNumberOfSuccessfulScans(getApplicationContext());
+        if(accuracy>=OCRResultDialog.MEDIUM_ACCURACY){
+            PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
+        }
+        if (numberOfSuccessfulScans == 2 ) {
+            FeedbackDialog.newInstance().show(getSupportFragmentManager(), FeedbackDialog.TAG);
+        } else if (accuracy > 0) {
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
         }
-        setIntent(intent);
 
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putBoolean(STATE_DIALOG_SHOWN, mResultDialogShown);
+    public void onContinueClicked() {
+        int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
+        OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
     }
 
     @Override
@@ -137,7 +133,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     }
 
     void exportAsPdf() {
-        Set<Integer> idForPdf = new HashSet<Integer>();
+        Set<Integer> idForPdf = new HashSet<>();
         idForPdf.add(getParentId());
         new CreatePDFTask(idForPdf).execute();
     }
@@ -153,7 +149,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
         if (itemId == R.id.item_view_mode) {
             DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
-             fragment.setShowText(!fragment.getShowText());
+            fragment.setShowText(!fragment.getShowText());
             return true;
         } else if (itemId == R.id.item_text_options) {
             Intent i = new Intent(this, TextOptionsActivity.class);
@@ -166,7 +162,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
             startActivityForResult(tocIndent, REQUEST_CODE_TABLE_OF_CONTENTS);
             return true;
         } else if (itemId == R.id.item_delete) {
-            Set<Integer> idToDelete = new HashSet<Integer>();
+            Set<Integer> idToDelete = new HashSet<>();
             idToDelete.add(getParentId());
             new DeleteDocumentTask(idToDelete, true).execute();
             return true;
@@ -213,9 +209,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     }
 
     String getPlainDocumentText() {
-        //final String htmlText = getDocumentContainer().getTextOfCurrentlyShownDocument();
         final String htmlText = getDocumentContainer().getTextOfAllDocuments();
-        if (htmlText!=null){
+        if (htmlText != null) {
             return Html.fromHtml(htmlText).toString();
         } else {
             return null;
@@ -224,8 +219,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     void shareText() {
         String shareBody = getPlainDocumentText();
-        if (shareBody==null){
-            Toast.makeText(DocumentActivity.this,R.string.empty_document,Toast.LENGTH_LONG).show();
+        if (shareBody == null) {
+            Toast.makeText(DocumentActivity.this, R.string.empty_document, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -247,7 +242,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     @SuppressWarnings("deprecation")
     private void copyTextToClipboard(String text) {
         android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        clipboard.setText("text");
+        clipboard.setText(text);
     }
 
     public void onTtsLanguageChosen(OCRLanguageAdapter.OCRLanguage lang) {
@@ -304,6 +299,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         } else {
             mParentId = parentId;
         }
+
         getSupportLoaderManager().initLoader(0, null, this);
 
     }
@@ -328,8 +324,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     }
 
     public DocumentContainerFragment getDocumentContainer() {
-        DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
-        return fragment;
+        return (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
     }
 
     private void setDocumentFragmentType() {
@@ -344,14 +339,11 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
                 newFragment.setCursor(mCursor);
             }
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            if (fragment != null) {
-                ft.remove((Fragment) fragment);
-            }
             ft.add(R.id.document_fragment_container, (Fragment) newFragment);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.commit();
         }
-        
+
     }
 
     @Override
@@ -360,7 +352,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         mCursor = cursor;
         DocumentContainerFragment frag = getDocumentContainer();
         frag.setCursor(cursor);
-        if(getIntent().getData()!=null) {
+        if (getIntent().getData() != null) {
             String id = getIntent().getData().getLastPathSegment();
             DocumentPagerFragment documentContainer = (DocumentPagerFragment) getDocumentContainer();
             documentContainer.setDisplayedPageByDocumentId(Integer.parseInt(id));

@@ -27,7 +27,7 @@ import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 
 public class ContributeActivity extends MonitoredActivity implements View.OnClickListener {
-    private static final String MARKET_URL = "market://details?id=com.renard.ocr";
+    public static final String MARKET_URL = "market://details?id=com.renard.ocr";
 	private boolean slideOutLeft = false;
 
     @Override

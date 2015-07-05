@@ -126,9 +126,7 @@ public class InstallActivity extends Activity {
                 InstallResult result;
                 try {
                     result = mTask.get();
-                } catch (InterruptedException e) {
-                    result = new InstallResult(Result.UNSPEZIFIED_ERROR);
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     result = new InstallResult(Result.UNSPEZIFIED_ERROR);
                 }
                 markAsDone(result);
@@ -150,7 +148,7 @@ public class InstallActivity extends Activity {
         });
     }
 
-    public void watchYoutubeVideo(String id) {
+    private void watchYoutubeVideo(String id) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(id));
         startActivity(intent);
     }

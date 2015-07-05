@@ -15,16 +15,6 @@
  */
 package com.googlecode.tesseract.android;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.RectF;
-import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.util.Log;
-
-import com.googlecode.leptonica.android.Box;
 import com.googlecode.leptonica.android.Boxa;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
@@ -34,8 +24,19 @@ import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.Util;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.RectF;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.text.TextUtils;
+import android.util.Log;
+
+import java.io.File;
+import java.io.IOException;
 
 public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgressListener {
 
@@ -62,9 +63,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     }
 
-    private Pix pixResult;
-    private String ocrResult;
-    private String utf8Result;
     private int mPreviewWith;
     private int mPreviewHeight;
     private int mOriginalWidth;
@@ -73,7 +71,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private RectF mOCRBoundingBox = new RectF();
     private Messenger mMessenger;
     private boolean mIsActivityAttached = false;
-    private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
     protected TessBaseAPI mTess;
     private boolean mStopped;
@@ -127,8 +124,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
      * MESSAGE_IMAGE_DEWARP = 1; static const int MESSAGE_OCR = 2; static const
      * int MESSAGE_ASSEMBLE_PIX = 3; static const int MESSAGE_ANALYSE_LAYOUT =
      * 4;
-     *
-     * @param id
      */
 
     private void onProgressText(int id) {
@@ -162,7 +157,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
      * @param nativePix pix pointer
      */
     private void onLayoutPix(long nativePix) {
-        sendMessage(MESSAGE_LAYOUT_PIX, (int) nativePix);
+        sendMessage(MESSAGE_LAYOUT_PIX, nativePix);
     }
 
     /**
@@ -201,6 +196,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     private void sendMessage(int what, String string, int accuracy) {
         sendMessage(what, accuracy, 0, string, null);
+    }
+
+    private void sendMessage(int what, long nativeTextPix) {
+        sendMessage(what, 0, 0, nativeTextPix, null);
     }
 
     private void sendMessage(int what, int arg1) {
@@ -266,18 +265,13 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     long pixOcrPointer = columnData[1];
                     long boxaColumnsPointer = columnData[2];
 
-                    sendMessage(MESSAGE_FINAL_IMAGE, (int) pixOrgPointer);
+                    sendMessage(MESSAGE_FINAL_IMAGE, pixOrgPointer);
                     sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
                     Boxa boxa;
                     Pix pixOcr;
                     synchronized (OCR.this) {
 
-                        mTess = new TessBaseAPI(OCR.this);
-                        boolean result = mTess.init(tessDir, lang);
-                        if (!result) {
-                            sendMessage(MESSAGE_ERROR);
-                            return;
-                        }
+                        if (!initTessApi(tessDir, lang)) return;
                         pixOcr = new Pix(pixOcrPointer);
                         mTess.setPageSegMode(PageSegMode.PSM_SINGLE_BLOCK);
                         mTess.setImage(pixOcr);
@@ -331,13 +325,24 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         }).start();
     }
 
+    private boolean initTessApi(String tessDir, String lang) {
+        mTess = new TessBaseAPI(OCR.this);
+        boolean result = mTess.init(tessDir, lang);
+        mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST,"ﬀﬁﬂﬃﬄﬅﬆ");
+        if (!result) {
+            sendMessage(MESSAGE_ERROR, R.string.error_tess_init);
+            return false;
+        }
+        return true;
+    }
+
     /**
      * native code takes care of the Pix, do not use it after calling this
      * function
      *
      * @param pixs source pix on which to do layout analysis
      */
-    public void startLayoutAnalysis(final Pix pixs) {
+    public void startLayoutAnalysis(final Context context, final Pix pixs) {
 
         if (pixs == null) {
             throw new IllegalArgumentException("Source pix must be non-null");
@@ -349,6 +354,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         new Thread(new Runnable() {
             @Override
             public void run() {
+                final Pix copy = pixs.copy();
+                //savePixToCacheDir(context, copy);
                 nativeAnalyseLayout(pixs.getNativePix());
             }
         }).start();
@@ -373,6 +380,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             @Override
             public void run() {
                 try {
+                    final Pix copy = pixs.copy();
+                    //savePixToCacheDir(context, copy);
                     final String tessDir = Util.getTessDir(context);
                     long nativeTextPix = nativeOCRBook(pixs.getNativePix());
                     pixs.recycle();
@@ -380,14 +389,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     mOriginalHeight = pixText.getHeight();
                     mOriginalWidth = pixText.getWidth();
                     sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
-                    sendMessage(MESSAGE_FINAL_IMAGE, (int) nativeTextPix);
+                    sendMessage(MESSAGE_FINAL_IMAGE, nativeTextPix);
                     synchronized (OCR.this) {
-                        mTess = new TessBaseAPI(OCR.this);
-                        boolean result = mTess.init(tessDir, lang);
-                        if (!result) {
-                            sendMessage(MESSAGE_ERROR);
-                            return;
-                        }
+                        if (!initTessApi(tessDir, lang)) return;
 
                         mTess.setPageSegMode(PageSegMode.PSM_AUTO);
                         mTess.setImage(pixText);
@@ -399,6 +403,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                         }
                         String htmlText = mTess.getHtmlText();
                         int accuracy = mTess.meanConfidence();
+                        if (accuracy==95) {
+                            accuracy = 0;
+                        }
                         sendMessage(MESSAGE_HOCR_TEXT, hocrText, accuracy);
                         sendMessage(MESSAGE_UTF8_TEXT, htmlText, accuracy);
                     }
@@ -412,6 +419,45 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         }).start();
 
     }
+
+    private static class SavePixTask extends AsyncTask<Void, Void, File> {
+        private final Pix mPix;
+        private final File mDir;
+
+        SavePixTask(Pix pix, File dir) {
+            mPix = pix;
+            mDir = dir;
+        }
+
+        @Override
+        protected File doInBackground(Void... params) {
+            try {
+                return Util.savePixToDir(mPix, ORIGINAL_PIX_NAME, mDir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                mPix.recycle();
+            }
+
+            return null;
+        }
+
+    }
+
+    private final static String ORIGINAL_PIX_NAME = "last_scan";
+
+
+    public static void savePixToCacheDir(Context context, Pix pix) {
+        File dir = new File(context.getCacheDir(), context.getString(R.string.config_share_file_dir));
+        new SavePixTask(pix, dir).execute();
+    }
+
+    public static File getLastOriginalImageFromCache(Context context) {
+        File dir = new File(context.getCacheDir(), context.getString(R.string.config_share_file_dir));
+        return new File(dir, ORIGINAL_PIX_NAME + ".png");
+
+    }
+
 
     public synchronized void cancel() {
         if (mTess != null) {

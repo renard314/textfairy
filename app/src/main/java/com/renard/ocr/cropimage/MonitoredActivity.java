@@ -17,6 +17,8 @@
 
 package com.renard.ocr.cropimage;
 
+import com.renard.ocr.R;
+
 import android.annotation.TargetApi;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
@@ -29,8 +31,6 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
-import com.renard.ocr.R;
 
 import java.util.ArrayList;
 
@@ -148,12 +148,12 @@ public class MonitoredActivity extends ActionBarActivity implements BaseActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             nativeAppIcon = (ImageView) activity.findViewById(android.R.id.home);
         }
-        if(nativeAppIcon==null){
+        if (nativeAppIcon == null) {
             nativeAppIcon = (ImageView) activity.findViewById(android.support.v7.appcompat.R.id.home);
         }
         ImageView sherlockAppIcon = null;//(ImageView) activity.findViewById(com.actionbarsherlock.R.id.abs__home);
         final ImageView appIcon = nativeAppIcon != null ? nativeAppIcon : sherlockAppIcon;
-        if (appIcon==null){
+        if (appIcon == null) {
             return;
         }
         ViewTreeObserver viewTreeObserver = appIcon.getViewTreeObserver();
