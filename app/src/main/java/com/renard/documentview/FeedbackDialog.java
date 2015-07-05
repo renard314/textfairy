@@ -4,7 +4,6 @@ import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.R;
 import com.renard.ocr.help.ContactActivity;
 import com.renard.ocr.help.ContributeActivity;
-import com.renard.ocr.help.HelpActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -16,7 +15,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TextView;
 
 import java.io.File;
 
@@ -27,7 +25,6 @@ public class FeedbackDialog extends TopDialogFragment implements DialogInterface
 
     public static final String TAG = FeedbackDialog.class.getSimpleName();
 
-    private final static String EXTRA_ACCURACY = "extra_accuracy";
     private Button mLoveIt;
     private Button mCouldBeBetter;
     private View mButtonDivider;
@@ -49,9 +46,8 @@ public class FeedbackDialog extends TopDialogFragment implements DialogInterface
         void onContinueClicked();
     }
 
-    public static FeedbackDialog newInstance(float accuracy) {
+    public static FeedbackDialog newInstance() {
         Bundle extra = new Bundle();
-        extra.putInt(EXTRA_ACCURACY, (int) accuracy);
         final FeedbackDialog dialog = new FeedbackDialog();
         dialog.setArguments(extra);
         return dialog;
@@ -62,62 +58,33 @@ public class FeedbackDialog extends TopDialogFragment implements DialogInterface
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity(), R.style.DialogSlideAnim);
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_feedback, null);
-        final int accuracy = getArguments().getInt(EXTRA_ACCURACY);
         mButtonDivider = view.findViewById(R.id.button_divider);
         mCouldBeBetter = (Button) view.findViewById(R.id.could_be_better);
         mLoveIt = (Button) view.findViewById(R.id.love_it);
-        if (accuracy <= OCRResultDialog.LOW_ACCURACY) {
-            final TextView title = (TextView) view.findViewById(R.id.fairy_text);
-            title.setText(R.string.first_scan_unsuccessful);
-            showFeedbackButton();
-            showTipsButton();
-            TextView explanationTextView = (TextView) view.findViewById(R.id.explanation_text);
-            explanationTextView.setText(R.string.first_time_bad_result);
-        } else {
-            mLoveIt.setOnClickListener(new OnClickListener() {
+        mLoveIt.setOnClickListener(new OnClickListener() {
 
-                @Override
-                public void onClick(View v) {
-                    showPlayStoreRatingButton();
-                }
-            });
-            mCouldBeBetter.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPlayStoreRatingButton();
+            }
+        });
+        mCouldBeBetter.setOnClickListener(new OnClickListener() {
 
-                @Override
-                public void onClick(View v) {
-                    showFeedbackButton();
-                }
-            });
-        }
+            @Override
+            public void onClick(View v) {
+                showFeedbackButton();
+            }
+        });
         builder.setView(view);
         builder.setPositiveButton(R.string.continue_editing, this);
         final AlertDialog alertDialog = builder.create();
-
         positionDialogAtTop(alertDialog);
-
         setCancelable(false);
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.setOnDismissListener(this);
         return alertDialog;
     }
 
-
-    private void showTipsButton() {
-        mLoveIt.setVisibility(View.VISIBLE);
-        mButtonDivider.setVisibility(View.VISIBLE);
-        mLoveIt.setText(R.string.show_tips);
-        final Drawable drawable = getResources().getDrawable(R.drawable.ic_action_tips_light);
-        mLoveIt.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-        mLoveIt.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), HelpActivity.class));
-                dismiss();
-                notifyListener();
-            }
-        });
-    }
 
     private void showFeedbackButton() {
         mLoveIt.setVisibility(View.GONE);

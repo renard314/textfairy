@@ -17,10 +17,8 @@
 package com.renard.documentview;
 
 import com.renard.ocr.BaseDocumentActivitiy;
-import com.renard.ocr.BuildConfig;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.DocumentGridActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.help.HintDialog;
 import com.renard.ocr.help.OCRLanguageAdapter;
@@ -89,13 +87,9 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         setContentView(R.layout.activity_document);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         init();
-        int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
 
-        if (savedInstanceState == null && !PreferencesUtils.hasAskedForFeedback(getApplicationContext())) {
-            PreferencesUtils.setHasAskedForFeedback(getApplicationContext(), true);
-            FeedbackDialog.newInstance(accuracy).show(getSupportFragmentManager(), FeedbackDialog.TAG);
-        } else if (accuracy > 0 && savedInstanceState == null) {
-            OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
+        if(savedInstanceState==null){
+            showResultDialog();
         }
         setDocumentFragmentType();
         initAppIcon(this, HINT_DIALOG_ID);
@@ -103,13 +97,32 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     }
 
     @Override
-    public void onContinueClicked() {
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if(intent.getExtras()!=null){
+            setIntent(intent);
+            showResultDialog();
+        }
+    }
+
+    private void showResultDialog() {
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
-        //don't show the result dialog if the accuracy was really bad
-        if(accuracy>=OCRResultDialog.LOW_ACCURACY){
+        int numberOfSuccessfulScans = PreferencesUtils.getNumberOfSuccessfulScans(getApplicationContext());
+        if(accuracy>=OCRResultDialog.MEDIUM_ACCURACY){
+            PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
+        }
+        if (numberOfSuccessfulScans == 2 ) {
+            FeedbackDialog.newInstance().show(getSupportFragmentManager(), FeedbackDialog.TAG);
+        } else if (accuracy > 0) {
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
         }
 
+    }
+
+    @Override
+    public void onContinueClicked() {
+        int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
+        OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
     }
 
     @Override

@@ -5,7 +5,8 @@
         android:background="#FFFFFF"
         android:padding="@dimen/default_padding"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent" android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:orientation="vertical">
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/fairy_text"
@@ -27,7 +28,7 @@
             android:id="@+id/divider1"
             android:background="@color/grey6"/>
 
-    <TextView android:text="@string/start_text_5"
+    <TextView android:text="@string/feedback_description"
               android:textSize="16sp"
               android:id="@+id/explanation_text"
               android:layout_marginTop="@dimen/default_padding"

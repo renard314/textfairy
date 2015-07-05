@@ -109,16 +109,16 @@ public class PreferencesUtils {
         edit.apply();
     }
 
-    public static void setHasAskedForFeedback(Context appContext, final boolean value) {
+    public static void setNumberOfSuccessfulScans(Context appContext, final int value) {
         SharedPreferences prefs = getPreferences(appContext);
         Editor edit = prefs.edit();
-        edit.putBoolean(PREFERENCES_HAS_ASKED_FOR_FEEDBACK, value);
+        edit.putInt(PREFERENCES_HAS_ASKED_FOR_FEEDBACK, value);
         edit.apply();
     }
 
-    public static boolean hasAskedForFeedback(Context appContext) {
+    public static int getNumberOfSuccessfulScans(Context appContext) {
         SharedPreferences prefs = getPreferences(appContext);
-        return prefs.getBoolean(PREFERENCES_HAS_ASKED_FOR_FEEDBACK, false);
+        return prefs.getInt(PREFERENCES_HAS_ASKED_FOR_FEEDBACK, 0);
     }
 
 

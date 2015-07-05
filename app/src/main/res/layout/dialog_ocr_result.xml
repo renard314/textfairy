@@ -2,6 +2,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
+              android:padding="@dimen/default_padding"
               android:background="#FFFFFF"
               android:orientation="vertical"
               android:layout_height="match_parent">
@@ -9,20 +10,35 @@
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/help_header"
               android:textSize="18sp"
-              android:layout_marginTop="@dimen/default_padding"
+              android:layout_marginTop="@dimen/default_padding_half"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_alignParentTop="true"
               android:gravity="center_vertical|left"
               android:drawableLeft="@drawable/warte3"
               android:drawablePadding="@dimen/default_padding"
               android:textStyle="bold"
-              android:layout_margin="@dimen/default_padding"
               android:textAppearance="@style/FairySpeechbubble">
     </TextView>
+    <View
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:id="@+id/divider0"
+            android:background="@color/grey6"/>
+
+    <TextView
+            android:visibility="gone"
+            android:text="@string/first_time_bad_result"
+            android:textSize="16sp"
+            android:layout_marginTop="@dimen/default_padding"
+            android:layout_marginBottom="@dimen/default_padding"
+            android:id="@+id/explanation_text"
+            android:padding="@dimen/default_padding_half"
+            android:background="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     <View
-            android:layout_marginTop="@dimen/default_element_padding"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:id="@+id/divider1"

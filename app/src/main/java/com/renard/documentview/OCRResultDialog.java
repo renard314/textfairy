@@ -44,6 +44,11 @@ public class OCRResultDialog extends DialogFragment implements View.OnClickListe
         if (accuracy <= LOW_ACCURACY) {
             speech.setText(R.string.ocr_result_is_bad);
             hideTextActions(view);
+            TextView explanation = (TextView) view.findViewById(R.id.explanation_text);
+            explanation.setVisibility(View.VISIBLE);
+            View divider0 = view.findViewById(R.id.divider0);
+            divider0.setVisibility(View.VISIBLE);
+
         } else if (accuracy < MEDIUM_ACCURACY) {
             speech.setText(R.string.ocr_result_is_ok);
         } else {
@@ -58,10 +63,10 @@ public class OCRResultDialog extends DialogFragment implements View.OnClickListe
     }
 
     private void hideTextActions(View view) {
-        view.findViewById(R.id.divider1).setVisibility(View.GONE);
-        view.findViewById(R.id.divider1).setVisibility(View.GONE);
-        view.findViewById(R.id.divider1).setVisibility(View.GONE);
-        view.findViewById(R.id.divider1).setVisibility(View.GONE);
+        view.findViewById(R.id.divider3).setVisibility(View.GONE);
+        view.findViewById(R.id.divider4).setVisibility(View.GONE);
+        view.findViewById(R.id.divider5).setVisibility(View.GONE);
+        view.findViewById(R.id.divider6).setVisibility(View.GONE);
         view.findViewById(R.id.button_copy_to_clipboard).setVisibility(View.GONE);
         view.findViewById(R.id.button_text_to_speech).setVisibility(View.GONE);
         view.findViewById(R.id.button_export_pdf).setVisibility(View.GONE);
