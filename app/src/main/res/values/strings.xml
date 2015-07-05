@@ -140,7 +140,7 @@
     <string name="action_settings">Settings</string>
     <string name="ocr_accuracy">OCR accuracy: %1$d</string>
     <string name="text_to_speech">Speak text</string>
-    <string name="ocr_result_is_bad">That did not go so well. Please read the tips.</string>
+    <string name="ocr_result_is_bad">Oops. Something doesn\'t seem right.</string>
     <string name="ocr_result_is_ok">I think i got most of the text.</string>
     <string name="ocr_result_is_good">That went well.</string>
     <string name="play">Play</string>
@@ -218,12 +218,11 @@
         and I will make some mistakes doing so.
     </string>
     <string name="nav_drawer_download_language">Add language</string>
-    <string name="first_scan_successful">Congratulation, you scanned your first image.</string>
+    <string name="first_scan_successful">Congratulations, you are getting good at it!</string>
     <string name="love_it">Love it!</string>
     <string name="could_be_better">Could be better</string>
     <string name="continue_editing">Continue</string>
     <string name="feedback_description">How was your experience using this app?</string>
     <string name="first_time_bad_result">Please read the tips or send me your feedback and I\'ll try to help you.
     </string>
-    <string name="first_scan_unsuccessful">Oops. Something doesn\'t seem right</string>
 </resources>
