@@ -3,7 +3,6 @@ package com.renard.ocr;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.leptonica.android.Rotate;
-import com.googlecode.tesseract.android.OCR;
 import com.renard.util.Util;
 
 import android.content.ContentResolver;
@@ -155,10 +154,12 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                 FileOutputStream fileOut = null;
                 try {
                     stream = contentResolver.openInputStream(cameraPicUri);
-                    fileOut = context.openFileOutput(TMP_FILE_NAME, Context.MODE_PRIVATE);
-                    Util.copy(stream, fileOut);
-                    File file = context.getFileStreamPath(TMP_FILE_NAME);
-                    p = ReadFile.readFile(context, file);
+                    if (stream != null) {
+                        fileOut = context.openFileOutput(TMP_FILE_NAME, Context.MODE_PRIVATE);
+                        Util.copy(stream, fileOut);
+                        File file = context.getFileStreamPath(TMP_FILE_NAME);
+                        p = ReadFile.readFile(context, file);
+                    }
                 } finally {
                     if (stream != null) {
                         stream.close();
