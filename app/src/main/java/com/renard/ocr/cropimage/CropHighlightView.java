@@ -112,9 +112,6 @@ class CropHighlightView implements HighLightView {
         path.computeBounds(mPathBounds, false);
         mPathBounds.round(mPathBoundsRounded);
         canvas.getClipBounds(mCanvasCLipRect);
-        if (!mCanvasCLipRect.contains(mPathBoundsRounded)) {
-            return;
-        }
 
         mContext.getDrawingRect(mViewDrawingRect);
         mTopRect.set(0, 0, mViewDrawingRect.right, getDrawRect().top);
@@ -137,11 +134,13 @@ class CropHighlightView implements HighLightView {
         canvas.drawRect(mRightRect, mFocusPaint);
         canvas.drawRect(mLeftRect, mFocusPaint);
         canvas.drawRect(mBottomRect, mFocusPaint);
-        canvas.save();
-        canvas.clipRect(getDrawRect());
-        path.setFillType(Path.FillType.INVERSE_EVEN_ODD);
-        canvas.drawPath(path, mFocusPaint);
-        canvas.restore();
+        if (mCanvasCLipRect.contains(mPathBoundsRounded)) {
+            canvas.save();
+            canvas.clipRect(getDrawRect());
+            path.setFillType(Path.FillType.INVERSE_EVEN_ODD);
+            canvas.drawPath(path, mFocusPaint);
+            canvas.restore();
+        }
         canvas.drawLine(p[0], p[1], p[2], p[3], mOutlinePaint);
         canvas.drawLine(p[2], p[3], p[4], p[5], mOutlinePaint);
         canvas.drawLine(p[4], p[5], p[6], p[7], mOutlinePaint);
