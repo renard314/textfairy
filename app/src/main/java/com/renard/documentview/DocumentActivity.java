@@ -113,6 +113,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         }
         if (numberOfSuccessfulScans == 2 ) {
             FeedbackDialog.newInstance().show(getSupportFragmentManager(), FeedbackDialog.TAG);
+            PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         } else if (accuracy > 0) {
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
         }
