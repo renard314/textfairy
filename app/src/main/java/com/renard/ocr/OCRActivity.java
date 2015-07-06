@@ -345,7 +345,7 @@ public class OCRActivity extends MonitoredActivity {
         askUserAboutDocumentLayout(pixOrg, accessibility);
 
         mButtonStartOCR = (Button) findViewById(R.id.column_pick_completed);
-        initAppIcon(this, -1);
+        initAppIcon(-1);
     }
 
     private void askUserAboutDocumentLayout(final Pix pixOrg, final boolean accessibility) {

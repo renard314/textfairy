@@ -64,7 +64,7 @@ public class TextOptionsActivity extends MonitoredActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_text_options);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initAppIcon(this,-1);
+        initAppIcon(-1);
 
 		mPreferences = PreferencesUtils.getPreferences(getApplicationContext());
 

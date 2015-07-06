@@ -35,7 +35,7 @@ public class AboutActivity extends MonitoredActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initAppIcon(this, -1);
+        initAppIcon(-1);
         findViewById(R.id.show_licences).setOnClickListener(this);
         findViewById(R.id.show_contact).setOnClickListener(this);
         TextView version = (TextView) findViewById(R.id.version_name);

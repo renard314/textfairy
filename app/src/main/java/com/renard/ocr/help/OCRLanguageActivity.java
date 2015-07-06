@@ -203,7 +203,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
         setContentView(R.layout.activity_ocr_language);
         mList = (ListView) findViewById(R.id.list_ocr_languages);
         mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher_language_list);
-        initAppIcon(this, -1);
+        initAppIcon(-1);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         new LoadListAsyncTask().execute();
     }

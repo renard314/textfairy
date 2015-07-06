@@ -41,7 +41,7 @@ public class BetaTestActivity extends MonitoredActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beta_test);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initAppIcon(this, -1);
+        initAppIcon(-1);
 		findViewById(R.id.textView_become_tester).setOnClickListener(this);
 		findViewById(R.id.textView_join_community).setOnClickListener(this);
     }

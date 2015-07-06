@@ -72,7 +72,7 @@ public class ContactActivity extends MonitoredActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
-        initAppIcon(this, -1);
+        initAppIcon(-1);
         // Show the Up button in the action bar.
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         TextView email = (TextView) findViewById(R.id.textView_send_mail);

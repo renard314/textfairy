@@ -110,7 +110,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 
 		setContentView(R.layout.activity_document_grid);
 
-		initAppIcon(this,HINT_DIALOG_ID);
+		initAppIcon(HINT_DIALOG_ID);
         initNavigationDrawer();
 		getSupportActionBar().setDisplayShowTitleEnabled(false);
 		initGridView();

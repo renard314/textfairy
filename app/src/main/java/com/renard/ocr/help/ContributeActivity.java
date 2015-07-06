@@ -35,7 +35,7 @@ public class ContributeActivity extends MonitoredActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contribute);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initAppIcon(this, -1);
+        initAppIcon(-1);
         findViewById(R.id.layout_enroll_beta_test).setOnClickListener(this);
         findViewById(R.id.layout_rate_app).setOnClickListener(this);
         findViewById(R.id.layout_send_feedback).setOnClickListener(this);

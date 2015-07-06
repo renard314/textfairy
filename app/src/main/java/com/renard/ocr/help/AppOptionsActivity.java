@@ -45,7 +45,7 @@ public class AppOptionsActivity extends MonitoredActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initAppIcon(this, -1);
+        initAppIcon(-1);
 
         findViewById(R.id.language_settings).setOnClickListener(this);
         findViewById(R.id.tessdata_directory).setOnClickListener(this);

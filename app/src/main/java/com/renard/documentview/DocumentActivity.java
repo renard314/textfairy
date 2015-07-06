@@ -51,7 +51,7 @@ import android.widget.Toast;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DocumentActivity extends BaseDocumentActivitiy implements LoaderManager.LoaderCallbacks<Cursor>, FeedbackDialog.FeedbackDialogClickListener {
+public class DocumentActivity extends BaseDocumentActivitiy implements LoaderManager.LoaderCallbacks<Cursor>, GetOpinionDialog.FeedbackDialogClickListener {
 
     private final static String LOG_TAG = DocumentActivity.class.getSimpleName();
 
@@ -92,7 +92,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
             showResultDialog();
         }
         setDocumentFragmentType();
-        initAppIcon(this, HINT_DIALOG_ID);
+        initAppIcon(HINT_DIALOG_ID);
         mActionCallback = new TtsActionCallback(this);
     }
 
@@ -112,7 +112,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         }
         if (numberOfSuccessfulScans == 2 ) {
-            FeedbackDialog.newInstance().show(getSupportFragmentManager(), FeedbackDialog.TAG);
+            GetOpinionDialog.newInstance().show(getSupportFragmentManager(), GetOpinionDialog.TAG);
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         } else if (accuracy > 0) {
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);

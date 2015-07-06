@@ -42,7 +42,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.AdapterView;
 import android.widget.ViewSwitcher;
 
 import de.greenrobot.event.EventBus;
@@ -91,7 +94,7 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
 
         });
 
-        initAppIcon(this, HINT_DIALOG_ID);
+        initAppIcon(HINT_DIALOG_ID);
     }
 
     @SuppressWarnings("unused")
@@ -255,6 +258,7 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        unbindDrawables(findViewById(android.R.id.content));
         if (mPrepareTask.isPresent()) {
             mPrepareTask.get().cancel(false);
             mPrepareTask = Optional.absent();
@@ -262,6 +266,22 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
         if (mCropData.isPresent()) {
             mCropData.get().recylce();
             mCropData = Optional.absent();
+        }
+
+    }
+    private void unbindDrawables(View view)
+    {
+        if (view.getBackground() != null)
+        {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup && !(view instanceof AdapterView))
+        {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++)
+            {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
         }
     }
 

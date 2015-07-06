@@ -34,7 +34,7 @@ public class HelpActivity extends MonitoredActivity implements YouTubePlayer.OnI
         setContentView(R.layout.activity_help);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        initAppIcon(this, -1);
+        initAppIcon(-1);
         YouTubePlayerSupportFragment youTubePlayerFragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
         youTubePlayerFragment.initialize("AIzaSyBDZn3rmXgEP64ID0Rp32OwSScns6ZdaF8", this);
 

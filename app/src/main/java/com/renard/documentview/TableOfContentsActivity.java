@@ -61,7 +61,7 @@ public class TableOfContentsActivity extends MonitoredActivity implements Loader
         mList.setOnItemClickListener(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportLoaderManager().initLoader(0, null, this);
-        initAppIcon(this, -1);
+        initAppIcon(-1);
     }
 
     @Override
