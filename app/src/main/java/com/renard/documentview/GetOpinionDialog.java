@@ -21,9 +21,9 @@ import java.io.File;
 /**
  * @author renard
  */
-public class FeedbackDialog extends TopDialogFragment implements DialogInterface.OnClickListener {
+public class GetOpinionDialog extends TopDialogFragment implements DialogInterface.OnClickListener {
 
-    public static final String TAG = FeedbackDialog.class.getSimpleName();
+    public static final String TAG = GetOpinionDialog.class.getSimpleName();
 
     private Button mLoveIt;
     private Button mCouldBeBetter;
@@ -46,9 +46,9 @@ public class FeedbackDialog extends TopDialogFragment implements DialogInterface
         void onContinueClicked();
     }
 
-    public static FeedbackDialog newInstance() {
+    public static GetOpinionDialog newInstance() {
         Bundle extra = new Bundle();
-        final FeedbackDialog dialog = new FeedbackDialog();
+        final GetOpinionDialog dialog = new GetOpinionDialog();
         dialog.setArguments(extra);
         return dialog;
     }

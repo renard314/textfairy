@@ -3,12 +3,12 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:clickable="true"
         android:background="#FFFFFF"
-        android:padding="@dimen/default_padding"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="vertical">
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:padding="@dimen/default_padding"
               android:id="@+id/fairy_text"
               android:textSize="18sp"
               android:layout_width="match_parent"
@@ -31,10 +31,8 @@
     <TextView android:text="@string/feedback_description"
               android:textSize="16sp"
               android:id="@+id/explanation_text"
-              android:layout_marginTop="@dimen/default_padding"
-              android:layout_marginBottom="@dimen/default_padding"
+              android:padding="@dimen/default_padding"
               android:background="@android:color/white"
-              android:padding="@dimen/default_padding_half"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"/>
 
@@ -45,7 +43,6 @@
             android:background="@color/grey6"/>
 
     <LinearLayout android:layout_width="match_parent"
-                  android:layout_marginTop="@dimen/default_padding_half"
                   android:orientation="horizontal"
                   android:layout_height="@dimen/button_height">
         <Button android:layout_weight="1"
@@ -71,6 +68,11 @@
                 android:text="@string/love_it"/>
 
     </LinearLayout>
+    <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New RadioButton"
+            android:id="@+id/radioButton"/>
 
 
 </LinearLayout>
