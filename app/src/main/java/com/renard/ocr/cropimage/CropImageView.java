@@ -200,7 +200,6 @@ public class CropImageView extends ImageViewTouchBase {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (!isInEditMode() && mCropHighlightView.isPresent()) {
-            Log.i(CropImageView.class.getSimpleName(), getScale() + " - " + maxZoom());
             mCropHighlightView.get().draw(canvas);
         }
     }
