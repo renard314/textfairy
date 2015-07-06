@@ -361,7 +361,7 @@ l_uint32  *data, *line;
 
 void blurDetect(const char* image){
 	Pix* pixOrg = pixRead(image);
-	PixBlurDetect blurDetector(false);
+	PixBlurDetect blurDetector(true);
 
 	startTimer();
 	l_float32 blurValue;
@@ -405,7 +405,7 @@ int main() {
 	//blurDetect("images/sharp9.jpg");
 	//blurDetect("images/48.jpg");
 	//testAllBlur();
-	blurDetect("images/66.jpg");
+	blurDetect("images/53.jpg");
 
 
 	return 0;

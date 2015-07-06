@@ -51,7 +51,7 @@ private:
 	/**
 	 * Creates a binary mask that covers the vertical edges.
 	 */
-	Pix* makeEdgeMask(Pix* pixs);
+	Pix* makeEdgeMask(Pix* pixs, l_int32  orientflag, l_int32* paverage);
 
 	//void getValueBetweenTwoFixedColors(float value, int r, int g, int b, int &red, int &green, int &blue);
 	void getValueBetweenTwoFixedColors(float value, int h1, int s1, int v1, int h2, int s2, int v2, int &red, int &green, int &blue);
