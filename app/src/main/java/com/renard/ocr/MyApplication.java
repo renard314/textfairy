@@ -16,6 +16,7 @@
 package com.renard.ocr;
 
 import com.renard.util.PreferencesUtils;
+import com.squareup.leakcanary.LeakCanary;
 
 import android.app.Application;
 import android.os.StrictMode;
@@ -32,12 +33,12 @@ public class MyApplication extends Application {
         PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
 
         if (BuildConfig.DEBUG) {
+            LeakCanary.install(this);
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
                     .build();
             StrictMode.setThreadPolicy(policy);
-
         }
 
         // force overflow button for actionbar for devices with hardware option
