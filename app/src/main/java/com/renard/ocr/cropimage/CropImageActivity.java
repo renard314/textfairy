@@ -306,8 +306,8 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
         BlurHighLightView hv = new BlurHighLightView(focusArea,progressColor,edgeWidth, mImageView.getImageMatrix());
         mImageView.add(hv);
         */
-        mImageView.setMaxZoom(6);
-        mImageView.zoomTo(6, pts[0], pts[1], 2000);
+        mImageView.setMaxZoom(3);
+        mImageView.zoomTo(3, pts[0], pts[1], 2000);
     }
 
 
@@ -334,8 +334,6 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
         mCrop = hv;
         mCrop.setFocus(true);
         mImageView.invalidate();
-        //hack until i refactor the crop image package
-        //mImageView.zoomTo(1, 10);
     }
 
     @Override
