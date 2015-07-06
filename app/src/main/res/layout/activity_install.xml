@@ -67,24 +67,24 @@
         android:outAnimation="@android:anim/fade_out"
         android:padding="@dimen/activity_horizontal_margin">
 
-
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
             <TextView
-                android:text="Installing files."
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                    android:text="Installing files."
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
             <ProgressBar
-                android:id="@+id/installactivity_progressbar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                    android:id="@+id/installactivity_progressbar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
 
         </LinearLayout>
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -93,7 +93,7 @@
             <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:layout_alignParentRight="true"
                 android:layout_width="120dp"
-                android:layout_height="36dp"
+                android:layout_height="wrap_content"
                 card_view:cardBackgroundColor="@color/install_complete_button_color"
                 card_view:cardCornerRadius="2dp"
                 android:layout_margin="6dp"
@@ -103,7 +103,7 @@
                 <TextView
                     android:id="@+id/button_start_app"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="36dp"
                     android:text="@android:string/ok"
                     android:gravity="center"
                     android:textColor="@color/primary_text_btn_main" />
