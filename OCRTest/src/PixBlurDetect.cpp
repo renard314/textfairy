@@ -126,7 +126,7 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue, Box** m
 	Pix* pixScaled;
 	int targetw = pixGetWidth(pixGrey);
 	int targeth = pixGetHeight(pixGrey);
-	const int maxEdgeLength = 1200;
+	const int maxEdgeLength = 1300;
 	if (targeth >= targetw && targeth >= maxEdgeLength) {
 		pixScaled = pixScaleBySamplingToSize(pixGrey, 0, maxEdgeLength);
 	} else if (targetw > targeth && targetw >= maxEdgeLength) {
@@ -328,21 +328,21 @@ Pix* PixBlurDetect::makeEdgeMask(Pix* pixs, l_int32 orientflag, l_int32* prating
 	Pix* pixConvEdges = pixTwoSidedEdgeFilter(pixConv, orientflag);
 
 	NUMA* histo = pixGetGrayHistogram(pixConvEdges, 8);
-	l_int32 thresh = 2;
-	//numaSplitDistribution(histo, 0.01, &thresh, NULL, NULL, NULL, NULL, NULL);
-
+	l_int32 thresh = 3;
+	numaSplitDistribution(histo, 0.01, &thresh, NULL, NULL, NULL, NULL, NULL);
+	thresh = max(2,thresh-2);
 	l_int32 count = numaGetCount(histo);
 	if (count > 0 && prating != NULL) {
 		numaGetIValue(histo, 0, prating);
 	}
 
 	if (mDebug) {
-		if(orientflag==L_VERTICAL_EDGES) {
+		if (orientflag == L_VERTICAL_EDGES) {
 			printf("v-thresh=%i, sum=%i\n", thresh, *prating);
-			pixWrite("pixConvEdgesV.png",pixConvEdges, IFF_PNG);
+			pixWrite("pixConvEdgesV.png", pixConvEdges, IFF_PNG);
 		} else {
 			printf("h-thresh=%i, sum=%i\n", thresh, *prating);
-			pixWrite("pixConvEdgesH.png",pixConvEdges, IFF_PNG);
+			pixWrite("pixConvEdgesH.png", pixConvEdges, IFF_PNG);
 		}
 	}
 	Pix* pixForeground = pixThresholdToBinary(pixConvEdges, thresh);
@@ -400,9 +400,11 @@ Pix* PixBlurDetect::pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blu
 	wplby = pixGetWpl(pixBinaryy);
 	wplm = pixGetWpl(pixMedian);
 	RunningStats stats;
-	printf("vert = %i horz = %i\n", vertRating, horzRating);
 
 	if (vertRating < horzRating) {
+		if (mDebug) {
+			printf("measuring from left to right\n");
+		}
 		if (pixBinary != NULL) {
 			*pixBinary = pixCopy(NULL, pixBinaryy);
 		}
@@ -429,6 +431,9 @@ Pix* PixBlurDetect::pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blu
 			}
 		}
 	} else {
+		if (mDebug) {
+			printf("measuring from top to bottom\n");
+		}
 		if (pixBinary != NULL) {
 			*pixBinary = pixCopy(NULL, pixBinaryx);
 		}
