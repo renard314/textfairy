@@ -1,4 +1,3 @@
-include ':FileExplorer', ':testapp'
 include ':tess-two:tess-two'
 include ':app'
 
