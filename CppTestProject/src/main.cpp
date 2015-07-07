@@ -397,15 +397,38 @@ void testAllBlur(){
 	blurDetect("images/blur5.jpg");
 	blurDetect("images/blur6.jpg");
 	blurDetect("images/blur7.jpg");
-
 }
+void blurDetectTest(const char* images){
+	PixBlurDetect blurDetector(false);
+	SARRAY* sa = getSortedPathnamesInDirectory(images, NULL, 0, 0);
+	l_int32 count = sarrayGetCount(sa);
+	Pix* pixOrg;
+	char    *str;
+	for(int i=0;i<count;i++) {
+        str = sarrayGetString(sa, i, L_NOCOPY);
+        if ((pixOrg = pixRead(str)) != NULL) {
+    		startTimer();
+    		l_float32 blurValue;
+    		//printf("Loading %s",str);
+    		Box* maxBlurLoc = NULL;
+    		Pix* pixBlended = blurDetector.makeBlurIndicator(pixOrg,&blurValue,&maxBlurLoc);
+    		//printf(" - blur = %f\n",blurValue);
+    		pixDestroy(&pixBlended);
+    		pixDestroy(&pixOrg);
+    		boxDestroy(&maxBlurLoc);
+        }
+	}
+}
+
 int main() {
 	//createPdf("images/5.png","images/scan_test.html");
 	//testScaleWithBitmap();
 	//blurDetect("images/sharp9.jpg");
 	//blurDetect("images/48.jpg");
 	//testAllBlur();
-	blurDetect("images/53.jpg");
+	//blurDetect("images/sharp/3.jpg");
+	blurDetectTest("images/blurred");
+	blurDetectTest("images/sharp");
 
 
 	return 0;
