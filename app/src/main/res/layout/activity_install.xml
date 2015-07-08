@@ -103,7 +103,7 @@
                 <TextView
                     android:id="@+id/button_start_app"
                     android:layout_width="match_parent"
-                    android:layout_height="36dp"
+                    android:layout_height="@dimen/button_height"
                     android:text="@android:string/ok"
                     android:gravity="center"
                     android:textColor="@color/primary_text_btn_main" />
