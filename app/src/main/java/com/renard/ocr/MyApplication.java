@@ -15,6 +15,7 @@
  */
 package com.renard.ocr;
 
+import com.crashlytics.android.Crashlytics;
 import com.renard.util.PreferencesUtils;
 import com.squareup.leakcanary.LeakCanary;
 
@@ -22,6 +23,7 @@ import android.app.Application;
 import android.os.StrictMode;
 import android.view.ViewConfiguration;
 
+import io.fabric.sdk.android.Fabric;
 import java.lang.reflect.Field;
 
 //@ReportsCrashes(formKey = "dDZFZXFpU1NocWUwZ0x0aURsVUhNSXc6MQ", socketTimeout = 10000)
@@ -29,6 +31,7 @@ public class MyApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
 
@@ -53,10 +56,7 @@ public class MyApplication extends Application {
         } catch (Exception ex) {
             // Ignore
         }
-        // ACRA.init(this);
 
     }
-
-    ;
 
 }

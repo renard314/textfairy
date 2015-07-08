@@ -1,6 +1,9 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
@@ -135,6 +138,9 @@ dependencies {
     testCompile "org.mockito:mockito-all:1.10.19"
     testCompile("org.robolectric:robolectric:3.0-rc2") {
         exclude group: 'commons-logging', module: 'commons-logging'
+    }
+    compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
+        transitive = true;
     }
 
 
