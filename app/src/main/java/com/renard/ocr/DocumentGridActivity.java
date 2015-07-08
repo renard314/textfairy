@@ -24,8 +24,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -59,7 +57,6 @@ import com.renard.install.InstallActivity;
 import com.renard.ocr.DocumentAdapter.DocumentViewHolder;
 import com.renard.ocr.DocumentAdapter.OnCheckedChangeListener;
 import com.renard.ocr.help.AboutActivity;
-import com.renard.ocr.help.AppOptionsActivity;
 import com.renard.ocr.help.ContributeActivity;
 import com.renard.ocr.help.HelpActivity;
 import com.renard.ocr.help.HintDialog;
@@ -67,15 +64,12 @@ import com.renard.ocr.help.OCRLanguageActivity;
 import com.renard.ocr.help.ReleaseNoteDialog;
 import com.renard.util.Util;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import com.googlecode.leptonica.android.ReadFile;
+
 /**
  * main activity of the app
  * 

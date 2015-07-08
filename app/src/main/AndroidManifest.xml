@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.renard.ocr"
           android:installLocation="auto"
-          android:versionCode="36"
+          android:versionCode="38"
           android:versionName="2.0.5">
 
     <uses-sdk
@@ -36,9 +36,7 @@
                 android:authorities="com.renard.ocr"
                 android:exported="false"/>
 
-        <activity
-                android:name="com.lamerman.FileDialog"
-                android:label="@string/app_name"/>
+
         <activity
                 android:name="com.renard.ocr.OCRActivity"
                 android:launchMode="singleTop"
@@ -70,14 +68,6 @@
         <activity
                 android:name="com.renard.ocr.help.OCRLanguageActivity"
                 android:label="@string/ocr_language_title"
-                android:logo="@drawable/textfairy_title">
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.renard.ocr.help.AppOptionsActivity"/>
-        </activity>
-        <activity
-                android:name="com.renard.ocr.help.AppOptionsActivity"
-                android:label="@string/app_options_title"
                 android:logo="@drawable/textfairy_title">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
@@ -171,6 +161,9 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.renard.ocr.DocumentGridActivity"/>
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="ef8b77a0fd2ef3e87c78497b9595a9234fe5b711" />
     </application>
 
 </manifest>
