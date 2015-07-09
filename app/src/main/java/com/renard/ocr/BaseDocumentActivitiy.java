@@ -838,16 +838,6 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
         protected void onPostExecute(Integer result) {
             if (result == RESULT_REMOTE_EXCEPTION) {
                 Toast.makeText(getApplicationContext(), getText(R.string.delete_error), Toast.LENGTH_LONG).show();
-            } else if (result > 0) {
-                // String deleteMsg = null;
-                // if (result == 1) {
-                // deleteMsg = getResources().getString(R.string.deleted_page);
-                // } else if (result > 1) {
-                // deleteMsg = getResources().getString(R.string.deleted_pages);
-                // deleteMsg = String.format(deleteMsg, result);
-                // }
-                // Toast.makeText(getApplicationContext(), deleteMsg,
-                // Toast.LENGTH_LONG).show();
             }
             dismissDialog(DELETE_PROGRESS_DIALOG_ID);
             super.onPostExecute(result);
@@ -877,7 +867,7 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
             int progress = 0;
             for (Integer id : mIds) {
                 try {
-                    Cursor c = client.query(DocumentContentProvider.CONTENT_URI, null, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?",
+                    Cursor c = client.query(DocumentContentProvider.CONTENT_URI, new String[]{Columns.ID, Columns.PHOTO_PATH}, Columns.PARENT_ID + "=? OR " + Columns.ID + "=?",
                             new String[]{String.valueOf(id), String.valueOf(id)}, Columns.PARENT_ID + " ASC");
 
                     while (c.moveToNext()) {
