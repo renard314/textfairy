@@ -24,6 +24,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -175,9 +177,12 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
         final int count = adapter.getCount();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < count; i++) {
-            String text;
+            String text = null;
             if(i==position){
-                text = Html.toHtml(fragment.getDocumentText());
+                final Spanned documentText = fragment.getDocumentText();
+                if(!TextUtils.isEmpty(documentText)) {
+                    text = Html.toHtml(documentText);
+                }
             } else {
                 text = adapter.getText(i);
             }
