@@ -11,12 +11,12 @@ import android.os.AsyncTask;
 class CropData {
     private final Bitmap mBitmap;
     private final CropImageScaler.ScaleResult mScaleResult;
-    private final BlurDetectionResult mBlurrines;
+    private final BlurDetectionResult mBlurriness;
 
-    CropData(Bitmap bitmap, CropImageScaler.ScaleResult scaleFactor, BlurDetectionResult blurrines) {
+    CropData(Bitmap bitmap, CropImageScaler.ScaleResult scaleFactor, BlurDetectionResult blurriness) {
         mBitmap = bitmap;
         this.mScaleResult = scaleFactor;
-        this.mBlurrines = blurrines;
+        this.mBlurriness = blurriness;
     }
 
     public Bitmap getBitmap() {
@@ -27,14 +27,13 @@ class CropData {
         return mScaleResult;
     }
 
-    public BlurDetectionResult getBlurrines() {
-        return mBlurrines;
+    public BlurDetectionResult getBlurriness() {
+        return mBlurriness;
     }
 
     public void recylce() {
-        mBitmap.recycle();
         mScaleResult.getPix().recycle();
-        mBlurrines.getPixBlur().recycle();
+        mBlurriness.getPixBlur().recycle();
     }
 }
 
@@ -56,7 +55,9 @@ public class PreparePixForCropTask extends AsyncTask<Void, Void, CropData> {
     @Override
     protected void onCancelled(CropData cropData) {
         super.onCancelled(cropData);
-        cropData.recylce();
+        if (cropData != null) {
+            cropData.recylce();
+        }
     }
 
     @Override
