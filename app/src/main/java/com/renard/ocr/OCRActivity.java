@@ -259,14 +259,10 @@ public class OCRActivity extends MonitoredActivity {
                             recycleResultPix(pix);
                             if (documentUri != null) {
                                 Intent i;
-                                if (utf8String == null || utf8String.isEmpty()) {
-                                    i = new Intent(OCRActivity.this, DocumentGridActivity.class);
-                                } else {
-                                    i = new Intent(OCRActivity.this, DocumentActivity.class);
-                                    i.putExtra(DocumentActivity.EXTRA_ACCURACY, accuracy);
-                                    i.setData(documentUri);
-                                    i.putExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, pix.getNativePix());
-                                }
+                                i = new Intent(OCRActivity.this, DocumentActivity.class);
+                                i.putExtra(DocumentActivity.EXTRA_ACCURACY, accuracy);
+                                i.setData(documentUri);
+                                i.putExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, pix.getNativePix());
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(i);
                                 finish();

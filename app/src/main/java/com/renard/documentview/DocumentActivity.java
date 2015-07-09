@@ -54,8 +54,7 @@ import java.util.Set;
 public class DocumentActivity extends BaseDocumentActivitiy implements LoaderManager.LoaderCallbacks<Cursor>, GetOpinionDialog.FeedbackDialogClickListener {
 
     private final static String LOG_TAG = DocumentActivity.class.getSimpleName();
-
-
+    private static final String STATE_DOCUMENT_URI = "documet_uri";
 
     public interface DocumentContainerFragment {
         String getLangOfCurrentlyShownDocument();
@@ -86,9 +85,12 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_document);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        init();
+        if (!init(savedInstanceState)) {
+            finish();
+            return;
+        }
 
-        if(savedInstanceState==null){
+        if (savedInstanceState == null) {
             showResultDialog();
         }
         setDocumentFragmentType();
@@ -99,22 +101,22 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if(intent.getExtras()!=null){
+        if (intent.getExtras() != null) {
             setIntent(intent);
             showResultDialog();
         }
     }
 
     private void showResultDialog() {
-        int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
+        int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, -1);
         int numberOfSuccessfulScans = PreferencesUtils.getNumberOfSuccessfulScans(getApplicationContext());
-        if(accuracy>=OCRResultDialog.MEDIUM_ACCURACY){
+        if (accuracy >= OCRResultDialog.MEDIUM_ACCURACY) {
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         }
-        if (numberOfSuccessfulScans == 2 ) {
+        if (numberOfSuccessfulScans == 2) {
             GetOpinionDialog.newInstance().show(getSupportFragmentManager(), GetOpinionDialog.TAG);
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
-        } else if (accuracy > 0) {
+        } else if (accuracy > -1) {
             OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
         }
 
@@ -291,9 +293,23 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         return super.onCreateDialog(id, args);
     }
 
-    private void init() {
-        String id = getIntent().getData().getLastPathSegment();
-        int parentId = getParentId(getIntent().getData());
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelable(STATE_DOCUMENT_URI, getIntent().getData());
+    }
+
+
+    private boolean init(Bundle savedInstanceState) {
+        Uri data = getIntent().getData();
+        if (data == null) {
+            data = savedInstanceState.getParcelable(STATE_DOCUMENT_URI);
+        }
+        if (data == null) {
+            return false;
+        }
+        String id = data.getLastPathSegment();
+        int parentId = getParentId(data);
         // Base class needs that value
         if (parentId == -1) {
             mParentId = Integer.parseInt(id);
@@ -302,7 +318,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         }
 
         getSupportLoaderManager().initLoader(0, null, this);
-
+        return true;
     }
 
     private int getParentId(Uri documentUri) {
