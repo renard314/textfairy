@@ -56,6 +56,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     public static final String EXTRA_OCR_BOX = "ocr_box";
 
     static {
+        System.loadLibrary("pngo");
         System.loadLibrary("lept");
         System.loadLibrary("tess");
         System.loadLibrary("image_processing_jni");

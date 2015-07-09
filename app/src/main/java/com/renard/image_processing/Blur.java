@@ -23,6 +23,7 @@ import com.googlecode.leptonica.android.Pix;
  */
 public class Blur {
     static {
+        System.loadLibrary("pngo");
         System.loadLibrary("lept");
         System.loadLibrary("image_processing_jni");
     }
