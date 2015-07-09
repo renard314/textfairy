@@ -79,14 +79,13 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
 
             @Override
             public void onGlobalLayout() {
-                Bundle extras = getIntent().getExtras();
-                extras.getLong(DocumentGridActivity.EXTRA_NATIVE_PIX);
-                extras.getInt(DocumentGridActivity.EXTRA_ROTATION);
+                final long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, 0);
+                final int rotation = getIntent().getIntExtra(DocumentGridActivity.EXTRA_ROTATION, 0);
                 final int width = mImageView.getWidth();
                 final int height = mImageView.getHeight();
 
-                mPix = new Pix(extras.getLong(DocumentGridActivity.EXTRA_NATIVE_PIX));
-                mRotation = extras.getInt(DocumentGridActivity.EXTRA_ROTATION) / 90;
+                mPix = new Pix(nativePix);
+                mRotation = rotation / 90;
                 mPrepareTask = Optional.of(new PreparePixForCropTask(mPix, width, height));
                 mPrepareTask.get().execute();
                 mImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
@@ -109,7 +108,7 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
             public void onGlobalLayout() {
                 mImageView.setImageBitmapResetBase(cropData.getBitmap(), true, mRotation * 90);
 
-                switch (cropData.getBlurrines().getBlurriness()) {
+                switch (cropData.getBlurriness().getBlurriness()) {
                     case NOT_BLURRED:
                         showDefaultCroppingRectangle(cropData.getBitmap());
                         break;
@@ -117,7 +116,7 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
                     case STRONG_BLUR:
                         zoomToBlurredRegion(cropData);
                         setTitle(R.string.image_is_blurred);
-                        ImageBlurredDialog dialog = ImageBlurredDialog.newInstance((float) cropData.getBlurrines().getBlurValue());
+                        ImageBlurredDialog dialog = ImageBlurredDialog.newInstance((float) cropData.getBlurriness().getBlurValue());
                         dialog.show(getSupportFragmentManager(), ImageBlurredDialog.TAG);
                         break;
                 }
@@ -286,11 +285,11 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
     }
 
     private void zoomToBlurredRegion(CropData data) {
-        float width = data.getBlurrines().getPixBlur().getWidth();
-        float height = data.getBlurrines().getPixBlur().getHeight();
+        float width = data.getBlurriness().getPixBlur().getWidth();
+        float height = data.getBlurriness().getPixBlur().getHeight();
         float widthScale = width / data.getBitmap().getWidth();
         float heightScale = height / data.getBitmap().getHeight();
-        final Point c = data.getBlurrines().getMostBlurredRegion().getCenter();
+        final Point c = data.getBlurriness().getMostBlurredRegion().getCenter();
         c.set((int) (c.x / widthScale), (int) (c.y / heightScale));
         float[] pts = {c.x, c.y};
         mImageView.getImageMatrix().mapPoints(pts);
