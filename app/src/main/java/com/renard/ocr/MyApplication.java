@@ -23,15 +23,16 @@ import android.app.Application;
 import android.os.StrictMode;
 import android.view.ViewConfiguration;
 
-import io.fabric.sdk.android.Fabric;
 import java.lang.reflect.Field;
 
-//@ReportsCrashes(formKey = "dDZFZXFpU1NocWUwZ0x0aURsVUhNSXc6MQ", socketTimeout = 10000)
+import io.fabric.sdk.android.Fabric;
+
 public class MyApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+        final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics()).debuggable(BuildConfig.DEBUG).build();
+        Fabric.with(fabric);
 
         PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
 

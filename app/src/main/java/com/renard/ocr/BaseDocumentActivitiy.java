@@ -372,7 +372,6 @@ public abstract class BaseDocumentActivitiy extends MonitoredActivity {
                     startGallery();
                     break;
                 case INTENT:
-                    finish();
                     break;
                 case CAMERA:
                     startCamera();

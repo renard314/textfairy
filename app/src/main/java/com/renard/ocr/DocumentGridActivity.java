@@ -111,7 +111,9 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
         startInstallActivityIfNeeded();
         final int columnWidth = Util.determineThumbnailSize(this, null);
         Util.setThumbnailSize(columnWidth, columnWidth, this);
-        checkForImageIntent();
+		if(savedInstanceState==null) {
+			checkForImageIntent();
+		}
 
         //setup the load language button that is shown when the grid is empty
         final View viewById = findViewById(R.id.install_language_button);
