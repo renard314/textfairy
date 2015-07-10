@@ -99,6 +99,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
             mHtmlTask.execute(text);
         } else {
             mViewSwitcher.setDisplayedChild(1);
+            mEditText.addTextChangedListener(this);
         }
 
         PreferencesUtils.applyTextPreferences(mEditText, getActivity());
