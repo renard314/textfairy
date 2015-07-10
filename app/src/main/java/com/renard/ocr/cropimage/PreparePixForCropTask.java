@@ -48,7 +48,7 @@ public class PreparePixForCropTask extends AsyncTask<Void, Void, CropData> {
     private final int mHeight;
 
     public PreparePixForCropTask(Pix pix, int width, int height) {
-        if(width==0 || height==0) {
+        if (width == 0 || height == 0) {
             Log.e(TAG, "scaling to 0 value: (" + width + "," + height + ")");
         }
         mPix = pix;
@@ -81,8 +81,16 @@ public class PreparePixForCropTask extends AsyncTask<Void, Void, CropData> {
             return null;
         }
         scaleResult = scaler.scale(mPix, mWidth, mHeight);
+        if (isCancelled()) {
+            return null;
+        }
         Bitmap bitmap = WriteFile.writeBitmap(scaleResult.getPix());
-        Log.d(TAG, "scaling result (" + bitmap.getWidth() + "," + bitmap.getHeight() + ")");
+        if (isCancelled()) {
+            return null;
+        }
+        if (bitmap != null) {
+            Log.d(TAG, "scaling result (" + bitmap.getWidth() + "," + bitmap.getHeight() + ")");
+        }
         return new CropData(bitmap, scaleResult, blurDetectionResult);
 
     }
