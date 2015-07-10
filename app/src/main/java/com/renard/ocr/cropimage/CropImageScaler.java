@@ -55,6 +55,7 @@ public class CropImageScaler {
     }
 
     public ScaleResult scale(Pix pix, final int w, final int h) {
+
         float bestScale = 1 / getScaleFactorToFitScreen(pix, w, h);
         float scaleFactor = Util.determineScaleFactor(pix.getWidth(), pix.getHeight(), w, h);
         if (scaleFactor == 0) {

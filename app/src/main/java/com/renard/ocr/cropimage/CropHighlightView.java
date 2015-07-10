@@ -119,17 +119,6 @@ class CropHighlightView implements HighLightView {
         mLeftRect.set(getDrawRect().right, getDrawRect().top, mViewDrawingRect.right, getDrawRect().bottom);
         mBottomRect.set(0, getDrawRect().bottom, mViewDrawingRect.right, mViewDrawingRect.bottom);
 
-        /* debug
-        Paint paint = new Paint(mOutlinePaint);
-        paint.setColor(0xffff0000);
-        final Rect perspectiveCorrectedBoundingRect = mTrapzoid.getPerspectiveCorrectedBoundingRect();
-        RectF debug = new RectF();
-        RectF src = new RectF(perspectiveCorrectedBoundingRect);
-        mMatrix.mapRect(debug,src);
-        canvas.drawRect(debug,paint);
-        */
-
-
         canvas.drawRect(mTopRect, mFocusPaint);
         canvas.drawRect(mRightRect, mFocusPaint);
         canvas.drawRect(mLeftRect, mFocusPaint);

@@ -7,6 +7,7 @@ import com.renard.image_processing.BlurDetectionResult;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 
 class CropData {
     private final Bitmap mBitmap;
@@ -47,6 +48,9 @@ public class PreparePixForCropTask extends AsyncTask<Void, Void, CropData> {
     private final int mHeight;
 
     public PreparePixForCropTask(Pix pix, int width, int height) {
+        if(width==0 || height==0) {
+            Log.e(TAG, "scaling to 0 value: (" + width + "," + height + ")");
+        }
         mPix = pix;
         mWidth = width;
         mHeight = height;
@@ -68,6 +72,7 @@ public class PreparePixForCropTask extends AsyncTask<Void, Void, CropData> {
 
     @Override
     protected CropData doInBackground(Void... params) {
+        Log.d(TAG, "scaling to (" + mWidth + "," + mHeight + ")");
         BlurDetectionResult blurDetectionResult = Blur.blurDetect(mPix);
         CropImageScaler scaler = new CropImageScaler();
         CropImageScaler.ScaleResult scaleResult;
@@ -77,6 +82,7 @@ public class PreparePixForCropTask extends AsyncTask<Void, Void, CropData> {
         }
         scaleResult = scaler.scale(mPix, mWidth, mHeight);
         Bitmap bitmap = WriteFile.writeBitmap(scaleResult.getPix());
+        Log.d(TAG, "scaling result (" + bitmap.getWidth() + "," + bitmap.getHeight() + ")");
         return new CropData(bitmap, scaleResult, blurDetectionResult);
 
     }

@@ -81,8 +81,8 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
             public void onGlobalLayout() {
                 final long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, 0);
                 final int rotation = getIntent().getIntExtra(DocumentGridActivity.EXTRA_ROTATION, 0);
-                final int width = mImageView.getWidth();
-                final int height = mImageView.getHeight();
+                final int width = mViewSwitcher.getWidth();
+                final int height = mViewSwitcher.getHeight();
 
                 mPix = new Pix(nativePix);
                 mRotation = rotation / 90;
