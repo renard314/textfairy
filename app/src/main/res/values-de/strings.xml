@@ -222,5 +222,6 @@
     <string name="first_time_bad_result">Bitte lies die Tipps oder sende mir Feedback damit ich dir
         helfen kann.
     </string>
+    <string name="start_scan">Start</string>
 
 </resources>

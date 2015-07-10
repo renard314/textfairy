@@ -155,7 +155,7 @@ public class LayoutQuestionDialog {
         });
 
 
-        builder.setPositiveButton(android.R.string.ok,
+        builder.setPositiveButton(R.string.start_scan,
                 new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
