@@ -328,11 +328,11 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private boolean initTessApi(String tessDir, String lang) {
         mTess = new TessBaseAPI(OCR.this);
         boolean result = mTess.init(tessDir, lang);
-        mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST,"ﬀﬁﬂﬃﬄﬅﬆ");
         if (!result) {
             sendMessage(MESSAGE_ERROR, R.string.error_tess_init);
             return false;
         }
+        mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST,"ﬀﬁﬂﬃﬄﬅﬆ");
         return true;
     }
 
