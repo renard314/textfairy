@@ -112,7 +112,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
         final int columnWidth = Util.determineThumbnailSize(this, null);
         Util.setThumbnailSize(columnWidth, columnWidth, this);
 		if(savedInstanceState==null) {
-			checkForImageIntent();
+			checkForImageIntent(getIntent());
 		}
 
         //setup the load language button that is shown when the grid is empty
@@ -126,8 +126,14 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
         });
     }
 
-    private void checkForImageIntent() {
-        Intent intent = getIntent();
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        checkForImageIntent(intent);
+    }
+
+    private void checkForImageIntent(Intent intent) {
         String action = intent.getAction();
         String type = intent.getType();
 
