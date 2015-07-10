@@ -355,8 +355,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final Pix copy = pixs.copy();
-                //savePixToCacheDir(context, copy);
                 nativeAnalyseLayout(pixs.getNativePix());
             }
         }).start();
@@ -381,8 +379,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             @Override
             public void run() {
                 try {
-                    final Pix copy = pixs.copy();
-                    //savePixToCacheDir(context, copy);
                     final String tessDir = Util.getTessDir(context);
                     long nativeTextPix = nativeOCRBook(pixs.getNativePix());
                     pixs.recycle();
@@ -393,7 +389,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     sendMessage(MESSAGE_FINAL_IMAGE, nativeTextPix);
                     synchronized (OCR.this) {
                         if (!initTessApi(tessDir, lang)) return;
-
                         mTess.setPageSegMode(PageSegMode.PSM_AUTO);
                         mTess.setImage(pixText);
                     }
