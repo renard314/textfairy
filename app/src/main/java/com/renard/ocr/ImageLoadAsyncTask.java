@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 
 
 enum PixLoadStatus {
@@ -42,13 +43,13 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
     final static String ACTION_IMAGE_LOADING_START = ImageLoadAsyncTask.class.getName() + ".image.loading.start";
     final private static String TMP_FILE_NAME = "loadfiletmp";
     private final boolean skipCrop;
-    private final ContentResolver contentResolver;
+    private final WeakReference<ContentResolver> mContentResolver;
     private final Context context;
     private int rotateXDegrees;
     private final Uri cameraPicUri;
 
     ImageLoadAsyncTask(BaseDocumentActivitiy activity, boolean skipCrop, int rotateXDegrees, Uri cameraPicUri) {
-        contentResolver = activity.getContentResolver();
+        mContentResolver = new WeakReference<>(activity.getContentResolver());
         context = activity.getApplicationContext();
         this.skipCrop = skipCrop;
         this.rotateXDegrees = rotateXDegrees;
@@ -125,15 +126,20 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
             // MediaStore loves to crash with an oom exception. So we
             // try to load bitmap nativly if it is on internal storage
             if (pathForUri != null && pathForUri.startsWith("http")) {
-                Bitmap b = MediaStore.Images.Media.getBitmap(contentResolver, cameraPicUri);
-                if (b != null) {
-                    if (b.getConfig() != Bitmap.Config.ARGB_8888) {
-                        return Pair.create(null, PixLoadStatus.IMAGE_NOT_32_BIT);
+                final ContentResolver contentResolver = this.mContentResolver.get();
+                if (contentResolver != null) {
+                    Bitmap b = MediaStore.Images.Media.getBitmap(contentResolver, cameraPicUri);
+                    if (b != null) {
+                        if (b.getConfig() != Bitmap.Config.ARGB_8888) {
+                            return Pair.create(null, PixLoadStatus.IMAGE_NOT_32_BIT);
+                        }
+                        p = ReadFile.readBitmap(b);
+                        b.recycle();
+                    } else {
+                        return Pair.create(null, PixLoadStatus.MEDIA_STORE_RETURNED_NULL);
                     }
-                    p = ReadFile.readBitmap(b);
-                    b.recycle();
                 } else {
-                    return Pair.create(null, PixLoadStatus.MEDIA_STORE_RETURNED_NULL);
+                    return Pair.create(null, PixLoadStatus.IMAGE_COULD_NOT_BE_READ);
                 }
             } else if (pathForUri != null) {
                 File imageFile = new File(pathForUri);
@@ -153,12 +159,17 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                 InputStream stream = null;
                 FileOutputStream fileOut = null;
                 try {
-                    stream = contentResolver.openInputStream(cameraPicUri);
-                    if (stream != null) {
-                        fileOut = context.openFileOutput(TMP_FILE_NAME, Context.MODE_PRIVATE);
-                        Util.copy(stream, fileOut);
-                        File file = context.getFileStreamPath(TMP_FILE_NAME);
-                        p = ReadFile.readFile(context, file);
+                    final ContentResolver contentResolver = this.mContentResolver.get();
+                    if (contentResolver != null) {
+                        stream = contentResolver.openInputStream(cameraPicUri);
+                        if (stream != null) {
+                            fileOut = context.openFileOutput(TMP_FILE_NAME, Context.MODE_PRIVATE);
+                            Util.copy(stream, fileOut);
+                            File file = context.getFileStreamPath(TMP_FILE_NAME);
+                            p = ReadFile.readFile(context, file);
+                        }
+                    } else {
+                        return Pair.create(null, PixLoadStatus.IMAGE_COULD_NOT_BE_READ);
                     }
                 } finally {
                     if (stream != null) {
