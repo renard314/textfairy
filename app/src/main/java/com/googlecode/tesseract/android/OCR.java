@@ -320,6 +320,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     sendMessage(MESSAGE_HOCR_TEXT, hocrText.toString(), totalAccuracy);
                     sendMessage(MESSAGE_UTF8_TEXT, htmlText.toString(), totalAccuracy);
                 } finally {
+                    if(mTess!=null) {
+                        mTess.end();
+                    }
                     sendMessage(MESSAGE_END);
                 }
             }
@@ -408,8 +411,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
 
                 } finally {
+                    if(mTess!=null) {
+                        mTess.end();
+                    }
                     sendMessage(MESSAGE_END);
-                    mTess.end();
                 }
             }
         }).start();
