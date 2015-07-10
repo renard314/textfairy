@@ -259,7 +259,7 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
         EventBus.getDefault().unregister(this);
         unbindDrawables(findViewById(android.R.id.content));
         if (mPrepareTask.isPresent()) {
-            mPrepareTask.get().cancel(false);
+            mPrepareTask.get().cancel(true);
             mPrepareTask = Optional.absent();
         }
         if (mCropData.isPresent()) {

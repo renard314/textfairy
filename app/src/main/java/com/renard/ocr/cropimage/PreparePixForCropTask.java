@@ -72,6 +72,9 @@ public class PreparePixForCropTask extends AsyncTask<Void, Void, CropData> {
         CropImageScaler scaler = new CropImageScaler();
         CropImageScaler.ScaleResult scaleResult;
         // scale it so that it fits the screen
+        if (isCancelled()) {
+            return null;
+        }
         scaleResult = scaler.scale(mPix, mWidth, mHeight);
         Bitmap bitmap = WriteFile.writeBitmap(scaleResult.getPix());
         return new CropData(bitmap, scaleResult, blurDetectionResult);
