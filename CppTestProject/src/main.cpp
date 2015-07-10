@@ -412,7 +412,7 @@ void blurDetectTest(const char* images){
     		//printf("Loading %s",str);
     		Box* maxBlurLoc = NULL;
     		Pix* pixBlended = blurDetector.makeBlurIndicator(pixOrg,&blurValue,&maxBlurLoc);
-    		//printf(" - blur = %f\n",blurValue);
+    		printf("%s - blur = %f\n",str, blurValue);
     		pixDestroy(&pixBlended);
     		pixDestroy(&pixOrg);
     		boxDestroy(&maxBlurLoc);
@@ -426,8 +426,8 @@ int main() {
 	//blurDetect("images/sharp9.jpg");
 	//blurDetect("images/48.jpg");
 	//testAllBlur();
-	//blurDetect("images/sharp/3.jpg");
-	blurDetectTest("images/blurred");
+	//blurDetect("images/blurred/endless.jpg");
+	//blurDetectTest("images/blurred");
 	blurDetectTest("images/sharp");
 
 
