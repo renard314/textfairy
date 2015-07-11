@@ -320,17 +320,21 @@ public class OCRActivity extends MonitoredActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1);
+        if (nativePix == -1) {
+            Intent intent = new Intent(this, DocumentGridActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
 
         mOCR = new OCR(this, mMessageReceiver);
-
         Screen.lockOrientation(this);
-
-
         setContentView(R.layout.ocr_visualize);
         mImageView = (OCRImageView) findViewById(R.id.progress_image);
 
         mParentId = getIntent().getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1);
-        long nativePix = getIntent().getExtras().getLong(DocumentGridActivity.EXTRA_NATIVE_PIX);
 
         Pix pixOrg = new Pix(nativePix);
         mOriginalHeight = pixOrg.getHeight();
