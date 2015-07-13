@@ -98,8 +98,8 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
 
     @SuppressWarnings("unused")
     public void onEventMainThread(final CropData cropData) {
-        supportInvalidateOptionsMenu();
         mCropData = Optional.of(cropData);
+        supportInvalidateOptionsMenu();
         mViewSwitcher.setDisplayedChild(1);
 
         mImageView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
