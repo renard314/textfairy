@@ -16,6 +16,11 @@
 
 package com.renard.documentview;
 
+import com.renard.documentview.DocumentActivity.DocumentContainerFragment;
+import com.renard.ocr.R;
+import com.renard.util.PreferencesUtils;
+import com.viewpagerindicator.CirclePageIndicator;
+
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -30,11 +35,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-
-import com.renard.documentview.DocumentActivity.DocumentContainerFragment;
-import com.renard.ocr.R;
-import com.renard.util.PreferencesUtils;
-import com.viewpagerindicator.CirclePageIndicator;
 
 public class DocumentPagerFragment extends Fragment implements DocumentContainerFragment {
 
@@ -51,7 +51,7 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
         View v = inflater.inflate(R.layout.fragment_document_pager, container, false);
         mPager = (ViewPager) v.findViewById(R.id.document_pager);
         mTitleIndicator = (CirclePageIndicator) v.findViewById(R.id.titles);
-        mLastPosition = -1;
+        mLastPosition = 0;
         initPager();
         return v;
     }
@@ -92,11 +92,12 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     public void setDisplayedPage(final int pageno) {
         mPager.setCurrentItem(pageno, true);
     }
+
     public void setDisplayedPageByDocumentId(final int documentId) {
         final int count = mAdapter.getCount();
-        for(int i = 0; i < count; i++){
+        for (int i = 0; i < count; i++) {
             final int id = mAdapter.getId(i);
-            if(documentId==id) {
+            if (documentId == id) {
                 mPager.setCurrentItem(i, false);
                 return;
             }
@@ -126,11 +127,9 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 
                 @Override
                 public void onPageSelected(int position) {
-                    if (mLastPosition != -1) {
-                        final DocumentTextFragment fragment = mAdapter.getFragment(mLastPosition);
-                        if(fragment!=null) {
-                            fragment.saveIfTextHasChanged();
-                        }
+                    final DocumentTextFragment fragment = mAdapter.getFragment(mLastPosition);
+                    if (fragment != null) {
+                        fragment.saveIfTextHasChanged();
                     }
                     mLastPosition = position;
                     final String title = mAdapter.getLongTitle(position);
@@ -166,21 +165,16 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
 
     @Override
     public String getTextOfAllDocuments() {
-		int position =0 ;
-		if (mLastPosition!=-1){
-			position = mLastPosition;
-		}
-
-		final DocumentTextFragment fragment = mAdapter.getFragment(position);
+        final DocumentTextFragment fragment = mAdapter.getFragment(mLastPosition);
 
         DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
         final int count = adapter.getCount();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < count; i++) {
             String text = null;
-            if(i==position){
+            if (i == mLastPosition && fragment != null) {
                 final Spanned documentText = fragment.getDocumentText();
-                if(!TextUtils.isEmpty(documentText)) {
+                if (!TextUtils.isEmpty(documentText)) {
                     text = Html.toHtml(documentText);
                 }
             } else {

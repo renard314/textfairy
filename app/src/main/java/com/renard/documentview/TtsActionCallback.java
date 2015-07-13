@@ -1,7 +1,11 @@
 package com.renard.documentview;
 
+import com.renard.ocr.R;
+import com.renard.ocr.cropimage.MonitoredActivity;
+import com.renard.ocr.help.OCRLanguageAdapter;
+import com.renard.util.ResourceUtils;
+
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -15,10 +19,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import com.renard.ocr.R;
-import com.renard.ocr.cropimage.MonitoredActivity;
-import com.renard.ocr.help.OCRLanguageAdapter;
-import com.renard.util.ResourceUtils;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -37,12 +37,12 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     private ActionMode mActionMode;
     final Map<String, String> hashMapResource;
 
-	TtsActionCallback(DocumentActivity activity) {
+    TtsActionCallback(DocumentActivity activity) {
         hashMapResource = ResourceUtils.getHashMapResource(activity, R.xml.iso_639_mapping);
         this.activity = activity;
         this.activity.addLifeCycleListener(this);
 
-	}
+    }
 
     @Override
     public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
@@ -96,16 +96,16 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
         mActionMode = actionMode;
 
-		activity.getMenuInflater().inflate(R.menu.tts_action_mode, menu);
+        activity.getMenuInflater().inflate(R.menu.tts_action_mode, menu);
         if (mTts == null) {
             Intent checkIntent = new Intent();
             checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
             ResolveInfo resolveInfo = activity.getPackageManager().resolveActivity(checkIntent, PackageManager.MATCH_DEFAULT_ONLY);
-            if(resolveInfo!=null){
+            if (resolveInfo != null) {
                 activity.startActivityForResult(checkIntent, DocumentActivity.REQUEST_CODE_TTS_CHECK);
                 return true;
             } else {
-                Toast.makeText(activity,R.string.tts_not_available,Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, R.string.tts_not_available, Toast.LENGTH_LONG).show();
                 return false;
             }
         }
@@ -118,13 +118,13 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
             mTts.stop();
         }
 
-	}
+    }
 
     @Override
     public void onInit(int status) {
-		if(mActionMode==null){
-			return;
-		}
+        if (mActionMode == null) {
+            return;
+        }
         activity.setSupportProgressBarIndeterminateVisibility(false);
         // status can be either TextToSpeech.SUCCESS or TextToSpeech.ERROR.
         if (status == TextToSpeech.ERROR) {
@@ -136,15 +136,15 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
             mActionMode.getMenu().findItem(R.id.item_tts_settings).setVisible(true);
             String ocrLanguage = activity.getLanguageOfDocument();
             Locale documentLocale = mapTesseractLanguageToLocale(ocrLanguage);
-            if (documentLocale==null){
+            if (documentLocale == null) {
                 askForLocale();
-            }else {
-                if(isLanguageAvailable(new OCRLanguageAdapter.OCRLanguage(ocrLanguage, null,true,0))){
+            } else {
+                if (isLanguageAvailable(new OCRLanguageAdapter.OCRLanguage(ocrLanguage, null, true, 0))) {
                     mTts.setLanguage(documentLocale);
                     mActionMode.getMenu().findItem(R.id.item_play).setVisible(true);
                     mTtsReady = true;
                 } else {
-                    askForLocale(ocrLanguage,true);
+                    askForLocale(ocrLanguage, true);
                 }
             }
         }
@@ -153,7 +153,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     @SuppressLint("NewApi")
     private void registerForSpeechFinished() {
         final Handler handler = new Handler();
-        if(Build.VERSION.SDK_INT>=15){
+        if (Build.VERSION.SDK_INT >= 15) {
             mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                 @Override
                 public void onStart(String utteranceId) {
@@ -184,7 +184,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     }
 
     private void onUtteranceDone(String utteranceId, Handler handler) {
-        if (utteranceId.equalsIgnoreCase(LOG_TAG)){
+        if (utteranceId.equalsIgnoreCase(LOG_TAG)) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -204,21 +204,21 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     private void askForLocale() {
         PickTtsLanguageDialog.newInstance(activity).show(activity.getSupportFragmentManager(), PickTtsLanguageDialog.TAG);
     }
+
     /**
      * user has picked a language for tts
-     * @param lang
      */
     public void onTtsLanguageChosen(OCRLanguageAdapter.OCRLanguage lang) {
         Locale documentLocale = mapTesseractLanguageToLocale(lang.getValue());
         int result = mTts.setLanguage(documentLocale);
-        switch (result){
+        switch (result) {
             case TextToSpeech.LANG_COUNTRY_AVAILABLE:
             case TextToSpeech.LANG_AVAILABLE:
             case TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE:
-                Log.i(LOG_TAG,"language ok");
+                Log.i(LOG_TAG, "language ok");
                 break;
             default:
-                Log.i(LOG_TAG,"language not supported");
+                Log.i(LOG_TAG, "language not supported");
                 break;
         }
         mActionMode.getMenu().findItem(R.id.item_play).setVisible(true);
@@ -227,30 +227,30 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     }
 
     public void onTtsCancelled() {
-        if (mTts!=null){
+        if (mTts != null) {
             mTts.shutdown();
             mTts = null;
         }
-        mTtsReady=false;
-		if(mActionMode!=null) {
-			mActionMode.finish();
-		}
+        mTtsReady = false;
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
     }
 
     public boolean isLanguageAvailable(OCRLanguageAdapter.OCRLanguage lang) {
-        if (mTts!=null){
+        if (mTts != null) {
             final Locale locale = mapTesseractLanguageToLocale(lang.getValue());
-            if (locale==null){
+            if (locale == null) {
                 return false;
             }
-            Log.i(LOG_TAG,"Checking " + locale.toString());
+            Log.i(LOG_TAG, "Checking " + locale.toString());
             final int result = mTts.isLanguageAvailable(locale);
-            switch(result){
+            switch (result) {
                 case TextToSpeech.LANG_NOT_SUPPORTED:
-                    Log.i(LOG_TAG,"LANG_NOT_SUPPORTED");
+                    Log.i(LOG_TAG, "LANG_NOT_SUPPORTED");
                     return false;
                 case TextToSpeech.LANG_MISSING_DATA:
-                    Log.i(LOG_TAG,"LANG_MISSING_DATA");
+                    Log.i(LOG_TAG, "LANG_MISSING_DATA");
                     return false;
                 case TextToSpeech.LANG_COUNTRY_AVAILABLE:
                     Log.w(LOG_TAG, "LANG_COUNTRY_AVAILABLE");
@@ -270,7 +270,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
 
     private Locale mapTesseractLanguageToLocale(String ocrLanguage) {
         final String s = hashMapResource.get(ocrLanguage);
-        if (s!=null){
+        if (s != null) {
             return new Locale(s);
         } else {
             return null;
@@ -283,7 +283,9 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
             // success, create the TTS instance
             mTts = new TextToSpeech(activity, this);
         } else {
-            mActionMode.finish();
+            if (mActionMode != null) {
+                mActionMode.finish();
+            }
             // missing data, install it
             Intent installIntent = new Intent();
             installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);

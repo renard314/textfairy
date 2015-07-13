@@ -164,7 +164,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
         if ("deu-frak".equalsIgnoreCase(language.getValue())) {
             part1 = "https://tesseract-ocr.googlecode.com/files/";
             part2 = ".traineddata.gz";
-        } else if("guj".equalsIgnoreCase(language.getValue())){
+        } else if ("guj".equalsIgnoreCase(language.getValue())) {
             part1 = "https://parichit.googlecode.com/files/";
             part2 = ".traineddata";
 
@@ -335,6 +335,9 @@ public class OCRLanguageActivity extends MonitoredActivity {
             query.setFilterByStatus(DownloadManager.STATUS_RUNNING | DownloadManager.STATUS_PENDING | DownloadManager.STATUS_PAUSED);
             final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
             Cursor c = dm.query(query);
+            if (c == null) {
+                return;
+            }
             int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
             while (c.moveToNext()) {
                 final String title = c.getString(columnIndex);
