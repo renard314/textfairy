@@ -302,7 +302,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     private boolean init(Bundle savedInstanceState) {
         Uri data = getIntent().getData();
-        if (data == null) {
+        if (data == null && savedInstanceState != null) {
             data = savedInstanceState.getParcelable(STATE_DOCUMENT_URI);
         }
         if (data == null) {
