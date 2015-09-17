@@ -194,6 +194,10 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
 
     void copyTextToClipboard() {
         final String text = getPlainDocumentText();
+        if (text == null) {
+            Toast.makeText(this, getString(R.string.empty_document), Toast.LENGTH_LONG).show();
+            return;
+        }
         //some apps don't like html text
 //		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 //			copyHtmlTextToClipboard(htmlText, text);
