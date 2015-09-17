@@ -7,8 +7,7 @@
         android:layout_width="match_parent"
         android:orientation="vertical">
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:padding="@dimen/default_padding"
+    <TextView android:padding="@dimen/default_padding"
               android:id="@+id/fairy_text"
               android:textSize="18sp"
               android:layout_width="match_parent"
