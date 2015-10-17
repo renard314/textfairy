@@ -11,7 +11,7 @@ JNIEXPORT jstring JNICALL
 Java_ndk_renard_com_perftest_MainActivity_stringFromJNI(JNIEnv *env, jobject instance) {
 
     PixBinarizer binarizer(false);
-    Pix *pixOrg = pixRead("/mnt/sdcard/94.png");
+    Pix *pixOrg = pixRead("/mnt/sdcard/test_image.png");
     if (pixOrg != NULL) {
         printf("pix is read");
         Pix *pixBinary = binarizer.binarize(pixOrg, NULL);
