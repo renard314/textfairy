@@ -77,3 +77,6 @@ config.status
 libjpeg.9.dylib
 test.pdf
 fabric.properties
+image-processing
+CppTestProject/ImageProcessing/ImageProcessing.xcodeproj/project.xcworkspace/xcuserdata/renard.xcuserdatad/UserInterfaceState.xcuserstate
+CppTestProject/ImageProcessing/ImageProcessing.xcodeproj/xcuserdata/renard.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
