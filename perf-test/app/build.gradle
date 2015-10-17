@@ -1,0 +1,63 @@
+apply plugin: 'com.android.model.application'
+
+model {
+    android {
+        compileSdkVersion  = 23
+        buildToolsVersion  = '23.0.1'
+
+        defaultConfig.with {
+            applicationId = "ndk.renard.com.perftest"
+            minSdkVersion.apiLevel = 15
+            targetSdkVersion.apiLevel = 22
+        }
+    }
+
+    compileOptions.with {
+        sourceCompatibility=JavaVersion.VERSION_1_7
+        targetCompatibility=JavaVersion.VERSION_1_7
+    }
+    android.sources {
+        main.jniLibs {
+            source {
+                srcDirs = ['src/main/libs']
+            }
+        }
+    }
+
+    android.ndk {
+        moduleName = "perf-test"
+        /*
+        * Other ndk flags configurable here are
+        * cppFlags += "-fno-rtti"
+        * cppFlags += "-fno-exceptions"
+        * ldLibs    = ["android", "log"]
+        * stl       = "system"
+        */
+        cppFlags += "-fno-rtti"
+        cppFlags += "-fno-exceptions"
+        cppFlags += "-I${file("src/main/jni/image-processing")}".toString()
+        cppFlags += "-I${file("src/main/jni/prebuilts")}".toString()
+        ldLibs += ["log","android"]
+        ldLibs += file("src/main/libs/armeabi-v7a/libpngo.so").toString()
+        ldLibs += file("src/main/libs/armeabi-v7a/libjpeg.so").toString()
+        ldLibs += file("src/main/libs/armeabi-v7a/liblept.so").toString()
+        stl = "gnustl_static"
+    }
+    android.buildTypes {
+        release {
+            minifyEnabled = false
+            proguardFiles  += file('proguard-rules.txt')
+        }
+    }
+
+    android.productFlavors {
+        create ("arm7") {
+            ndk.abiFilters += "armeabi-v7a"
+//            ndk.ldFlags += "-L${file("src/main/jni/prebuilts")}".toString()
+
+
+        }        // for detailed abiFilter descriptions, refer to "Supported ABIs" @
+        // https://developer.android.com/ndk/guides/abis.html#sa
+        // build one including all productFlavors
+    }
+}

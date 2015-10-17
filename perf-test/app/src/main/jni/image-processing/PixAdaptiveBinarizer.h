@@ -1,0 +1,1 @@
+/Users/renard/devel/textfairy/image-processing/src/PixAdaptiveBinarizer.h
