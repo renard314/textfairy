@@ -365,10 +365,10 @@ public class OCRActivity extends MonitoredActivity {
                             getSupportActionBar().setTitle(R.string.progress_start);
 
                             if (layoutKind == LayoutKind.SIMPLE) {
-                                mOCR.startOCRForSimpleLayout(OCRActivity.this, determineOcrLanguage(ocrLanguage), pixOrg);
+                                mOCR.startOCRForSimpleLayout(OCRActivity.this, determineOcrLanguage(ocrLanguage), pixOrg, mImageView.getWidth(), mImageView.getHeight());
                             } else if (layoutKind == LayoutKind.COMPLEX) {
                                 mAccuracy = 0;
-                                mOCR.startLayoutAnalysis(OCRActivity.this, pixOrg);
+                                mOCR.startLayoutAnalysis(OCRActivity.this, pixOrg, mImageView.getWidth(), mImageView.getHeight());
                             }
                         }
                     }

@@ -21,6 +21,7 @@ import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 import com.renard.ocr.R;
+import com.renard.ocr.cropimage.CropImageScaler;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.Util;
 
@@ -75,6 +76,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     protected TessBaseAPI mTess;
     private boolean mStopped;
+    private int mPreviewHeightUnScaled;
+    private int mPreviewWidthUnScaled;
 
     public OCR(final MonitoredActivity activity, final Messenger messenger) {
         mMessenger = messenger;
@@ -89,7 +92,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         if (mMessenger != null && mIsActivityAttached) {
             Log.i(TAG, "onProgressImage " + nativePix);
             Pix preview = new Pix(nativePix);
-            final Bitmap previewBitmap = WriteFile.writeBitmap(preview);
+            CropImageScaler scaler = new CropImageScaler();
+            final CropImageScaler.ScaleResult scale = scaler.scale(preview, mPreviewWidthUnScaled, mPreviewHeightUnScaled);
+            final Bitmap previewBitmap = WriteFile.writeBitmap(scale.getPix());
+            scale.getPix().recycle();
             mPreviewHeight = preview.getHeight();
             mPreviewWith = preview.getWidth();
             sendMessage(MESSAGE_PREVIEW_IMAGE, previewBitmap);
@@ -345,19 +351,25 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
      * function
      *
      * @param pixs source pix on which to do layout analysis
+     * @param width
+     * @param height
      */
-    public void startLayoutAnalysis(final Context context, final Pix pixs) {
+    public void startLayoutAnalysis(final Context context, final Pix pixs, int width, int height) {
 
         if (pixs == null) {
             throw new IllegalArgumentException("Source pix must be non-null");
         }
 
+        mPreviewHeightUnScaled =  height;
+        mPreviewWidthUnScaled =  width;
         mOriginalHeight = pixs.getHeight();
         mOriginalWidth = pixs.getWidth();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
+                //final Pix copy = pixs.copy();
+                //savePixToCacheDir(context, copy);
                 nativeAnalyseLayout(pixs.getNativePix());
             }
         }).start();
@@ -367,14 +379,17 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
      * native code takes care of the Pix, do not use it after calling this
      * function
      *
-     * @param pixs    source pix to do ocr on
      * @param context used to access the file system
+     * @param pixs    source pix to do ocr on
+     * @param width
+     * @param height
      */
-    public void startOCRForSimpleLayout(final Context context, final String lang, final Pix pixs) {
+    public void startOCRForSimpleLayout(final Context context, final String lang, final Pix pixs, int width, int height) {
         if (pixs == null) {
             throw new IllegalArgumentException("Source pix must be non-null");
         }
-
+        mPreviewHeightUnScaled =  height;
+        mPreviewWidthUnScaled =  width;
         mOriginalHeight = pixs.getHeight();
         mOriginalWidth = pixs.getWidth();
 
@@ -382,6 +397,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             @Override
             public void run() {
                 try {
+                    //final Pix copy = pixs.copy();
+                    //savePixToCacheDir(context, copy);
                     final String tessDir = Util.getTessDir(context);
                     long nativeTextPix = nativeOCRBook(pixs.getNativePix());
                     pixs.recycle();
