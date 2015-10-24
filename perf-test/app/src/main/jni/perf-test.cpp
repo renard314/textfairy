@@ -1,24 +1,33 @@
 #include <jni.h>
 #include "PixBinarizer.h"
+#include <android/log.h>
+
+#define LOG_TAG "PerfTest"
+
 
 extern "C" {
 JNIEXPORT jstring JNICALL Java_ndk_renard_com_perftest_MainActivity_stringFromJNI(JNIEnv *env,
-                                                                                  jobject obj);
+                                                                                  jobject obj,
+                                                                                  jstring filePathJni);
 };
 
 
 JNIEXPORT jstring JNICALL
-Java_ndk_renard_com_perftest_MainActivity_stringFromJNI(JNIEnv *env, jobject instance) {
-
+Java_ndk_renard_com_perftest_MainActivity_stringFromJNI(JNIEnv *env, jobject instance,
+                                                        jstring filePathJni) {
     PixBinarizer binarizer(false);
+
+    const char *s = env->GetStringUTFChars(filePathJni, NULL);
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "loading %s\n", s);
+    std::string filePath = s;
+    env->ReleaseStringUTFChars(filePathJni, s);
     Pix *pixOrg = pixRead("/mnt/sdcard/test_image.png");
     if (pixOrg != NULL) {
-        printf("pix is read");
         Pix *pixBinary = binarizer.binarize(pixOrg, NULL);
         pixDestroy(&pixBinary);
         pixDestroy(&pixOrg);
     } else {
-        printf("cant read pix");
+        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "cant read pix");
     }
 
 #if defined(__arm__)

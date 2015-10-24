@@ -46,9 +46,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final Button b = (Button) findViewById(R.id.button);
-        final InputStream inputStream = getResources().openRawResource(R.raw.tets_image);
-        File myFile = new File(Environment.getExternalStorageDirectory()+"/test_image.png");
-        if(!myFile.exists()) {
+        final InputStream inputStream = getResources().openRawResource(R.raw.test_image);
+        final File myFile = new File(Environment.getExternalStorageDirectory(), "test_image.png");
+        if (!myFile.exists()) {
             copyInputStreamToFile(inputStream, myFile);
         }
 
@@ -67,7 +67,7 @@ public class MainActivity extends Activity {
 
                     @Override
                     protected Void doInBackground(Void... params) {
-                        Log.i(LOG_TAG, stringFromJNI());
+                        Log.i(LOG_TAG, stringFromJNI(myFile.getAbsolutePath()));
                         return null;
                     }
                 }.execute();
@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
         });
     }
 
-    public native String stringFromJNI();
+    public native String stringFromJNI(String imagePath);
 
 }
 
