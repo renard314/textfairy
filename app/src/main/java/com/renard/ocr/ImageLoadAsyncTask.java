@@ -8,11 +8,9 @@ import com.renard.util.Util;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
@@ -23,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.URL;
 
 
 enum PixLoadStatus {
@@ -126,21 +125,11 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
             // MediaStore loves to crash with an oom exception. So we
             // try to load bitmap nativly if it is on internal storage
             if (pathForUri != null && pathForUri.startsWith("http")) {
-                final ContentResolver contentResolver = this.mContentResolver.get();
-                if (contentResolver != null) {
-                    Bitmap b = MediaStore.Images.Media.getBitmap(contentResolver, cameraPicUri);
-                    if (b != null) {
-                        if (b.getConfig() != Bitmap.Config.ARGB_8888) {
-                            return Pair.create(null, PixLoadStatus.IMAGE_NOT_32_BIT);
-                        }
-                        p = ReadFile.readBitmap(b);
-                        b.recycle();
-                    } else {
-                        return Pair.create(null, PixLoadStatus.MEDIA_STORE_RETURNED_NULL);
-                    }
-                } else {
-                    return Pair.create(null, PixLoadStatus.IMAGE_COULD_NOT_BE_READ);
+                p = downloadFile(pathForUri);
+                if (p == null) {
+                    return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
                 }
+
             } else if (pathForUri != null) {
                 File imageFile = new File(pathForUri);
                 if (imageFile.exists()) {
@@ -203,4 +192,47 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
         }
     }
 
+
+    private Pix downloadFile(String pathForUri) {
+        InputStream inputStream = null;
+        try {
+            URL url = new URL(pathForUri);
+            inputStream = url.openStream();
+            return getPixFromStream(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
+    private Pix getPixFromStream(InputStream stream) throws IOException {
+        FileOutputStream fileOut = null;
+        Pix p = null;
+        try {
+            if (stream != null) {
+                fileOut = context.openFileOutput(TMP_FILE_NAME, Context.MODE_PRIVATE);
+                Util.copy(stream, fileOut);
+                File file = context.getFileStreamPath(TMP_FILE_NAME);
+                p = ReadFile.readFile(context, file);
+            }
+        } finally {
+            if (stream != null) {
+                stream.close();
+            }
+            if (fileOut != null) {
+                fileOut.close();
+            }
+            context.deleteFile(TMP_FILE_NAME);
+        }
+        return p;
+    }
 }
