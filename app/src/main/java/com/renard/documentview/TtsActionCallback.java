@@ -79,7 +79,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
 
     private void startPlaying(ActionMode actionMode) {
         HashMap<String, String> alarm = new HashMap<String, String>();
-        alarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(AudioManager.STREAM_ALARM));
+        alarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(TextToSpeech.Engine.DEFAULT_STREAM));
         alarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, LOG_TAG);
         int result = mTts.speak(activity.getPlainDocumentText(), TextToSpeech.QUEUE_FLUSH, alarm);
         actionMode.getMenu().findItem(R.id.item_play).setVisible(false);
