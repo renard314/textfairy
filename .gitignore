@@ -28,17 +28,12 @@ build/
 hocr2pdf/objdir/
 hocr2pdf/Debug
 hocr2pdf/Default
-OCRTest/Debug
-OCRTest/Release
+
 
 # Local configuration file (sdk path, etc)
 local.properties
 build.xml
 
-
-# Eclipse project files
-.classpath
-.project
 
 # Android Studio project files
 *.iml
@@ -58,7 +53,7 @@ build.xml
 !gradle-wrapper.jar
 # Avoid ignoring YouTubeAndroidPlayerApi.jar (.jar files are usually ignored)
 !YouTubeAndroidPlayerApi.jar
-# Avoid ignoring testate.zip
+# Avoid ignoring tessdata.zip
 !tessdata.zip
 
 libjpeg/testoutt.jpg
@@ -74,11 +69,6 @@ aclocal.m4
 libjpeg/libtool
 tesseract-ocr-read-only/libtool
 configure
-OCRTest/Default/codecs/subdir.mk
-OCRTest/Default/lib/subdir.mk
-OCRTest/Default/src/subdir.mk
-OCRTest/Default/utility/subdir.mk
-OCRTest/Default
 signing.properties
 makefile.static
 config.status
