@@ -1,6 +1,3 @@
-[submodule "ViewPager3D"]
-	path = ViewPager3D
-	url = git@github.com:renard314/ViewPager3D.git
 [submodule "tess-two"]
 	path = tess-two
 	url = git@github.com:renard314/tess-two.git
