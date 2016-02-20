@@ -5,7 +5,7 @@ include $(CLEAR_VARS)
 HOCR2PDF_PATH := $(LOCAL_PATH)/../../../../hocr2pdf/src
 HOCR2PDF_JNI_PATH := $(LOCAL_PATH)/hocr2pdf
 
-IMAGE_PROCESSING_PATH := $(LOCAL_PATH)/../../../../OCRTest/src
+IMAGE_PROCESSING_PATH := $(LOCAL_PATH)/../../../../image-processing/src
 IMAGE_PROCESSING_JNI_PATH := $(LOCAL_PATH)/image_processing
 
 TESS_TWO_PATH := $(LOCAL_PATH)/../../../../tess-two/tess-two
