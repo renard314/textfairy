@@ -49,6 +49,8 @@ build.xml
 # mac finder
 .DS_Store
 
+image-processing-private/
+
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 # Avoid ignoring YouTubeAndroidPlayerApi.jar (.jar files are usually ignored)
