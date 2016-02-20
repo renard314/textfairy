@@ -19,12 +19,12 @@ import org.robolectric.shadows.ShadowLog;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.renard.ocr.cropimage.HighlightView.GROW_BOTTOM_EDGE;
-import static com.renard.ocr.cropimage.HighlightView.GROW_LEFT_EDGE;
-import static com.renard.ocr.cropimage.HighlightView.GROW_NONE;
-import static com.renard.ocr.cropimage.HighlightView.GROW_RIGHT_EDGE;
-import static com.renard.ocr.cropimage.HighlightView.GROW_TOP_EDGE;
-import static com.renard.ocr.cropimage.HighlightView.MOVE;
+import static com.renard.ocr.cropimage.HighLightView.GROW_BOTTOM_EDGE;
+import static com.renard.ocr.cropimage.HighLightView.GROW_LEFT_EDGE;
+import static com.renard.ocr.cropimage.HighLightView.GROW_NONE;
+import static com.renard.ocr.cropimage.HighLightView.GROW_RIGHT_EDGE;
+import static com.renard.ocr.cropimage.HighLightView.GROW_TOP_EDGE;
+import static com.renard.ocr.cropimage.HighLightView.MOVE;
 
 /**
  * Created by renard.
