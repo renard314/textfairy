@@ -1,20 +1,6 @@
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
-    }
-}
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-}
-
 apply plugin: 'io.fabric'
 
 
@@ -153,7 +139,7 @@ dependencies {
     testCompile("org.robolectric:robolectric:3.0-rc2") {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.0@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
         transitive = true;
     }
 
