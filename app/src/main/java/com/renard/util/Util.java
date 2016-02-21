@@ -140,9 +140,6 @@ public class Util {
 
 		@Override
 		protected void entryRemoved(boolean evicted, Integer key, FastBitmapDrawable oldValue, FastBitmapDrawable newValue) {
-			if (oldValue != null && oldValue.getBitmap() != null) {
-				oldValue.getBitmap().recycle();
-			}
 		}
 	}
 
