@@ -46,6 +46,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import de.greenrobot.event.EventBus;
@@ -98,6 +99,12 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
 
     @SuppressWarnings("unused")
     public void onEventMainThread(final CropData cropData) {
+        if (cropData.getBitmap() == null) {
+            //should not happen. Scaling of the original document failed some how. Maybe out od memory?
+            //TODO send GA event to monitor this
+            Toast.makeText(this, R.string.could_not_load_image, Toast.LENGTH_LONG).show();
+            onNewImageClicked();
+        }
         mCropData = Optional.of(cropData);
         supportInvalidateOptionsMenu();
         mViewSwitcher.setDisplayedChild(1);
@@ -268,16 +275,13 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
         }
 
     }
-    private void unbindDrawables(View view)
-    {
-        if (view.getBackground() != null)
-        {
+
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
             view.getBackground().setCallback(null);
         }
-        if (view instanceof ViewGroup && !(view instanceof AdapterView))
-        {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++)
-            {
+        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
                 unbindDrawables(((ViewGroup) view).getChildAt(i));
             }
             ((ViewGroup) view).removeAllViews();

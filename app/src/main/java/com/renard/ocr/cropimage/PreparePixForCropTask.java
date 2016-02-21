@@ -90,6 +90,8 @@ public class PreparePixForCropTask extends AsyncTask<Void, Void, CropData> {
         }
         if (bitmap != null) {
             Log.d(TAG, "scaling result (" + bitmap.getWidth() + "," + bitmap.getHeight() + ")");
+        } else {
+            //TODO LOG to GA along with with and height as well as pix pointer
         }
         return new CropData(bitmap, scaleResult, blurDetectionResult);
 
