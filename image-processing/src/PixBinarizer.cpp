@@ -255,7 +255,7 @@ void PixBinarizer::binarizeInternal(Pix* pixGrey, Pix* pixhm, Pix** pixb) {
 
  Pix* PixBinarizer::binarize(Pix* pix){
 	 l_int32 depth = pixGetDepth(pix);
-	 Pix* pixGrey;
+	 Pix* pixGrey = NULL;
 	 Pix* pixtContrast;
 	 Pix* pixBinary;
 	 switch(depth){
@@ -267,12 +267,12 @@ void PixBinarizer::binarizeInternal(Pix* pixGrey, Pix* pixhm, Pix** pixb) {
 		 case 32:
 			 pixGrey = pixConvertRGBToLuminance(pix);
 	 }
-	 //binarizeInternal(pixGrey, NULL, &pixBinary);
+	 binarizeInternal(pixGrey, NULL, &pixBinary);
 
 	/* Do combination of contrast norm and sauvola */
-	pixtContrast = pixContrastNorm(NULL, pixGrey, 100, 100, 55, 1, 1);
-	pixSauvolaBinarizeTiled(pixtContrast, 9, 0.15, 1, 1, NULL, &pixBinary);
-//
+//	pixtContrast = pixContrastNorm(NULL, pixGrey, 100, 100, 55, 1, 1);
+//	pixSauvolaBinarizeTiled(pixtContrast, 9, 0.15, 1, 1, NULL, &pixBinary);
+
 	pixDestroy(&pixtContrast);
 	pixDestroy(&pixGrey);
 
