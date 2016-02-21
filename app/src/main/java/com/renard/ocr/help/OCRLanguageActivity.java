@@ -62,6 +62,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
     private ViewSwitcher mSwitcher;
     private BroadcastReceiver mFailedReceiver;
     private boolean mReceiverRegistered;
+    private final DownloadManagerResolver mDownloadManagerResolver = new DownloadManagerResolver();
 
     private class LoadListAsyncTask extends AsyncTask<Void, Void, OCRLanguageAdapter> {
 
@@ -80,17 +81,19 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
                     OCRLanguage language = (OCRLanguage) mAdapter.getItem(position);
                     if (!language.mDownloaded) {
-                        final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-                        Uri uri = getDownloadUri(language);
-                        Request request = new Request(uri);
-                        request.setTitle(language.mDisplayText);
-                        String tessDir = Util.getDownloadTempDir(OCRLanguageActivity.this);
-                        File targetFile = new File(tessDir, DOWNLOADED_TRAINING_DATA);
-                        request.setDestinationUri(Uri.fromFile(targetFile));
-                        @SuppressWarnings("unused")
-                        long downloadId = dm.enqueue(request);
-                        language.mDownloading = true;
-                        mAdapter.notifyDataSetChanged();
+                        if (mDownloadManagerResolver.resolve(OCRLanguageActivity.this)) {
+                            final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                            Uri uri = getDownloadUri(language);
+                            Request request = new Request(uri);
+                            request.setTitle(language.mDisplayText);
+                            String tessDir = Util.getDownloadTempDir(OCRLanguageActivity.this);
+                            File targetFile = new File(tessDir, DOWNLOADED_TRAINING_DATA);
+                            request.setDestinationUri(Uri.fromFile(targetFile));
+                            @SuppressWarnings("unused")
+                            long downloadId = dm.enqueue(request);
+                            language.mDownloading = true;
+                            mAdapter.notifyDataSetChanged();
+                        }
 
                     } else {
                         deleteLanguage(position);
@@ -239,7 +242,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
     }
 
-    private static final List<Pair<String, Long>> getInstalledLanguages(Context appContext) {
+    private static List<Pair<String, Long>> getInstalledLanguages(Context appContext) {
         final List<Pair<String, Long>> result = new ArrayList<Pair<String, Long>>();
         final File tessDir = Util.getTrainingDataDir(appContext);
         if (!tessDir.exists()) {
@@ -300,7 +303,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
     }
 
 
-    public static final List<OCRLanguage> getInstalledOCRLanguages(Context appContext) {
+    public static List<OCRLanguage> getInstalledOCRLanguages(Context appContext) {
         final List<OCRLanguage> ocrLanguages = getAllOCRLanguages(appContext);
         final List<OCRLanguage> result = new ArrayList<OCRLanguage>();
         for (OCRLanguage lang : ocrLanguages) {
