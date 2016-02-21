@@ -45,12 +45,6 @@ public class FancyGridView extends GridView {
 			touchedChild = (CheckableGridElement) getChildAt(motionPosition - getFirstVisiblePosition());
 		}
 
-		// if (mLastTouchedChild != null &&
-		// !mLastTouchedChild.equals(touchedChild)) {
-		// mLastTouchedChild.startTouchUpAnimation();
-		// mLastTouchedChild=null;
-		// }
-
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN: {
 			if (touchedChild != null) {
@@ -74,10 +68,6 @@ public class FancyGridView extends GridView {
 				mLastTouchedChild.startTouchUpAnimation();
 
 			}
-			// if (touchedChild != null &&
-			// !touchedChild.equals(mLastTouchedChild)) {
-			// touchedChild.startTouchDownAnimation();
-			// }
 			mLastTouchedChild = touchedChild;
 			break;
 		}

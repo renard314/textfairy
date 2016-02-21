@@ -370,7 +370,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 			CheckableGridElement clicked = (CheckableGridElement) view;
 
-			if (sIsInSelectionMode == false) {
+			if (!sIsInSelectionMode) {
 				sIsInSelectionMode = true;
 				clicked.toggle();
 				final int childCount = parent.getChildCount();
@@ -457,7 +457,7 @@ public class DocumentGridActivity extends BaseDocumentActivitiy implements OnChe
 		for (int i = 0; i < count; i++) {
 			final View view = grid.getChildAt(i);
 			final DocumentAdapter.DocumentViewHolder holder = (DocumentAdapter.DocumentViewHolder) view.getTag();
-			if (holder.updateThumbnail == true) {
+			if (holder.updateThumbnail) {
 				final int documentId = holder.documentId;
 				CrossFadeDrawable d = holder.transition;
 				FastBitmapDrawable thumb = Util.getDocumentThumbnail(documentId);

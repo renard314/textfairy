@@ -31,7 +31,7 @@ import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
 /**
- * custom view for children of the document grid view TODO remove thight
+ * custom view for children of the document grid view TODO remove tight
  * coupling with DocumentGridActivity
  * 
  * @author renard
