@@ -62,7 +62,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         System.loadLibrary("tess");
         System.loadLibrary("image_processing_jni");
         nativeInit();
-
     }
 
     private int mPreviewWith;
