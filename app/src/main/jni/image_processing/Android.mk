@@ -13,9 +13,6 @@ LOCAL_SRC_FILES += \
   $(IMAGE_PROCESSING_PATH)/PixBlurDetect.cpp \
   $(IMAGE_PROCESSING_PATH)/image_processing_util.cpp \
   $(IMAGE_PROCESSING_PATH)/dewarp.cpp \
-  $(IMAGE_PROCESSING_PATH)/TimerUtil.cpp \
-  $(IMAGE_PROCESSING_PATH)/PixEdgeDetector.cpp \
-  $(IMAGE_PROCESSING_PATH)/PixAdaptiveBinarizer.cpp \
   $(IMAGE_PROCESSING_PATH)/PixBinarizer.cpp \
   image_processing.cpp
 

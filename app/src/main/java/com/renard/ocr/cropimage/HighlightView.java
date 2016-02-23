@@ -3,7 +3,6 @@ package com.renard.ocr.cropimage;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.view.MotionEvent;
 
 /**
  * Created by renard on 07/06/15.
