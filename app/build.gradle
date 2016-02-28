@@ -1,15 +1,16 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
+def versions = ['appcompat_v7': '23.2.0',
+                'butterknife' : '7.0.1',
+                'card_view'   : '23.2.0',
+                'design'      : '23.2.0']
 
-import org.apache.tools.ant.taskdefs.condition.Os
-
-def versions = ['appcompat_v7'        : '23.1.1',
-                'design'              : '23.1.1']
-
-task ndkBuild(type: Exec,description: 'run ndk-build') {
+task ndkBuild(type: Exec, description: 'run ndk-build') {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         workingDir 'src/main/jni'
         commandLine 'ndk-build.cmd', '-j', Runtime.runtime.availableProcessors()
@@ -37,15 +38,13 @@ def getVersionCodeFromManifest(String prefix) {
 }
 
 
-
-
 android {
     compileSdkVersion 23
     buildToolsVersion "22.0.1"
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 21
+        targetSdkVersion 23
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         //testHandleProfiling true
         //testFunctionalTest true
@@ -58,7 +57,7 @@ android {
             debuggable true
         }
         release {
-	        //runProguard true
+            //runProguard true
             proguardFile file('android.pro')
             proguardFile getDefaultProguardFile('proguard-android.txt')
             signingConfig signingConfigs.release
@@ -125,13 +124,13 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:2.0.2'
     compile "com.google.guava:guava:18.0"
     compile 'de.greenrobot:eventbus:2.4.0'
-    //compile 'com.android.support:design:22.2.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile "com.android.support:design:${versions.design}"
     compile "com.android.support:appcompat-v7:${versions.appcompat_v7}"
     compile 'org.apache.commons:commons-compress:1.5'
     compile project(":tess-two:tess-two")
-    compile 'com.android.support:cardview-v7:21.0.+'
+    compile "com.android.support:cardview-v7:${versions.card_view}"
+    compile "com.jakewharton:butterknife:${versions.butterknife}"
 
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.0'

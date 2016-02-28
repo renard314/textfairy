@@ -1,86 +1,94 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"
+                android:layout_width="match_parent">
+
+    <include layout="@layout/toolbar"
+             android:id="@+id/toolbar"/>
+    <ScrollView
+            android:layout_below="@+id/toolbar"
             android:layout_width="match_parent"
             android:padding="@dimen/default_element_padding"
             android:layout_height="wrap_content"
             android:fillViewport="true">
 
-    <LinearLayout
-        android:paddingTop="32dp"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:orientation="vertical">
-\
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/first_step"
-            android:textStyle="bold"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+        <LinearLayout
+                android:paddingTop="32dp"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="vertical">
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/first_step"
+                    android:textStyle="bold"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin"
-            android:background="@color/grey2"/>
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                    android:background="@color/grey2"/>
 
-        <TextView
-            android:background="@drawable/btn_start_activity2"
-            android:clickable="true"
-            android:id="@+id/textView_join_community"
-            android:layout_width="wrap_content"
-            android:drawablePadding="@dimen/default_element_padding"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/default_element_padding"
-            android:gravity="left|center_vertical"
-            android:drawableLeft="@drawable/gplus"
-            android:text="@string/join_beta_test_community"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/first_step_detail"
-            style="@style/contribute_bullet_point"/>
-
-        <TextView
-            android:layout_marginTop="@dimen/default_element_padding"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:text="@string/second_step"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin"
-            android:background="@color/grey2"/>
-
-        <TextView
-            android:background="@drawable/btn_start_activity2"
-            android:clickable="true"
-            android:id="@+id/textView_become_tester"
-            android:drawablePadding="@dimen/google_play_icon_padding"
-            android:drawableLeft="@drawable/google_play_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/default_element_padding"
-            android:gravity="left|center_vertical"
-            android:text="@string/join_beta_program"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/second_step_first_detail"
-            style="@style/contribute_bullet_point"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/second_step_second_detail"
-            style="@style/contribute_bullet_point"/>
-    </LinearLayout>
+            <TextView
+                    android:background="@drawable/btn_start_activity2"
+                    android:clickable="true"
+                    android:id="@+id/textView_join_community"
+                    android:layout_width="wrap_content"
+                    android:drawablePadding="@dimen/default_element_padding"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/default_element_padding"
+                    android:gravity="left|center_vertical"
+                    android:drawableLeft="@drawable/gplus"
+                    android:text="@string/join_beta_test_community"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
 
 
-</ScrollView>
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/first_step_detail"
+                    style="@style/contribute_bullet_point"/>
+
+            <TextView
+                    android:layout_marginTop="@dimen/default_element_padding"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="@string/second_step"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                    android:background="@color/grey2"/>
+
+            <TextView
+                    android:background="@drawable/btn_start_activity2"
+                    android:clickable="true"
+                    android:id="@+id/textView_become_tester"
+                    android:drawablePadding="@dimen/google_play_icon_padding"
+                    android:drawableLeft="@drawable/google_play_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/default_element_padding"
+                    android:gravity="left|center_vertical"
+                    android:text="@string/join_beta_program"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/second_step_first_detail"
+                    style="@style/contribute_bullet_point"/>
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/second_step_second_detail"
+                    style="@style/contribute_bullet_point"/>
+        </LinearLayout>
+
+
+    </ScrollView>
+</RelativeLayout>

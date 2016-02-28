@@ -81,10 +81,8 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_ALARM);
-
         supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_document);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (!init(savedInstanceState)) {
             finish();
             return;
@@ -94,9 +92,16 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
             showResultDialog();
         }
         setDocumentFragmentType();
-        initAppIcon(HINT_DIALOG_ID);
+        initToolbar();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mActionCallback = new TtsActionCallback(this);
     }
+
+    @Override
+    protected int getHintDialogId() {
+        return HINT_DIALOG_ID;
+    }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -155,7 +160,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
             fragment.setShowText(!fragment.getShowText());
             return true;
         } else if (itemId == R.id.item_text_options) {
-            Intent i = new Intent(this, TextOptionsActivity.class);
+            Intent i = new Intent(this, TextSettingsActivity.class);
             startActivityForResult(i, REQUEST_CODE_OPTIONS);
             return true;
         } else if (itemId == R.id.item_content) {
@@ -361,7 +366,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
             }
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.document_fragment_container, (Fragment) newFragment);
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.commit();
         }
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+                android:id="@+id/whats_new"
+                android:icon="@drawable/ic_whats_new"
+                android:title="@string/whats_new"/>
+        <item
+                android:id="@+id/add_language"
+                android:icon="@drawable/ic_action_language"
+                android:title="@string/nav_drawer_download_language"/>
+        <item
+                android:id="@+id/show_tips"
+                android:icon="@drawable/ic_action_tips_light"
+                android:title="@string/pref_title_help"/>
+
+        <item
+                android:id="@+id/feedback"
+                android:icon="@drawable/ic_action_feedback"
+                android:title="@string/help_to_improve"/>
+        <item
+                android:id="@+id/about"
+                android:icon="@drawable/ic_action_about"
+                android:title="@string/about"/>
+    </group>
+</menu>

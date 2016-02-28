@@ -43,7 +43,6 @@
             android:layout_width="210dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:choiceMode="singleChoice"
             android:background="@android:color/white"/>
 
 </android.support.v4.widget.DrawerLayout>

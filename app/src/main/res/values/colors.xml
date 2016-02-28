@@ -2,6 +2,12 @@
 <resources>
     
     <color name="dark_grey">#ff333333</color>
+    <color name="document_grid_background">#ffDFDFDF</color>
+    <color name="primary">#212121</color>
+    <color name="accent">#009e8c</color>
+    <color name="toolbar_bottom_bar">#AAAAAA</color>
+    <color name="colorControlHighlight">#33ffffff</color>
+
     <color name="grey2">#555555</color>
     <color name="grey3">#777777</color>
     <color name="grey5">#AAAAAA</color>

@@ -38,17 +38,21 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 
 /**
@@ -60,10 +64,22 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
     private final Handler mHandler = new Handler();
 
     private int mRotation = 0;
-    boolean mSaving; // Whether the "save" button is already clicked.
-    private Pix mPix; // original Picture
-    private CropImageView mImageView;
-    private ViewSwitcher mViewSwitcher;
+    boolean mSaving;
+    private Pix mPix;
+    @Bind(R.id.toolbar)
+    protected Toolbar mToolbar;
+    @Bind(R.id.cropImageView)
+    protected CropImageView mImageView;
+    @Bind(R.id.crop_layout)
+    protected ViewSwitcher mViewSwitcher;
+    @Bind(R.id.item_rotate_left)
+    protected ImageView mRotateLeft;
+    @Bind(R.id.item_rotate_right)
+    protected ImageView mRotateRight;
+    @Bind(R.id.item_save)
+    protected ImageView mSave;
+
+
     private CropHighlightView mCrop;
     private Optional<CropData> mCropData = Optional.absent();
     private Optional<PreparePixForCropTask> mPrepareTask = Optional.absent();
@@ -74,8 +90,36 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
         EventBus.getDefault().register(this);
         getWindow().setFormat(PixelFormat.RGBA_8888);
         setContentView(R.layout.activity_cropimage);
-        mImageView = (CropImageView) findViewById(R.id.image);
-        mViewSwitcher = (ViewSwitcher) findViewById(R.id.crop_layout);
+        ButterKnife.bind(this);
+        initToolbar();
+        initNavigationAsUp();
+        startCropping();
+    }
+
+
+    @OnClick(R.id.item_rotate_left)
+    public void onRotateLeft() {
+        onRotateClicked(-1);
+    }
+
+    @OnClick(R.id.item_rotate_right)
+    public void onRotateRight() {
+        onRotateClicked(1);
+    }
+
+    private void onRotateClicked(int delta) {
+        if (mCropData.isPresent()) {
+            if (delta < 0) {
+                delta = -delta * 3;
+            }
+            mRotation += delta;
+            mRotation = mRotation % 4;
+            mImageView.setImageBitmapResetBase(mCropData.get().getBitmap(), false, mRotation * 90);
+            showDefaultCroppingRectangle(mCropData.get().getBitmap());
+        }
+    }
+
+    private void startCropping() {
         mImageView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
             @Override
@@ -93,8 +137,24 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
             }
 
         });
+    }
 
-        initAppIcon(HINT_DIALOG_ID);
+
+    private void initNavigationAsUp() {
+        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_arrow_back_white);
+        getSupportActionBar().setHomeAsUpIndicator(upArrow);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    @Override
+    protected int getHintDialogId() {
+        return HINT_DIALOG_ID;
     }
 
     @SuppressWarnings("unused")
@@ -106,7 +166,7 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
             onNewImageClicked();
         }
         mCropData = Optional.of(cropData);
-        supportInvalidateOptionsMenu();
+        adjustOptionsMenu();
         mViewSwitcher.setDisplayedChild(1);
 
         mImageView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
@@ -145,58 +205,21 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
         return super.onCreateDialog(id, args);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.item_save) {
-            onSaveClicked();
-            return true;
-        } else if (itemId == R.id.item_rotate_right) {
-            onRotateClicked(1);
-            return true;
-        } else if (itemId == R.id.item_rotate_left) {
-            onRotateClicked(-1);
-            return true;
-        }
 
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.crop_image_options, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    private void adjustOptionsMenu() {
         if (mCropData.isPresent()) {
-            menu.findItem(R.id.item_rotate_left).setVisible(true);
-            menu.findItem(R.id.item_rotate_right).setVisible(true);
-            menu.findItem(R.id.item_save).setVisible(true);
-            return true;
+            mRotateLeft.setVisibility(View.VISIBLE);
+            mRotateRight.setVisibility(View.VISIBLE);
+            mSave.setVisibility(View.VISIBLE);
         } else {
-            menu.findItem(R.id.item_rotate_left).setVisible(false);
-            menu.findItem(R.id.item_rotate_right).setVisible(false);
-            menu.findItem(R.id.item_save).setVisible(false);
-            return true;
+            mRotateLeft.setVisibility(View.GONE);
+            mRotateRight.setVisibility(View.GONE);
+            mSave.setVisibility(View.GONE);
         }
     }
 
-    private void onRotateClicked(int delta) {
-        if (mCropData.isPresent()) {
-            if (delta < 0) {
-                delta = -delta * 3;
-            }
-            mRotation += delta;
-            mRotation = mRotation % 4;
-            mImageView.setImageBitmapResetBase(mCropData.get().getBitmap(), false, mRotation * 90);
-            showDefaultCroppingRectangle(mCropData.get().getBitmap());
-        }
-    }
-
-    private void onSaveClicked() {
+    @OnClick(R.id.item_save)
+    void onSaveClicked() {
         if (!mCropData.isPresent() || mSaving || (mCrop == null)) {
             return;
         }
@@ -322,13 +345,12 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
 
         // make the default size about 4/5 of the width or height
         int cropWidth = Math.min(width, height) * 4 / 5;
-        int cropHeight = cropWidth;
 
 
         int x = (width - cropWidth) / 2;
-        int y = (height - cropHeight) / 2;
+        int y = (height - cropWidth) / 2;
 
-        RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
+        RectF cropRect = new RectF(x, y, x + cropWidth, y + cropWidth);
 
         CropHighlightView hv = new CropHighlightView(mImageView, imageRect, cropRect);
 

@@ -16,6 +16,14 @@
 
 package com.renard.documentview;
 
+import com.renard.documentview.SimpleDocumentAdapter.DocumentViewHolder;
+import com.renard.documentview.SimpleDocumentAdapter.ViewBinder;
+import com.renard.ocr.DocumentContentProvider;
+import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.R;
+import com.renard.ocr.cropimage.MonitoredActivity;
+import com.renard.ocr.help.HintDialog;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -31,14 +39,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.renard.documentview.SimpleDocumentAdapter.DocumentViewHolder;
-import com.renard.documentview.SimpleDocumentAdapter.ViewBinder;
-import com.renard.ocr.DocumentContentProvider;
-import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.R;
-import com.renard.ocr.cropimage.MonitoredActivity;
-import com.renard.ocr.help.HintDialog;
-
 public class TableOfContentsActivity extends MonitoredActivity implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
     private final static String[] PROJECTION = {Columns.ID, Columns.TITLE, Columns.OCR_TEXT, Columns.CREATED};
 
@@ -53,15 +53,21 @@ public class TableOfContentsActivity extends MonitoredActivity implements Loader
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table_of_contents);
+        initToolbar();
+        setToolbarMessage(R.string.toc_title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (getIntent() == null || getIntent().getData() == null) {
             finish();
             return;
         }
         mList = (ListView) findViewById(R.id.list);
         mList.setOnItemClickListener(this);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportLoaderManager().initLoader(0, null, this);
-        initAppIcon(-1);
+    }
+
+    @Override
+    protected int getHintDialogId() {
+        return -1;
     }
 
     @Override

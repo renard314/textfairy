@@ -15,37 +15,28 @@
  */
 package com.renard.ocr;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.util.Pair;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageSwitcher;
-import android.widget.ImageView;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-import android.widget.TextView;
-import android.widget.ViewFlipper;
-import android.widget.ViewSwitcher;
-
 import com.renard.ocr.help.OCRLanguageActivity;
-import com.renard.ocr.help.OCRLanguageAdapter;
 import com.renard.ocr.help.OCRLanguageAdapter.OCRLanguage;
 import com.renard.util.PreferencesUtils;
 
-import java.util.List;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialog;
+import android.util.Pair;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.ViewFlipper;
+import android.widget.ViewSwitcher;
 
-import static android.widget.ArrayAdapter.*;
+import java.util.List;
 
 public class LayoutQuestionDialog {
 
@@ -60,7 +51,7 @@ public class LayoutQuestionDialog {
         void onLayoutChosen(final LayoutKind layoutKind, final String language);
     }
 
-    public static AlertDialog createDialog(final Context context, final LayoutChoseListener listener, boolean accessibility) {
+    public static AppCompatDialog createDialog(final Context context, final LayoutChoseListener listener) {
 
         mLayout = null;
         Pair<String, String> language = PreferencesUtils.getOCRLanguage(context);
@@ -102,7 +93,7 @@ public class LayoutQuestionDialog {
         columnLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mLayout!=LayoutKind.COMPLEX) {
+                if (mLayout != LayoutKind.COMPLEX) {
                     fairy.setImageResource(R.drawable.fairy_looks_left);
                     titleViewFlipper.setDisplayedChild(2);
                     columnLayout.setColorFilter(colorFilter);
@@ -115,7 +106,7 @@ public class LayoutQuestionDialog {
         pageLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mLayout!=LayoutKind.SIMPLE) {
+                if (mLayout != LayoutKind.SIMPLE) {
                     mLayout = LayoutKind.SIMPLE;
                     titleViewFlipper.setDisplayedChild(1);
                     fairy.setImageResource(R.drawable.fairy_looks_right);
@@ -130,12 +121,12 @@ public class LayoutQuestionDialog {
         List<OCRLanguage> installedLanguages = OCRLanguageActivity.getInstalledOCRLanguages(context);
 
         // actual values uses by tesseract
-        final ArrayAdapter<OCRLanguage> adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item, installedLanguages);
+        final ArrayAdapter<OCRLanguage> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, installedLanguages);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         langButton.setAdapter(adapter);
-        for(int i = 0; i < installedLanguages.size(); i++){
+        for (int i = 0; i < installedLanguages.size(); i++) {
             OCRLanguage lang = installedLanguages.get(i);
-            if(lang.getValue().equals(language.first)){
+            if (lang.getValue().equals(language.first)) {
                 langButton.setSelection(i);
                 break;
             }
@@ -159,10 +150,10 @@ public class LayoutQuestionDialog {
                 new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
-                        if(mLayout==null){
-                            mLayout= LayoutKind.SIMPLE;
+                        if (mLayout == null) {
+                            mLayout = LayoutKind.SIMPLE;
                         }
-                        listener.onLayoutChosen(mLayout,mLanguage);
+                        listener.onLayoutChosen(mLayout, mLanguage);
                     }
                 });
 
@@ -174,7 +165,6 @@ public class LayoutQuestionDialog {
                     }
                 });
         final AlertDialog dialog = builder.create();
-
 
 
         return dialog;

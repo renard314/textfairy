@@ -32,12 +32,17 @@ public class HelpActivity extends MonitoredActivity implements YouTubePlayer.OnI
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
+        initToolbar();
+        setToolbarMessage(R.string.tips);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        initAppIcon(-1);
         YouTubePlayerSupportFragment youTubePlayerFragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
         youTubePlayerFragment.initialize("AIzaSyBDZn3rmXgEP64ID0Rp32OwSScns6ZdaF8", this);
 
+    }
+
+    @Override
+    protected int getHintDialogId() {
+        return -1;
     }
 
 

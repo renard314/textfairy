@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/viewSwitcher_language_list"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent">
+    <include layout="@layout/toolbar"
+             android:id="@+id/toolbar"/>
 
-    <ProgressBar
-        android:id="@+id/progressBar1"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:id="@+id/viewSwitcher_language_list"
+                  android:background="@android:color/white"
+                  android:layout_width="match_parent"
+                  android:layout_below="@+id/toolbar"
+                  android:layout_height="match_parent">
 
-    <ListView
-        android:layoutAnimation="@anim/layout_animation"
-        android:id="@+id/list_ocr_languages"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ListView>
+        <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-</ViewSwitcher>
+        <ListView
+                android:layoutAnimation="@anim/layout_animation"
+                android:id="@+id/list_ocr_languages"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+        </ListView>
+
+    </ViewSwitcher>
+</RelativeLayout>

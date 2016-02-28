@@ -15,56 +15,56 @@
  */
 package com.renard.ocr.help;
 
+import com.renard.ocr.R;
+import com.renard.ocr.cropimage.MonitoredActivity;
+
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.TextView;
-import android.widget.ViewSwitcher;
-
-import com.renard.ocr.R;
-import com.renard.ocr.cropimage.MonitoredActivity;
 
 public class BetaTestActivity extends MonitoredActivity implements View.OnClickListener {
 
     private boolean slideOutLeft = false;
-	private final static String BETA_TEST_GROUP_URL = "https://plus.google.com/communities/105320277782726490448";
-	private final static String GOOGLE_PLAY_TEST_URL = "https://play.google.com/apps/testing/com.renard.ocr";
+    private final static String BETA_TEST_GROUP_URL = "https://plus.google.com/communities/105320277782726490448";
+    private final static String GOOGLE_PLAY_TEST_URL = "https://play.google.com/apps/testing/com.renard.ocr";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beta_test);
+        initToolbar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initAppIcon(-1);
-		findViewById(R.id.textView_become_tester).setOnClickListener(this);
-		findViewById(R.id.textView_join_community).setOnClickListener(this);
+        setToolbarMessage(R.string.beta_test_title);
+        findViewById(R.id.textView_become_tester).setOnClickListener(this);
+        findViewById(R.id.textView_join_community).setOnClickListener(this);
     }
 
-	@Override
-	public void onClick(View v) {
-		switch(v.getId()){
-			case R.id.textView_become_tester:
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(GOOGLE_PLAY_TEST_URL)));
-				break;
-			case R.id.textView_join_community:
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BETA_TEST_GROUP_URL)));
-				break;
-		}
+    @Override
+    protected int getHintDialogId() {
+        return -1;
+    }
 
-	}
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.textView_become_tester:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(GOOGLE_PLAY_TEST_URL)));
+                break;
+            case R.id.textView_join_community:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BETA_TEST_GROUP_URL)));
+                break;
+        }
+
+    }
 
 
-
-	@Override
+    @Override
     protected void onPause() {
         super.onPause();
-        if (slideOutLeft){
+        if (slideOutLeft) {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         } else {
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:inAnimation="@android:anim/fade_in"
               android:outAnimation="@android:anim/fade_out"
               android:id="@+id/crop_layout"
@@ -9,15 +10,57 @@
               android:layout_height="match_parent">
 
     <ProgressBar
+            tools:visibility="gone"
             android:layout_margin="75dp"
             android:layout_gravity="center"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-    <com.renard.ocr.cropimage.CropImageView
-            android:id="@+id/image"
-            android:background="#55000000"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            />
-</ViewSwitcher>
+
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+        <include layout="@layout/toolbar"
+                 android:id="@+id/toolbar"/>
+
+        <com.renard.ocr.cropimage.CropImageView
+                android:layout_below="@+id/toolbar"
+                android:layout_above="@+id/toolbar_bottom"
+                android:id="@+id/cropImageView"
+                android:background="#55000000"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+        />
+
+        <LinearLayout
+                android:elevation="4dp"
+                android:orientation="horizontal"
+                android:id="@+id/toolbar_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_alignParentBottom="true"
+                android:background="@color/primary">
+        <ImageButton
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:id="@+id/item_rotate_right"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_action_rotate_right"/>
+        <ImageButton
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:id="@+id/item_rotate_left"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_action_rotate_left"/>
+        <ImageButton
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:id="@+id/item_save"
+                android:contentDescription="@string/continue_ocr"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_action_save"/>
+    </LinearLayout>
+</RelativeLayout>
+        </ViewSwitcher>

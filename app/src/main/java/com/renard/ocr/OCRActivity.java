@@ -27,7 +27,6 @@ import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.Screen;
 import com.renard.util.Util;
 
-import android.app.AlertDialog;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -43,6 +42,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v7.app.AppCompatDialog;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -53,6 +53,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * this activity is shown during the ocr process
@@ -69,20 +72,48 @@ public class OCRActivity extends MonitoredActivity {
     public static final String EXTRA_USE_ACCESSIBILITY_MODE = "ACCESSIBILTY_MODE";
 
 
-    private Button mButtonStartOCR;
-    private OCRImageView mImageView;
+    @Bind(R.id.column_pick_completed)
+    protected Button mButtonStartOCR;
+    @Bind(R.id.progress_image)
+    protected OCRImageView mImageView;
+
     private int mOriginalHeight = 0;
     private int mOriginalWidth = 0;
     private Pix mFinalPix;
     private String mOcrLanguage; // is set by dialog in
     private int mAccuracy;
 
-    // askUserAboutDocumentLayout
     private OCR mOCR;
     // receives messages from background task
     private Messenger mMessageReceiver = new Messenger(new ProgressActivityHandler());
-    // if >=0 its the id of the parentdocument to which the current page shall be added
+    // if >=0 its the id of the parent document to which the current page shall be added
     private int mParentId = -1;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1);
+        mParentId = getIntent().getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1);
+        if (nativePix == -1) {
+            Intent intent = new Intent(this, DocumentGridActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+        Pix pixOrg = new Pix(nativePix);
+        mOriginalHeight = pixOrg.getHeight();
+        mOriginalWidth = pixOrg.getWidth();
+
+
+        mOCR = new OCR(this, mMessageReceiver);
+        Screen.lockOrientation(this);
+        setContentView(R.layout.activity_ocr);
+        ButterKnife.bind(this);
+        initToolbar();
+        askUserAboutDocumentLayout(pixOrg);
+    }
+
 
     /**
      * receives progress status messages from the background ocr task and
@@ -102,7 +133,7 @@ public class OCRActivity extends MonitoredActivity {
             switch (msg.what) {
 
                 case OCR.MESSAGE_EXPLANATION_TEXT: {
-                    getSupportActionBar().setTitle(msg.arg1);
+                    setToolbarMessage(msg.arg1);
                     break;
                 }
                 case OCR.MESSAGE_TESSERACT_PROGRESS: {
@@ -144,7 +175,7 @@ public class OCRActivity extends MonitoredActivity {
                     final Pixa texts = new Pixa(nativePixaText, 0, 0);
                     final Pixa images = new Pixa(nativePixaImages, 0, 0);
                     ArrayList<Rect> boxes = images.getBoxRects();
-                    ArrayList<RectF> scaledBoxes = new ArrayList<RectF>(boxes.size());
+                    ArrayList<RectF> scaledBoxes = new ArrayList<>(boxes.size());
                     float xScale = (1.0f * mPreviewWith) / mOriginalWidth;
                     float yScale = (1.0f * mPreviewHeight) / mOriginalHeight;
                     // scale the to the preview image space
@@ -188,7 +219,7 @@ public class OCRActivity extends MonitoredActivity {
                         }
                     });
 
-                    getSupportActionBar().setTitle(R.string.progress_choose_columns);
+                    setToolbarMessage(R.string.progress_choose_columns);
 
                     break;
                 }
@@ -212,6 +243,7 @@ public class OCRActivity extends MonitoredActivity {
             }
         }
     }
+
 
     private void saveDocument(final Pix pix, final String hocrString, final String utf8String, final int accuracy) {
 
@@ -316,40 +348,15 @@ public class OCRActivity extends MonitoredActivity {
         }
     }
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1);
-        if (nativePix == -1) {
-            Intent intent = new Intent(this, DocumentGridActivity.class);
-            startActivity(intent);
-            finish();
-            return;
-        }
-
-
-        mOCR = new OCR(this, mMessageReceiver);
-        Screen.lockOrientation(this);
-        setContentView(R.layout.ocr_visualize);
-        mImageView = (OCRImageView) findViewById(R.id.progress_image);
-
-        mParentId = getIntent().getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1);
-
-        Pix pixOrg = new Pix(nativePix);
-        mOriginalHeight = pixOrg.getHeight();
-        mOriginalWidth = pixOrg.getWidth();
-
-        final boolean accessibility = getIntent().getBooleanExtra(EXTRA_USE_ACCESSIBILITY_MODE, false);
-
-        askUserAboutDocumentLayout(pixOrg, accessibility);
-
-        mButtonStartOCR = (Button) findViewById(R.id.column_pick_completed);
-        initAppIcon(-1);
+    protected int getHintDialogId() {
+        return -1;
     }
 
-    private void askUserAboutDocumentLayout(final Pix pixOrg, final boolean accessibility) {
-        AlertDialog alertDialog = LayoutQuestionDialog.createDialog(this,
+    private void askUserAboutDocumentLayout(final Pix pixOrg) {
+
+        AppCompatDialog alertDialog = LayoutQuestionDialog.createDialog(this,
                 new LayoutChoseListener() {
 
                     @Override
@@ -360,9 +367,7 @@ public class OCRActivity extends MonitoredActivity {
                         } else {
                             mOcrLanguage = ocrLanguage;
 
-                            getSupportActionBar().show();
-                            getSupportActionBar().setDisplayShowTitleEnabled(true);
-                            getSupportActionBar().setTitle(R.string.progress_start);
+                            setToolbarMessage(R.string.progress_start);
 
                             if (layoutKind == LayoutKind.SIMPLE) {
                                 mOCR.startOCRForSimpleLayout(OCRActivity.this, determineOcrLanguage(ocrLanguage), pixOrg, mImageView.getWidth(), mImageView.getHeight());
@@ -372,7 +377,7 @@ public class OCRActivity extends MonitoredActivity {
                             }
                         }
                     }
-                }, accessibility);
+                });
         alertDialog.setOnCancelListener(new OnCancelListener() {
 
             @Override

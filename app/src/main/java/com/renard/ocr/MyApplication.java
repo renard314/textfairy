@@ -31,8 +31,10 @@ public class MyApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
-        final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics()).debuggable(BuildConfig.DEBUG).build();
-        Fabric.with(fabric);
+        if (!BuildConfig.DEBUG) {
+            final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics()).debuggable(BuildConfig.DEBUG).build();
+            Fabric.with(fabric);
+        }
 
         PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
 

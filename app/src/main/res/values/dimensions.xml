@@ -13,7 +13,6 @@
     <dimen name="default_padding">8dp</dimen>
     <dimen name="default_padding_half">4dp</dimen>
     <dimen name="two_line_item_margin">4dp</dimen>
-    <dimen name="home_icon_margin">28dp</dimen>
 
     <dimen name="min_grid_size">20mm</dimen>
     <dimen name="default_element_padding">16dp</dimen>

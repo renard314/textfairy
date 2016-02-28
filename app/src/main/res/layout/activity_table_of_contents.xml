@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-         android:orientation="vertical"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:paddingLeft="8dp"
-         android:paddingRight="8dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"
+                android:layout_width="match_parent">
 
-     <ListView android:id="@+id/list"
-               android:layout_width="match_parent"
-               android:layout_height="0dip"
-               android:layout_weight="1"
-               android:drawSelectorOnTop="false"/>
- </LinearLayout>
+    <include layout="@layout/toolbar"
+             android:id="@+id/toolbar"/>
+    <LinearLayout
+            android:layout_below="@id/toolbar"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp">
+        <ListView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_weight="1"
+                android:drawSelectorOnTop="false"/>
+    </LinearLayout>
+</RelativeLayout>

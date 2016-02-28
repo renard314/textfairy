@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+    <string name="drawer_open">Open Main Menu</string>
+    <string name="drawer_close">Close ain Menu</string>
     <string name="whats_new_title">Check out what has changed</string>
     <string name="whats_new">Release notes</string>
     <string name="text_was_copied_to_clipboard">Text copied to clipboard.</string>
@@ -152,8 +154,6 @@
     <string name="choose_language">Pick a language for text to speech.</string>
     <string name="share_text">Share text</string>
     <string name="help_to_improve">Feedback</string>
-    <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>
     <string name="product_tour">Product tour</string>
     <string name="empty_grid_greeting">Welcome</string>
     <string name="empty_grid_camera">Tap here to convert text from a new image.</string>
@@ -204,7 +204,7 @@
     <string name="promo_video_title">A short introduction on Youtube.</string>
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Hello</string>
-    <string name="text_is_in">Text is in</string>
+    <string name="text_is_in">Recognise Text as</string>
     <string name="empty_grid_language">I can read German and English but you can download more languages.</string>
     <string name="error_tess_init">Internal OCR Error. Please reinstall the app or the language data.</string>
     <string name="image_is_blurred">I have a problem.</string>

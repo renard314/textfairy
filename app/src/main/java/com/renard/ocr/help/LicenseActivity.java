@@ -15,30 +15,36 @@
  */
 package com.renard.ocr.help;
 
+import com.renard.ocr.R;
+import com.renard.ocr.cropimage.MonitoredActivity;
+
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.renard.ocr.R;
-import com.renard.ocr.cropimage.MonitoredActivity;
-
 public class LicenseActivity extends MonitoredActivity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_license);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initAppIcon(-1);
-		TextView leptonica = (TextView) findViewById(R.id.textView_leptonica);
-		TextView tesseract = (TextView) findViewById(R.id.textView_tesseract);
-		TextView hocr2pdf = (TextView) findViewById(R.id.textView_hocr2pdf);
-		leptonica.setMovementMethod(new LinkMovementMethod());
-		tesseract.setMovementMethod(new LinkMovementMethod());
-		hocr2pdf.setMovementMethod(new LinkMovementMethod());
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_license);
+        initToolbar();
+        setToolbarMessage(R.string.pref_title_license);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        TextView leptonica = (TextView) findViewById(R.id.textView_leptonica);
+        TextView tesseract = (TextView) findViewById(R.id.textView_tesseract);
+        TextView hocr2pdf = (TextView) findViewById(R.id.textView_hocr2pdf);
+        leptonica.setMovementMethod(new LinkMovementMethod());
+        tesseract.setMovementMethod(new LinkMovementMethod());
+        hocr2pdf.setMovementMethod(new LinkMovementMethod());
+    }
+
+    @Override
+    protected int getHintDialogId() {
+        return -1;
+    }
 
     @Override
     protected void onPause() {
@@ -48,13 +54,13 @@ public class LicenseActivity extends MonitoredActivity {
 
 
     @Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

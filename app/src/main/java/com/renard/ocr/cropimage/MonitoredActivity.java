@@ -20,48 +20,51 @@ package com.renard.ocr.cropimage;
 import com.google.common.base.Optional;
 
 import com.renard.ocr.R;
-import com.squareup.leakcanary.LeakCanary;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.drawable.AnimationDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
+import android.support.annotation.StringRes;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 
-public class MonitoredActivity extends ActionBarActivity implements BaseActivityInterface, OnGlobalLayoutListener {
+public abstract class MonitoredActivity extends AppCompatActivity implements BaseActivityInterface, OnGlobalLayoutListener {
+
+    private static final String LOG_TAG = MonitoredActivity.class.getSimpleName();
 
     private final ArrayList<LifeCycleListener> mListeners = new ArrayList<LifeCycleListener>();
     private int mDialogId = -1;
     private final Handler mHandler = new Handler();
-    private ImageView appIcon = null;
+    private ImageView mAppIcon = null;
     private Optional<IconAnimationRunnable> mRunnable = Optional.absent();
+    private Toolbar mToolbar;
+    private TextView mToolbarMessage;
 
 
-    public static interface LifeCycleListener {
-        public void onActivityCreated(MonitoredActivity activity);
+    public interface LifeCycleListener {
+        void onActivityCreated(MonitoredActivity activity);
 
-        public void onActivityDestroyed(MonitoredActivity activity);
+        void onActivityDestroyed(MonitoredActivity activity);
 
-        public void onActivityPaused(MonitoredActivity activity);
+        void onActivityPaused(MonitoredActivity activity);
 
-        public void onActivityResumed(MonitoredActivity activity);
+        void onActivityResumed(MonitoredActivity activity);
 
-        public void onActivityStarted(MonitoredActivity activity);
+        void onActivityStarted(MonitoredActivity activity);
 
-        public void onActivityStopped(MonitoredActivity activity);
+        void onActivityStopped(MonitoredActivity activity);
     }
 
     public static class LifeCycleAdapter implements LifeCycleListener {
@@ -102,12 +105,26 @@ public class MonitoredActivity extends ActionBarActivity implements BaseActivity
         }
     }
 
+    protected void initToolbar() {
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbarMessage = (TextView) mToolbar.findViewById(R.id.toolbar_text);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        initAppIcon(getHintDialogId(), (ImageView) mToolbar.findViewById(R.id.app_icon));
+    }
+
+    public void setToolbarMessage(@StringRes int stringId) {
+        mToolbarMessage.setVisibility(View.VISIBLE);
+        mToolbarMessage.setText(stringId);
+    }
+
+
+    protected abstract int getHintDialogId();
+
     @Override
     protected synchronized void onDestroy() {
         super.onDestroy();
-        if (mRunnable.isPresent()) {
-            mHandler.removeCallbacks(mRunnable.get());
-        }
+        mHandler.removeCallbacksAndMessages(null);
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityDestroyed(this);
         }
@@ -156,7 +173,8 @@ public class MonitoredActivity extends ActionBarActivity implements BaseActivity
         public void run() {
             animation.setVisible(false, true);
             animation.start();
-            final int delayMillis = (int) ((Math.random() * 5 + 5) * 1000);
+            final int delayMillis = (int) ((Math.random() * 5 + 15) * 1000);
+            Log.i(LOG_TAG, "IconAnimationRunnable:run() in " + delayMillis + " ms.");
             mHandler.postDelayed(this, delayMillis);
         }
     }
@@ -173,7 +191,7 @@ public class MonitoredActivity extends ActionBarActivity implements BaseActivity
         @Override
         public void onClick(View v) {
             final Activity activity = mActivityWeakReference.get();
-            if(activity !=null) {
+            if (activity != null) {
                 activity.showDialog(mDialogId);
             }
         }
@@ -181,42 +199,28 @@ public class MonitoredActivity extends ActionBarActivity implements BaseActivity
 
     @Override
     public void onGlobalLayout() {
-        FrameLayout.LayoutParams llp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        appIcon.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-        final int iconHeight = appIcon.getHeight() + 1;
-        final int barHeight = ((FrameLayout) appIcon.getParent()).getHeight();
-        int leftMargin = mDialogId == -1 ? 0 : (int) appIcon.getContext().getResources().getDimension(R.dimen.home_icon_margin);
-        llp.setMargins(leftMargin, barHeight - iconHeight, 0, 0);
-        appIcon.setLayoutParams(llp);
-        appIcon.invalidate();
-
         // start fairy animation at random intervals
-        if (appIcon.getDrawable() instanceof AnimationDrawable) {
-            final AnimationDrawable animation = (AnimationDrawable) appIcon.getDrawable();
+        if (mAppIcon.getDrawable() instanceof AnimationDrawable) {
+            final AnimationDrawable animation = (AnimationDrawable) mAppIcon.getDrawable();
             mRunnable = Optional.of(new IconAnimationRunnable(animation, mHandler));
+            mHandler.removeCallbacksAndMessages(null);
             mHandler.post(mRunnable.get());
         }
         if (mDialogId != -1) {
             // show hint dialog when user clicks on the app icon
-            appIcon.setOnClickListener(new AppIconClickListener(this, mDialogId));
+            mAppIcon.setOnClickListener(new AppIconClickListener(this, mDialogId));
+        }
+        if (mAppIcon.getViewTreeObserver().isAlive()) {
+            mAppIcon.getViewTreeObserver().removeGlobalOnLayoutListener(this);
         }
     }
 
     /**
      * position the app icon at the bottom of the action bar and start animation
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void initAppIcon(final int dialogId) {
+    private void initAppIcon(final int dialogId, ImageView appIcon) {
         setDialogId(dialogId);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            appIcon = (ImageView) findViewById(android.R.id.home);
-        }
-        if (appIcon == null) {
-            appIcon = (ImageView) findViewById(android.support.v7.appcompat.R.id.home);
-        }
-        if (appIcon == null) {
-            return;
-        }
+        mAppIcon = appIcon;
         final ViewTreeObserver viewTreeObserver = appIcon.getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(this);

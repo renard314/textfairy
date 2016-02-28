@@ -206,9 +206,15 @@ public class OCRLanguageActivity extends MonitoredActivity {
         setContentView(R.layout.activity_ocr_language);
         mList = (ListView) findViewById(R.id.list_ocr_languages);
         mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher_language_list);
-        initAppIcon(-1);
+        initToolbar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setToolbarMessage(R.string.ocr_language_title);
         new LoadListAsyncTask().execute();
+    }
+
+    @Override
+    protected int getHintDialogId() {
+        return -1;
     }
 
     ;

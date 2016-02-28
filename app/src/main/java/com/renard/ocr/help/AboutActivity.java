@@ -15,6 +15,9 @@
  */
 package com.renard.ocr.help;
 
+import com.renard.ocr.R;
+import com.renard.ocr.cropimage.MonitoredActivity;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -22,9 +25,6 @@ import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
-import com.renard.ocr.R;
-import com.renard.ocr.cropimage.MonitoredActivity;
 
 public class AboutActivity extends MonitoredActivity implements View.OnClickListener {
 
@@ -34,17 +34,23 @@ public class AboutActivity extends MonitoredActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        initToolbar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initAppIcon(-1);
+        setToolbarMessage(R.string.about);
         findViewById(R.id.show_licences).setOnClickListener(this);
         findViewById(R.id.show_contact).setOnClickListener(this);
         TextView version = (TextView) findViewById(R.id.version_name);
         try {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            version.setText(getString(R.string.app_version,versionName));
+            version.setText(getString(R.string.app_version, versionName));
         } catch (PackageManager.NameNotFoundException e) {
             version.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    protected int getHintDialogId() {
+        return -1;
     }
 
     @Override
@@ -65,7 +71,7 @@ public class AboutActivity extends MonitoredActivity implements View.OnClickList
     @Override
     protected void onPause() {
         super.onPause();
-        if (slideOutLeft){
+        if (slideOutLeft) {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         } else {
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);

@@ -1,52 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- File created by the Android Action Bar Style Generator
-
-     Copyright (C) 2011 The Android Open Source Project
-     Copyright (C) 2012 readyState Software Ltd
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-  
-          http://www.apache.org/licenses/LICENSE-2.0
-  
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
 <resources>
 
-    <style name="Theme.Fairylightdarkactionbar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="actionBarItemBackground">@drawable/selectable_background_fairylightdarkactionbar</item>
-        <item name="popupMenuStyle">@style/PopupMenu.Fairylightdarkactionbar</item>
-        <item name="dropDownListViewStyle">@style/DropDownListView.Fairylightdarkactionbar</item>
-        <item name="actionBarTabStyle">@style/ActionBarTabStyle.Fairylightdarkactionbar</item>
-        <item name="actionDropDownStyle">@style/DropDownNav.Fairylightdarkactionbar</item>
-        <item name="actionBarStyle">@style/ActionBar.Solid.Fairylightdarkactionbar</item>
-        <item name="actionModeBackground">@drawable/cab_background_top_fairylightdarkactionbar</item>
-        <item name="actionModeSplitBackground">@drawable/cab_background_bottom_fairylightdarkactionbar</item>
-        <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Fairylightdarkactionbar</item>
-
-                <!-- Light.DarkActionBar specific -->
-        <item name="actionBarWidgetTheme">@style/Theme.Fairylightdarkactionbar.Widget</item>
-
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlHighlight">@color/colorControlHighlight</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
     </style>
 
-    <style name="ActionBar.Solid.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="background">@drawable/ab_solid_fairylightdarkactionbar</item>
-        <item name="backgroundStacked">@drawable/ab_stacked_solid_fairylightdarkactionbar</item>
-        <item name="backgroundSplit">@drawable/ab_bottom_solid_fairylightdarkactionbar</item>
-        <item name="progressBarStyle">@style/ProgressBar.Fairylightdarkactionbar</item>
+    <style name="ToolbarTheme" parent="AppBaseTheme">
+        <item name="android:textColorSecondary">@android:color/white</item>
     </style>
 
-    <style name="ActionBar.Transparent.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.ActionBar">
-        <item name="background">@drawable/ab_transparent_fairylightdarkactionbar</item>
-        <item name="progressBarStyle">@style/ProgressBar.Fairylightdarkactionbar</item>
+
+
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@android:color/white</item>
     </style>
-	
+
+
+    <style name="MyActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="titleTextStyle">@style/MyTitleTextStyle</item>
+    </style>
+
+    <style name="MyTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+
     <style name="PopupMenu.Fairylightdarkactionbar" parent="@style/Widget.AppCompat.PopupMenu">	
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_fairylightdarkactionbar</item>	
     </style>
@@ -77,10 +65,6 @@
     <style name="Theme.Fairylightdarkactionbar.Widget" parent="@style/Theme.AppCompat">
         <item name="popupMenuStyle">@style/PopupMenu.Fairylightdarkactionbar</item>
         <item name="dropDownListViewStyle">@style/DropDownListView.Fairylightdarkactionbar</item>
-    </style>
-
-    <style name="Theme.AppCompat.Light.NoActionBar" parent="@style/Theme.AppCompat.Light">
-        <item name="android:windowNoTitle">true</item>
     </style>
 
 </resources>
