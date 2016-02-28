@@ -29,7 +29,7 @@ import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.PreferencesUtils;
 
-public class TextOptionsActivity extends MonitoredActivity {
+public class TextSettingsActivity extends MonitoredActivity {
 
 	private SharedPreferences mPreferences;
 	private RadioGroup mTextAlignmentRadioGroup;
@@ -63,8 +63,6 @@ public class TextOptionsActivity extends MonitoredActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_text_options);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initAppIcon(-1);
 
 		mPreferences = PreferencesUtils.getPreferences(getApplicationContext());
 
@@ -94,6 +92,11 @@ public class TextOptionsActivity extends MonitoredActivity {
 				finish();
 			}
 		});
+	}
+
+	@Override
+	protected int getHintDialogId() {
+		return -1;
 	}
 
 	@Override
