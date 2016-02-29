@@ -118,6 +118,10 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         mToolbarMessage.setText(stringId);
     }
 
+    public void setToolbarMessage(String message) {
+        mToolbarMessage.setText(message);
+    }
+
 
     protected abstract int getHintDialogId();
 
