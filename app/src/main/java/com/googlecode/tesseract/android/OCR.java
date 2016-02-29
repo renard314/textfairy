@@ -92,10 +92,12 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             CropImageScaler scaler = new CropImageScaler();
             final CropImageScaler.ScaleResult scale = scaler.scale(preview, mPreviewWidthUnScaled, mPreviewHeightUnScaled);
             final Bitmap previewBitmap = WriteFile.writeBitmap(scale.getPix());
-            scale.getPix().recycle();
-            mPreviewHeight = preview.getHeight();
-            mPreviewWith = preview.getWidth();
-            sendMessage(MESSAGE_PREVIEW_IMAGE, previewBitmap);
+            if (previewBitmap != null) {
+                scale.getPix().recycle();
+                mPreviewHeight = previewBitmap.getHeight();
+                mPreviewWith = previewBitmap.getWidth();
+                sendMessage(MESSAGE_PREVIEW_IMAGE, previewBitmap);
+            }
         }
     }
 
@@ -323,7 +325,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     sendMessage(MESSAGE_HOCR_TEXT, hocrText.toString(), totalAccuracy);
                     sendMessage(MESSAGE_UTF8_TEXT, htmlText.toString(), totalAccuracy);
                 } finally {
-                    if(mTess!=null) {
+                    if (mTess != null) {
                         mTess.end();
                     }
                     sendMessage(MESSAGE_END);
@@ -339,7 +341,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             sendMessage(MESSAGE_ERROR, R.string.error_tess_init);
             return false;
         }
-        mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST,"ﬀﬁﬂﬃﬄﬅﬆ");
+        mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "ﬀﬁﬂﬃﬄﬅﬆ");
         return true;
     }
 
@@ -348,8 +350,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
      * function
      *
      * @param pixs source pix on which to do layout analysis
-     * @param width
-     * @param height
      */
     public void startLayoutAnalysis(final Context context, final Pix pixs, int width, int height) {
 
@@ -357,8 +357,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             throw new IllegalArgumentException("Source pix must be non-null");
         }
 
-        mPreviewHeightUnScaled =  height;
-        mPreviewWidthUnScaled =  width;
+        mPreviewHeightUnScaled = height;
+        mPreviewWidthUnScaled = width;
         mOriginalHeight = pixs.getHeight();
         mOriginalWidth = pixs.getWidth();
 
@@ -376,15 +376,13 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
      *
      * @param context used to access the file system
      * @param pixs    source pix to do ocr on
-     * @param width
-     * @param height
      */
     public void startOCRForSimpleLayout(final Context context, final String lang, final Pix pixs, int width, int height) {
         if (pixs == null) {
             throw new IllegalArgumentException("Source pix must be non-null");
         }
-        mPreviewHeightUnScaled =  height;
-        mPreviewWidthUnScaled =  width;
+        mPreviewHeightUnScaled = height;
+        mPreviewWidthUnScaled = width;
         mOriginalHeight = pixs.getHeight();
         mOriginalWidth = pixs.getWidth();
 
@@ -412,7 +410,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                         }
                         String htmlText = mTess.getHtmlText();
                         int accuracy = mTess.meanConfidence();
-                        if (accuracy==95) {
+                        if (accuracy == 95) {
                             accuracy = 0;
                         }
                         sendMessage(MESSAGE_HOCR_TEXT, hocrText, accuracy);
@@ -421,7 +419,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
 
                 } finally {
-                    if(mTess!=null) {
+                    if (mTess != null) {
                         mTess.end();
                     }
                     sendMessage(MESSAGE_END);
