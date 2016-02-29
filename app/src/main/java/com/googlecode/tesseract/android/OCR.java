@@ -28,16 +28,13 @@ import com.renard.util.Util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
-import java.io.IOException;
 
 public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgressListener {
 
@@ -368,8 +365,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         new Thread(new Runnable() {
             @Override
             public void run() {
-                //final Pix copy = pixs.copy();
-                //savePixToCacheDir(context, copy);
                 nativeAnalyseLayout(pixs.getNativePix());
             }
         }).start();
@@ -397,8 +392,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             @Override
             public void run() {
                 try {
-                    //final Pix copy = pixs.copy();
-                    //savePixToCacheDir(context, copy);
                     final String tessDir = Util.getTessDir(context);
                     long nativeTextPix = nativeOCRBook(pixs.getNativePix());
                     pixs.recycle();
@@ -438,31 +431,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     }
 
-    private static class SavePixTask extends AsyncTask<Void, Void, File> {
-        private final Pix mPix;
-        private final File mDir;
-
-        SavePixTask(Pix pix, File dir) {
-            mPix = pix;
-            mDir = dir;
-        }
-
-        @Override
-        protected File doInBackground(Void... params) {
-            try {
-                return Util.savePixToDir(mPix, ORIGINAL_PIX_NAME, mDir);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                mPix.recycle();
-            }
-
-            return null;
-        }
-
-    }
-
-    private final static String ORIGINAL_PIX_NAME = "last_scan";
+    final static String ORIGINAL_PIX_NAME = "last_scan";
 
 
     public static void savePixToCacheDir(Context context, Pix pix) {
@@ -484,9 +453,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         }
     }
 
-    // ***************
-    // * NATIVE CODE *
-    // ***************
 
     private static native void nativeInit();
 
