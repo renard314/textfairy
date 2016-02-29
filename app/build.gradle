@@ -8,7 +8,8 @@ apply plugin: 'io.fabric'
 def versions = ['appcompat_v7': '23.2.0',
                 'butterknife' : '7.0.1',
                 'card_view'   : '23.2.0',
-                'design'      : '23.2.0']
+                'design'      : '23.2.0',
+                'photoview'   : '1.2.4']
 
 task ndkBuild(type: Exec, description: 'run ndk-build') {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -120,7 +121,7 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
     compile fileTree(dir: 'src/main/libs', include: '*.jar')
     compile 'com.viewpagerindicator:library:2.4.1@aar'
-    compile 'com.github.chrisbanes.photoview:library:1.2.2'
+    compile "com.commit451:PhotoView:${versions.photoview}"
     compile 'com.google.code.findbugs:jsr305:2.0.2'
     compile "com.google.guava:guava:18.0"
     compile 'de.greenrobot:eventbus:2.4.0'
