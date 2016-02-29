@@ -15,26 +15,26 @@
  */
 package com.renard.ocr.help;
 
+import com.renard.ocr.R;
+import com.renard.ocr.cropimage.MonitoredActivity;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
-
-import com.renard.ocr.R;
-import com.renard.ocr.cropimage.MonitoredActivity;
 
 public class ContributeActivity extends MonitoredActivity implements View.OnClickListener {
     public static final String MARKET_URL = "market://details?id=com.renard.ocr";
-	private boolean slideOutLeft = false;
+    private boolean slideOutLeft = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contribute);
         initToolbar();
+        setToolbarMessage(R.string.contribute_title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         findViewById(R.id.layout_enroll_beta_test).setOnClickListener(this);
         findViewById(R.id.layout_rate_app).setOnClickListener(this);
@@ -59,11 +59,11 @@ public class ContributeActivity extends MonitoredActivity implements View.OnClic
     @Override
     protected void onPause() {
         super.onPause();
-		if (slideOutLeft){
-			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-		} else {
-			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-		}
+        if (slideOutLeft) {
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        } else {
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        }
     }
 
     @Override
@@ -72,20 +72,20 @@ public class ContributeActivity extends MonitoredActivity implements View.OnClic
         switch (v.getId()) {
             case R.id.layout_enroll_beta_test:
             case R.id.button_enroll_beta_test:
-				slideOutLeft = true;
-				intent = ContactActivity.getFeedbackIntent(this);
+                slideOutLeft = true;
+                intent = ContactActivity.getFeedbackIntent(this);
                 startActivity(intent);
                 break;
             case R.id.layout_send_feedback:
             case R.id.button_send_feedback:
-				slideOutLeft = true;
-				intent = ContactActivity.getFeedbackIntent(getString(R.string.feedback_subject), null);
+                slideOutLeft = true;
+                intent = ContactActivity.getFeedbackIntent(getString(R.string.feedback_subject), null);
                 startActivity(intent);
                 break;
             case R.id.layout_rate_app:
             case R.id.button_rate_app:
-				slideOutLeft = true;
-				overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                slideOutLeft = true;
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 intent = new Intent(Intent.ACTION_VIEW);
                 Uri url = Uri.parse(MARKET_URL);
                 intent.setData(url);

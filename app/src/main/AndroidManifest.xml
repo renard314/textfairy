@@ -79,10 +79,7 @@
                 android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
                 android:name=".cropimage.CropImageActivity"
-                android:configChanges="orientation|keyboardHidden"
-                android:label="@string/crop_title"
-
-                android:uiOptions="splitActionBarWhenNarrow"/>
+                android:configChanges="orientation|keyboardHidden"/>
         <activity
                 android:name="com.renard.ocr.DocumentGridActivity"
                 android:hardwareAccelerated="false"
@@ -127,7 +124,7 @@
         </activity>
         <activity
                 android:name="com.renard.ocr.help.ContributeActivity"
-                android:label="@string/contribute_title">
+                >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.renard.ocr.DocumentGridActivity"/>

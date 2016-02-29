@@ -365,7 +365,7 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
     public void onContinueClicked() {
         if (mCropData.isPresent()) {
             showDefaultCroppingRectangle(mCropData.get().getBitmap());
-            setTitle(R.string.crop_title);
+            setToolbarMessage(R.string.crop_title);
             mImageView.zoomTo(1, 500);
         }
     }

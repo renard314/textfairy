@@ -18,6 +18,7 @@ package com.renard.documentview;
 
 import com.renard.documentview.DocumentActivity.DocumentContainerFragment;
 import com.renard.ocr.R;
+import com.renard.ocr.cropimage.MonitoredActivity;
 import com.renard.util.PreferencesUtils;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -27,7 +28,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -133,8 +133,7 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
                     }
                     mLastPosition = position;
                     final String title = mAdapter.getLongTitle(position);
-                    ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(title);
-                    ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+                    ((MonitoredActivity) getActivity()).setToolbarMessage(title);
                 }
 
                 @Override
