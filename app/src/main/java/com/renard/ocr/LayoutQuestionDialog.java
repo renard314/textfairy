@@ -121,7 +121,7 @@ public class LayoutQuestionDialog {
         List<OCRLanguage> installedLanguages = OCRLanguageActivity.getInstalledOCRLanguages(context);
 
         // actual values uses by tesseract
-        final ArrayAdapter<OCRLanguage> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, installedLanguages);
+        final ArrayAdapter<OCRLanguage> adapter = new ArrayAdapter<>(context, R.layout.language_spinner_item, installedLanguages);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         langButton.setAdapter(adapter);
         for (int i = 0; i < installedLanguages.size(); i++) {
