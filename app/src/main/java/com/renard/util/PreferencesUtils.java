@@ -16,7 +16,7 @@
 package com.renard.util;
 
 import com.renard.ocr.R;
-import com.renard.ocr.help.OCRLanguageAdapter.OCRLanguage;
+import com.renard.ocr.language_download.OcrLanguage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -68,7 +68,7 @@ public class PreferencesUtils {
         }
     }
 
-    public static void saveOCRLanguage(final Context context, OCRLanguage language) {
+    public static void saveOCRLanguage(final Context context, OcrLanguage language) {
         SharedPreferences prefs = getPreferences(context);
         Editor edit = prefs.edit();
         edit.putString(PREFERENCES_OCR_LANG, language.getValue());

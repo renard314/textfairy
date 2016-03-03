@@ -15,8 +15,8 @@
  */
 package com.renard.ocr;
 
-import com.renard.ocr.help.OCRLanguageActivity;
-import com.renard.ocr.help.OCRLanguageAdapter.OCRLanguage;
+import com.renard.ocr.language_download.OcrLanguage;
+import com.renard.ocr.language_download.OcrLanguageDataStore;
 import com.renard.util.PreferencesUtils;
 
 import android.content.Context;
@@ -56,7 +56,9 @@ public class LayoutQuestionDialog {
         mLayout = null;
         Pair<String, String> language = PreferencesUtils.getOCRLanguage(context);
 
-        if (!OCRLanguageActivity.isLanguageInstalled(language.first, context)) {
+        final OcrLanguage.InstallStatus installStatus = OcrLanguageDataStore.isLanguageInstalled(language.first, context);
+
+        if (installStatus.isInstalled()) {
             final String defaultLanguage = context.getString(R.string.default_ocr_language);
             final String defaultLanguageDisplay = context.getString(R.string.default_ocr_display_language);
             language = Pair.create(defaultLanguage, defaultLanguageDisplay);
@@ -118,14 +120,14 @@ public class LayoutQuestionDialog {
 
 
         final Spinner langButton = (Spinner) layout.findViewById(R.id.button_language);
-        List<OCRLanguage> installedLanguages = OCRLanguageActivity.getInstalledOCRLanguages(context);
+        List<OcrLanguage> installedLanguages = OcrLanguageDataStore.getInstalledOCRLanguages(context);
 
         // actual values uses by tesseract
-        final ArrayAdapter<OCRLanguage> adapter = new ArrayAdapter<>(context, R.layout.language_spinner_item, installedLanguages);
+        final ArrayAdapter<OcrLanguage> adapter = new ArrayAdapter<>(context, R.layout.language_spinner_item, installedLanguages);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         langButton.setAdapter(adapter);
         for (int i = 0; i < installedLanguages.size(); i++) {
-            OCRLanguage lang = installedLanguages.get(i);
+            OcrLanguage lang = installedLanguages.get(i);
             if (lang.getValue().equals(language.first)) {
                 langButton.setSelection(i);
                 break;
@@ -134,7 +136,7 @@ public class LayoutQuestionDialog {
         langButton.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                final OCRLanguage item = adapter.getItem(position);
+                final OcrLanguage item = adapter.getItem(position);
                 mLanguage = item.getValue();
                 PreferencesUtils.saveOCRLanguage(context, item);
             }

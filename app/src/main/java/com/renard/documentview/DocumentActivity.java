@@ -21,7 +21,7 @@ import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.R;
 import com.renard.ocr.help.HintDialog;
-import com.renard.ocr.help.OCRLanguageAdapter;
+import com.renard.ocr.language_download.OcrLanguage;
 import com.renard.util.PreferencesUtils;
 
 import android.annotation.SuppressLint;
@@ -257,7 +257,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         clipboard.setText(text);
     }
 
-    public void onTtsLanguageChosen(OCRLanguageAdapter.OCRLanguage lang) {
+    public void onTtsLanguageChosen(OcrLanguage lang) {
         mActionCallback.onTtsLanguageChosen(lang);
     }
 
@@ -265,7 +265,7 @@ public class DocumentActivity extends BaseDocumentActivitiy implements LoaderMan
         mActionCallback.onTtsCancelled();
     }
 
-    public boolean isTtsLanguageAvailable(OCRLanguageAdapter.OCRLanguage lang) {
+    public boolean isTtsLanguageAvailable(OcrLanguage lang) {
         return mActionCallback.isLanguageAvailable(lang);
     }
 

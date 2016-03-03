@@ -59,7 +59,7 @@
                     android:value="com.renard.ocr.DocumentGridActivity"/>
         </activity>
         <activity
-                android:name="com.renard.ocr.help.OCRLanguageActivity"
+                android:name=".language_download.OCRLanguageActivity"
         >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
@@ -99,9 +99,9 @@
 
         </activity>
 
-        <service android:name="com.renard.ocr.help.OCRLanguageInstallService"/>
+        <service android:name=".language_download.OCRLanguageInstallService"/>
 
-        <receiver android:name="com.renard.ocr.help.DownloadBroadCastReceiver">
+        <receiver android:name=".language_download.DownloadBroadCastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
             </intent-filter>

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.renard.ocr.help;
+package com.renard.ocr.language_download;
 
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;

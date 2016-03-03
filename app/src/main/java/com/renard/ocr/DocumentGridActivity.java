@@ -25,7 +25,7 @@ import com.renard.ocr.help.AboutActivity;
 import com.renard.ocr.help.ContributeActivity;
 import com.renard.ocr.help.HelpActivity;
 import com.renard.ocr.help.HintDialog;
-import com.renard.ocr.help.OCRLanguageActivity;
+import com.renard.ocr.language_download.OCRLanguageActivity;
 import com.renard.ocr.help.ReleaseNoteDialog;
 import com.renard.util.Util;
 

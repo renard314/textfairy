@@ -11,7 +11,8 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import com.renard.ocr.R;
-import com.renard.ocr.help.OCRLanguageAdapter;
+import com.renard.ocr.language_download.OcrLanguage;
+import com.renard.ocr.language_download.OCRLanguageAdapter;
 
 import java.util.ArrayList;
 
@@ -30,7 +31,7 @@ public class PickTtsLanguageDialog extends DialogFragment {
         Bundle arguments = new Bundle();
         arguments.putString(ARG_DOCUMENT_LANGUAGE, documentLanguage);
         arguments.putBoolean(ARG_LANGUAGE_SUPPORTED, languageSupported);
-        final ArrayList<OCRLanguageAdapter.OCRLanguage> languages = getLanguages(c);
+        final ArrayList<OcrLanguage> languages = getLanguages(c);
         arguments.putParcelableArrayList(ARG_LANGUAGES, languages);
         final PickTtsLanguageDialog dialog = new PickTtsLanguageDialog();
         dialog.setArguments(arguments);
@@ -39,7 +40,7 @@ public class PickTtsLanguageDialog extends DialogFragment {
 
     public static PickTtsLanguageDialog newInstance(Context c) {
         Bundle arguments = new Bundle();
-        final ArrayList<OCRLanguageAdapter.OCRLanguage> languages = getLanguages(c);
+        final ArrayList<OcrLanguage> languages = getLanguages(c);
         arguments.putParcelableArrayList(ARG_LANGUAGES, languages);
         final PickTtsLanguageDialog dialog = new PickTtsLanguageDialog();
         dialog.setArguments(arguments);
@@ -61,9 +62,9 @@ public class PickTtsLanguageDialog extends DialogFragment {
             }
         });
         final String language = getArguments().getString(ARG_DOCUMENT_LANGUAGE);
-        ArrayList<OCRLanguageAdapter.OCRLanguage> languages = getArguments().getParcelableArrayList(ARG_LANGUAGES);
+        ArrayList<OcrLanguage> languages = getArguments().getParcelableArrayList(ARG_LANGUAGES);
         String displayLanguage = null;
-        for (OCRLanguageAdapter.OCRLanguage lang : languages) {
+        for (OcrLanguage lang : languages) {
             if (lang.getValue().equalsIgnoreCase(language)) {
                 displayLanguage = lang.getDisplayText();
                 break;
@@ -83,7 +84,7 @@ public class PickTtsLanguageDialog extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final DocumentActivity activity = (DocumentActivity) getActivity();
-                OCRLanguageAdapter.OCRLanguage lang = (OCRLanguageAdapter.OCRLanguage) adapter.getItem(which);
+                OcrLanguage lang = (OcrLanguage) adapter.getItem(which);
                 activity.onTtsLanguageChosen(lang);
             }
         });
@@ -96,27 +97,26 @@ public class PickTtsLanguageDialog extends DialogFragment {
         return alertDialog;
     }
 
-    private static ArrayList<OCRLanguageAdapter.OCRLanguage> getLanguages(Context c) {
+    private static ArrayList<OcrLanguage> getLanguages(Context c) {
         final String[] languageValues = c.getResources().getStringArray(R.array.ocr_languages);
-        final ArrayList<OCRLanguageAdapter.OCRLanguage> languages = new ArrayList<OCRLanguageAdapter.OCRLanguage>();
+        final ArrayList<OcrLanguage> languages = new ArrayList<OcrLanguage>();
 
         for (String val : languageValues) {
             final int firstSpace = val.indexOf(' ');
             final String value = val.substring(0, firstSpace);
             final String displayText = val.substring(firstSpace + 1, val.length());
-            languages.add(new OCRLanguageAdapter.OCRLanguage(value, displayText, false, 0));
+            languages.add(new OcrLanguage(value, displayText, false, 0));
         }
         return languages;
     }
 
-    private void fillAdapterWithAllowedTtsLanguages(final OCRLanguageAdapter adapter, ArrayList<OCRLanguageAdapter.OCRLanguage> allLanguages) {
-        final ArrayList<OCRLanguageAdapter.OCRLanguage> allowedLanguages = new ArrayList<OCRLanguageAdapter.OCRLanguage>();
-        new AsyncTask<ArrayList<OCRLanguageAdapter.OCRLanguage>, Void, ArrayList<OCRLanguageAdapter.OCRLanguage>>() {
+    private void fillAdapterWithAllowedTtsLanguages(final OCRLanguageAdapter adapter, ArrayList<OcrLanguage> allLanguages) {
+        new AsyncTask<ArrayList<OcrLanguage>, Void, ArrayList<OcrLanguage>>() {
 
             @Override
-            protected ArrayList<OCRLanguageAdapter.OCRLanguage> doInBackground(ArrayList<OCRLanguageAdapter.OCRLanguage>... params) {
-                ArrayList<OCRLanguageAdapter.OCRLanguage> resultList = new ArrayList<OCRLanguageAdapter.OCRLanguage>();
-                for (final OCRLanguageAdapter.OCRLanguage lang : params[0]) {
+            protected ArrayList<OcrLanguage> doInBackground(ArrayList<OcrLanguage>... params) {
+                ArrayList<OcrLanguage> resultList = new ArrayList<>();
+                for (final OcrLanguage lang : params[0]) {
                     DocumentActivity activity = (DocumentActivity) getActivity();
                     if (activity != null) {
                         boolean available = activity.isTtsLanguageAvailable(lang);

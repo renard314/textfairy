@@ -2,14 +2,13 @@ package com.renard.documentview;
 
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.MonitoredActivity;
-import com.renard.ocr.help.OCRLanguageAdapter;
+import com.renard.ocr.language_download.OcrLanguage;
 import com.renard.util.ResourceUtils;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -139,7 +138,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
             if (documentLocale == null) {
                 askForLocale();
             } else {
-                if (isLanguageAvailable(new OCRLanguageAdapter.OCRLanguage(ocrLanguage, null, true, 0))) {
+                if (isLanguageAvailable(new OcrLanguage(ocrLanguage, null, true, 0))) {
                     mTts.setLanguage(documentLocale);
                     mActionMode.getMenu().findItem(R.id.item_play).setVisible(true);
                     mTtsReady = true;
@@ -208,7 +207,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     /**
      * user has picked a language for tts
      */
-    public void onTtsLanguageChosen(OCRLanguageAdapter.OCRLanguage lang) {
+    public void onTtsLanguageChosen(OcrLanguage lang) {
         Locale documentLocale = mapTesseractLanguageToLocale(lang.getValue());
         int result = mTts.setLanguage(documentLocale);
         switch (result) {
@@ -237,7 +236,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
         }
     }
 
-    public boolean isLanguageAvailable(OCRLanguageAdapter.OCRLanguage lang) {
+    public boolean isLanguageAvailable(OcrLanguage lang) {
         if (mTts != null) {
             final Locale locale = mapTesseractLanguageToLocale(lang.getValue());
             if (locale == null) {

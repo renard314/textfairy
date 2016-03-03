@@ -1,4 +1,4 @@
-package com.renard.ocr.help;
+package com.renard.ocr.language_download;
 
 import com.renard.ocr.R;
 
@@ -11,7 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
 
-public final class DownloadManagerResolver {
+final class DownloadManagerResolver {
 
     private static final String DOWNLOAD_MANAGER_PACKAGE_NAME = "com.android.providers.downloads";
 
