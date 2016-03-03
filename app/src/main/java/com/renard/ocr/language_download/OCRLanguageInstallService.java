@@ -77,8 +77,11 @@ public class OCRLanguageInstallService extends IntentService {
                     in = new BufferedInputStream(fin);
 
                     copyInputStream(in, fileUri.getLastPathSegment(), tessDir);
+                    Log.i(LOG_TAG, "Successfully installed " + fileName);
+
                     notifySuccess(langName);
                 } else {
+                    Log.i(LOG_TAG, "Failed to install " + fileName);
                     notifyError(langName);
                 }
 
@@ -129,6 +132,10 @@ public class OCRLanguageInstallService extends IntentService {
         if (index != -1) {
             return lastPathSegment.substring(0, index);
         }
+        index = lastPathSegment.indexOf(".tesseract_cube.nn");
+        if (index != -1) {
+            return lastPathSegment.substring(0, index);
+        }
 
         return null;
     }
@@ -141,7 +148,6 @@ public class OCRLanguageInstallService extends IntentService {
     }
 
     private void notifySuccess(String lang) {
-        Log.i(LOG_TAG, "Successfully downloaded " + lang);
         Intent resultIntent = new Intent(ACTION_INSTALL_COMPLETED);
         resultIntent.putExtra(EXTRA_OCR_LANGUAGE, lang);
         resultIntent.putExtra(EXTRA_STATUS, DownloadManager.STATUS_SUCCESSFUL);

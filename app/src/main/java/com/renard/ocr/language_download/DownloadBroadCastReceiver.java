@@ -30,7 +30,6 @@ public class DownloadBroadCastReceiver extends BroadcastReceiver {
 	public void onReceive(final Context context, Intent intent) {
 		String action = intent.getAction();
 		if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-			Log.i(LOG_TAG,"received ACTION_DOWNLOAD_COMPLETE");
 			long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
 			DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 			Query query = new Query();

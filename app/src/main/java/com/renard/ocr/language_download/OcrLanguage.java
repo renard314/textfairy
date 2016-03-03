@@ -31,7 +31,7 @@ public class OcrLanguage implements Parcelable {
         }
     }
 
-    private static final String[] CUBE_FILES = {".cube.bigrams", ".cube.fold", ".cube.lm", ".cube.nn", ".cube.params", ".cube.size", ".cube.word-freq"};
+    private static final String[] CUBE_FILES = {".cube.bigrams", ".cube.fold", ".cube.lm", ".cube.nn", ".cube.params", ".cube.word-freq"};
 
 
     private boolean mDownloading;
@@ -145,8 +145,11 @@ public class OcrLanguage implements Parcelable {
         for (String cubeFileName : CUBE_FILES) {
             result.add(getValue() + cubeFileName);
         }
-        if ("hin".equalsIgnoreCase(getValue())) {
+        if ("hin".equalsIgnoreCase(mValue)) {
             result.add(getValue() + ".tesseract_cube.nn");
+        }
+        if ("ara".equalsIgnoreCase(mValue)) {
+            result.add(getValue() + ".cube.size");
         }
         return result;
     }
