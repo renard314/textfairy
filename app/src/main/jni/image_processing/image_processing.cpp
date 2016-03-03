@@ -34,7 +34,7 @@ using namespace std;
 extern "C" {
 #endif  /* __cplusplus */
 
-static jmethodID onProgressImage, onProgressValues, onProgressText, onHOCRResult, onLayoutElements, onUTF8Result, onLayoutPix;
+static jmethodID onProgressImage, onProgressValues, onProgressText, onLayoutElements, onUTF8Result, onLayoutPix;
 
 static JNIEnv *cachedEnv;
 static jobject* cachedObject;
@@ -48,7 +48,6 @@ void Java_com_googlecode_tesseract_android_OCR_nativeInit(JNIEnv *env, jobject _
 	cls = env->FindClass("com/googlecode/tesseract/android/OCR");
 	onProgressImage = env->GetMethodID(cls, "onProgressImage", "(J)V");
 	onProgressText = env->GetMethodID(cls, "onProgressText", "(I)V");
-	onHOCRResult = env->GetMethodID(cls, "onHOCRResult", "(Ljava/lang/String;I)V");
 	onLayoutElements = env->GetMethodID(cls, "onLayoutElements", "(II)V");
 	onUTF8Result = env->GetMethodID(cls, "onUTF8Result", "(Ljava/lang/String;)V");
 	onLayoutPix = env->GetMethodID(cls, "onLayoutPix", "(J)V");
@@ -101,106 +100,6 @@ void callbackLayout(const Pix* pixpreview) {
 	messageJavaCallback(MESSAGE_ANALYSE_LAYOUT);
 }
 
-/*
-
-int doOCR(Pix* pixb, ostringstream* hocr, ostringstream* utf8,  const char* const tessDir, const char* const lang,  bool debug = false) {
-	ETEXT_DESC monitor;
-
-	monitor.progress_callback = progressJavaCallback;
-	monitor.cancel = cancelFunc;
-
-	tesseract::TessBaseAPI api;
-	LOGI("OCR LANG = %s",lang);
-	api.Init(tessDir, lang, tesseract::OEM_DEFAULT);
-
-	api.SetPageSegMode(tesseract::PSM_AUTO);
-
-	if (debug) {
-		startTimer();
-	}
-
-	api.SetImage(pixb);
-	LOGI("ocr start");
-	const char* hocrtext = api.GetHOCRText(&monitor, 0);
-	LOGI("ocr finished");
-	int accuracy = 0;
-	if (hocrtext != NULL && isStateValid()) {
-		*hocr << hocrtext;
-		tesseract::ResultIterator* it = api.GetIterator();
-		LOGI("start GetHTMLText");
-		std::string utf8text = GetHTMLText(it, 70);
-
-		//std::string utf8text = api.GetUTF8Text();
-		LOGI("after GetHTMLText");
-		if (!utf8text.empty()) {
-			*utf8 << utf8text;
-		}
-        accuracy = api.MeanTextConf();
-		if (debug) {
-			ostringstream debugstring;
-			debugstring << "ocr: " << stopTimer() << std::endl << "confidence: " << api.MeanTextConf() << std::endl;
-			LOGI(debugstring.str().c_str());
-		}
-	} else {
-		LOGI("ocr was cancelled");
-		if (debug) {
-			ostringstream debugstring;
-			debugstring << "ocr: " << stopTimer() << std::endl << "ocr was cancelled" << std::endl;
-			LOGI(debugstring.str().c_str());
-		}
-	}
-	if (hocrtext != NULL) {
-		delete[] hocrtext;
-	}
-	api.End();
-    return accuracy;
-}
-
-int doMultiOcr(Pix* pixOCR, Boxa* boxaColumns, ostringstream* hocrtext, ostringstream* utf8text, const char* const tessDir, const char* const lang, const bool debug, const bool usecube) {
-	l_int32 xb, yb, wb, hb;
-	l_int32 columnCount = boxaGetCount(boxaColumns);
-
-	//do ocr on text parts
-	tesseract::TessBaseAPI api;
-	ETEXT_DESC monitor;
-	monitor.progress_callback = progressJavaCallback;
-	monitor.cancel = cancelFunc;
-	api.Init(tessDir, lang, tesseract::OEM_DEFAULT);
-	api.SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
-	api.SetImage(pixOCR);
-
-	messageJavaCallback(MESSAGE_OCR);
-	float accuracy = 0;
-
-	for (int i = 0; i < columnCount; i++) {
-		if (boxaGetBoxGeometry(boxaColumns, i, &xb, &yb, &wb, &hb)) {
-			continue;
-		}
-		currentTextBox = boxCreate(xb, yb, wb, hb);
-		api.SetRectangle(xb, yb, wb, hb);
-		LOGI("start OCR");
-		const char* hocr = api.GetHOCRText(&monitor, 0);
-		if (hocr != NULL && isStateValid()) {
-			*hocrtext << hocr;
-			delete[] hocr;
-			tesseract::ResultIterator* it = api.GetIterator();
-			std::string utf8 = GetHTMLText(it, 70);
-			if (!utf8.empty()) {
-				*utf8text << utf8;
-			}
-			accuracy += api.MeanTextConf();
-		} else {
-			boxDestroy(&currentTextBox);
-			break;
-		}
-
-		boxDestroy(&currentTextBox);
-	}
-	api.End();
-	return accuracy/columnCount;
-}
-
-*/
 
 jlongArray Java_com_googlecode_tesseract_android_OCR_combineSelectedPixa(JNIEnv *env, jobject thiz, jlong nativePixaText, jlong nativePixaImage, jintArray selectedTexts, jintArray selectedImages) {
 	LOGV(__FUNCTION__);
@@ -236,46 +135,6 @@ jlongArray Java_com_googlecode_tesseract_android_OCR_combineSelectedPixa(JNIEnv 
 	env->ReleaseIntArrayElements(selectedTexts, textindexes, 0);
 	env->ReleaseIntArrayElements(selectedImages, imageindexes, 0);
 	return result;
-/*
-	const char *tessDirNative = env->GetStringUTFChars(tessDir, 0);
-	const char *langNative = env->GetStringUTFChars(lang, 0);
-
-	pixJavaCallback(pixFinal, TRUE, TRUE);
-	LOGI("after showPixRGB");
-
-	if (isStateValid()) {
-		cachedEnv->CallVoidMethod(*cachedObject, onFinalPix, pixFinal);
-		LOGI("after CallVoidMethod");
-	}
-
-	cancel_ocr = false;
-
-	int accuracy = doMultiOcr(pixOcr, boxaColumns, &hocr, &utf8text, tessDirNative, langNative, true, useCube);
-
-	pixDestroy(&pixOcr);
-	boxaDestroy(&boxaColumns);
-
-	env->ReleaseStringUTFChars(tessDir, tessDirNative);
-	env->ReleaseStringUTFChars(lang, langNative);
-
-	if (isStateValid()) {
-		jstring result = env->NewStringUTF(hocr.str().c_str());
-		env->CallVoidMethod(thiz, onHOCRResult, result, accuracy);
-	}
-	if (isStateValid()) {
-		jstring result = env->NewStringUTF(utf8text.str().c_str());
-		env->CallVoidMethod(thiz, onUTF8Result, result);
-	}
-
-	env->ReleaseIntArrayElements(selectedTexts, textindexes, 0);
-	env->ReleaseIntArrayElements(selectedImages, imageindexes, 0);
-	utf8text.str("");
-	hocr.str("");
-	resetStateVariables();
-
-	return (jint) 0;
-*/
-
 }
 
 
