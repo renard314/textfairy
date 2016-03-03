@@ -18,7 +18,7 @@ Features
 
 Project Structure
 -----------------
-* *textfairy* this is the android app
+* *app* contains the android app code
 * *hocr2pdf* contains c++ code to create pdf files
  * is used by the text fairy through a jni wrapper (textfairy/jni)
 * *image-processing* contains image processing code (binarization and page segmentation)
