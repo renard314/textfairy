@@ -177,8 +177,7 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         public void run() {
             animation.setVisible(false, true);
             animation.start();
-            final int delayMillis = (int) ((Math.random() * 5 + 15) * 1000);
-            Log.i(LOG_TAG, "IconAnimationRunnable:run() in " + delayMillis + " ms.");
+            final int delayMillis = (int) ((Math.random() * 15 + 15) * 1000);
             mHandler.postDelayed(this, delayMillis);
         }
     }
