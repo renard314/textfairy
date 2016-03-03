@@ -18,31 +18,26 @@ Features
 
 Project Structure
 -----------------
-* *textfairy* this is the android app
+* *app* contains the android app code
 * *hocr2pdf* contains c++ code to create pdf files
  * is used by the text fairy through a jni wrapper (textfairy/jni)
-* *OCRTest* contains image processing code (binarization and page segmentation)
- * can be compiled to a command line executable main.cpp to debug/test the image processing code
+* *image-processing* contains image processing code (binarization and page segmentation)
+ * can be compiled to a command line executable main.cpp 
+ * CppTestProject contains an XCode project to debug and test the image processing code
  * is used by the text fairy through a jni wrapper (textfairy/jni)
 
 The following android library projects are included as git submodules:
-* [ViewPager3D] [2]
+* [Forked Tesseract Tools for Android by rmtheis] [1]
 
 The following projects where added to the sources directly either because they were modified or they are not available as git repos:
-* [Tesseract (OCR Engine)] [4]
-* [Leptonica (Image processing library)] [5]
-* [Android Page Curl] [6]
-* [hocr2pdf] [7]
-* [Tesseract android tools] [8]
-* [libjpeg] [9]
+* [hocr2pdf] [2]
+* [libjpeg] [3]
+* [libpng-android] [4]
 
-  [2]: https://github.com/renard314/ViewPager3D
-  [4]: https://tesseract-ocr.googlecode.com/
-  [5]: http://www.leptonica.com/index.html
-  [6]: https://github.com/harism/android_page_curl/
-  [7]: http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/
-  [8]: https://code.google.com/p/tesseract-android-tools/
-  [9]: http://libjpeg.sourceforge.net/
+  [1]: https://github.com/rmtheis/tess-two
+  [2]: http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/
+  [3]: http://libjpeg.sourceforge.net/
+  [4]: https://github.com/julienr/libpng-android
 
 
 Building with gradle
