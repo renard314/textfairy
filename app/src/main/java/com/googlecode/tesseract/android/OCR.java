@@ -22,8 +22,8 @@ import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.CropImageScaler;
-import com.renard.ocr.cropimage.MonitoredActivity;
-import com.renard.util.Util;
+import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.util.Util;
 
 import android.content.Context;
 import android.graphics.Bitmap;

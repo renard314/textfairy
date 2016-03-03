@@ -16,7 +16,7 @@
 package com.renard.ocr;
 
 import com.crashlytics.android.Crashlytics;
-import com.renard.util.PreferencesUtils;
+import com.renard.ocr.util.PreferencesUtils;
 import com.squareup.leakcanary.LeakCanary;
 
 import android.app.Application;

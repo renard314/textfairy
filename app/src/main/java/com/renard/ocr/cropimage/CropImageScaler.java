@@ -17,7 +17,7 @@ package com.renard.ocr.cropimage;
 
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Scale;
-import com.renard.util.Util;
+import com.renard.ocr.util.Util;
 
 /**
  * Created by renard.

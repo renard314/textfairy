@@ -22,7 +22,7 @@
                 android:layout_height="match_parent"/>
 
 
-        <com.renard.ocr.FancyGridView
+        <com.renard.ocr.documents.viewing.grid.FancyGridView
                 android:background="@color/document_grid_background"
                 android:layout_below="@+id/toolbar"
                 android:id="@+id/gridview"

@@ -1,7 +1,7 @@
 package com.googlecode.tesseract.android;
 
 import com.googlecode.leptonica.android.Pix;
-import com.renard.util.Util;
+import com.renard.ocr.util.Util;
 
 import android.os.AsyncTask;
 

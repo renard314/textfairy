@@ -1,13 +1,12 @@
 package com.renard.ocr.cropimage;
 
-import com.renard.documentview.TopDialogFragment;
+import com.renard.ocr.documents.viewing.single.TopDialogFragment;
 import com.renard.ocr.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;

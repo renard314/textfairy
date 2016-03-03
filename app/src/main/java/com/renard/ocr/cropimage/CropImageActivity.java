@@ -25,10 +25,11 @@ import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Projective;
 import com.googlecode.leptonica.android.Rotate;
 import com.googlecode.tesseract.android.OCR;
-import com.renard.ocr.DocumentGridActivity;
+import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.R;
-import com.renard.ocr.help.HintDialog;
-import com.renard.util.Util;
+import com.renard.ocr.HintDialog;
+import com.renard.ocr.util.Util;
 
 import android.app.Dialog;
 import android.content.Intent;

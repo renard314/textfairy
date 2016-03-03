@@ -2,8 +2,8 @@ package com.renard.ocr.cropimage;
 
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.WriteFile;
-import com.renard.image_processing.Blur;
-import com.renard.image_processing.BlurDetectionResult;
+import com.renard.ocr.cropimage.image_processing.Blur;
+import com.renard.ocr.cropimage.image_processing.BlurDetectionResult;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;

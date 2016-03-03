@@ -133,4 +133,15 @@
         <item name="android:drawableLeft">@drawable/cross</item>
     </style>
 
+    <style name="ToolbarTheme" parent="AppBaseTheme">
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:actionModeStyle">@style/ActionMode</item>
+        <item name="actionModeStyle">@style/ActionMode</item>
+    </style>
+
+    <style name="ActionMode" parent="Widget.AppCompat.ActionMode">
+        <item name="android:background">@color/accent</item>
+        <item name="background">@color/accent</item>
+    </style>
+
 </resources>

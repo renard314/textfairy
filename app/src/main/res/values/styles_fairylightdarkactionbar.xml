@@ -8,16 +8,12 @@
         <item name="windowActionBar">false</item>
         <item name="colorPrimary">@color/primary</item>
         <item name="colorAccent">@color/accent</item>
-        <item name="actionBarStyle">@style/MyActionBar</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="colorControlNormal">@android:color/white</item>
         <item name="colorControlHighlight">@color/colorControlHighlight</item>
         <item name="android:textColorSecondary">@android:color/white</item>
     </style>
 
-    <style name="ToolbarTheme" parent="AppBaseTheme">
-        <item name="android:textColorSecondary">@android:color/white</item>
-    </style>
 
 
 

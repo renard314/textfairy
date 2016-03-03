@@ -10,7 +10,7 @@
              android:id="@+id/toolbar"/>
 
 
-    <com.renard.ocr.OCRImageView
+    <com.renard.ocr.visualisation.OCRImageView
             android:layout_below="@+id/toolbar"
             android:id="@+id/progress_image"
             android:layout_width="match_parent"
