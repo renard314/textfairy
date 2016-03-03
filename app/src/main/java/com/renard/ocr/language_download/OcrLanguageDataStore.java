@@ -92,7 +92,7 @@ public class OcrLanguageDataStore {
     }
 
     private static boolean isLanguageFileFor(File pathname, String ocrLang) {
-        return pathname.getName().startsWith(ocrLang) && pathname.isFile();
+        return pathname.getName().startsWith(ocrLang + ".") && pathname.isFile();
     }
 
     public static boolean deleteLanguage(OcrLanguage language, Context context) {
