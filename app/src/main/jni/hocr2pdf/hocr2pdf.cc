@@ -81,7 +81,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 }
 
 
-void Java_com_renard_pdf_Hocr2Pdf_nativeHocr2pdf( JNIEnv* env, jobject thiz, jobjectArray imageStrings, jobjectArray hocrBytes, jstring out, jboolean sloppy, jboolean overlayImage)
+void Java_com_renard_ocr_pdf_Hocr2Pdf_nativeHocr2pdf( JNIEnv* env, jobject thiz, jobjectArray imageStrings, jobjectArray hocrBytes, jstring out, jboolean sloppy, jboolean overlayImage)
 {
   LOGI("Java_com_renard_pdf_Hocr2Pdf_nativeHocr2pdf");
 
