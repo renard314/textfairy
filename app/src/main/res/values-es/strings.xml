@@ -221,4 +221,9 @@
     <string name="feedback_description">Como fue tu experiencia usando la app?</string>
     <string name="first_time_bad_result">Por favor lee los consejos o infórmame de tu problema y haré lo mejor para poder ayudarte.</string>
     <string name="start_scan">Empezar</string>
+    <string name="ok">ok</string>
+    <string name="download_manager_disabled">DownloadManager está deshabilitado . Por favor
+        activarlo.
+    </string>
+    <string name="could_not_load_image">No se pudo cargar la imagen.</string>
 </resources>

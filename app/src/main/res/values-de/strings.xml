@@ -223,5 +223,8 @@
         helfen kann.
     </string>
     <string name="start_scan">Start</string>
+    <string name="ok">ok</string>
+    <string name="download_manager_disabled">Bitte aktiviere den Downloadmanager.</string>
+    <string name="could_not_load_image">Bild konnte nicht geladen werden.</string>
 
 </resources>
