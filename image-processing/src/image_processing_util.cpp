@@ -33,7 +33,7 @@
 #include <sstream>
 #include <string>
 
-#include "binarize.h"
+#include "PixBinarizer.h"
 #include "dewarp.h"
 #include "pageseg.h"
 
@@ -51,16 +51,18 @@ void bookpage(Pix* pixOrg, Pix** pixText, void (*messageJavaCallback)(int), void
 	}
 
 	int depth = pixGetDepth(pixOrg);
+    PixBinarizer binarizer(false);
 	if (depth == 32) {
 		log("converting from 32 to 8 bit");
-		pixsg = pixConvertRGBToLuminance(pixOrg);
-		binarize(pixsg, NULL, &pixb);
+        pixsg = pixConvertRGBToLuminance(pixOrg);
+        log("binarizing");
+        pixb = binarizer.binarize(pixsg, pixJavaCallback);
 	    pixDestroy(&pixsg);
 	} else if(depth==1){
 		pixb = pixClone(pixOrg);
 	} else {
 		pixsg = pixClone(pixOrg);
-		binarize(pixsg, NULL, &pixb);
+        pixb = binarizer.binarize(pixsg, pixJavaCallback);
 	    pixDestroy(&pixsg);
 	}
 

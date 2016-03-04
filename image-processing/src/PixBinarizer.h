@@ -13,7 +13,7 @@
 class PixBinarizer {
 public:
 	PixBinarizer(bool debug);
-	Pix* binarize(Pix* pix);
+    Pix* binarize(Pix* pix,  void(*previewCallBack) (Pix*));
 
 	virtual ~PixBinarizer();
 

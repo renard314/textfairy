@@ -23,9 +23,9 @@
 #include <iostream>
 #include <pthread.h>
 #include <cmath>
-#include "binarize.h"
 #include "pageseg.h"
 #include "PixBlurDetect.h"
+#include "PixBinarizer.h"
 #include <image_processing_util.h>
 
 using namespace std;
@@ -152,7 +152,9 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeAnalyseLayout(JNIEnv *env, 
 	Pix* pixsg;
 	extractImages(pixOrg, &pixhm, &pixsg);
 	pixJavaCallback(pixsg);
-	binarize(pixsg, pixhm, &pixb);
+    PixBinarizer binarizer(false);
+    pixb = binarizer.binarize(pixsg, pixJavaCallback);
+
 	pixDestroy(&pixsg);
 
 
