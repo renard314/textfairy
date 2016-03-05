@@ -159,7 +159,7 @@
     <string name="empty_grid_gallery">Hier tippen um Text auf einem Bild aus deiner Galerie zu erkennen.</string>
     <string name="empty_grid_fairy">PS: Tippe auf die Fee für noch mehr Infos.</string>
     <string name="contribute_title">Verbessere die App</string>
-    <string name="contribute_text">Eine OCR-App zu programmieren nicht leicht. Aber Du kannst mir helfen, die App zu verbessern</string>
+    <string name="contribute_text">Eine OCR-App zu programmieren is viel Arbeit. Aber Du kannst mir helfen, die App zu verbessern</string>
     <string name="rating_title">Bewerte die App</string>
     <string name="rating_text">Du findest die App nützlich? Ich freue mich immer über hilfreiche Bewertungen.</string>
     <string name="feedback_title">Sende Feedback</string>
@@ -227,5 +227,7 @@
     <string name="download_manager_disabled">Bitte aktiviere den Downloadmanager.</string>
     <string name="could_not_load_image">Bild konnte nicht geladen werden.</string>
     <string name="document_scanned_as">Textsprache ist %s.</string>
+    <string name="delete_document_message">Alle Seiten werden gelöscht.</string>
+    <string name="delete_whole_document">Document löschen?</string>
 
 </resources>

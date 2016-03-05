@@ -160,7 +160,7 @@
     <string name="empty_grid_gallery">Tap here to convert text from an existing image.</string>
     <string name="empty_grid_fairy">P.S. Tap on the fairy for more info.</string>
     <string name="contribute_title">Improve the app</string>
-    <string name="contribute_text">Creating an OCR app is hard. But you can help me to improve the app.</string>
+    <string name="contribute_text">Creating an OCR app is a lot of work. But you can help me to improve the app.</string>
     <string name="rating_title">Rate the app</string>
     <string name="rating_text">The app is useful to you? Review it on the Play Store.</string>
     <string name="feedback_title">Send feedback</string>
@@ -230,4 +230,6 @@
     <string name="download_manager_disabled">DownloadManager is disabled. Please enable it.</string>
     <string name="ok">OK</string>
     <string name="document_scanned_as">Document language was set to %s.</string>
+    <string name="delete_whole_document">Delete document?</string>
+    <string name="delete_document_message">All pages will be deleted.</string>
 </resources>
