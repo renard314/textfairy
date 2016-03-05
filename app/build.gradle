@@ -41,11 +41,12 @@ def getVersionCodeFromManifest(String prefix) {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "22.0.1"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         //testHandleProfiling true
         //testFunctionalTest true
