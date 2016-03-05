@@ -25,11 +25,8 @@
 
 #include "image_processing_util.h"
 
-#include <allheaders.h>
-#include <dewarp_textfairy.h>
-#include <environ.h>
-#include <imageio.h>
-#include <pix.h>
+#include "allheaders.h"
+#include "dewarp_textfairy.h"
 #include <sstream>
 #include <string>
 
@@ -156,7 +153,7 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 	Pixa* pixaSelectedColumns = pixaCreate(textCount);
 	for (int i = 0; i < textCount; i++) {
 		int textIndex = textindexes[i];
-		const l_int32 border = 40;
+		const l_int32 border = 0;
 		Pix* p = pixaGetPix(pixaText, textIndex, L_CLONE);
 		Pix* p_with_border = pixAddBorder(p, border, 0);
 		pixDestroy(&p);
@@ -167,6 +164,7 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 		int x,y,w,h;
 		boxGetGeometry(b,&x,&y,&w,&h);
 		translateBoxa(pixaText,border,border,x,y);
+
 	}
 	pixaDestroy(&pixaText);
 
@@ -183,6 +181,7 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 			log("dewarp success");
 			dw = pixGetWidth(pixDewarped);
 			dh = pixGetHeight(pixDewarped);
+            pixDisplay(pixDewarped, 0, 0);
 			dx = dw - w;
 			dy = dh - h;
 			boxSetGeometry(b, x, y, dw, dh);
@@ -190,8 +189,10 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
 			translateBoxa(pixaSelectedColumns, dx, dy, x, y);
 		}
 	}
-
-	callbackMessage(MESSAGE_ASSEMBLE_PIX);
+    
+    if(callbackMessage!=NULL){
+        callbackMessage(MESSAGE_ASSEMBLE_PIX);
+    }
 
 	int xb, yb, wb, hb;
 	int left = MAX_INT16;

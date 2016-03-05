@@ -8,7 +8,7 @@
 #ifndef PIXBINARIZER_H_
 #define PIXBINARIZER_H_
 
-#include <allheaders.h>
+#include "allheaders.h"
 
 class PixBinarizer {
 public:

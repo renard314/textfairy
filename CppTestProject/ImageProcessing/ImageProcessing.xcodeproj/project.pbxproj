@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B242B5311C8A94AD008E56DE /* pageseg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B242B52F1C8A94AD008E56DE /* pageseg.cpp */; };
+		B242B5341C8AA44B008E56DE /* image_processing_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B242B5321C8AA44B008E56DE /* image_processing_util.cpp */; };
+		B242B5371C8AA82C008E56DE /* dewarp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B242B5361C8AA82C008E56DE /* dewarp.cpp */; };
 		B26DE9E31C143C9300D73678 /* RunningStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B26DE9E11C143C9300D73678 /* RunningStats.cpp */; };
 		B29E1CFA1BE486670023496D /* PixAdaptiveBinarizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B29E1CF61BE486670023496D /* PixAdaptiveBinarizer.cpp */; };
 		B29E1CFB1BE486670023496D /* TimerUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B29E1CF81BE486670023496D /* TimerUtil.cpp */; };
@@ -197,6 +200,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B242B52F1C8A94AD008E56DE /* pageseg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pageseg.cpp; path = "../../../image-processing-private/src/pageseg.cpp"; sourceTree = "<group>"; };
+		B242B5301C8A94AD008E56DE /* pageseg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pageseg.h; path = "../../../image-processing-private/src/pageseg.h"; sourceTree = "<group>"; };
+		B242B5321C8AA44B008E56DE /* image_processing_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = image_processing_util.cpp; path = "../../../image-processing/src/image_processing_util.cpp"; sourceTree = "<group>"; };
+		B242B5331C8AA44B008E56DE /* image_processing_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = image_processing_util.h; path = "../../../image-processing/src/image_processing_util.h"; sourceTree = "<group>"; };
+		B242B5351C8AA82C008E56DE /* dewarp_textfairy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dewarp_textfairy.h; path = "../../../image-processing/src/dewarp_textfairy.h"; sourceTree = "<group>"; };
+		B242B5361C8AA82C008E56DE /* dewarp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dewarp.cpp; path = "../../../image-processing/src/dewarp.cpp"; sourceTree = "<group>"; };
 		B26DE9E11C143C9300D73678 /* RunningStats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RunningStats.cpp; path = "../../../image-processing/src/RunningStats.cpp"; sourceTree = "<group>"; };
 		B26DE9E21C143C9300D73678 /* RunningStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RunningStats.h; path = "../../../image-processing/src/RunningStats.h"; sourceTree = "<group>"; };
 		B29E1CF61BE486670023496D /* PixAdaptiveBinarizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PixAdaptiveBinarizer.cpp; path = "../../../image-processing/src/PixAdaptiveBinarizer.cpp"; sourceTree = "<group>"; };
@@ -706,6 +715,12 @@
 		B29EF5E61BBFE11500888B3D /* src */ = {
 			isa = PBXGroup;
 			children = (
+				B242B5351C8AA82C008E56DE /* dewarp_textfairy.h */,
+				B242B5361C8AA82C008E56DE /* dewarp.cpp */,
+				B242B5321C8AA44B008E56DE /* image_processing_util.cpp */,
+				B242B5331C8AA44B008E56DE /* image_processing_util.h */,
+				B242B52F1C8A94AD008E56DE /* pageseg.cpp */,
+				B242B5301C8A94AD008E56DE /* pageseg.h */,
 				B2C5B0AD1C660C09000ADD91 /* PixEdgeDetector.cpp */,
 				B2C5B0AE1C660C09000ADD91 /* PixEdgeDetector.h */,
 				B26DE9E11C143C9300D73678 /* RunningStats.cpp */,
@@ -900,6 +915,7 @@
 				B29EF2861BBFB20400888B3D /* psio1stub.c in Sources */,
 				B29EF2871BBFB20400888B3D /* psio2.c in Sources */,
 				B29EF2881BBFB20400888B3D /* psio2stub.c in Sources */,
+				B242B5341C8AA44B008E56DE /* image_processing_util.cpp in Sources */,
 				B29EF2891BBFB20400888B3D /* ptabasic.c in Sources */,
 				B29EF28A1BBFB20400888B3D /* ptafunc1.c in Sources */,
 				B29EF28B1BBFB20400888B3D /* ptra.c in Sources */,
@@ -933,11 +949,13 @@
 				B29EF2AC1BBFB20500888B3D /* shear.c in Sources */,
 				B29EF2AD1BBFB20500888B3D /* skew.c in Sources */,
 				B29EF2AE1BBFB20500888B3D /* spixio.c in Sources */,
+				B242B5311C8A94AD008E56DE /* pageseg.cpp in Sources */,
 				B29EF2AF1BBFB20500888B3D /* stack.c in Sources */,
 				B29EF5EC1BBFF72C00888B3D /* binarize.cpp in Sources */,
 				B29EF2B11BBFB20500888B3D /* sudoku.c in Sources */,
 				B29EF2B31BBFB20500888B3D /* textops.c in Sources */,
 				B29EF2B41BBFB20500888B3D /* tiffio.c in Sources */,
+				B242B5371C8AA82C008E56DE /* dewarp.cpp in Sources */,
 				B29EF2B51BBFB20500888B3D /* tiffiostub.c in Sources */,
 				B26DE9E31C143C9300D73678 /* RunningStats.cpp in Sources */,
 				B29EF2B61BBFB20500888B3D /* utils.c in Sources */,

@@ -23,7 +23,7 @@
 #ifndef BINARIZE_H_
 #define BINARIZE_H_
 
-#include <allheaders.h>
+#include "allheaders.h"
 
 
 Pix* createEdgeMask(Pix* pixs);

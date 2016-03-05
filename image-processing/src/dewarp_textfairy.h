@@ -23,7 +23,7 @@
 #ifndef DEWARP_H_
 #define DEWARP_H_
 
-#include <allheaders.h>
+#include "allheaders.h"
 
 
 l_int32 pixDewarp(Pix* pixs, Pix** pixd);

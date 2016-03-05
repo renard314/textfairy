@@ -44,8 +44,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 }
 
 void Java_com_googlecode_tesseract_android_OCR_nativeInit(JNIEnv *env, jobject _thiz) {
-	jclass cls;
-	cls = env->FindClass("com/googlecode/tesseract/android/OCR");
+	jclass cls = env->FindClass("com/googlecode/tesseract/android/OCR");
 	onProgressImage = env->GetMethodID(cls, "onProgressImage", "(J)V");
 	onProgressText = env->GetMethodID(cls, "onProgressText", "(I)V");
 	onLayoutElements = env->GetMethodID(cls, "onLayoutElements", "(II)V");
@@ -149,16 +148,11 @@ jint Java_com_googlecode_tesseract_android_OCR_nativeAnalyseLayout(JNIEnv *env, 
 	Pix* pixb, *pixhm;
 	messageJavaCallback(MESSAGE_IMAGE_DETECTION);
 
-	Pix* pixsg;
-	extractImages(pixOrg, &pixhm, &pixsg);
-	pixJavaCallback(pixsg);
     PixBinarizer binarizer(false);
-    pixb = binarizer.binarize(pixsg, pixJavaCallback);
+    pixb = binarizer.binarize(pixOrg, pixJavaCallback);
+    pixJavaCallback(pixb);
 
-	pixDestroy(&pixsg);
-
-
-	segmentComplexLayout(pixOrg, pixhm, pixb, &pixaImages, &pixaTexts, callbackLayout, true);
+	segmentComplexLayout(pixOrg, NULL, pixb, &pixaImages, &pixaTexts, callbackLayout, true);
 
 	if (isStateValid()) {
 		env->CallVoidMethod(thiz, onLayoutElements, pixaTexts, pixaImages);

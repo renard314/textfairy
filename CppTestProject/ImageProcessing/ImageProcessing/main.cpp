@@ -16,7 +16,8 @@
 #include "binarize.h"
 #include "TimerUtil.h"
 #include <math.h>
-
+#include "pageseg.h"
+#include "image_processing_util.h"
 using namespace std;
 
 void binariseTestFolder(const char* images) {
@@ -569,15 +570,34 @@ Pix* findpolarityRegionsTiled(Pix* pixs, const l_uint32 tileSize) {
 }
 
 
-void findpolarityRegions(const char* image) {
+void pageSegTest(const char* image) {
     Pix* pixOrg;
     if ((pixOrg = pixRead(image)) != NULL) {
-        Pix* pixGrey = pixConvertTo8(pixOrg, FALSE);
-        Pix* pixb = findpolarityRegionsTiled(pixGrey, 15);
+        PixBinarizer binarizer = PixBinarizer(false);
+        Pix* pixb = binarizer.binarize(pixOrg, NULL);
+        Pixa* pixaText;
+        Pixa* pixaImage;
+        segmentComplexLayout(pixOrg, NULL, pixb,&pixaImage, &pixaText, NULL, false);
+        Boxa* boxaText = pixaGetBoxa(pixaText, L_CLONE);
         
+        renderTransformedBoxa(pixOrg, boxaText, 1344);
+        pixWrite("columns.png", pixOrg, IFF_PNG);
+        
+        int textindexes[1]  = {0};
+        int textCount = 1;
+        int imageindexes[0];
+        int imageCount = 0;
+        
+        Pix* pixFinal;
+        Pix* pixOcr;
+        Boxa* boxaColumn;
+        
+        combineSelectedPixa(pixaText, NULL, textindexes, textCount, imageindexes, imageCount, NULL, &pixFinal, &pixOcr, &boxaColumn,true);
+        
+        pixWrite("combined.png", pixFinal, IFF_PNG);
+        boxaDestroy(&boxaText);
         pixDestroy(&pixOrg);
-        pixDestroy(&pixGrey);
-        pixDestroy(&pixb);
+//        pixDestroy(&pixb);
     }
     
 }
@@ -587,12 +607,12 @@ int main(int argc, const char * argv[]) {
     char * dir = getcwd(NULL, 0);
     cout << "Current dir: " << dir << endl;
     //findpolarityRegions("/Users/renard/devel/textfairy/test-images/binarize/8.jpg");
-    binariseTest("/Users/renard/devel/textfairy/test-images/binarize/last_scan101.jpg");
+//    binariseTest("/Users/renard/devel/textfairy/test-images/binarize/last_scan101.jpg");
     //binariseTest("/Users/renard/devel/textfairy/test-images/binarize/11.png");
     //testBinary("/Users/renard/devel/textfairy/test-images/binarize/pixDiff.png");
     //testBinary("/Users/renard/devel/textfairy/test-images/binarize/27.jpg");
     
-
+    pageSegTest("/Users/renard/devel/textfairy/test-images/binarize/last_scan24.png");
 //    runBlackOnWhiteData();
 //    finetune2();
     //plotCandidates();

@@ -273,8 +273,7 @@ Pix *PixBinarizer::binarize(Pix *pix, void(*previewCallBack)(Pix *)) {
     /* Do combination of contrast norm and sauvola */
     //	pixtContrast = pixContrastNorm(NULL, pixGrey, 100, 100, 55, 1, 1);
     //	pixSauvolaBinarizeTiled(pixtContrast, 9, 0.15, 1, 1, NULL, &pixBinary);
-    
-    pixDestroy(&pixtContrast);
+    //  pixDestroy(&pixtContrast);
     pixDestroy(&pixGrey);
     
     return pixBinary;
