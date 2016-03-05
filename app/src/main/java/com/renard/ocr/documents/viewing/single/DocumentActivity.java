@@ -29,6 +29,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
@@ -41,6 +42,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
@@ -58,6 +60,8 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
 
     public interface DocumentContainerFragment {
         String getLangOfCurrentlyShownDocument();
+
+        int getDocumentCount();
 
         void setCursor(final Cursor cursor);
 
@@ -173,9 +177,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
             startActivityForResult(tocIndent, REQUEST_CODE_TABLE_OF_CONTENTS);
             return true;
         } else if (itemId == R.id.item_delete) {
-            Set<Integer> idToDelete = new HashSet<>();
-            idToDelete.add(getParentId());
-            new DeleteDocumentTask(idToDelete, true).execute();
+            deleteDocument();
             return true;
         } else if (itemId == R.id.item_export_as_pdf) {
             exportAsPdf();
@@ -192,6 +194,27 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteDocument() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.delete_whole_document);
+        builder.setMessage(getString(R.string.delete_document_message));
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Set<Integer> idToDelete = new HashSet<>();
+                idToDelete.add(getParentId());
+                new DeleteDocumentTask(idToDelete, true).execute();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
 

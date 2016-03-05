@@ -16,9 +16,9 @@
 
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.documents.viewing.single.DocumentActivity.DocumentContainerFragment;
-import com.renard.ocr.R;
 import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
+import com.renard.ocr.documents.viewing.single.DocumentActivity.DocumentContainerFragment;
 import com.renard.ocr.util.PreferencesUtils;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -153,6 +153,15 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
         DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
         int currentItem = mPager.getCurrentItem();
         return adapter.getLanguage(currentItem);
+    }
+
+    @Override
+    public int getDocumentCount() {
+        if (mCursor != null) {
+            return mCursor.getCount();
+        } else {
+            return 0;
+        }
     }
 
     @Override
