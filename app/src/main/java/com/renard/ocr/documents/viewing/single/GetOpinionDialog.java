@@ -24,6 +24,7 @@ import java.io.File;
 public class GetOpinionDialog extends TopDialogFragment implements DialogInterface.OnClickListener {
 
     public static final String TAG = GetOpinionDialog.class.getSimpleName();
+    private static final String EXTRA_LANGUAGE = "extra_language";
 
     private Button mLoveIt;
     private Button mCouldBeBetter;
@@ -46,8 +47,9 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
         void onContinueClicked();
     }
 
-    public static GetOpinionDialog newInstance() {
+    public static GetOpinionDialog newInstance(String language) {
         Bundle extra = new Bundle();
+        extra.putString(EXTRA_LANGUAGE, language);
         final GetOpinionDialog dialog = new GetOpinionDialog();
         dialog.setArguments(extra);
         return dialog;
@@ -87,6 +89,8 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
 
 
     private void showFeedbackButton() {
+        final String language = getArguments().getString(EXTRA_LANGUAGE);
+        final String body = getString(R.string.document_scanned_as, language);
         mLoveIt.setVisibility(View.GONE);
         mButtonDivider.setVisibility(View.GONE);
         mCouldBeBetter.setText(R.string.feedback_title);
@@ -95,7 +99,7 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
             @Override
             public void onClick(View v) {
                 File lastOriginalImage = OCR.getLastOriginalImageFromCache(getActivity());
-                Intent intent = ContactActivity.getFeedbackIntent(getActivity(), getString(R.string.feedback_subject), lastOriginalImage);
+                Intent intent = ContactActivity.getFeedbackIntent(getActivity(), getString(R.string.feedback_subject), lastOriginalImage, body);
                 startActivity(intent);
                 dismiss();
                 notifyListener();

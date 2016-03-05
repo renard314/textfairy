@@ -226,4 +226,5 @@
         activarlo.
     </string>
     <string name="could_not_load_image">No se pudo cargar la imagen.</string>
+    <string name="document_scanned_as">idioma del documento se establece en %s.</string>
 </resources>

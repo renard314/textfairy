@@ -16,11 +16,11 @@
 
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.documents.creation.NewDocumentActivitiy;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.R;
 import com.renard.ocr.HintDialog;
+import com.renard.ocr.R;
+import com.renard.ocr.documents.creation.NewDocumentActivitiy;
 import com.renard.ocr.language.OcrLanguage;
 import com.renard.ocr.util.PreferencesUtils;
 
@@ -119,10 +119,11 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         }
         if (numberOfSuccessfulScans == 2) {
-            GetOpinionDialog.newInstance().show(getSupportFragmentManager(), GetOpinionDialog.TAG);
+            GetOpinionDialog.newInstance(getLanguageOfDocument()).show(getSupportFragmentManager(), GetOpinionDialog.TAG);
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         } else if (accuracy > -1) {
-            OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
+            final String languageOfDocument = getLanguageOfDocument();
+            OCRResultDialog.newInstance(accuracy, languageOfDocument).show(getSupportFragmentManager(), OCRResultDialog.TAG);
         }
 
     }
@@ -130,7 +131,8 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
     @Override
     public void onContinueClicked() {
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
-        OCRResultDialog.newInstance(accuracy).show(getSupportFragmentManager(), OCRResultDialog.TAG);
+        final String languageOfDocument = getLanguageOfDocument();
+        OCRResultDialog.newInstance(accuracy, languageOfDocument).show(getSupportFragmentManager(), OCRResultDialog.TAG);
     }
 
     @Override

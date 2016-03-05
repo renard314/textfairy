@@ -23,12 +23,14 @@ public class OCRResultDialog extends DialogFragment implements View.OnClickListe
     public static final String TAG = OCRResultDialog.class.getSimpleName();
 
     private final static String EXTRA_ACCURACY = "extra_ocr_accuracy";
+    private final static String EXTRA_LANGUAGE = "extra_language";
     public static final int LOW_ACCURACY = 75;
     public static final int MEDIUM_ACCURACY = 83;
 
-    public static OCRResultDialog newInstance(int ocrAccuracy) {
+    public static OCRResultDialog newInstance(int ocrAccuracy, String language) {
         Bundle extra = new Bundle();
         extra.putInt(EXTRA_ACCURACY, ocrAccuracy);
+        extra.putString(EXTRA_LANGUAGE, language);
         final OCRResultDialog ocrResultDialog = new OCRResultDialog();
         ocrResultDialog.setArguments(extra);
         return ocrResultDialog;
@@ -98,7 +100,9 @@ public class OCRResultDialog extends DialogFragment implements View.OnClickListe
         switch (v.getId()) {
             case R.id.button_send_feedback:
                 File lastOriginalImage = OCR.getLastOriginalImageFromCache(getActivity());
-                Intent intent = ContactActivity.getFeedbackIntent(getActivity(), getString(R.string.feedback_subject), lastOriginalImage);
+                final String language = getArguments().getString(EXTRA_LANGUAGE);
+                String body = activity.getString(R.string.document_scanned_as, language);
+                Intent intent = ContactActivity.getFeedbackIntent(getActivity(), getString(R.string.feedback_subject), lastOriginalImage, body);
                 startActivity(intent);
                 break;
             case R.id.button_show_tips:

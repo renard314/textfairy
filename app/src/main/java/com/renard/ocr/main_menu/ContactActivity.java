@@ -15,8 +15,8 @@
  */
 package com.renard.ocr.main_menu;
 
-import com.renard.ocr.R;
 import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
 
 import android.content.Context;
 import android.content.Intent;
@@ -53,7 +53,7 @@ public class ContactActivity extends MonitoredActivity {
         return intent;
     }
 
-    public static Intent getFeedbackIntent(Context context, String subject, File file) {
+    public static Intent getFeedbackIntent(Context context, String subject, File file, String body) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
         if (subject != null) {
@@ -64,6 +64,10 @@ public class ContactActivity extends MonitoredActivity {
             intent.putExtra(Intent.EXTRA_STREAM, uriForFile);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
+        if (body != null) {
+            intent.putExtra(Intent.EXTRA_TEXT, body);
+        }
+
         intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{FEEDBACK_MAIL});
         return intent;
     }

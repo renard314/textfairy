@@ -226,5 +226,6 @@
     <string name="ok">ok</string>
     <string name="download_manager_disabled">Bitte aktiviere den Downloadmanager.</string>
     <string name="could_not_load_image">Bild konnte nicht geladen werden.</string>
+    <string name="document_scanned_as">Textsprache ist %s.</string>
 
 </resources>
