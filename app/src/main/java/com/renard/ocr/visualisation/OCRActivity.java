@@ -296,6 +296,7 @@ public class OCRActivity extends MonitoredActivity {
                                 Intent i;
                                 i = new Intent(OCRActivity.this, DocumentActivity.class);
                                 i.putExtra(DocumentActivity.EXTRA_ACCURACY, accuracy);
+                                i.putExtra(DocumentActivity.EXTRA_LANGUAGE, mOcrLanguage);
                                 i.setData(documentUri);
                                 i.putExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, pix.getNativePix());
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

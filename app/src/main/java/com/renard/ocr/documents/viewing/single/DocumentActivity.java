@@ -71,7 +71,8 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
     static final int REQUEST_CODE_TTS_CHECK = 6;
     private static final int REQUEST_CODE_OPTIONS = 4;
     private static final int REQUEST_CODE_TABLE_OF_CONTENTS = 5;
-    public static final String EXTRA_ACCURACY = "ask_for_title";
+    public static final String EXTRA_ACCURACY = "extra_accuracy";
+    public static final String EXTRA_LANGUAGE = "extra_language";
 
     private int mParentId;
     private Cursor mCursor;
@@ -114,16 +115,16 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
 
     private void showResultDialog() {
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, -1);
+        String language = getIntent().getStringExtra(EXTRA_LANGUAGE);
         int numberOfSuccessfulScans = PreferencesUtils.getNumberOfSuccessfulScans(getApplicationContext());
         if (accuracy >= OCRResultDialog.MEDIUM_ACCURACY) {
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         }
         if (numberOfSuccessfulScans == 2) {
-            GetOpinionDialog.newInstance(getLanguageOfDocument()).show(getSupportFragmentManager(), GetOpinionDialog.TAG);
+            GetOpinionDialog.newInstance(language).show(getSupportFragmentManager(), GetOpinionDialog.TAG);
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         } else if (accuracy > -1) {
-            final String languageOfDocument = getLanguageOfDocument();
-            OCRResultDialog.newInstance(accuracy, languageOfDocument).show(getSupportFragmentManager(), OCRResultDialog.TAG);
+            OCRResultDialog.newInstance(accuracy, language).show(getSupportFragmentManager(), OCRResultDialog.TAG);
         }
 
     }
@@ -131,7 +132,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
     @Override
     public void onContinueClicked() {
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
-        final String languageOfDocument = getLanguageOfDocument();
+        final String languageOfDocument = getIntent().getStringExtra(EXTRA_LANGUAGE);
         OCRResultDialog.newInstance(accuracy, languageOfDocument).show(getSupportFragmentManager(), OCRResultDialog.TAG);
     }
 
