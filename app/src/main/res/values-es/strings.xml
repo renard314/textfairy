@@ -204,7 +204,7 @@
     <string name="promo_video_title">Una breve introducción en Youtube.</string>
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Hola</string>
-    <string name="text_is_in">El texto está adentro</string>
+    <string name="text_is_in">"El texto está adentro: "</string>
     <string name="empty_grid_language">Puedo leer Alemán e Inglés pero puedes descargar más idiomas.</string>
     <string name="error_tess_init">Error interno. Por favor reinstala la app o los datos del idioma.</string>
     <string name="image_is_blurred">Tengo un problema.</string>

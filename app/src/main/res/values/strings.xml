@@ -204,7 +204,7 @@
     <string name="promo_video_title">A short introduction on Youtube.</string>
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Hello</string>
-    <string name="text_is_in">Recognise Text as</string>
+    <string name="text_is_in">"Recognise Text as: "</string>
     <string name="empty_grid_language">I can read German and English but you can download more languages.</string>
     <string name="error_tess_init">Internal OCR Error. Please reinstall the app or the language data.</string>
     <string name="image_is_blurred">I have a problem.</string>

@@ -3,7 +3,7 @@
           android:id="@android:id/text1"
           android:singleLine="true"
           android:textSize="18sp"
-          android:gravity="center_horizontal"
+          android:gravity="center_horizontal|start"
           android:textColor="@color/accent"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
