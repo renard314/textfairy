@@ -16,19 +16,21 @@
 
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.documents.creation.NewDocumentActivitiy;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.R;
+import com.renard.ocr.documents.creation.NewDocumentActivitiy;
 import com.renard.ocr.util.PreferencesUtils;
 
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,9 +47,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
     private EditText mEditText;
     private int mDocumentId;
     private boolean mHasTextChanged;
-    private ViewSwitcher mViewSwitcher;
     private HtmlToSpannedAsyncTask mHtmlTask;
-    private NewDocumentActivitiy.SaveDocumentTask saveTask;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -71,12 +71,14 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         if (mHtmlTask != null) {
             mHtmlTask.cancel(true);
         }
+        mEditText.removeTextChangedListener(this);
     }
+
 
     @Override
     public void onPause() {
@@ -86,25 +88,30 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        String text = getArguments().getString("text");
         mDocumentId = getArguments().getInt("id");
         View view = inflater.inflate(R.layout.fragment_document, container, false);
         mEditText = (EditText) view.findViewById(R.id.editText_document);
-        mViewSwitcher = (ViewSwitcher) view.findViewById(R.id.viewSwitcher);
         if (mHtmlTask != null) {
             mHtmlTask.cancel(true);
-        }
-        if (savedInstanceState == null || !savedInstanceState.getBoolean(IS_STATE_SAVED)) {
-            mHtmlTask = new HtmlToSpannedAsyncTask(mEditText, mViewSwitcher, this);
-            mHtmlTask.execute(text);
-        } else {
-            mViewSwitcher.setDisplayedChild(1);
-            mEditText.addTextChangedListener(this);
         }
 
         PreferencesUtils.applyTextPreferences(mEditText, getActivity());
 
         return view;
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        String text = getArguments().getString("text");
+        ViewSwitcher viewSwitcher = (ViewSwitcher) getView().findViewById(R.id.viewSwitcher);
+        if (savedInstanceState == null || !savedInstanceState.getBoolean(IS_STATE_SAVED)) {
+            mHtmlTask = new HtmlToSpannedAsyncTask(mEditText, viewSwitcher, this);
+            mHtmlTask.execute(text);
+        } else {
+            viewSwitcher.setDisplayedChild(1);
+            mEditText.addTextChangedListener(this);
+        }
     }
 
 
@@ -116,7 +123,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
             List<Spanned> texts = new ArrayList<>();
             ids.add(uri);
             texts.add(mEditText.getText());
-            saveTask = new NewDocumentActivitiy.SaveDocumentTask(getActivity(), ids, texts);
+            NewDocumentActivitiy.SaveDocumentTask saveTask = new NewDocumentActivitiy.SaveDocumentTask(getActivity(), ids, texts);
             saveTask.execute();
         }
     }
@@ -135,6 +142,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+        Log.i(LOG_TAG, "onTextChanged(" + s + ", " + start + ", " + before + ", " + count + ")");
         mHasTextChanged = true;
     }
 
@@ -172,6 +180,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
         @Override
         protected void onPostExecute(Spanned spanned) {
             super.onPostExecute(spanned);
+            Log.i(LOG_TAG, "setText()");
             mEditText.setText(spanned);
             mEditText.addTextChangedListener(mTextWatcher);
             mViewSwitcher.setDisplayedChild(1);

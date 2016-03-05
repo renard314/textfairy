@@ -57,6 +57,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
 
     private final static String LOG_TAG = DocumentActivity.class.getSimpleName();
     private static final String STATE_DOCUMENT_URI = "documet_uri";
+    public static final int DOCUMENT_CURSOR_LOADER_ID = 45678998;
 
     public interface DocumentContainerFragment {
         String getLangOfCurrentlyShownDocument();
@@ -352,7 +353,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
             mParentId = parentId;
         }
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(DOCUMENT_CURSOR_LOADER_ID, null, this);
         return true;
     }
 
@@ -409,6 +410,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
             DocumentPagerFragment documentContainer = (DocumentPagerFragment) getDocumentContainer();
             documentContainer.setDisplayedPageByDocumentId(Integer.parseInt(id));
         }
+        getLoaderManager().destroyLoader(DOCUMENT_CURSOR_LOADER_ID);
 
     }
 
