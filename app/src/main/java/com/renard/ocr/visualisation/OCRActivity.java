@@ -20,15 +20,15 @@ import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.DocumentContentProvider;
+import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
-import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.visualisation.LayoutQuestionDialog.LayoutChoseListener;
-import com.renard.ocr.visualisation.LayoutQuestionDialog.LayoutKind;
-import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.util.Screen;
 import com.renard.ocr.util.Util;
+import com.renard.ocr.visualisation.LayoutQuestionDialog.LayoutChoseListener;
+import com.renard.ocr.visualisation.LayoutQuestionDialog.LayoutKind;
 
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
@@ -209,8 +209,9 @@ public class OCRActivity extends MonitoredActivity {
                                     || selectedImages.length > 0) {
                                 mImageView.clearAllProgressInfo();
 
+
                                 mOCR.startOCRForComplexLayout(OCRActivity.this,
-                                        determineOcrLanguage(mOcrLanguage), texts,
+                                        mOcrLanguage, texts,
                                         images, selectedTexts, selectedImages);
                                 mButtonStartOCR.setVisibility(View.GONE);
                             } else {
@@ -374,7 +375,7 @@ public class OCRActivity extends MonitoredActivity {
                             setToolbarMessage(R.string.progress_start);
 
                             if (layoutKind == LayoutKind.SIMPLE) {
-                                mOCR.startOCRForSimpleLayout(OCRActivity.this, determineOcrLanguage(ocrLanguage), pixOrg, mImageView.getWidth(), mImageView.getHeight());
+                                mOCR.startOCRForSimpleLayout(OCRActivity.this, ocrLanguage, pixOrg, mImageView.getWidth(), mImageView.getHeight());
                             } else if (layoutKind == LayoutKind.COMPLEX) {
                                 mAccuracy = 0;
                                 mOCR.startLayoutAnalysis(OCRActivity.this, pixOrg, mImageView.getWidth(), mImageView.getHeight());
@@ -392,36 +393,6 @@ public class OCRActivity extends MonitoredActivity {
         alertDialog.show();
     }
 
-    private String determineOcrLanguage(String ocrLanguage) {
-        final String english = "eng";
-        if (!ocrLanguage.equals(english) && addEnglishData(ocrLanguage)) {
-            return ocrLanguage + "+" + english;
-        } else {
-            return ocrLanguage;
-        }
-
-    }
-
-    // when combining languages that have multi byte characters with english
-    // training data the ocr text gets corrupted
-    // but adding english will improve overall accuracy for the other languages
-    private static boolean addEnglishData(String mLanguage) {
-        if (mLanguage.startsWith("chi") || mLanguage.equalsIgnoreCase("tha")
-                || mLanguage.equalsIgnoreCase("kor")
-                || mLanguage.equalsIgnoreCase("hin")
-                //|| mLanguage.equalsIgnoreCase("heb")
-                || mLanguage.equalsIgnoreCase("jap")
-                || mLanguage.equalsIgnoreCase("ell")
-                || mLanguage.equalsIgnoreCase("bel")
-                || mLanguage.equalsIgnoreCase("ara")
-                || mLanguage.equalsIgnoreCase("grc")
-                || mLanguage.equalsIgnoreCase("rus")
-                || mLanguage.equalsIgnoreCase("vie")) {
-            return false;
-
-        }
-        return true;
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

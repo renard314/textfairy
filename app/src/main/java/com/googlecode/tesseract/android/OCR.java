@@ -20,9 +20,10 @@ import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
+import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.CropImageScaler;
-import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.language.OcrLanguage;
 import com.renard.ocr.util.Util;
 
 import android.content.Context;
@@ -249,6 +250,51 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         mIsActivityAttached = true;
     }
 
+    private int determineOcrMode(String lang) {
+        boolean hasCubeSupport = OcrLanguage.hasCubeSupport(lang);
+        boolean canCombine = OcrLanguage.canCombineCubeAndTesseract(lang);
+        if (canCombine) {
+            return TessBaseAPI.OEM_TESSERACT_CUBE_COMBINED;
+        } else if (hasCubeSupport) {
+            return TessBaseAPI.OEM_DEFAULT;
+        } else {
+            return TessBaseAPI.OEM_TESSERACT_ONLY;
+        }
+    }
+
+
+    private String determineOcrLanguage(String ocrLanguage) {
+        final String english = "eng";
+        if (!ocrLanguage.equals(english) && addEnglishData(ocrLanguage)) {
+            return ocrLanguage + "+" + english;
+        } else {
+            return ocrLanguage;
+        }
+
+    }
+
+    // when combining languages that have multi byte characters with english
+    // training data the ocr text gets corrupted
+    // but adding english will improve overall accuracy for the other languages
+    private boolean addEnglishData(String mLanguage) {
+        if (mLanguage.startsWith("chi") || mLanguage.equalsIgnoreCase("tha")
+                || mLanguage.equalsIgnoreCase("kor")
+                || mLanguage.equalsIgnoreCase("hin")
+                //|| mLanguage.equalsIgnoreCase("heb")
+                || mLanguage.equalsIgnoreCase("jap")
+                || mLanguage.equalsIgnoreCase("ell")
+                || mLanguage.equalsIgnoreCase("bel")
+                || mLanguage.equalsIgnoreCase("ara")
+                || mLanguage.equalsIgnoreCase("grc")
+                || mLanguage.equalsIgnoreCase("rus")
+                || mLanguage.equalsIgnoreCase("vie")) {
+            return false;
+
+        }
+        return true;
+    }
+
+
     /**
      * native code takes care of both Pixa, do not use them after calling this
      * function
@@ -276,8 +322,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     Boxa boxa;
                     Pix pixOcr;
                     synchronized (OCR.this) {
+                        final String ocrLanguages = determineOcrLanguage(lang);
+                        int ocrMode = determineOcrMode(lang);
 
-                        if (!initTessApi(tessDir, lang)) return;
+                        if (!initTessApi(tessDir, ocrLanguages, ocrMode)) return;
                         pixOcr = new Pix(pixOcrPointer);
                         mTess.setPageSegMode(PageSegMode.PSM_SINGLE_BLOCK);
                         mTess.setImage(pixOcr);
@@ -334,9 +382,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         }).start();
     }
 
-    private boolean initTessApi(String tessDir, String lang) {
+
+    private boolean initTessApi(String tessDir, String lang, int ocrMode) {
         mTess = new TessBaseAPI(OCR.this);
-        boolean result = mTess.init(tessDir, lang);
+        boolean result = mTess.init(tessDir, lang, ocrMode);
         if (!result) {
             sendMessage(MESSAGE_ERROR, R.string.error_tess_init);
             return false;
@@ -399,7 +448,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
                     sendMessage(MESSAGE_FINAL_IMAGE, nativeTextPix);
                     synchronized (OCR.this) {
-                        if (!initTessApi(tessDir, lang)) return;
+                        final String ocrLanguages = determineOcrLanguage(lang);
+                        int ocrMode = determineOcrMode(lang);
+
+                        if (!initTessApi(tessDir, ocrLanguages, ocrMode)) return;
                         mTess.setPageSegMode(PageSegMode.PSM_AUTO);
                         mTess.setImage(pixText);
                     }

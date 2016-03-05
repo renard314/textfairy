@@ -31,7 +31,7 @@ public class OcrLanguage implements Parcelable {
         }
     }
 
-    private static final String[] CUBE_FILES = {".cube.bigrams", ".cube.fold", ".cube.lm", ".cube.nn", ".cube.params", ".cube.word-freq"};
+    private static final String[] CUBE_FILES = {".cube.fold", ".cube.lm", ".cube.nn", ".cube.params", ".cube.word-freq"};
 
 
     private boolean mDownloading;
@@ -135,8 +135,16 @@ public class OcrLanguage implements Parcelable {
         return result;
     }
 
+    public static boolean hasCubeSupport(String lang) {
+        return "ara".equalsIgnoreCase(lang) || "hin".equalsIgnoreCase(lang) || "rus".equalsIgnoreCase(lang);
+    }
+
+    public static boolean canCombineCubeAndTesseract(String lang) {
+        return "hin".equalsIgnoreCase(lang);
+    }
+
     private boolean needsCubeData() {
-        return "ara".equalsIgnoreCase(getValue()) || "hin".equalsIgnoreCase(getValue());
+        return hasCubeSupport(mValue);
     }
 
 
@@ -146,9 +154,14 @@ public class OcrLanguage implements Parcelable {
             result.add(getValue() + cubeFileName);
         }
         if ("hin".equalsIgnoreCase(mValue)) {
+            result.add(getValue() + ".cube.bigrams");
             result.add(getValue() + ".tesseract_cube.nn");
         }
         if ("ara".equalsIgnoreCase(mValue)) {
+            result.add(getValue() + ".cube.bigrams");
+            result.add(getValue() + ".cube.size");
+        }
+        if ("rus".equalsIgnoreCase(mValue)) {
             result.add(getValue() + ".cube.size");
         }
         return result;
