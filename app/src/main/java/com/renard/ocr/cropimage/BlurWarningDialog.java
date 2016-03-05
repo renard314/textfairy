@@ -1,7 +1,7 @@
 package com.renard.ocr.cropimage;
 
-import com.renard.ocr.documents.viewing.single.TopDialogFragment;
 import com.renard.ocr.R;
+import com.renard.ocr.documents.viewing.single.TopDialogFragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,11 +14,11 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 /**
- * Created by renard on 12/11/13.
+ * @author renard
  */
-public class ImageBlurredDialog extends TopDialogFragment implements DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
+public class BlurWarningDialog extends TopDialogFragment implements DialogInterface.OnClickListener, DialogInterface.OnCancelListener {
 
-    public static final String TAG = ImageBlurredDialog.class.getSimpleName();
+    public static final String TAG = BlurWarningDialog.class.getSimpleName();
 
     private final static String EXTRA_BLURRINES = "extra_blurrines";
 
@@ -49,10 +49,10 @@ public class ImageBlurredDialog extends TopDialogFragment implements DialogInter
         void onNewImageClicked();
     }
 
-    public static ImageBlurredDialog newInstance(float blurrines) {
+    public static BlurWarningDialog newInstance(float blurrines) {
         Bundle extra = new Bundle();
         extra.putFloat(EXTRA_BLURRINES, blurrines);
-        final ImageBlurredDialog dialog = new ImageBlurredDialog();
+        final BlurWarningDialog dialog = new BlurWarningDialog();
         dialog.setArguments(extra);
         return dialog;
     }

@@ -59,7 +59,7 @@ import de.greenrobot.event.EventBus;
 /**
  * The activity can crop specific region of interest from an image.
  */
-public class CropImageActivity extends MonitoredActivity implements ImageBlurredDialog.BlurDialogClickListener {
+public class CropImageActivity extends MonitoredActivity implements BlurWarningDialog.BlurDialogClickListener {
     public static final int RESULT_NEW_IMAGE = RESULT_FIRST_USER + 1;
     private static final int HINT_DIALOG_ID = 2;
     private final Handler mHandler = new Handler();
@@ -184,8 +184,8 @@ public class CropImageActivity extends MonitoredActivity implements ImageBlurred
                     case STRONG_BLUR:
                         zoomToBlurredRegion(cropData);
                         setTitle(R.string.image_is_blurred);
-                        ImageBlurredDialog dialog = ImageBlurredDialog.newInstance((float) cropData.getBlurriness().getBlurValue());
-                        dialog.show(getSupportFragmentManager(), ImageBlurredDialog.TAG);
+                        BlurWarningDialog dialog = BlurWarningDialog.newInstance((float) cropData.getBlurriness().getBlurValue());
+                        dialog.show(getSupportFragmentManager(), BlurWarningDialog.TAG);
                         break;
                 }
 

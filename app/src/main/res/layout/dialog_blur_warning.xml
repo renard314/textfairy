@@ -15,6 +15,7 @@
             android:drawableLeft="@drawable/ic_alert_warning"
             android:text="@string/image_is_blurred"
             android:id="@+id/blur_warning_title"
+            android:textColor="@color/primary"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
 
