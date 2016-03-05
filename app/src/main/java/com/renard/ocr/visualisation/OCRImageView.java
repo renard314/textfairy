@@ -105,8 +105,6 @@ public class OCRImageView extends ImageViewTouchBase {
     }
 
     public void setProgress(int newProgress, RectF wordBoundingBox, RectF ocrBoundingBox) {
-        Log.i(LOG_TAG, "OCRImageView.setProgress(" + wordBoundingBox + "," + ocrBoundingBox + ")");
-
         this.mProgress = newProgress;
         this.mWordBoundingBox.set(wordBoundingBox);
         this.mOCRBoundingBox.set(ocrBoundingBox);
