@@ -1,110 +1,75 @@
 package com.renard.ocr.documents.viewing.single;
 
 import com.renard.ocr.R;
-import com.renard.ocr.util.Util;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
-import android.annotation.TargetApi;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
-import android.widget.ViewSwitcher;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import java.io.File;
 
 /**
- * Created by renard on 02/04/14.
+ * @author renard
  */
 public class DocumentImageFragment extends Fragment {
 
+    public static final String EXTRA_IMAGE_PATH = "image_path";
     private ImageView mImageView;
-    private ViewSwitcher mViewSwitcher;
-    private LoadImageAsyncTask mImageTask;
+    private ProgressBar mProgressBar;
 
     public static DocumentImageFragment newInstance(final String imagePath) {
         DocumentImageFragment f = new DocumentImageFragment();
-        // Supply text input as an argument.
         Bundle args = new Bundle();
-        args.putString("image_path", imagePath);
+        args.putString(EXTRA_IMAGE_PATH, imagePath);
         f.setArguments(args);
         return f;
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mImageTask != null) {
-            mImageTask.cancel(true);
-        }
+    public void onDestroyView() {
+        super.onDestroyView();
+        Picasso.with(getActivity()).cancelRequest(mImageView);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final String imagePath = getArguments().getString("image_path");
+        final String imagePath = getArguments().getString(EXTRA_IMAGE_PATH);
         View view = inflater.inflate(R.layout.fragment_document_image, container, false);
+        if (imagePath == null) {
+            showError();
+            return view;
+        }
+
         mImageView = (ImageView) view.findViewById(R.id.imageView);
-        mViewSwitcher = (ViewSwitcher) view.findViewById(R.id.viewSwitcher);
-        //use async loading
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progress);
+        final File file = new File(imagePath);
+        Picasso.with(getActivity()).load(file).fit().centerInside().into(mImageView, new Callback() {
+            @Override
+            public void onSuccess() {
+                mProgressBar.setVisibility(View.GONE);
+            }
 
-        mImageView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-
-                    @Override
-                    @TargetApi(16)
-                    public void onGlobalLayout() {
-                        if (mImageTask != null) {
-                            mImageTask.cancel(true);
-                        }
-                        mImageTask = new LoadImageAsyncTask(mImageView, mViewSwitcher);
-                        mImageTask.execute(imagePath);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            mImageView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        } else {
-                            mImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        }
-                    }
-
-                });
-
+            @Override
+            public void onError() {
+                mProgressBar.setVisibility(View.GONE);
+                showError();
+            }
+        });
         return view;
+
     }
 
-    private static class LoadImageAsyncTask extends AsyncTask<String, Void, Bitmap> {
-
-
-        private final ImageView mImageView;
-        private final ViewSwitcher mViewSwitcher;
-        private final int mWidth, mHeight;
-
-        private LoadImageAsyncTask(final ImageView imageView, ViewSwitcher viewSwitcher) {
-            mImageView = imageView;
-            mViewSwitcher = viewSwitcher;
-            mHeight = mViewSwitcher.getHeight();
-            mWidth = mViewSwitcher.getWidth();
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            final String imagePath = params[0];
-            return Util.decodeFile(imagePath, mWidth, mHeight);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mViewSwitcher.setDisplayedChild(0);
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            mImageView.setImageBitmap(bitmap);
-            mViewSwitcher.setDisplayedChild(1);
-        }
+    private void showError() {
+        Toast.makeText(getActivity(), R.string.image_does_not_exist, Toast.LENGTH_LONG).show();
     }
+
 
 }
