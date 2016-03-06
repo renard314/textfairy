@@ -58,6 +58,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
     private final static String LOG_TAG = DocumentActivity.class.getSimpleName();
     private static final String STATE_DOCUMENT_URI = "documet_uri";
     public static final int DOCUMENT_CURSOR_LOADER_ID = 45678998;
+    private boolean mIsCursorLoaded = false;
 
     public interface DocumentContainerFragment {
         String getLangOfCurrentlyShownDocument();
@@ -230,10 +231,6 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
             Toast.makeText(this, getString(R.string.empty_document), Toast.LENGTH_LONG).show();
             return;
         }
-        //some apps don't like html text
-//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//			copyHtmlTextToClipboard(htmlText, text);
-//		} else 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             copyTextToClipboardNewApi(text);
         } else {
@@ -353,6 +350,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
             mParentId = parentId;
         }
 
+        mIsCursorLoaded = false;
         getSupportLoaderManager().initLoader(DOCUMENT_CURSOR_LOADER_ID, null, this);
         return true;
     }
@@ -405,17 +403,19 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
         mCursor = cursor;
         DocumentContainerFragment frag = getDocumentContainer();
         frag.setCursor(cursor);
-        if (getIntent().getData() != null) {
+        if (getIntent().getData() != null && !mIsCursorLoaded) {
+            mIsCursorLoaded = true;
             String id = getIntent().getData().getLastPathSegment();
             DocumentPagerFragment documentContainer = (DocumentPagerFragment) getDocumentContainer();
             documentContainer.setDisplayedPageByDocumentId(Integer.parseInt(id));
         }
-        getLoaderManager().destroyLoader(DOCUMENT_CURSOR_LOADER_ID);
+        getSupportLoaderManager().destroyLoader(DOCUMENT_CURSOR_LOADER_ID);
 
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        Log.i(LOG_TAG, "onLoaderReset");
         mCursor = null;
     }
 
