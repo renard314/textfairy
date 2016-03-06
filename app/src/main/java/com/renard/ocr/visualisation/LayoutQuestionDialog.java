@@ -59,7 +59,7 @@ public class LayoutQuestionDialog {
 
         final OcrLanguage.InstallStatus installStatus = OcrLanguageDataStore.isLanguageInstalled(language.first, context);
 
-        if (installStatus.isInstalled()) {
+        if (!installStatus.isInstalled()) {
             final String defaultLanguage = context.getString(R.string.default_ocr_language);
             final String defaultLanguageDisplay = context.getString(R.string.default_ocr_display_language);
             language = Pair.create(defaultLanguage, defaultLanguageDisplay);
