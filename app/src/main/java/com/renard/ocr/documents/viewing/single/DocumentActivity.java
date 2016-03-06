@@ -409,8 +409,6 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
             DocumentPagerFragment documentContainer = (DocumentPagerFragment) getDocumentContainer();
             documentContainer.setDisplayedPageByDocumentId(Integer.parseInt(id));
         }
-        getSupportLoaderManager().destroyLoader(DOCUMENT_CURSOR_LOADER_ID);
-
     }
 
     @Override

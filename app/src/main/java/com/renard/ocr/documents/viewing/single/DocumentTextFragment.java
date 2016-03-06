@@ -142,7 +142,6 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        Log.i(LOG_TAG, "onTextChanged(" + s + ", " + start + ", " + before + ", " + count + ")");
         mHasTextChanged = true;
     }
 
