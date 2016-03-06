@@ -33,7 +33,7 @@ import java.io.File;
 
 public class ContactActivity extends MonitoredActivity {
 
-    private static final String FEEDBACK_MAIL = "renard.wellnitz+textfairy@googlemail.com";
+    private static final String FEEDBACK_MAIL = "textfairyapp@gmail.com";
 
     public static Intent getFeedbackIntent(Context context) {
         Intent intent = new Intent(context, BetaTestActivity.class);
