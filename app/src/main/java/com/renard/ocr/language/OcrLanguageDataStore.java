@@ -59,7 +59,7 @@ public class OcrLanguageDataStore {
 
         OcrLanguage dummy = new OcrLanguage(ocrLang, "", false, 0);
         final List<Uri> downloadUris = dummy.getDownloadUris();
-        final boolean isInstalled = languageFiles.length == downloadUris.size();
+        final boolean isInstalled = languageFiles.length >= downloadUris.size();
 
         return new InstallStatus(isInstalled, sumFileSizes(languageFiles));
 
