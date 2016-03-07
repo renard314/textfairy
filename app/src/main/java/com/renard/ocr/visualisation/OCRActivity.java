@@ -431,7 +431,7 @@ public class OCRActivity extends MonitoredActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);Ø
+        EventBus.getDefault().unregister(this);
         if (mFinalPix != null) {
             mFinalPix.recycle();
             mFinalPix = null;
