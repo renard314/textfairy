@@ -256,7 +256,7 @@ public class OCRActivity extends MonitoredActivity {
 
                     @Override
                     public void run() {
-                        File imageFile = null;
+                        File imageFile;
                         Uri documentUri = null;
 
                         try {
@@ -272,6 +272,7 @@ public class OCRActivity extends MonitoredActivity {
                                             Toast.LENGTH_LONG).show();
                                 }
                             });
+                            return;
                         }
 
                         try {
