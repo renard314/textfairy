@@ -35,8 +35,13 @@ final class DownloadManagerResolver {
      * @return true if DownloadManager is enable,false otherwise.
      */
     private static boolean resolveEnable(Context context) {
-        int state = context.getPackageManager()
-                .getApplicationEnabledSetting(DOWNLOAD_MANAGER_PACKAGE_NAME);
+        int state;
+        try {
+            state = context.getPackageManager()
+                    .getApplicationEnabledSetting(DOWNLOAD_MANAGER_PACKAGE_NAME);
+        } catch (IllegalStateException e) {
+            return false;
+        }
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
             return !(state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED ||
