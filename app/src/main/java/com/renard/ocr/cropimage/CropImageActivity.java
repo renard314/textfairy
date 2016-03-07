@@ -161,10 +161,11 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
     @SuppressWarnings("unused")
     public void onEventMainThread(final CropData cropData) {
         if (cropData.getBitmap() == null) {
-            //should not happen. Scaling of the original document failed some how. Maybe out od memory?
+            //should not happen. Scaling of the original document failed some how. Maybe out of memory?
             //TODO send GA event to monitor this
             Toast.makeText(this, R.string.could_not_load_image, Toast.LENGTH_LONG).show();
             onNewImageClicked();
+            return;
         }
         mCropData = Optional.of(cropData);
         adjustOptionsMenu();
