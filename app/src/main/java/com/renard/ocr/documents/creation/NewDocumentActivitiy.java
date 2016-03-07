@@ -214,6 +214,7 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
     @Override
     protected synchronized void onDestroy() {
         super.onDestroy();
+        unRegisterImageLoadedReceiver();
         //cancel loading of image if the activity is destroyed for good
         if (android.os.Build.VERSION.SDK_INT >= 11 && !isChangingConfigurations() && mBitmapLoadTask != null) {
             mBitmapLoadTask.cancel(false);
