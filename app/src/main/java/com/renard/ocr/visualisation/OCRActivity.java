@@ -256,12 +256,13 @@ public class OCRActivity extends MonitoredActivity {
 
                     @Override
                     public void run() {
-                        File imageFile;
+                        File imageFile = null;
                         Uri documentUri = null;
 
                         try {
                             imageFile = saveImage(pix);
-                        } catch (IOException ignore) {
+                        } catch (IOException e) {
+                            e.printStackTrace();
                             runOnUiThread(new Runnable() {
 
                                 @Override
@@ -272,13 +273,14 @@ public class OCRActivity extends MonitoredActivity {
                                             Toast.LENGTH_LONG).show();
                                 }
                             });
-                            return;
                         }
 
                         try {
 
                             documentUri = saveDocumentToDB(imageFile, hocrString, utf8String);
-                            Util.createThumbnail(OCRActivity.this, imageFile, Integer.valueOf(documentUri.getLastPathSegment()));
+                            if (imageFile != null) {
+                                Util.createThumbnail(OCRActivity.this, imageFile, Integer.valueOf(documentUri.getLastPathSegment()));
+                            }
                         } catch (RemoteException e) {
                             e.printStackTrace();
 
