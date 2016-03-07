@@ -22,12 +22,19 @@ import com.google.common.base.Optional;
 import com.renard.ocr.cropimage.BaseActivityInterface;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -38,18 +45,20 @@ import android.widget.TextView;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
+import de.greenrobot.event.EventBus;
+
 
 public abstract class MonitoredActivity extends AppCompatActivity implements BaseActivityInterface, OnGlobalLayoutListener {
 
     private static final String LOG_TAG = MonitoredActivity.class.getSimpleName();
+    static final int MY_PERMISSIONS_REQUEST = 232;
 
     private final ArrayList<LifeCycleListener> mListeners = new ArrayList<LifeCycleListener>();
     private int mDialogId = -1;
     private final Handler mHandler = new Handler();
     private ImageView mAppIcon = null;
-    private Optional<IconAnimationRunnable> mRunnable = Optional.absent();
-    private Toolbar mToolbar;
     private TextView mToolbarMessage;
+    private AlertDialog mPermissionDialog;
 
 
     public interface LifeCycleListener {
@@ -102,14 +111,15 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityCreated(this);
         }
+        Log.i(LOG_TAG, "onCreate: " + this.getClass());
     }
 
     protected void initToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbarMessage = (TextView) mToolbar.findViewById(R.id.toolbar_text);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbarMessage = (TextView) toolbar.findViewById(R.id.toolbar_text);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        initAppIcon(getHintDialogId(), (ImageView) mToolbar.findViewById(R.id.app_icon));
+        initAppIcon(getHintDialogId(), (ImageView) toolbar.findViewById(R.id.app_icon));
     }
 
     public void setToolbarMessage(@StringRes int stringId) {
@@ -128,6 +138,9 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     protected synchronized void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacksAndMessages(null);
+        if (mPermissionDialog != null) {
+            mPermissionDialog.cancel();
+        }
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityDestroyed(this);
         }
@@ -147,6 +160,7 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityStopped(this);
         }
+        Log.i(LOG_TAG, "onStop: " + this.getClass());
     }
 
     @Override
@@ -204,9 +218,9 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         // start fairy animation at random intervals
         if (mAppIcon.getDrawable() instanceof AnimationDrawable) {
             final AnimationDrawable animation = (AnimationDrawable) mAppIcon.getDrawable();
-            mRunnable = Optional.of(new IconAnimationRunnable(animation, mHandler));
+            Optional<IconAnimationRunnable> runnable = Optional.of(new IconAnimationRunnable(animation, mHandler));
             mHandler.removeCallbacksAndMessages(null);
-            mHandler.post(mRunnable.get());
+            mHandler.post(runnable.get());
         }
         if (mDialogId != -1) {
             // show hint dialog when user clicks on the app icon
@@ -233,6 +247,54 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     @Override
     public void setDialogId(int dialogId) {
         mDialogId = dialogId;
+    }
+
+    public void ensurePermission(String permission, @StringRes int explanation) {
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                explainPermission(permission, explanation);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{permission}, MY_PERMISSIONS_REQUEST);
+
+            }
+        } else {
+            EventBus.getDefault().post(new PermissionGrantedEvent(permission));
+        }
+    }
+
+
+    private void explainPermission(final String permission, int explanation) {
+        //PermissionExplanationDialog.newInstance(R.string.permission_explanation_title, explanation, permission);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(explanation);
+        builder.setTitle(R.string.permission_explanation_title);
+        builder.setNegativeButton(R.string.close_app, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ActivityCompat.requestPermissions(MonitoredActivity.this, new String[]{permission}, MY_PERMISSIONS_REQUEST);
+
+            }
+        });
+        mPermissionDialog = builder.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    EventBus.getDefault().post(new PermissionGrantedEvent(permissions[0]));
+                } else {
+                    finish();
+                }
+            }
+        }
     }
 
 }

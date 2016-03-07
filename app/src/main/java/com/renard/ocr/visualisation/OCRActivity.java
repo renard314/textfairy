@@ -22,6 +22,7 @@ import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
@@ -30,6 +31,7 @@ import com.renard.ocr.util.Util;
 import com.renard.ocr.visualisation.LayoutQuestionDialog.LayoutChoseListener;
 import com.renard.ocr.visualisation.LayoutQuestionDialog.LayoutKind;
 
+import android.Manifest;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -59,6 +61,7 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 
 /**
  * this activity is shown during the ocr process
@@ -96,6 +99,7 @@ public class OCRActivity extends MonitoredActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1);
         mParentId = getIntent().getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1);
         if (nativePix == -1) {
@@ -104,19 +108,25 @@ public class OCRActivity extends MonitoredActivity {
             finish();
             return;
         }
-        Pix pixOrg = new Pix(nativePix);
-        mOriginalHeight = pixOrg.getHeight();
-        mOriginalWidth = pixOrg.getWidth();
-
 
         mOCR = new OCR(this, mMessageReceiver);
         Screen.lockOrientation(this);
         setContentView(R.layout.activity_ocr);
         ButterKnife.bind(this);
         initToolbar();
-        askUserAboutDocumentLayout(pixOrg);
+        ensurePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, R.string.permission_explanation);
+
     }
 
+
+    @SuppressWarnings("unused")
+    public void onEventMainThread(final PermissionGrantedEvent event) {
+        long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1);
+        final Pix pixOrg = new Pix(nativePix);
+        mOriginalHeight = pixOrg.getHeight();
+        mOriginalWidth = pixOrg.getWidth();
+        askUserAboutDocumentLayout(pixOrg);
+    }
 
     /**
      * receives progress status messages from the background ocr task and
@@ -421,6 +431,7 @@ public class OCRActivity extends MonitoredActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);Ø
         if (mFinalPix != null) {
             mFinalPix.recycle();
             mFinalPix = null;

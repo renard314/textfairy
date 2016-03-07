@@ -16,6 +16,14 @@
 
 package com.renard.ocr.install;
 
+import com.renard.ocr.install.InstallResult.Result;
+import com.renard.ocr.util.Util;
+
+import android.content.res.AssetManager;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.util.Log;
+
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,168 +32,168 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import android.content.res.AssetManager;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.util.Log;
-
-import com.renard.ocr.install.InstallActivity.InstallResult;
-import com.renard.ocr.install.InstallActivity.InstallResult.Result;
-import com.renard.ocr.util.Util;
-
 public class InstallTask extends AsyncTask<Void, Integer, InstallResult> {
-	
-	private static final String DEBUG_TAG = InstallTask.class.getSimpleName();
 
-	
-	private InstallActivity mActivity = null;
-	private int mProgress = 0;
-	private AssetManager mAssetManager;
+    private static final String DEBUG_TAG = InstallTask.class.getSimpleName();
+    private static final int PROGRESS_STEP = 100; // when to give feedback to the parent progress dialog
+    private static final String TESSDATA_FILE_NAME = "tessdata.zip";
 
-	private long mBytesInstalled; // bytes Installed
-	private long mBytesToInstallTotal; // total Install size in bytes
-	private final int PROGRESS_STEP = 100; // when to give feedback to the
-											// parent progress dialog
+    private int mProgress = 0;
+    private final AssetManager mAssetManager;
+    private long mBytesInstalled; // bytes Installed
+    private long mBytesToInstallTotal; // total Install size in bytes
+    private TaskFragment.TaskCallbacks mCallbacks;
 
-	InstallTask(InstallActivity activity) {		
-		attach(activity);
-	}
+    InstallTask(TaskFragment.TaskCallbacks callbacks, AssetManager assetManager) {
+        mCallbacks = callbacks;
+        mAssetManager = assetManager;
+    }
 
-	@Override
-	protected InstallResult doInBackground(Void... unused) {
-		long freeSpace = Util.GetFreeSpaceB();
-		mBytesToInstallTotal = InstallActivity.getTotalUnzippedSize(mAssetManager);
-		if (freeSpace < mBytesToInstallTotal) {
-			return new InstallResult(Result.NOT_ENOUGH_DISK_SPACE, mBytesToInstallTotal, freeSpace);
-		}
+    public void setTaskCallbacks(TaskFragment.TaskCallbacks callbacks) {
+        mCallbacks = callbacks;
+    }
 
-		publishProgress(0);
+    @Override
+    protected InstallResult doInBackground(Void... unused) {
+        Log.i(DEBUG_TAG, "start installation" );
+        long freeSpace = Util.GetFreeSpaceB();
+        mBytesToInstallTotal = getTotalUnzippedSize();
+        if (freeSpace < mBytesToInstallTotal) {
+            return new InstallResult(Result.NOT_ENOUGH_DISK_SPACE, mBytesToInstallTotal, freeSpace);
+        }
 
-		InstallResult ret = unzipLanguageAssets(mAssetManager);
+        publishProgress(0);
+        InstallResult ret = unzipLanguageAssets(mAssetManager);
+        Log.i(DEBUG_TAG, "InstallLanguageAssets : " + ret);
+        return ret;
+    }
 
-		Log.v(DEBUG_TAG, "InstallLanguageAssets : " + ret);
+    /**
+     * @return the total size of the language-assets in the zip file
+     */
+    private long getTotalUnzippedSize() {
+        return 24314653;
+    }
 
-		return ret;
-	}
 
-	@Override
-	protected void onProgressUpdate(Integer... progress) {
-		if (mActivity == null) {
-		} else {
-			mActivity.updateProgress(progress[0]);
-		}
-	}
+    @Override
+    protected void onProgressUpdate(Integer... progress) {
+        if (mCallbacks != null) {
+            mCallbacks.onProgressUpdate(progress[0]);
+        }
+    }
 
-	@Override
-	protected void onPostExecute(InstallResult result) {
-		if (mActivity == null) {
-		} else {
-			mActivity.markAsDone(result);
-		}
-	}
+    @Override
+    protected void onCancelled() {
+        if (mCallbacks != null) {
+            mCallbacks.onCancelled();
+        }
+    }
 
-	/**
-	 * @return the install status in procentages [0-100] %
-	 */
-	public int getInstallStatus() {
-		long percent = 0; // [0-100]
-		if (mBytesToInstallTotal != 0) {
-			percent = mBytesInstalled * 100 / mBytesToInstallTotal;
-		}
+    @Override
+    protected void onPreExecute() {
+        if (mCallbacks != null) {
+            mCallbacks.onPreExecute();
+        }
+    }
 
-		Log.v(DEBUG_TAG, "GetInstallStatus(): Installed " + mBytesInstalled + "B [" + percent + "%]");
-		return (int) percent;
-	}
+    @Override
+    protected void onPostExecute(InstallResult result) {
+        if (mCallbacks != null) {
+            mCallbacks.onPostExecute(result);
+        }
+    }
 
-	/**
-	 * unzips all language-assets from the package
-	 */
-	private InstallResult unzipLanguageAssets(AssetManager manager) {
-		ZipInputStream zipStream = null;
-		File externalStorageDir = new File(Environment.getExternalStorageDirectory(), Util.EXTERNAL_APP_DIRECTORY);
-		if (!externalStorageDir.exists()) {
-			externalStorageDir.mkdirs();
-		}
-		InstallResult result = null;
+    /**
+     * @return the install status in procentages [0-100] %
+     */
+    private int getInstallStatus() {
+        long percent = 0; // [0-100]
+        if (mBytesToInstallTotal != 0) {
+            percent = mBytesInstalled * 100 / mBytesToInstallTotal;
+        }
 
-		try {
+        Log.v(DEBUG_TAG, "GetInstallStatus(): Installed " + mBytesInstalled + "B [" + percent + "%]");
+        return (int) percent;
+    }
 
-			InputStream in = manager.open(InstallActivity.TESSDATA_FILE_NAME);
-			zipStream = new ZipInputStream(in);
+    /**
+     * unzips all language-assets from the package
+     */
+    private InstallResult unzipLanguageAssets(AssetManager manager) {
+        ZipInputStream zipStream = null;
+        File externalStorageDir = new File(Environment.getExternalStorageDirectory(), Util.EXTERNAL_APP_DIRECTORY);
+        if (!externalStorageDir.exists()) {
+            externalStorageDir.mkdirs();
+        }
+        InstallResult result = null;
 
-			ZipEntry entry = null;
-			while ((entry = zipStream.getNextEntry()) != null) {
+        try {
 
-				String filename = entry.getName();
-				File file = new File(externalStorageDir, entry.getName());
-				if (entry.isDirectory()) {
-					file.mkdirs();
-				} else {
-					file.getParentFile().mkdirs();
-					Log.v(DEBUG_TAG, "Extracting asset file: " + filename);
-					result = copyInputStream(zipStream, entry.getSize(), entry.getName(), file);
-					publishProgress(getInstallStatus());
-				}
-			}
-			zipStream.closeEntry();
-		} catch (IOException ioe) {
-			Log.v(DEBUG_TAG, "exception:" + ioe.toString());
-			return new InstallResult(Result.UNSPEZIFIED_ERROR);
-		} finally {
-			if (zipStream != null) {
-				try {
-					zipStream.close();
-				} catch (IOException ignore) {
-				}
-			}
-		}
-		return result;
-	}
+            InputStream in = manager.open(TESSDATA_FILE_NAME);
+            zipStream = new ZipInputStream(in);
 
-	
-	/**
-	 * copy from the zip on the disk
-	 */
-	private InstallResult copyInputStream(final InputStream in, final long in_size, final String outname, final File outfile) {
-		byte[] buffer = new byte[1024];
-		int len;
-		DataOutputStream out = null;
-		Log.v(DEBUG_TAG, "Asset " + outfile.getName() + " installing on disk.");
-		try {
-			out = new DataOutputStream(new FileOutputStream(outfile));
+            ZipEntry entry = null;
+            while ((entry = zipStream.getNextEntry()) != null) {
 
-			while ((len = in.read(buffer)) >= 0) {
-				mProgress++;
-				if (mProgress >= PROGRESS_STEP) {
-					publishProgress(getInstallStatus());
-					mProgress = 0;
-				}
-				out.write(buffer, 0, len);
-				mBytesInstalled += len;
-			}
-		} catch (IOException e) {
-			return new InstallResult(Result.UNSPEZIFIED_ERROR);
-		} finally {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException ignore) {
-				}
-			}
-		}
-		return new InstallResult(Result.OK);
-	}
+                String filename = entry.getName();
+                File file = new File(externalStorageDir, entry.getName());
+                if (entry.isDirectory()) {
+                    file.mkdirs();
+                } else {
+                    file.getParentFile().mkdirs();
+                    Log.v(DEBUG_TAG, "Extracting asset file: " + filename);
+                    result = copyInputStream(zipStream, entry.getSize(), entry.getName(), file);
+                    publishProgress(getInstallStatus());
+                }
+            }
+            zipStream.closeEntry();
+        } catch (IOException ioe) {
+            Log.v(DEBUG_TAG, "exception:" + ioe.toString());
+            return new InstallResult(Result.UNSPECIFIED_ERROR);
+        } finally {
+            if (zipStream != null) {
+                try {
+                    zipStream.close();
+                } catch (IOException ignore) {
+                }
+            }
+        }
+        return result;
+    }
 
-	void detach() {
-		mActivity = null;
-	}
 
-	void attach(InstallActivity activity) {
-		this.mActivity = activity;
-		this.mAssetManager = activity.getAssets();				
-	}
+    /**
+     * copy from the zip on the disk
+     */
+    private InstallResult copyInputStream(final InputStream in, final long in_size, final String outname, final File outfile) {
+        byte[] buffer = new byte[1024];
+        int len;
+        DataOutputStream out = null;
+        Log.v(DEBUG_TAG, "Asset " + outfile.getName() + " installing on disk.");
+        try {
+            out = new DataOutputStream(new FileOutputStream(outfile));
 
-	int getProgress() {
-		return (getInstallStatus());
-	}
+            while ((len = in.read(buffer)) >= 0) {
+                mProgress++;
+                if (mProgress >= PROGRESS_STEP) {
+                    publishProgress(getInstallStatus());
+                    mProgress = 0;
+                }
+                out.write(buffer, 0, len);
+                mBytesInstalled += len;
+            }
+        } catch (IOException e) {
+            return new InstallResult(Result.UNSPECIFIED_ERROR);
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException ignore) {
+                }
+            }
+        }
+        return new InstallResult(Result.OK);
+    }
+
 }

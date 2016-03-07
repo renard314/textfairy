@@ -19,6 +19,8 @@ import static com.renard.ocr.language.OcrLanguage.InstallStatus;
 public class OcrLanguageDataStore {
 
 
+    public static final File[] EMPTY_FILE_ARRAY = new File[0];
+
     public static List<OcrLanguage> getInstalledOCRLanguages(Context appContext) {
         final List<OcrLanguage> ocrLanguages = getAvailableOcrLanguages(appContext);
         final List<OcrLanguage> result = new ArrayList<>();
@@ -68,16 +70,21 @@ public class OcrLanguageDataStore {
     private static File[] getAllFilesFor(final String ocrLang, Context context) {
         final File tessDir = Util.getTrainingDataDir(context);
         if (!tessDir.exists()) {
-            return new File[0];
+            return EMPTY_FILE_ARRAY;
         }
 
-        return tessDir.listFiles(new FileFilter() {
+        final File[] files = tessDir.listFiles(new FileFilter() {
 
             @Override
             public boolean accept(File pathname) {
                 return isLanguageFileFor(pathname, ocrLang);
             }
         });
+        if (files == null) {
+            return EMPTY_FILE_ARRAY;
+        } else {
+            return files;
+        }
     }
 
     private static long sumFileSizes(File[] languageFiles) {

@@ -229,5 +229,9 @@
     <string name="document_scanned_as">Textsprache ist %s.</string>
     <string name="delete_document_message">Alle Seiten werden gelöscht.</string>
     <string name="delete_whole_document">Document löschen?</string>
+    <string name="permission_explanation">Ich brauche deine Erlaubnis um auf die SD Karte zuzugreifen. Im Ordner Textfee liegen meine Konfigurationsdateien die Bilder die du gescannt hast.</string>
+    <string name="close_app">App beenden</string>
+    <string name="permission_explanation_install">Ich brauche deine Erlaubnis um meine Konfigurationsdateien im Ordner Textfee zu speichern. Dort kannst du auch später die Bilder finden, die du gescannt hast.</string>
+    <string name="permission_explanation_title">Berechtigung fehlt</string>
 
 </resources>

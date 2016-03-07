@@ -16,13 +16,19 @@
 
 package com.renard.ocr.install;
 
-import android.app.Activity;
+import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.PermissionGrantedEvent;
+import com.renard.ocr.R;
+import com.renard.ocr.util.Util;
+
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -30,56 +36,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import com.renard.ocr.install.InstallActivity.InstallResult.Result;
-import com.renard.ocr.R;
-import com.renard.ocr.util.Util;
-
 import java.io.File;
-import java.util.concurrent.ExecutionException;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * wrapper activity for the AssetsManager
  */
-public class InstallActivity extends Activity {
-    public static class InstallResult {
-        public enum Result {
-            NOT_ENOUGH_DISK_SPACE, OK, UNSPEZIFIED_ERROR;
-        }
-
-        private long mNeededSpace;
-        private long mFreeSpace;
-        private Result mResult;
-
-        public InstallResult(Result result) {
-            mResult = result;
-        }
-
-        public InstallResult(Result result, long needed, long free) {
-            mResult = result;
-            mFreeSpace = free;
-            mNeededSpace = needed;
-        }
-
-        public Result getResult() {
-            return mResult;
-        }
-
-        public boolean isSuccessful() {
-            return mResult == Result.OK;
-        }
-
-        public long getNeededSpace() {
-            return mNeededSpace;
-        }
-
-        public long getFreeSpace() {
-            return mFreeSpace;
-        }
-    }
-
+public class InstallActivity extends MonitoredActivity implements TaskFragment.TaskCallbacks {
+    private static final String TAG_TASK_FRAGMENT = "task_fragment";
     @SuppressWarnings("unused")
-    private static final String DEBUG_TAG = InstallActivity.class.getSimpleName();
-    final static String TESSDATA_FILE_NAME = "tessdata.zip";
+    private static final String LOG_TAG = InstallActivity.class.getSimpleName();
 
     private ProgressBar mProgressBar = null;
     private TextView mTextViewSpeechBubble = null;
@@ -89,12 +56,12 @@ public class InstallActivity extends Activity {
     private TextView mButtonStartApp = null;
     private ViewSwitcher mSwitcher = null;
     private View mContentView = null;
-
-    private InstallTask mTask = null;
+    private TaskFragment mTaskFragment;
 
     @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         setContentView(R.layout.activity_install);
         mImageViewFairy = (ImageView) findViewById(R.id.imageView_fairy);
         mFairyContainer = findViewById(R.id.fairy_container);
@@ -106,7 +73,23 @@ public class InstallActivity extends Activity {
         mContentView = findViewById(R.id.content_view);
         TextView mTextViewPromoLink = (TextView) findViewById(R.id.promo);
 
-        mTask = (InstallTask) getLastNonConfigurationInstance();
+
+        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+        mTaskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
+
+        // If the Fragment is non-null, then it is currently being
+        // retained across a configuration change.
+        if (mTaskFragment == null) {
+            Log.i(LOG_TAG, "ensuring permission for: " + this);
+            ensurePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, R.string.permission_explanation_install);
+        } else {
+            InstallResult result = mTaskFragment.getInstallResult();
+            if (result != null) {
+                markAsDone(result);
+            } else {
+                startInstallAnimation();
+            }
+        }
 
         mTextViewPromoLink.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,27 +98,19 @@ public class InstallActivity extends Activity {
             }
         });
 
-        if (mTask == null) {
-            mTask = new InstallTask(this);
-            mTask.execute();
-            startInstallAnimation();
-        } else {
-            mTask.attach(this);
-            updateProgress(mTask.getProgress());
-            if (mTask.getProgress() >= 100) {
-                InstallResult result;
-                try {
-                    result = mTask.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    result = new InstallResult(Result.UNSPEZIFIED_ERROR);
-                }
-                markAsDone(result);
-            } else {
-                startInstallAnimation();
+    }
 
-            }
-        }
+    @SuppressWarnings("unused")
+    public void onEventMainThread(final PermissionGrantedEvent event) {
+        Log.i(LOG_TAG, "PermissionGrantedEvent : " + this);
+        mTaskFragment = new TaskFragment();
+        final FragmentManager supportFragmentManager = getSupportFragmentManager();
+        supportFragmentManager.beginTransaction().add(mTaskFragment, TAG_TASK_FRAGMENT).commitAllowingStateLoss();
+    }
 
+    @Override
+    protected int getHintDialogId() {
+        return 0;
     }
 
     private void startInstallAnimation() {
@@ -153,43 +128,20 @@ public class InstallActivity extends Activity {
         startActivity(intent);
     }
 
-    @Override
-    public Object onRetainNonConfigurationInstance() {
-        mTask.detach();
-        return (mTask);
-    }
-
     /**
      * @return if the language assets are installed or not
      */
     public static boolean IsInstalled(Context appContext) {
-
-        // check directories
         File tessDir = Util.getTrainingDataDir(appContext);
+        return tessDir.exists();
 
-        if (!tessDir.exists()) {
-            return false;
-        }
-
-        return true;
     }
 
-    /**
-     * @return the total size of the language-assets in the zip file
-     */
-    static long getTotalUnzippedSize(AssetManager manager) {
-        /*
-         * long ret = 0; FileInputStream in = null; try { AssetFileDescriptor fd
-		 * = manager.openFd(TESSDATA_FILE_NAME); ret = fd.getLength(); if (ret
-		 * == AssetFileDescriptor.UNKNOWN_LENGTH) { in = fd.createInputStream();
-		 * ret = 0; byte[] buffer = new byte[1024]; int bytesRead = 0; while
-		 * ((bytesRead = in.read(buffer)) != -1) { ret += bytesRead; } } } catch
-		 * (IOException ioe) { Log.v(DEBUG_TAG, "exception:" + ioe.toString());
-		 * return 0; } finally { if (in != null) { try { in.close(); } catch
-		 * (IOException ignore) { } } } return ret;
-		 */
-        // return 5374633;
-        return 24314653;
+
+    @Override
+    protected synchronized void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     public void markAsDone(InstallResult result) {
@@ -222,7 +174,7 @@ public class InstallActivity extends Activity {
                     }
                 });
                 break;
-            case UNSPEZIFIED_ERROR:
+            case UNSPECIFIED_ERROR:
                 errorMsg = getString(R.string.install_error);
                 mTextViewSpeechBubble.setText(errorMsg);
                 mButtonStartApp.setOnClickListener(new View.OnClickListener() {
@@ -236,7 +188,14 @@ public class InstallActivity extends Activity {
         }
     }
 
-    public void updateProgress(int progress) {
+
+    @Override
+    public void onPreExecute() {
+        startInstallAnimation();
+    }
+
+    @Override
+    public void onProgressUpdate(int progress) {
         final int fairyEndX = mContentView.getWidth() / 2;
         final int fairyStartX = mImageViewFairy.getWidth() / 2;
         final int maxTravelDistance = Math.min(fairyEndX - fairyStartX, mContentView.getWidth() - mFairyContainer.getWidth());
@@ -247,4 +206,13 @@ public class InstallActivity extends Activity {
         mProgressBar.setProgress(progress);
     }
 
+    @Override
+    public void onCancelled() {
+
+    }
+
+    @Override
+    public void onPostExecute(InstallResult result) {
+        markAsDone(result);
+    }
 }

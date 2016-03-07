@@ -229,4 +229,14 @@
     <string name="document_scanned_as">idioma del documento se establece en %s.</string>
     <string name="delete_document_message">Se eliminarán todas las páginas.</string>
     <string name="delete_whole_document">Borrar documento?</string>
+    <string name="close_app">abortar</string>
+    <string name="permission_explanation">Necesito el permiso para leer y escribir en la tarjeta SD
+        . Voy a tener acceso a la carpeta que contiene texfee mi archivo de configuración y los
+        documentos escaneados .
+    </string>
+    <string name="permission_explanation_title">El permiso faltante</string>
+    <string name="permission_explanation_install">Necesito permiso para escribir mis archivos de
+        configuración en la tarjeta SD . Sólo voy a tener acceso a la carpeta texfee que también
+        contendrá los documentos escaneados más tarde.
+    </string>
 </resources>
