@@ -42,6 +42,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
@@ -186,7 +187,8 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
                         zoomToBlurredRegion(cropData);
                         setTitle(R.string.image_is_blurred);
                         BlurWarningDialog dialog = BlurWarningDialog.newInstance((float) cropData.getBlurriness().getBlurValue());
-                        dialog.show(getSupportFragmentManager(), BlurWarningDialog.TAG);
+                        final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.show(dialog).commitAllowingStateLoss();
                         break;
                 }
 
