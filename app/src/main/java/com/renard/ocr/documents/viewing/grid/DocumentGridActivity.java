@@ -15,21 +15,24 @@
  */
 package com.renard.ocr.documents.viewing.grid;
 
-import com.renard.ocr.documents.creation.NewDocumentActivitiy;
 import com.renard.ocr.DocumentContentProvider;
-import com.renard.ocr.documents.creation.ImageSource;
-import com.renard.ocr.documents.creation.PixLoadStatus;
+import com.renard.ocr.HintDialog;
+import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
+import com.renard.ocr.documents.creation.ImageSource;
+import com.renard.ocr.documents.creation.NewDocumentActivitiy;
+import com.renard.ocr.documents.creation.PixLoadStatus;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
-import com.renard.ocr.install.InstallActivity;
+import com.renard.ocr.language.OCRLanguageActivity;
+import com.renard.ocr.language.OcrLanguage;
+import com.renard.ocr.language.OcrLanguageDataStore;
 import com.renard.ocr.main_menu.AboutActivity;
 import com.renard.ocr.main_menu.ContributeActivity;
 import com.renard.ocr.main_menu.HelpActivity;
-import com.renard.ocr.HintDialog;
-import com.renard.ocr.language.OCRLanguageActivity;
 import com.renard.ocr.main_menu.ReleaseNoteDialog;
 import com.renard.ocr.util.Util;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -54,6 +57,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -69,7 +73,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * main activity of the app
@@ -78,6 +85,7 @@ import java.util.Set;
  */
 public class DocumentGridActivity extends NewDocumentActivitiy implements DocumentGridAdapter.OnCheckedChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String LOG_TAG = DocumentGridActivity.class.getSimpleName();
     private DocumentGridAdapter mDocumentAdapter;
     private GridView mGridView;
     private static final int MESSAGE_UPDATE_THUMNAILS = 1;
@@ -100,14 +108,28 @@ public class DocumentGridActivity extends NewDocumentActivitiy implements Docume
         initToolbar();
         initNavigationDrawer();
         initGridView();
-        startInstallActivityIfNeeded();
-        initThumbnailSize();
+        setupAddLanguageButton();
         if (savedInstanceState == null) {
             checkForImageIntent(getIntent());
         }
-
-        setupAddLanguageButton();
     }
+
+    @Override
+    protected void onResume() {
+        // ViewServer.get(this).setFocusedWindow(this);
+        super.onResume();
+        EventBus.getDefault().register(this);
+        ensurePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, R.string.permission_explanation);
+    }
+
+
+    @SuppressWarnings("unused")
+    public void onEventMainThread(final PermissionGrantedEvent event) {
+        Log.i(LOG_TAG, "Permission Granted");
+        startInstallActivityIfNeeded();
+        initThumbnailSize();
+    }
+
 
     @Override
     protected int getHintDialogId() {
@@ -164,9 +186,10 @@ public class DocumentGridActivity extends NewDocumentActivitiy implements Docume
      * Start the InstallActivity if possible and needed.
      */
     private void startInstallActivityIfNeeded() {
+        final List<OcrLanguage> installedOCRLanguages = OcrLanguageDataStore.getInstalledOCRLanguages(this);
         final String state = Environment.getExternalStorageState();
         if (state.equals(Environment.MEDIA_MOUNTED)) {
-            if (!InstallActivity.IsInstalled(this)) {
+            if (installedOCRLanguages.isEmpty()) {
                 // install the languages if needed, create directory structure
                 // (one
                 // time)
@@ -319,11 +342,6 @@ public class DocumentGridActivity extends NewDocumentActivitiy implements Docume
         }
     }
 
-    @Override
-    protected void onResume() {
-        // ViewServer.get(this).setFocusedWindow(this);
-        super.onResume();
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -473,7 +491,7 @@ public class DocumentGridActivity extends NewDocumentActivitiy implements Docume
         handler.sendMessage(message);
     }
 
-    private class DocumentActionCallback implements ActionMode.Callback  {
+    private class DocumentActionCallback implements ActionMode.Callback {
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
@@ -524,6 +542,12 @@ public class DocumentGridActivity extends NewDocumentActivitiy implements Docume
             mActionMode = null;
 
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
     }
 
 
