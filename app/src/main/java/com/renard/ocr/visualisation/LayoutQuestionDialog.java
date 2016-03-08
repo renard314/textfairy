@@ -167,10 +167,8 @@ public class LayoutQuestionDialog {
                         dialog.cancel();
                     }
                 });
-        final AlertDialog dialog = builder.create();
 
-
-        return dialog;
+        return builder.create();
 
     }
 

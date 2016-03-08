@@ -188,7 +188,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
                         setTitle(R.string.image_is_blurred);
                         BlurWarningDialog dialog = BlurWarningDialog.newInstance((float) cropData.getBlurriness().getBlurValue());
                         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.show(dialog).commitAllowingStateLoss();
+                        fragmentTransaction.add(dialog,BlurWarningDialog.TAG).commitAllowingStateLoss();
                         break;
                 }
 
