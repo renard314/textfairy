@@ -19,7 +19,8 @@ package com.renard.ocr.install;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
-import com.renard.ocr.util.Util;
+import com.renard.ocr.language.OcrLanguage;
+import com.renard.ocr.language.OcrLanguageDataStore;
 
 import android.Manifest;
 import android.content.Context;
@@ -36,7 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import java.io.File;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
@@ -103,6 +104,7 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
     @SuppressWarnings("unused")
     public void onEventMainThread(final PermissionGrantedEvent event) {
         Log.i(LOG_TAG, "PermissionGrantedEvent : " + this);
+        EventBus.getDefault().unregister(this);
         mTaskFragment = new TaskFragment();
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
         supportFragmentManager.beginTransaction().add(mTaskFragment, TAG_TASK_FRAGMENT).commitAllowingStateLoss();
@@ -126,15 +128,6 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
     private void watchYoutubeVideo(String id) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(id));
         startActivity(intent);
-    }
-
-    /**
-     * @return if the language assets are installed or not
-     */
-    public static boolean IsInstalled(Context appContext) {
-        File tessDir = Util.getTrainingDataDir(appContext);
-        return tessDir.exists();
-
     }
 
 
