@@ -374,7 +374,6 @@ public class OCRActivity extends MonitoredActivity {
 
     private void askUserAboutDocumentLayout(final Pix pixOrg) {
 
-        //TODO remove activity leak
         AppCompatDialog alertDialog = LayoutQuestionDialog.createDialog(this,
                 new LayoutChoseListener() {
 
