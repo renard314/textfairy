@@ -39,8 +39,8 @@ public class TaskFragment extends Fragment {
      * each configuration change.
      */
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
         mTask.setTaskCallbacks((TaskCallbacks) getActivity());
     }
 
