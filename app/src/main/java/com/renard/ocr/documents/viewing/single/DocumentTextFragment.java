@@ -89,7 +89,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mDocumentId = getArguments().getInt("id");
-        View view = inflater.inflate(R.layout.fragment_document, container, false);
+        View view = inflater.inflate(R.layout.fragment_document_text, container, false);
         mEditText = (EditText) view.findViewById(R.id.editText_document);
         if (mHtmlTask != null) {
             mHtmlTask.cancel(true);
