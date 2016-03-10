@@ -157,6 +157,7 @@ public class LayoutQuestionDialog {
                             mLayout = LayoutKind.SIMPLE;
                         }
                         listener.onLayoutChosen(mLayout, mLanguage);
+                        dialog.dismiss();
                     }
                 });
 
@@ -164,7 +165,7 @@ public class LayoutQuestionDialog {
                 new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
 
