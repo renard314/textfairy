@@ -24,47 +24,48 @@ import android.database.Cursor;
 import android.util.Log;
 
 public class DownloadBroadCastReceiver extends BroadcastReceiver {
-	private static final String LOG_TAG = DownloadBroadCastReceiver.class.getSimpleName();
+    private static final String LOG_TAG = DownloadBroadCastReceiver.class.getSimpleName();
 
-	@Override
-	public void onReceive(final Context context, Intent intent) {
-		String action = intent.getAction();
-		if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-			long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-			DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-			Query query = new Query();
-			query.setFilterById(downloadId);
-			Cursor c = dm.query(query);
-			if (c.moveToFirst()) {
-				int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
-				int status = c.getInt(columnIndex);
-				columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
-				String title = c.getString(columnIndex);
-				columnIndex = c.getColumnIndex(DownloadManager.COLUMN_URI);
-				String name = c.getString(columnIndex);
+    @Override
+    public void onReceive(final Context context, Intent intent) {
+        String action = intent.getAction();
+        if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+            long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+            DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+            Query query = new Query();
+            query.setFilterById(downloadId);
+            Cursor c = dm.query(query);
+            if (c == null) {
+                return;
+            }
+            if (c.moveToFirst()) {
+                int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                int status = c.getInt(columnIndex);
+                columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
+                String title = c.getString(columnIndex);
+                columnIndex = c.getColumnIndex(DownloadManager.COLUMN_URI);
+                String name = c.getString(columnIndex);
 
 
-				if (DownloadManager.STATUS_SUCCESSFUL == status) {
-					Log.i(LOG_TAG,"Download successful");
+                if (DownloadManager.STATUS_SUCCESSFUL == status) {
+                    Log.i(LOG_TAG, "Download successful");
+                    //start service to extract language file
+                    Intent serviceIntent = new Intent(context, OCRLanguageInstallService.class);
+                    serviceIntent.putExtra(DownloadManager.EXTRA_DOWNLOAD_ID, downloadId);
+                    serviceIntent.putExtra(OCRLanguageInstallService.EXTRA_FILE_NAME, name);
+                    context.startService(serviceIntent);
 
-					//start service to extract language file
-					Intent serviceIntent = new Intent(context, OCRLanguageInstallService.class);
-					serviceIntent.putExtra(DownloadManager.EXTRA_DOWNLOAD_ID, downloadId);
-					serviceIntent.putExtra(OCRLanguageInstallService.EXTRA_FILE_NAME, name);
-					context.startService(serviceIntent);
+                } else if (DownloadManager.STATUS_FAILED == status) {
+                    Log.i(LOG_TAG, "Download failed");
+                    Intent resultIntent = new Intent(OCRLanguageInstallService.ACTION_INSTALL_FAILED);
+                    resultIntent.putExtra(OCRLanguageInstallService.EXTRA_STATUS, status);
+                    resultIntent.putExtra(OCRLanguageInstallService.EXTRA_OCR_LANGUAGE_DISPLAY, title);
+                    context.sendBroadcast(resultIntent);
+                }
+            }
+            c.close();
 
-				} else if (DownloadManager.STATUS_FAILED==status){
-					Log.i(LOG_TAG,"Download failed");
-					Intent resultIntent = new Intent(OCRLanguageInstallService.ACTION_INSTALL_FAILED);
-					columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
-					resultIntent.putExtra(OCRLanguageInstallService.EXTRA_STATUS,status );
-					resultIntent.putExtra(OCRLanguageInstallService.EXTRA_OCR_LANGUAGE_DISPLAY, title);
-					context.sendBroadcast(resultIntent);
-				}
-			}
-			c.close();
-
-		}
-	}
+        }
+    }
 
 }
