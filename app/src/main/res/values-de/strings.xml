@@ -233,5 +233,6 @@
     <string name="close_app">App beenden</string>
     <string name="permission_explanation_install">Ich brauche deine Erlaubnis um meine Konfigurationsdateien im Ordner Textfee zu speichern. Dort kannst du auch später die Bilder finden, die du gescannt hast.</string>
     <string name="permission_explanation_title">Berechtigung fehlt</string>
+    <string name="no_gallery_found">Keine Gallerie gefunden.</string>
 
 </resources>

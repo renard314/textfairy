@@ -18,16 +18,16 @@ package com.renard.ocr.documents.creation;
 
 import com.googlecode.leptonica.android.Pix;
 import com.renard.ocr.DocumentContentProvider;
+import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
+import com.renard.ocr.cropimage.CropImageActivity;
 import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
-import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.cropimage.CropImageActivity;
-import com.renard.ocr.MonitoredActivity;
-import com.renard.ocr.visualisation.OCRActivity;
 import com.renard.ocr.pdf.Hocr2Pdf;
 import com.renard.ocr.pdf.Hocr2Pdf.PDFProgressListener;
 import com.renard.ocr.util.Util;
+import com.renard.ocr.visualisation.OCRActivity;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -156,7 +156,11 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
         }
 
         Intent chooser = Intent.createChooser(i, getString(R.string.image_source));
-        startActivityForResult(chooser, REQUEST_CODE_PICK_PHOTO);
+        try {
+            startActivityForResult(chooser, REQUEST_CODE_PICK_PHOTO);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, R.string.no_gallery_found, Toast.LENGTH_LONG).show();
+        }
     }
 
     protected void startCamera() {

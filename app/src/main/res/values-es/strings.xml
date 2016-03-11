@@ -239,4 +239,5 @@
         configuración en la tarjeta SD . Sólo voy a tener acceso a la carpeta texfee que también
         contendrá los documentos escaneados más tarde.
     </string>
+    <string name="no_gallery_found">No se encontró galería de aplicación en este teléfono.</string>
 </resources>

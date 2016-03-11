@@ -321,4 +321,5 @@
         later.
     </string>
     <string name="permission_explanation_title">Permission missing</string>
+    <string name="no_gallery_found">No gallery app found on this phone.</string>
 </resources>
