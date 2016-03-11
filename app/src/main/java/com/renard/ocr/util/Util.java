@@ -40,10 +40,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.StatFs;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -77,26 +77,7 @@ public class Util {
         final int maxSize = Math.min(h, w) - spacing;
         minSize = Math.min(maxSize, minSize);
         final int screenWidth = (w - spacing);
-        final int num = (int) Math.max(2, Math.floor((double) (screenWidth) / minSize)); // i
-        // want
-        // at
-        // least
-        // 2
-        // columns.
-        // if
-        // more
-        // than
-        // 2
-        // columns
-        // are
-        // possible
-        // each
-        // document
-        // must
-        // be
-        // minSize
-        // pixels
-        // wide
+        final int num = (int) Math.max(2, Math.floor((double) (screenWidth) / minSize));
 
         int columnWidth = (screenWidth - num * spacing) / num;
         if (columnWidth > (screenWidth - spacing)) {
@@ -169,7 +150,7 @@ public class Util {
     }
 
     public static FastBitmapDrawable getDocumentThumbnail(int documentId) {
-        FastBitmapDrawable drawable = null;
+        FastBitmapDrawable drawable;
 
         drawable = mCache.get(documentId);
 
@@ -183,13 +164,6 @@ public class Util {
             mCache.put(documentId, drawable);
         }
         return drawable == NULL_DRAWABLE ? sDefaultDocumentThumbnail : drawable;
-    }
-
-    public static Bitmap loadBitmap(final Context c, final String imagePath, final int desiredWith, final int desiredHeight) {
-        int w = Math.min(1024, desiredWith);
-        int h = Math.min(1024, desiredHeight);
-        Bitmap orgBitmap = Util.decodeFile(imagePath, w, h);
-        return Util.adjustBitmapSize(desiredWith, desiredHeight, orgBitmap);
     }
 
     /**
@@ -235,20 +209,19 @@ public class Util {
      * .com/questions/477572/android-strange-out-of-memory-issue/823966#823966
      */
     public static Bitmap decodeFile(String imagePath, int maxWidth, int maxHeight) {
-        Bitmap b = null;
-        // Decode image size
-        BitmapFactory.Options o = new BitmapFactory.Options();
-        o.inJustDecodeBounds = true;
-
-        BitmapFactory.decodeFile(imagePath, o);
-        int scale = determineScaleFactor(o.outWidth, o.outHeight, maxWidth, maxHeight);
-
+        Options o = decodeImageSize(imagePath);
         // Decode with inSampleSize
-        o.inSampleSize = scale;
+        o.inSampleSize = determineScaleFactor(o.outWidth, o.outHeight, maxWidth, maxHeight);
         o.inJustDecodeBounds = false;
         o.inPreferredConfig = Bitmap.Config.RGB_565;
-        b = BitmapFactory.decodeFile(imagePath, o);
-        return b;
+        return BitmapFactory.decodeFile(imagePath, o);
+    }
+
+    private static Options decodeImageSize(String imagePath) {
+        Options o = new Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imagePath, o);
+        return o;
     }
 
     public static int determineScaleFactor(int w, int h, int maxWidth, int maxHeight) {
@@ -308,7 +281,7 @@ public class Util {
         File image = new File(picDir, fileName);
         image.createNewFile();
         try {
-            boolean result = WriteFile.writeImpliedFormat(pix, image, 85, true);
+            WriteFile.writeImpliedFormat(pix, image, 85, true);
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -339,16 +312,8 @@ public class Util {
         }
     }
 
-    public static String getDownloadTempDir(final Context appContext) {
-        String dir = new File(Environment.getExternalStorageDirectory(), EXTERNAL_APP_DIRECTORY).getPath() + "/";
-        return dir;
-    }
 
     public static String getTessDir(final Context appContext) {
-        // String dir = new
-        // File(Environment.getExternalStorageDirectory(),EXTERNAL_APP_DIRECTORY
-        // ).getPath() + "/";
-        // return dir;
         String tessDir = PreferencesUtils.getTessDir(appContext);
         if (tessDir == null) {
             return new File(Environment.getExternalStorageDirectory(), EXTERNAL_APP_DIRECTORY).getPath() + "/";
@@ -417,8 +382,8 @@ public class Util {
         int deltaX = source.getWidth() - targetWidth;
         int deltaY = source.getHeight() - targetHeight;
         if (!scaleUp && (deltaX < 0 || deltaY < 0)) {
-			/*
-			 * In this case the bitmap is smaller, at least in one dimension,
+            /*
+             * In this case the bitmap is smaller, at least in one dimension,
 			 * than the target. Transform it by placing as much of the image as
 			 * possible into the target and leaving the top/bottom or left/right
 			 * (or both) black.
@@ -478,42 +443,22 @@ public class Util {
     }
 
 
-    public static Bitmap extractMiniThumb(Bitmap source, int width, int height, boolean recycle) {
-        if (source == null) {
-            return null;
-        }
-
-        float scale;
-        if (source.getWidth() < source.getHeight()) {
-            scale = width / (float) source.getWidth();
-        } else {
-            scale = height / (float) source.getHeight();
-        }
-        Matrix matrix = new Matrix();
-        matrix.setScale(scale, scale);
-        Bitmap miniThumbnail = transform(matrix, source, width, height, true);
-
-        if (recycle && miniThumbnail != source) {
-            source.recycle();
-        }
-        return miniThumbnail;
-    }
-
     private static class BackgroundJob extends MonitoredActivity.LifeCycleAdapter implements Runnable {
 
         private final MonitoredActivity mActivity;
+        @Nullable
         private final ProgressDialog mDialog;
         private final Runnable mJob;
         private final Handler mHandler;
         private final Runnable mCleanupRunner = new Runnable() {
             public void run() {
                 mActivity.removeLifeCycleListener(BackgroundJob.this);
-                if (mDialog.getWindow() != null)
+                if (mDialog != null && mDialog.getWindow() != null)
                     mDialog.dismiss();
             }
         };
 
-        public BackgroundJob(MonitoredActivity activity, Runnable job, ProgressDialog dialog, Handler handler) {
+        public BackgroundJob(MonitoredActivity activity, Runnable job, @Nullable ProgressDialog dialog, Handler handler) {
             mActivity = activity;
             mDialog = dialog;
             mJob = job;
@@ -539,12 +484,16 @@ public class Util {
 
         @Override
         public void onActivityStopped(MonitoredActivity activity) {
-            mDialog.hide();
+            if (mDialog != null) {
+                mDialog.hide();
+            }
         }
 
         @Override
         public void onActivityStarted(MonitoredActivity activity) {
-            mDialog.show();
+            if (mDialog != null) {
+                mDialog.show();
+            }
         }
     }
 
@@ -563,16 +512,12 @@ public class Util {
     }
 
     public static void startBackgroundJob(MonitoredActivity activity, String title, String message, Runnable job, Handler handler) {
-        // Make the progress dialog uncancelable, so that we can guarantee
-        // the thread will be done before the activity getting destroyed.
-        ProgressDialog dialog = ProgressDialog.show(activity, title, message, true, false);
-        new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
-    }
-
-    public static byte[] toByteArray(InputStream input) throws IOException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copy(input, output);
-        return output.toByteArray();
+        if (activity.isFinishing()) {
+            ProgressDialog dialog = ProgressDialog.show(activity, title, message, true, false);
+            new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
+        } else {
+            new Thread(new BackgroundJob(activity, job, null, handler)).start();
+        }
     }
 
     public static long copy(InputStream input, OutputStream output) throws IOException {
