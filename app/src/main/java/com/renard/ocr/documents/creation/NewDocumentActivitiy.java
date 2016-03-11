@@ -147,11 +147,14 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
 
     protected void startGallery() {
         cameraPicUri = null;
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT, null);
+        Intent i;
         if (Build.VERSION.SDK_INT >= 19) {
+            i = new Intent(Intent.ACTION_OPEN_DOCUMENT, null);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
             i.setType("image/*");
             i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/png", "image/jpg", "image/jpeg"});
         } else {
+            i = new Intent(Intent.ACTION_GET_CONTENT, null);
             i.setType("image/png,image/jpg, image/jpeg");
         }
 
