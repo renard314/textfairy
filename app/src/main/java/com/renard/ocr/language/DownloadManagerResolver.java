@@ -39,7 +39,7 @@ final class DownloadManagerResolver {
         try {
             state = context.getPackageManager()
                     .getApplicationEnabledSetting(DOWNLOAD_MANAGER_PACKAGE_NAME);
-        } catch (IllegalStateException e) {
+        } catch (java.lang.IllegalArgumentException e) {
             return false;
         }
 
