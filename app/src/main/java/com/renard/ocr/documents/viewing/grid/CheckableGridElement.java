@@ -16,6 +16,10 @@
 
 package com.renard.ocr.documents.viewing.grid;
 
+import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.renard.ocr.R;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -27,234 +31,225 @@ import android.widget.Checkable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.nineoldandroids.animation.AnimatorSet;
-import com.nineoldandroids.animation.ObjectAnimator;
-import com.renard.ocr.R;
-
 /**
  * custom view for children of the document grid view TODO remove tight
  * coupling with DocumentGridActivity
- * 
+ *
  * @author renard
- * 
  */
 public class CheckableGridElement extends RelativeLayout implements Checkable {
 
-	private boolean mIsChecked = false;
-	private OnCheckedChangeListener mListener;
-	private ImageView mThumbnailImageView;
-	private final Transformation mSelectionTransformation;
-	private final Transformation mAlphaTransformation;
-	private AnimatorSet mAnimatorSet;
+    private boolean mIsChecked = false;
+    private OnCheckedChangeListener mListener;
+    private ImageView mThumbnailImageView;
+    private final Transformation mSelectionTransformation;
+    private final Transformation mAlphaTransformation;
+    private AnimatorSet mAnimatorSet;
 
-	private float mTargetAlpha = 1;
-	private float mCurrentAlpha = 1;
+    private float mTargetAlpha = 1;
+    private float mCurrentAlpha = 1;
 
-	private float mTargetScale = 1;
-	private float mCurrentScale = 1;
+    private float mTargetScale = 1;
+    private float mCurrentScale = 1;
 
-	private static final float SELECTED_ALPHA = 1.0f;
-	private static final float NOT_SELECTED_ALPHA = .35f;
+    private static final float SELECTED_ALPHA = 1.0f;
+    private static final float NOT_SELECTED_ALPHA = .35f;
 
-	private static final float SELECTED_SCALE = 1.0f;
-	private static final float NOT_SELECTED_SCALE = 0.95f;
+    private static final float SELECTED_SCALE = 1.0f;
+    private static final float NOT_SELECTED_SCALE = 0.95f;
 
-	private static int ANIMATION_DURATION = 200;
-	private final long TAP_ANIMATINO_DURATION;
-	@SuppressWarnings("unused")
-	private final String LOG_TAG = CheckableGridElement.class.getSimpleName();
+    private final static int ANIMATION_DURATION = 200;
+    private final static long TAP_ANIMATION_DURATION = ViewConfiguration.getLongPressTimeout();
 
-	public interface OnCheckedChangeListener {
-		void onCheckedChanged(View documentView, boolean isChecked);
-	}
+    @SuppressWarnings("unused")
+    private final String LOG_TAG = CheckableGridElement.class.getSimpleName();
 
-	public CheckableGridElement(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		TAP_ANIMATINO_DURATION = ViewConfiguration.getLongPressTimeout();
-		this.setWillNotDraw(false);
-		if (!isInEditMode()) {
-			setStaticTransformationsEnabled(true);
-			mSelectionTransformation = new Transformation();
-			mAlphaTransformation = new Transformation();
-			mSelectionTransformation.setTransformationType(Transformation.TYPE_MATRIX);
-			mAlphaTransformation.setTransformationType(Transformation.TYPE_ALPHA);
-		} else {
-			mAlphaTransformation = null;
-			mSelectionTransformation = null;
-		}
-	}
+    public interface OnCheckedChangeListener {
+        void onCheckedChanged(View documentView, boolean isChecked);
+    }
 
-	@Override
-	protected void onFinishInflate() {
-		super.onFinishInflate();
-		mThumbnailImageView = (ImageView) findViewById(R.id.thumb);
-		this.setFocusable(false);
-	}
+    public CheckableGridElement(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        this.setWillNotDraw(false);
+        if (!isInEditMode()) {
+            setStaticTransformationsEnabled(true);
+            mSelectionTransformation = new Transformation();
+            mAlphaTransformation = new Transformation();
+            mSelectionTransformation.setTransformationType(Transformation.TYPE_MATRIX);
+            mAlphaTransformation.setTransformationType(Transformation.TYPE_ALPHA);
+        } else {
+            mAlphaTransformation = null;
+            mSelectionTransformation = null;
+        }
+    }
 
-	public void setImage(Drawable d) {
-		mThumbnailImageView.setImageDrawable(d);
-	}
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mThumbnailImageView = (ImageView) findViewById(R.id.thumb);
+        this.setFocusable(false);
+    }
 
-	public void setOnCheckedChangeListener(OnCheckedChangeListener listener) {
-		mListener = listener;
-	}
+    public void setImage(Drawable d) {
+        mThumbnailImageView.setImageDrawable(d);
+    }
 
-	/**
-	 * sets checked state without starting an animation
-	 * 
-	 * @param checked
-	 */
-	public void setCheckedNoAnimate(final boolean checked) {
-		mIsChecked = checked;
-		// stop any running animation
-		if (mAnimatorSet != null && mAnimatorSet.isRunning()) {
-			mAnimatorSet.removeAllListeners();
-			mAnimatorSet.cancel();
-		}
-		setCurrentAlpha(getDesiredAlpha());
-		setCurrentScale(getDesiredScale());
-		if (mListener != null) {
-			mListener.onCheckedChanged(this, mIsChecked);
-		}
+    public void setOnCheckedChangeListener(OnCheckedChangeListener listener) {
+        mListener = listener;
+    }
 
-	}
+    /**
+     * sets checked state without starting an animation
+     */
+    public void setCheckedNoAnimate(final boolean checked) {
+        mIsChecked = checked;
+        // stop any running animation
+        if (mAnimatorSet != null && mAnimatorSet.isRunning()) {
+            mAnimatorSet.removeAllListeners();
+            mAnimatorSet.cancel();
+        }
+        setCurrentAlpha(getDesiredAlpha());
+        setCurrentScale(getDesiredScale());
+        if (mListener != null) {
+            mListener.onCheckedChanged(this, mIsChecked);
+        }
 
-	/**
-	 * sets checked state and starts animation if necessary
-	 */
-	@Override
-	public void setChecked(boolean checked) {
-		mIsChecked = checked;
+    }
 
-		initAnimationProperties(AnimationType.CHECK);
+    /**
+     * sets checked state and starts animation if necessary
+     */
+    @Override
+    public void setChecked(boolean checked) {
+        mIsChecked = checked;
 
-		if (mListener != null) {
-			mListener.onCheckedChanged(this, mIsChecked);
-		}
-	}
+        initAnimationProperties(AnimationType.CHECK);
 
-	@Override
-	public boolean isChecked() {
-		return mIsChecked;
-	}
+        if (mListener != null) {
+            mListener.onCheckedChanged(this, mIsChecked);
+        }
+    }
 
-	private float getDesiredScale() {
-		if (mIsChecked && DocumentGridActivity.isInSelectionMode()) {
-			return SELECTED_SCALE;
-		} else if (!mIsChecked && DocumentGridActivity.isInSelectionMode()) {
-			return NOT_SELECTED_SCALE;
-		} else {
-			return SELECTED_SCALE;
-		}
-	}
+    @Override
+    public boolean isChecked() {
+        return mIsChecked;
+    }
 
-	private float getDesiredAlpha() {
-		if (mIsChecked && DocumentGridActivity.isInSelectionMode()) {
-			return SELECTED_ALPHA;
-		} else if (!mIsChecked && DocumentGridActivity.isInSelectionMode()) {
-			return NOT_SELECTED_ALPHA;
-		} else {
-			return SELECTED_ALPHA;
-		}
-	}
+    private float getDesiredScale() {
+        if (mIsChecked && DocumentGridActivity.isInSelectionMode()) {
+            return SELECTED_SCALE;
+        } else if (!mIsChecked && DocumentGridActivity.isInSelectionMode()) {
+            return NOT_SELECTED_SCALE;
+        } else {
+            return SELECTED_SCALE;
+        }
+    }
 
-	private enum AnimationType {
-		TAP_UP, TAP_DOWN, CHECK;
-	}
+    private float getDesiredAlpha() {
+        if (mIsChecked && DocumentGridActivity.isInSelectionMode()) {
+            return SELECTED_ALPHA;
+        } else if (!mIsChecked && DocumentGridActivity.isInSelectionMode()) {
+            return NOT_SELECTED_ALPHA;
+        } else {
+            return SELECTED_ALPHA;
+        }
+    }
 
-	private void initAnimationProperties(final AnimationType type) {
-		final long duration;
-		switch (type) {
+    private enum AnimationType {
+        TAP_UP, TAP_DOWN, CHECK
+    }
 
-		case CHECK: {
-			duration = ANIMATION_DURATION;
-			mTargetAlpha = getDesiredAlpha();
-			mTargetScale = getDesiredScale();
-			break;
-		}
-		case TAP_DOWN: {
-			duration = TAP_ANIMATINO_DURATION;
-			mTargetScale = NOT_SELECTED_SCALE;
-			break;
-		}
-		case TAP_UP: {
-			duration = ANIMATION_DURATION;
-			mTargetScale = SELECTED_SCALE;
-			break;
-		}
-		default:
-			duration = ANIMATION_DURATION;
-		}
+    private void initAnimationProperties(final AnimationType type) {
+        final long duration;
+        switch (type) {
 
-		startAnimation(duration);
-	}
+            case CHECK: {
+                duration = ANIMATION_DURATION;
+                mTargetAlpha = getDesiredAlpha();
+                mTargetScale = getDesiredScale();
+                break;
+            }
+            case TAP_DOWN: {
+                duration = TAP_ANIMATION_DURATION;
+                mTargetScale = NOT_SELECTED_SCALE;
+                break;
+            }
+            case TAP_UP: {
+                duration = ANIMATION_DURATION;
+                mTargetScale = SELECTED_SCALE;
+                break;
+            }
+            default:
+                duration = ANIMATION_DURATION;
+        }
 
-	private void setCurrentScale(final float value) {
-		mCurrentScale = value;
-		getChildAt(0).invalidate();
-	}
+        startAnimation(duration);
+    }
 
-	private void setCurrentAlpha(final float value) {
-		mCurrentAlpha = value;
-	}
+    private void setCurrentScale(final float value) {
+        mCurrentScale = value;
+        getChildAt(0).invalidate();
+    }
 
-	private void startAnimation(final long anmationDuration) {
-		final long duration = (long) (anmationDuration * (Math.abs(mCurrentScale - mTargetScale) / (SELECTED_SCALE - NOT_SELECTED_SCALE)));
-		// Log.i(LOG_TAG, "scaling from "+mCurrentScale + " to " + mTargetScale
-		// + " in " + duration);
+    private void setCurrentAlpha(final float value) {
+        mCurrentAlpha = value;
+    }
 
-		ObjectAnimator scale = ObjectAnimator.ofFloat(this, "currentScale", mCurrentScale, mTargetScale);
-		ObjectAnimator alpha = ObjectAnimator.ofFloat(this, "currentAlpha", mCurrentAlpha, mTargetAlpha);
-		mAnimatorSet = new AnimatorSet();
-		mAnimatorSet.setDuration(duration);
-		mAnimatorSet.setInterpolator(new DecelerateInterpolator(1.2f));
-		mAnimatorSet.playTogether(scale, alpha);
-		mAnimatorSet.start();
-	}
+    private void startAnimation(final long anmationDuration) {
+        final long duration = (long) (anmationDuration * (Math.abs(mCurrentScale - mTargetScale) / (SELECTED_SCALE - NOT_SELECTED_SCALE)));
 
-	@Override
-	public void toggle() {
-		mIsChecked = !mIsChecked;
-		initAnimationProperties(AnimationType.CHECK);
-		if (mListener != null) {
-			mListener.onCheckedChanged(this, mIsChecked);
-		}
-	}
+        ObjectAnimator scale = ObjectAnimator.ofFloat(this, "currentScale", mCurrentScale, mTargetScale);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(this, "currentAlpha", mCurrentAlpha, mTargetAlpha);
+        mAnimatorSet = new AnimatorSet();
+        mAnimatorSet.setDuration(duration);
+        mAnimatorSet.setInterpolator(new DecelerateInterpolator(1.2f));
+        mAnimatorSet.playTogether(scale, alpha);
+        mAnimatorSet.start();
+    }
 
-	public void startTouchDownAnimation() {
-		if (!DocumentGridActivity.isInSelectionMode()) {
-			initAnimationProperties(AnimationType.TAP_DOWN);
-		}
-	}
+    @Override
+    public void toggle() {
+        mIsChecked = !mIsChecked;
+        initAnimationProperties(AnimationType.CHECK);
+        if (mListener != null) {
+            mListener.onCheckedChanged(this, mIsChecked);
+        }
+    }
 
-	public void startTouchUpAnimation() {
-		if (!DocumentGridActivity.isInSelectionMode()) {
-			initAnimationProperties(AnimationType.TAP_UP);
-		}
-	}
+    public void startTouchDownAnimation() {
+        if (!DocumentGridActivity.isInSelectionMode()) {
+            initAnimationProperties(AnimationType.TAP_DOWN);
+        }
+    }
 
-	@Override
-	protected boolean getChildStaticTransformation(View child, Transformation t) {
+    public void startTouchUpAnimation() {
+        if (!DocumentGridActivity.isInSelectionMode()) {
+            initAnimationProperties(AnimationType.TAP_UP);
+        }
+    }
 
-		boolean hasChanged = false;
-		if (mTargetAlpha != mCurrentAlpha || mTargetAlpha != SELECTED_ALPHA) {
-			mAlphaTransformation.setAlpha(mCurrentAlpha);
-			t.compose(mAlphaTransformation);
-			hasChanged = true;
-		}
-		if (mTargetScale != mCurrentScale || mTargetScale != SELECTED_SCALE) {
-			mSelectionTransformation.getMatrix().reset();
-			final float px = child.getLeft() + (child.getWidth()) / 2;
-			final float py = child.getTop() + (child.getHeight()) / 2;
-			mSelectionTransformation.getMatrix().postScale(mCurrentScale, mCurrentScale, px, py);
-			t.compose(mSelectionTransformation);
-			hasChanged = true;
-		}
-		if (hasChanged) {
-			child.invalidate();
-			this.invalidate();
-		}
-		return hasChanged;
-	}
+    @Override
+    protected boolean getChildStaticTransformation(View child, Transformation t) {
+
+        boolean hasChanged = false;
+        if (mTargetAlpha != mCurrentAlpha || mTargetAlpha != SELECTED_ALPHA) {
+            mAlphaTransformation.setAlpha(mCurrentAlpha);
+            t.compose(mAlphaTransformation);
+            hasChanged = true;
+        }
+        if (mTargetScale != mCurrentScale || mTargetScale != SELECTED_SCALE) {
+            mSelectionTransformation.getMatrix().reset();
+            final float px = child.getLeft() + (child.getWidth()) / 2;
+            final float py = child.getTop() + (child.getHeight()) / 2;
+            mSelectionTransformation.getMatrix().postScale(mCurrentScale, mCurrentScale, px, py);
+            t.compose(mSelectionTransformation);
+            hasChanged = true;
+        }
+        if (hasChanged) {
+            child.invalidate();
+            this.invalidate();
+        }
+        return hasChanged;
+    }
 
 }
