@@ -396,13 +396,13 @@ public class OCRActivity extends MonitoredActivity {
                         }
                     }
                 });
-        alertDialog.setOnCancelListener(new OnCancelListener() {
-
+        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
-            public void onCancel(DialogInterface dialog) {
+            public void onDismiss(DialogInterface dialog) {
                 finish();
             }
         });
+
         alertDialog.show();
     }
 
