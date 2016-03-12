@@ -50,6 +50,7 @@ int hocr2pdf(const char* imageFileName, const char* hocrText, PDFCodec* pdfConte
             std::size_t endPos = hocrString.find(";", startPos);
             if (endPos!=std::string::npos) {
                 std::string subString =  hocrString.substr(startPos, endPos-startPos);
+                LOGI("size string = %s",subString.c_str());
                 std::string buf;
                 std::stringstream ss(subString);
                 std::vector<std::string> tokens;
@@ -57,14 +58,10 @@ int hocr2pdf(const char* imageFileName, const char* hocrText, PDFCodec* pdfConte
                 while (ss >> buf) {
                     tokens.push_back(buf);
                 }
-                int width, height;
                 std::stringstream(tokens[3]) >> image.w;
                 std::stringstream(tokens[4]) >> image.h;
 
-                image.w = width;
-                image.h= height;
-
-                LOGI("image size determined by hocr = %i, %i, ", image.w, image.h);
+                LOGI("image size = %i, %i, ", image.w, image.h);
 
             }
         }
