@@ -473,9 +473,11 @@ public class DocumentGridActivity extends NewDocumentActivitiy implements Docume
                 final int documentId = holder.documentId;
                 CrossFadeDrawable d = holder.transition;
                 FastBitmapDrawable thumb = Util.getDocumentThumbnail(documentId);
-                d.setEnd(thumb.getBitmap());
-                holder.gridElement.setImage(d);
-                d.startTransition(375);
+                if (thumb.getBitmap() != null) {
+                    d.setEnd(thumb.getBitmap());
+                    holder.gridElement.setImage(d);
+                    d.startTransition(375);
+                }
                 holder.updateThumbnail = false;
             }
         }
