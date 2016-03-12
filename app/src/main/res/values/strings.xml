@@ -277,7 +277,7 @@
     <string name="promo_video_title">A short introduction on Youtube.</string>
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Hello</string>
-    <string name="text_is_in">"Recognise Text as: "</string>
+    <string name="text_is_in">"The text is in: "</string>
     <string name="empty_grid_language">I can read German and English but you can download more
         languages.
     </string>
