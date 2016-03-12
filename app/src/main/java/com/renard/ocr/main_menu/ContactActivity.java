@@ -84,7 +84,7 @@ public class ContactActivity extends MonitoredActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = getFeedbackIntent(getString(R.string.feedback_subject), null);
-                startActivity(intent);
+                startActivity(Intent.createChooser(intent, getString(R.string.feedback_title)));
             }
         });
     }
