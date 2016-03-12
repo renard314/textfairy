@@ -59,6 +59,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
     private static final String STATE_DOCUMENT_URI = "documet_uri";
     public static final int DOCUMENT_CURSOR_LOADER_ID = 45678998;
     private boolean mIsCursorLoaded = false;
+    private boolean mMoveToPageFromIntent;
 
     public interface DocumentContainerFragment {
         String getLangOfCurrentlyShownDocument();
@@ -114,6 +115,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent.getExtras() != null) {
+            mMoveToPageFromIntent = true;
             setIntent(intent);
             showResultDialog();
         }
@@ -403,7 +405,8 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
         mCursor = cursor;
         DocumentContainerFragment frag = getDocumentContainer();
         frag.setCursor(cursor);
-        if (getIntent().getData() != null && !mIsCursorLoaded) {
+        if (getIntent().getData() != null && !mIsCursorLoaded || mMoveToPageFromIntent) {
+            mMoveToPageFromIntent = false;
             mIsCursorLoaded = true;
             String id = getIntent().getData().getLastPathSegment();
             DocumentPagerFragment documentContainer = (DocumentPagerFragment) getDocumentContainer();

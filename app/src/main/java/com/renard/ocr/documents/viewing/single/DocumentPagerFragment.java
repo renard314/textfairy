@@ -119,6 +119,7 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
             if (mAdapter.getCount() > 1) {
                 mTitleIndicator.setViewPager(mPager);
                 mIsTitleIndicatorVisible = true;
+                mTitleIndicator.setVisibility(View.VISIBLE);
             } else {
                 mTitleIndicator.setVisibility(View.GONE);
             }
