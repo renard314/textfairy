@@ -16,13 +16,13 @@
 
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.documents.viewing.single.SimpleDocumentAdapter.DocumentViewHolder;
-import com.renard.ocr.documents.viewing.single.SimpleDocumentAdapter.ViewBinder;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
-import com.renard.ocr.R;
-import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.HintDialog;
+import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
+import com.renard.ocr.documents.viewing.single.SimpleDocumentAdapter.DocumentViewHolder;
+import com.renard.ocr.documents.viewing.single.SimpleDocumentAdapter.ViewBinder;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -48,6 +48,11 @@ public class TableOfContentsActivity extends MonitoredActivity implements Loader
     private ListView mList;
     private static final int HINT_DIALOG_ID = 2;
 
+
+    @Override
+    public String getScreenName() {
+        return "Table of contents";
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

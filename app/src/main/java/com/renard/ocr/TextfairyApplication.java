@@ -15,6 +15,9 @@
  */
 package com.renard.ocr;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+
 import com.crashlytics.android.Crashlytics;
 import com.renard.ocr.util.PreferencesUtils;
 import com.squareup.leakcanary.LeakCanary;
@@ -27,7 +30,22 @@ import java.lang.reflect.Field;
 
 import io.fabric.sdk.android.Fabric;
 
-public class MyApplication extends Application {
+public class TextFairyApplication extends Application {
+
+    private Tracker mTracker;
+
+    /**
+     * Gets the default {@link Tracker} for this {@link Application}.
+     *
+     * @return tracker
+     */
+    synchronized public Tracker getDefaultTracker() {
+        if (mTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            mTracker = analytics.newTracker(R.xml.global_tracker);
+        }
+        return mTracker;
+    }
 
     public void onCreate() {
         super.onCreate();
@@ -35,6 +53,8 @@ public class MyApplication extends Application {
             final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics()).debuggable(BuildConfig.DEBUG).build();
             Fabric.with(fabric);
         }
+
+        GoogleAnalytics.getInstance(this).setDryRun(BuildConfig.DEBUG);
 
         PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
 

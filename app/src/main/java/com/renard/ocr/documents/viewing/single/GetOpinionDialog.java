@@ -3,7 +3,7 @@ package com.renard.ocr.documents.viewing.single;
 import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.R;
 import com.renard.ocr.main_menu.ContactActivity;
-import com.renard.ocr.main_menu.ContributeActivity;
+import com.renard.ocr.main_menu.FeedbackActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -133,7 +133,7 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
 
     private void rateOnPlayStore() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri url = Uri.parse(ContributeActivity.MARKET_URL);
+        Uri url = Uri.parse(FeedbackActivity.MARKET_URL);
         intent.setData(url);
         startActivity(intent);
     }

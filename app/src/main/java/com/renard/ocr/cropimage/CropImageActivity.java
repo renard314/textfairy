@@ -87,6 +87,11 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
     private Optional<PreparePixForCropTask> mPrepareTask = Optional.absent();
 
     @Override
+    public String getScreenName() {
+        return "Crop Image";
+    }
+
+    @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         EventBus.getDefault().register(this);

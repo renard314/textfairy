@@ -86,6 +86,11 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
     private TtsActionCallback mActionCallback;
 
     @Override
+    public String getScreenName() {
+        return "Document";
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_ALARM);

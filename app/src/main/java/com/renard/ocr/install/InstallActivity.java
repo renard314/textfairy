@@ -59,6 +59,11 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
     private View mContentView = null;
     private TaskFragment mTaskFragment;
 
+    @Override
+    public String getScreenName() {
+        return "Install Activity";
+    }
+
     @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -72,6 +72,11 @@ public class BetaTestActivity extends MonitoredActivity implements View.OnClickL
     }
 
     @Override
+    public String getScreenName() {
+        return "Beta Test";
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             NavUtils.navigateUpFromSameTask(this);

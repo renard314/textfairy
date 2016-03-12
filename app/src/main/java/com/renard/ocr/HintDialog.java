@@ -40,6 +40,7 @@ public class HintDialog{
 		builder = new AlertDialog.Builder(context);
 		builder.setView(layout);
 		builder.setNegativeButton(android.R.string.ok, null);
+
 		return builder.create();
 		
 	}

@@ -25,7 +25,7 @@ import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
 
-public class ContributeActivity extends MonitoredActivity implements View.OnClickListener {
+public class FeedbackActivity extends MonitoredActivity implements View.OnClickListener {
     public static final String MARKET_URL = "market://details?id=com.renard.ocr";
     private boolean slideOutLeft = false;
 
@@ -64,6 +64,11 @@ public class ContributeActivity extends MonitoredActivity implements View.OnClic
         } else {
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         }
+    }
+
+    @Override
+    public String getScreenName() {
+        return "Feedback";
     }
 
     @Override

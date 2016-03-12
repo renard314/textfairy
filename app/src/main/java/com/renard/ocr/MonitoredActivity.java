@@ -17,6 +17,8 @@
 
 package com.renard.ocr;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.common.base.Optional;
 
 import com.renard.ocr.cropimage.BaseActivityInterface;
@@ -106,12 +108,38 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        for (LifeCycleListener listener : mListeners) {
+            listener.onActivityPaused(this);
+        }
+    }
+
+    public abstract String getScreenName();
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        for (LifeCycleListener listener : mListeners) {
+            listener.onActivityResumed(this);
+        }
+        Log.i(LOG_TAG, "Setting screen name: " + getScreenName());
+        getTracker().setScreenName(getScreenName());
+        getTracker().send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+    @Override
     protected synchronized void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityCreated(this);
         }
         Log.i(LOG_TAG, "onCreate: " + this.getClass());
+    }
+
+    private Tracker getTracker() {
+        TextFairyApplication application = (TextFairyApplication) getApplication();
+        return application.getDefaultTracker();
     }
 
     protected void initToolbar() {

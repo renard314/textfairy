@@ -24,7 +24,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.renard.ocr.R;
 import com.renard.ocr.MonitoredActivity;
 
-public class HelpActivity extends MonitoredActivity implements YouTubePlayer.OnInitializedListener {
+public class TipsActivity extends MonitoredActivity implements YouTubePlayer.OnInitializedListener {
 
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
@@ -48,6 +48,11 @@ public class HelpActivity extends MonitoredActivity implements YouTubePlayer.OnI
     protected void onPause() {
         super.onPause();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    public String getScreenName() {
+        return "Tips";
     }
 
     @Override

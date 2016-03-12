@@ -79,6 +79,11 @@ public class AboutActivity extends MonitoredActivity implements View.OnClickList
     }
 
     @Override
+    public String getScreenName() {
+        return "About";
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             NavUtils.navigateUpFromSameTask(this);

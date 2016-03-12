@@ -12,7 +12,7 @@
 
     <application
             android:largeHeap="true"
-            android:name="com.renard.ocr.MyApplication"
+            android:name=".TextFairyApplication"
             android:allowBackup="true"
             android:hardwareAccelerated="true"
             android:hasCode="true"
@@ -53,7 +53,7 @@
                 android:name=".documents.viewing.single.TextSettingsActivity"
         />
         <activity
-                android:name="com.renard.ocr.main_menu.HelpActivity"
+                android:name=".main_menu.TipsActivity"
         >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
@@ -121,7 +121,7 @@
                     android:value="com.renard.ocr.main_menu.AboutActivity"/>
         </activity>
         <activity
-                android:name="com.renard.ocr.main_menu.ContributeActivity"
+                android:name=".main_menu.FeedbackActivity"
         >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
@@ -132,7 +132,7 @@
         >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.renard.ocr.main_menu.ContributeActivity"/>
+                    android:value=".main_menu.FeedbackActivity"/>
         </activity>
         <activity
                 android:name="com.renard.ocr.main_menu.AboutActivity"

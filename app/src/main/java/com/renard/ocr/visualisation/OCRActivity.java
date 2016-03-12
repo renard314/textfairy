@@ -429,6 +429,11 @@ public class OCRActivity extends MonitoredActivity {
     }
 
     @Override
+    public String getScreenName() {
+        return "Ocr";
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);

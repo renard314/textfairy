@@ -3,7 +3,7 @@ package com.renard.ocr.documents.viewing.single;
 import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.R;
 import com.renard.ocr.main_menu.ContactActivity;
-import com.renard.ocr.main_menu.HelpActivity;
+import com.renard.ocr.main_menu.TipsActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -106,7 +106,7 @@ public class OCRResultDialog extends DialogFragment implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.button_show_tips:
-                startActivity(new Intent(activity, HelpActivity.class));
+                startActivity(new Intent(activity, TipsActivity.class));
                 break;
             case R.id.button_copy_to_clipboard:
                 activity.copyTextToClipboard();

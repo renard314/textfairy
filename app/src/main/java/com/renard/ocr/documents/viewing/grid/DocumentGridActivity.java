@@ -27,8 +27,8 @@ import com.renard.ocr.language.OCRLanguageActivity;
 import com.renard.ocr.language.OcrLanguage;
 import com.renard.ocr.language.OcrLanguageDataStore;
 import com.renard.ocr.main_menu.AboutActivity;
-import com.renard.ocr.main_menu.ContributeActivity;
-import com.renard.ocr.main_menu.HelpActivity;
+import com.renard.ocr.main_menu.FeedbackActivity;
+import com.renard.ocr.main_menu.TipsActivity;
 import com.renard.ocr.main_menu.ReleaseNoteDialog;
 import com.renard.ocr.util.Util;
 
@@ -254,11 +254,11 @@ public class DocumentGridActivity extends NewDocumentActivitiy implements Docume
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
                     case R.id.show_tips:
-                        startActivity(new Intent(DocumentGridActivity.this, HelpActivity.class));
+                        startActivity(new Intent(DocumentGridActivity.this, TipsActivity.class));
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
                     case R.id.feedback:
-                        startActivity(new Intent(DocumentGridActivity.this, ContributeActivity.class));
+                        startActivity(new Intent(DocumentGridActivity.this, FeedbackActivity.class));
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
                     case R.id.about:
@@ -550,6 +550,11 @@ public class DocumentGridActivity extends NewDocumentActivitiy implements Docume
     protected void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public String getScreenName() {
+        return "Document Grid";
     }
 
 

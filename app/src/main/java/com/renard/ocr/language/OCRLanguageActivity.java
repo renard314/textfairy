@@ -273,4 +273,9 @@ public class OCRLanguageActivity extends MonitoredActivity {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
+    @Override
+    public String getScreenName() {
+        return "Ocr Languages";
+    }
+
 }

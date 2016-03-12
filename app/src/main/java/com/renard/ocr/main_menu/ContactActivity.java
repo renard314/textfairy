@@ -101,6 +101,11 @@ public class ContactActivity extends MonitoredActivity {
     }
 
     @Override
+    public String getScreenName() {
+        return "Contact";
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
