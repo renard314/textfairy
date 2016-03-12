@@ -36,6 +36,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -123,9 +124,12 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityResumed(this);
         }
-        Log.i(LOG_TAG, "Setting screen name: " + getScreenName());
-        getTracker().setScreenName(getScreenName());
-        getTracker().send(new HitBuilders.ScreenViewBuilder().build());
+        final String screenName = getScreenName();
+        if (!TextUtils.isEmpty(screenName)) {
+            Log.i(LOG_TAG, "Setting screen name: " + screenName);
+            getTracker().setScreenName(screenName);
+            getTracker().send(new HitBuilders.ScreenViewBuilder().build());
+        }
     }
 
     @Override
@@ -137,7 +141,7 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         Log.i(LOG_TAG, "onCreate: " + this.getClass());
     }
 
-    private Tracker getTracker() {
+    public Tracker getTracker() {
         TextFairyApplication application = (TextFairyApplication) getApplication();
         return application.getDefaultTracker();
     }

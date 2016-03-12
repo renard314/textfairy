@@ -1,10 +1,13 @@
 package com.renard.ocr.documents.viewing.single;
 
 import com.googlecode.tesseract.android.OCR;
+import com.renard.ocr.Analytics;
+import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.main_menu.ContactActivity;
 import com.renard.ocr.main_menu.FeedbackActivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -23,6 +26,18 @@ import java.io.File;
  */
 public class GetOpinionDialog extends TopDialogFragment implements DialogInterface.OnClickListener {
 
+    private static final String SCREEN_NAME = "Ocr Opinion Dialog";
+    private static final String SCREEN_NAME_LOVE_IT = "Ocr Opinion Dialog - Love it";
+    private static final String SCREEN_NAME_COULD_BE_BETTER = "Ocr Opinion Dialog - Could be better";
+    private static final String SCREEN_NAME_RATE_ON_PLAY_STORE = "Ocr Opinion Dialog - Rate on Play Store" ;
+
+    private Analytics mAnalytics;
+
+    public interface FeedbackDialogClickListener {
+        void onContinueClicked();
+    }
+
+
     public static final String TAG = GetOpinionDialog.class.getSimpleName();
     private static final String EXTRA_LANGUAGE = "extra_language";
 
@@ -35,7 +50,6 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
         super.onCancel(dialog);
         FeedbackDialogClickListener listener = (FeedbackDialogClickListener) getActivity();
         listener.onContinueClicked();
-
     }
 
     @Override
@@ -43,9 +57,6 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
         notifyListener();
     }
 
-    public interface FeedbackDialogClickListener {
-        void onContinueClicked();
-    }
 
     public static GetOpinionDialog newInstance(String language) {
         Bundle extra = new Bundle();
@@ -55,9 +66,16 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
         return dialog;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        MonitoredActivity monitoredActivity = (MonitoredActivity) getActivity();
+        mAnalytics = new Analytics(monitoredActivity.getTracker());
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mAnalytics.sendScreenView(SCREEN_NAME);
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity(), R.style.DialogSlideAnim);
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_feedback, null);
         mButtonDivider = view.findViewById(R.id.button_divider);
@@ -89,6 +107,7 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
 
 
     private void showFeedbackButton() {
+        mAnalytics.sendScreenView(SCREEN_NAME_COULD_BE_BETTER);
         final String language = getArguments().getString(EXTRA_LANGUAGE);
         final String body = getString(R.string.document_scanned_as, language);
         mLoveIt.setVisibility(View.GONE);
@@ -110,6 +129,7 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
     }
 
     private void showPlayStoreRatingButton() {
+        mAnalytics.sendScreenView(SCREEN_NAME_LOVE_IT);
         mCouldBeBetter.setVisibility(View.GONE);
         mButtonDivider.setVisibility(View.GONE);
         mLoveIt.setText(R.string.rating_title);
@@ -132,6 +152,7 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
     }
 
     private void rateOnPlayStore() {
+        mAnalytics.sendScreenView(SCREEN_NAME_RATE_ON_PLAY_STORE);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri url = Uri.parse(FeedbackActivity.MARKET_URL);
         intent.setData(url);

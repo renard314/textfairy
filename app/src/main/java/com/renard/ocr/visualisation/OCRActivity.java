@@ -19,6 +19,7 @@ import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.OCR;
+import com.renard.ocr.Analytics;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.MonitoredActivity;
@@ -35,7 +36,6 @@ import android.Manifest;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -47,7 +47,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v7.app.AppCompatDialog;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -68,7 +67,7 @@ import de.greenrobot.event.EventBus;
  *
  * @author renard
  */
-public class OCRActivity extends MonitoredActivity {
+public class OCRActivity extends MonitoredActivity implements LayoutChoseListener {
 
     @SuppressWarnings("unused")
     private static final String TAG = OCRActivity.class.getSimpleName();
@@ -95,6 +94,7 @@ public class OCRActivity extends MonitoredActivity {
     // if >=0 its the id of the parent document to which the current page shall be added
     private int mParentId = -1;
 
+    private final Analytics mAnalytics = new Analytics(getTracker());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +125,28 @@ public class OCRActivity extends MonitoredActivity {
         final Pix pixOrg = new Pix(nativePix);
         mOriginalHeight = pixOrg.getHeight();
         mOriginalWidth = pixOrg.getWidth();
-        askUserAboutDocumentLayout(pixOrg);
+        askUserAboutDocumentLayout();
+    }
+
+    @Override
+    public void onLayoutChosen(LayoutKind layoutKind, String ocrLanguage) {
+        long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1);
+        final Pix pixOrg = new Pix(nativePix);
+        if (layoutKind == LayoutKind.DO_NOTHING) {
+            saveDocument(pixOrg, null, null, 0);
+        } else {
+            mOcrLanguage = ocrLanguage;
+
+            setToolbarMessage(R.string.progress_start);
+
+            if (layoutKind == LayoutKind.SIMPLE) {
+                mOCR.startOCRForSimpleLayout(OCRActivity.this, ocrLanguage, pixOrg, mImageView.getWidth(), mImageView.getHeight());
+            } else if (layoutKind == LayoutKind.COMPLEX) {
+                mAccuracy = 0;
+                mOCR.startLayoutAnalysis(OCRActivity.this, pixOrg, mImageView.getWidth(), mImageView.getHeight());
+            }
+        }
+
     }
 
     /**
@@ -142,6 +163,8 @@ public class OCRActivity extends MonitoredActivity {
         private int mPreviewWith;
         private int mPreviewHeight;
 
+        private boolean mHasStartedOcr = false;
+
         public void handleMessage(Message msg) {
             switch (msg.what) {
 
@@ -150,6 +173,10 @@ public class OCRActivity extends MonitoredActivity {
                     break;
                 }
                 case OCR.MESSAGE_TESSERACT_PROGRESS: {
+                    if (!mHasStartedOcr) {
+                        mAnalytics.sendScreenView("Ocr");
+                        mHasStartedOcr = false;
+                    }
                     int percent = msg.arg1;
                     Bundle data = msg.getData();
                     mImageView.setProgress(percent,
@@ -170,6 +197,7 @@ public class OCRActivity extends MonitoredActivity {
                     break;
                 }
                 case OCR.MESSAGE_LAYOUT_PIX: {
+
                     layoutPix = (long) msg.obj;
                     if (layoutPix != 0) {
                         Pix pix = new Pix(layoutPix);
@@ -232,6 +260,7 @@ public class OCRActivity extends MonitoredActivity {
 
                         }
                     });
+                    mAnalytics.sendScreenView("Pick Columns");
 
                     setToolbarMessage(R.string.progress_choose_columns);
 
@@ -356,8 +385,7 @@ public class OCRActivity extends MonitoredActivity {
             if (mParentId > -1) {
                 v.put(Columns.PARENT_ID, mParentId);
             }
-            client = getContentResolver().acquireContentProviderClient(
-                    DocumentContentProvider.CONTENT_URI);
+            client = getContentResolver().acquireContentProviderClient(DocumentContentProvider.CONTENT_URI);
             return client.insert(DocumentContentProvider.CONTENT_URI, v);
         } finally {
             if (client != null) {
@@ -372,38 +400,9 @@ public class OCRActivity extends MonitoredActivity {
         return -1;
     }
 
-    private void askUserAboutDocumentLayout(final Pix pixOrg) {
-
-        AppCompatDialog alertDialog = LayoutQuestionDialog.createDialog(this,
-                new LayoutChoseListener() {
-
-                    @Override
-                    public void onLayoutChosen(final LayoutKind layoutKind,
-                                               final String ocrLanguage) {
-                        if (layoutKind == LayoutKind.DO_NOTHING) {
-                            saveDocument(pixOrg, null, null, 0);
-                        } else {
-                            mOcrLanguage = ocrLanguage;
-
-                            setToolbarMessage(R.string.progress_start);
-
-                            if (layoutKind == LayoutKind.SIMPLE) {
-                                mOCR.startOCRForSimpleLayout(OCRActivity.this, ocrLanguage, pixOrg, mImageView.getWidth(), mImageView.getHeight());
-                            } else if (layoutKind == LayoutKind.COMPLEX) {
-                                mAccuracy = 0;
-                                mOCR.startLayoutAnalysis(OCRActivity.this, pixOrg, mImageView.getWidth(), mImageView.getHeight());
-                            }
-                        }
-                    }
-                });
-        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                finish();
-            }
-        });
-
-        alertDialog.show();
+    private void askUserAboutDocumentLayout() {
+        LayoutQuestionDialog dialog = LayoutQuestionDialog.newInstance();
+        dialog.show(getSupportFragmentManager(),LayoutQuestionDialog.TAG);
     }
 
 
@@ -430,7 +429,7 @@ public class OCRActivity extends MonitoredActivity {
 
     @Override
     public String getScreenName() {
-        return "Ocr";
+        return "";
     }
 
     @Override

@@ -15,6 +15,7 @@
  */
 package com.renard.ocr.language;
 
+import com.renard.ocr.Analytics;
 import com.renard.ocr.R;
 import com.renard.ocr.MonitoredActivity;
 
@@ -52,6 +53,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
     private BroadcastReceiver mFailedReceiver;
     private boolean mReceiverRegistered;
     private final DownloadManagerResolver mDownloadManagerResolver = new DownloadManagerResolver();
+    private final Analytics mAnalytics = new Analytics(getTracker());
 
     private class LoadListAsyncTask extends AsyncTask<Void, Void, OCRLanguageAdapter> {
 
@@ -83,6 +85,8 @@ public class OCRLanguageActivity extends MonitoredActivity {
         }
 
         private void startDownload(OcrLanguage language) {
+            mAnalytics.sendStartDownload(language);
+
             final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
             List<Uri> uris = language.getDownloadUris();
             for (Uri uri : uris) {
@@ -97,6 +101,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
         protected void deleteLanguage(int position) {
             final OcrLanguage language = (OcrLanguage) mAdapter.getItem(position);
+
             AlertDialog.Builder b = new Builder(OCRLanguageActivity.this);
             String msg = getString(R.string.delete_language_message);
             String title = getString(R.string.delete_language_title);
@@ -109,7 +114,6 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-
                 }
             });
             b.setPositiveButton(R.string.ocr_language_delete, new OnClickListener() {
@@ -118,6 +122,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     OcrLanguageDataStore.deleteLanguage(language, OCRLanguageActivity.this);
                     mAdapter.notifyDataSetChanged();
+                    mAnalytics.sendDeleteLanguage(language);
 
                 }
             });

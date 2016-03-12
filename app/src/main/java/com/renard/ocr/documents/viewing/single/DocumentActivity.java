@@ -16,6 +16,7 @@
 
 package com.renard.ocr.documents.viewing.single;
 
+import com.renard.ocr.Analytics;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.HintDialog;
@@ -55,6 +56,7 @@ import java.util.Set;
 
 public class DocumentActivity extends NewDocumentActivitiy implements LoaderManager.LoaderCallbacks<Cursor>, GetOpinionDialog.FeedbackDialogClickListener {
 
+    public static final String OCR_RESULT_DIALOG = "Ocr Result Dialog";
     private final static String LOG_TAG = DocumentActivity.class.getSimpleName();
     private static final String STATE_DOCUMENT_URI = "documet_uri";
     public static final int DOCUMENT_CURSOR_LOADER_ID = 45678998;
@@ -84,10 +86,11 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
     private int mParentId;
     private Cursor mCursor;
     private TtsActionCallback mActionCallback;
+    private final Analytics mAnalytics = new Analytics(getTracker());
 
     @Override
     public String getScreenName() {
-        return "Document";
+        return "";
     }
 
     @Override
@@ -123,12 +126,17 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
             mMoveToPageFromIntent = true;
             setIntent(intent);
             showResultDialog();
+        } else {
+            mAnalytics.sendScreenView("Document");
         }
+
     }
 
     private void showResultDialog() {
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, -1);
         String language = getIntent().getStringExtra(EXTRA_LANGUAGE);
+        mAnalytics.sendOcrResult(language, accuracy);
+
         int numberOfSuccessfulScans = PreferencesUtils.getNumberOfSuccessfulScans(getApplicationContext());
         if (accuracy >= OCRResultDialog.MEDIUM_ACCURACY) {
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
@@ -138,6 +146,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         } else if (accuracy > -1) {
             OCRResultDialog.newInstance(accuracy, language).show(getSupportFragmentManager(), OCRResultDialog.TAG);
+            mAnalytics.sendScreenView(OCR_RESULT_DIALOG);
         }
 
     }
@@ -147,6 +156,7 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
         int accuracy = getIntent().getIntExtra(EXTRA_ACCURACY, 0);
         final String languageOfDocument = getIntent().getStringExtra(EXTRA_LANGUAGE);
         OCRResultDialog.newInstance(accuracy, languageOfDocument).show(getSupportFragmentManager(), OCRResultDialog.TAG);
+        mAnalytics.sendScreenView(OCR_RESULT_DIALOG);
     }
 
     @Override

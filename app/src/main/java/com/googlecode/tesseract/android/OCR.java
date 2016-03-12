@@ -20,6 +20,7 @@ import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
+import com.renard.ocr.Analytics;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.cropimage.CropImageScaler;
@@ -63,6 +64,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     }
 
+    private final Analytics mAnalytics;
+
     private int mPreviewWith;
     private int mPreviewHeight;
     private int mOriginalWidth;
@@ -78,6 +81,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private int mPreviewWidthUnScaled;
 
     public OCR(final MonitoredActivity activity, final Messenger messenger) {
+        mAnalytics = new Analytics(activity.getTracker());
         mMessenger = messenger;
         mIsActivityAttached = true;
         activity.addLifeCycleListener(this);
@@ -498,6 +502,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     public synchronized void cancel() {
         if (mTess != null) {
+            mAnalytics.sendOcrCancelled();
             mTess.stop();
             mStopped = true;
         }

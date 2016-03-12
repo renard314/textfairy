@@ -15,17 +15,23 @@
  */
 package com.renard.ocr.visualisation;
 
+import com.renard.ocr.Analytics;
+import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.language.OcrLanguage;
 import com.renard.ocr.language.OcrLanguageDataStore;
 import com.renard.ocr.util.PreferencesUtils;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDialog;
 import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,7 +45,16 @@ import android.widget.ViewSwitcher;
 
 import java.util.List;
 
-public class LayoutQuestionDialog {
+public class LayoutQuestionDialog extends DialogFragment {
+
+    public static final String TAG = LayoutQuestionDialog.class.getSimpleName();
+    private static final String SCREEN_NAME = "Layout Question Dialog";
+
+    private Analytics mAnalytics;
+
+    public static LayoutQuestionDialog newInstance() {
+        return new LayoutQuestionDialog();
+    }
 
     public enum LayoutKind {
         SIMPLE, COMPLEX, DO_NOTHING;
@@ -52,8 +67,20 @@ public class LayoutQuestionDialog {
         void onLayoutChosen(final LayoutKind layoutKind, final String language);
     }
 
-    public static AppCompatDialog createDialog(final Context context, final LayoutChoseListener listener) {
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        MonitoredActivity monitoredActivity = (MonitoredActivity) getActivity();
+        mAnalytics = new Analytics(monitoredActivity.getTracker());
+    }
+
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mAnalytics.sendScreenView(SCREEN_NAME);
+        final Context context = getContext();
         mLayout = null;
         Pair<String, String> language = PreferencesUtils.getOCRLanguage(context);
 
@@ -80,8 +107,7 @@ public class LayoutQuestionDialog {
         final ImageSwitcher fairy = (ImageSwitcher) layout.findViewById(R.id.fairy_layout);
         fairy.setFactory(new ViewSwitcher.ViewFactory() {
             public View makeView() {
-                ImageView myView = new ImageView(context);
-                return myView;
+                return new ImageView(context);
             }
         });
         fairy.setImageResource(R.drawable.fairy_looks_center);
@@ -140,6 +166,7 @@ public class LayoutQuestionDialog {
                 final OcrLanguage item = adapter.getItem(position);
                 mLanguage = item.getValue();
                 PreferencesUtils.saveOCRLanguage(context, item);
+                mAnalytics.sendOcrLanguageChanged(item);
             }
 
             @Override
@@ -156,7 +183,9 @@ public class LayoutQuestionDialog {
                         if (mLayout == null) {
                             mLayout = LayoutKind.SIMPLE;
                         }
+                        LayoutChoseListener listener = (LayoutChoseListener) getActivity();
                         listener.onLayoutChosen(mLayout, mLanguage);
+                        mAnalytics.sendOcrStarted(mLanguage, mLayout);
                         dialog.dismiss();
                     }
                 });
@@ -166,10 +195,21 @@ public class LayoutQuestionDialog {
 
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
+                        mAnalytics.sendLayoutDialogCancelled();
                     }
                 });
 
-        return builder.create();
+        final AlertDialog alertDialog = builder.create();
+
+        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                getActivity().finish();
+            }
+        });
+
+
+        return alertDialog;
 
     }
 
