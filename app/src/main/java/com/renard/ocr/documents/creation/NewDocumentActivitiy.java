@@ -764,10 +764,17 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
             String[] images = new String[cursor.getCount()];
             String[] hocr = new String[cursor.getCount()];
             cursor.moveToPosition(-1);
+            boolean overlayImage = true;
             while (cursor.moveToNext()) {
                 int hocrIndex = cursor.getColumnIndex(Columns.HOCR_TEXT);
                 index = cursor.getColumnIndex(Columns.PHOTO_PATH);
-                Uri imageUri = Uri.parse(cursor.getString(index));
+                final String photoPath = cursor.getString(index);
+                Uri imageUri = null;
+                if (photoPath != null) {
+                    imageUri = Uri.parse(photoPath);
+                } else {
+                    overlayImage = false;
+                }
                 images[cursor.getPosition()] = Util.getPathForUri(NewDocumentActivitiy.this, imageUri);
                 index = cursor.getColumnIndex(Columns.OCR_TEXT);
                 final String text = cursor.getString(index);
@@ -793,8 +800,8 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
             }
             cursor.close();
             Hocr2Pdf pdf = new Hocr2Pdf(this);
-            pdf.hocr2pdf(images, hocr, outPdf.getPath(), true, true);
-            return new Pair<File, File>(outPdf, outText);
+            pdf.hocr2pdf(images, hocr, outPdf.getPath(), true, overlayImage);
+            return new Pair<>(outPdf, outText);
         }
 
         @Override

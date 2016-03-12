@@ -79,28 +79,6 @@ std::string sanitizeStr(const std::string& _s) {
 // HTML decode
 
 std::string htmlDecode(const std::string& _s) {
-	/*
-
-	std::string s(_s);
-	std::string::size_type i;
-
-	while ((i = s.find("&amp;")) != std::string::npos)
-		s.replace(i, 5, "&");
-
-	while ((i = s.find("&lt;")) != std::string::npos)
-		s.replace(i, 4, "<");
-
-	while ((i = s.find("&gt;")) != std::string::npos)
-		s.replace(i, 4, ">");
-
-	while ((i = s.find("&quot;")) != std::string::npos)
-		s.replace(i, 6, "\"");
-
-
-	while ((i = s.find("&#39;")) != std::string::npos)
-		s.replace(i, 5, "'");
-	*/
-
 	char* dest = new char[_s.length()+1];
 	decode_html_entities_utf8(dest,_s.c_str());
 	std::string s(dest);

@@ -22,7 +22,6 @@
 #include <iomanip>
 #include <cmath>
 #include <cctype>
-
 #include <vector>
 
 #include "Codecs.hh"
@@ -44,7 +43,31 @@ int hocr2pdf(const char* imageFileName, const char* hocrText, PDFCodec* pdfConte
 	  std::string fileName(imageFileName);
 	  if (!ImageCodec::Read(fileName, image)) {
 		  LOGI("Error reading input file.");
-		  return 1;
+          overlayImage = false;
+        std::string hocrString(hocrText);
+        std::size_t startPos = hocrString.find("bbox", 0);
+        if (startPos!=std::string::npos) {
+            std::size_t endPos = hocrString.find(";", startPos);
+            if (endPos!=std::string::npos) {
+                std::string subString =  hocrString.substr(startPos, endPos-startPos);
+                std::string buf;
+                std::stringstream ss(subString);
+                std::vector<std::string> tokens;
+
+                while (ss >> buf) {
+                    tokens.push_back(buf);
+                }
+                int width, height;
+                std::stringstream(tokens[3]) >> image.w;
+                std::stringstream(tokens[4]) >> image.h;
+
+                image.w = width;
+                image.h= height;
+
+                LOGI("image size determined by hocr = %i, %i, ", image.w, image.h);
+
+            }
+        }
 	  }
 
 	  if (image.resolutionX() <= 0 || image.resolutionY() <= 0) {
@@ -55,6 +78,8 @@ int hocr2pdf(const char* imageFileName, const char* hocrText, PDFCodec* pdfConte
 	  unsigned int res = image.resolutionX();
 
 	  std::stringstream hocr(hocrText);
+    
+      LOGI("paged dimensions %.2f, %.2f", 72. * image.w / res, 72. * image.h / res);
 
 
 	  pdfContext->beginPage(72. * image.w / res, 72. * image.h / res);
