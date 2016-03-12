@@ -15,8 +15,8 @@
  */
 package com.renard.ocr.main_menu;
 
-import com.renard.ocr.R;
 import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -73,14 +73,14 @@ public class ContributeActivity extends MonitoredActivity implements View.OnClic
             case R.id.layout_enroll_beta_test:
             case R.id.button_enroll_beta_test:
                 slideOutLeft = true;
-                intent = ContactActivity.getFeedbackIntent(this);
+                intent = ContactActivity.getBetaTestIntent(this);
                 startActivity(intent);
                 break;
             case R.id.layout_send_feedback:
             case R.id.button_send_feedback:
                 slideOutLeft = true;
                 intent = ContactActivity.getFeedbackIntent(getString(R.string.feedback_subject), null);
-                startActivity(intent);
+                startActivity(Intent.createChooser(intent, getString(R.string.feedback_title)));
                 break;
             case R.id.layout_rate_app:
             case R.id.button_rate_app:
