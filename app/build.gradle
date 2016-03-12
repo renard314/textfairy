@@ -5,10 +5,10 @@ import java.util.regex.Pattern
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
-def versions = ['appcompat_v7': '23.2.0',
+def versions = ['appcompat_v7': '23.2.1',
                 'butterknife' : '7.0.1',
-                'card_view'   : '23.2.0',
-                'design'      : '23.2.0',
+                'card_view'   : '23.2.1',
+                'design'      : '23.2.1',
                 'photoview'   : '1.2.4']
 
 task ndkBuild(type: Exec, description: 'run ndk-build') {
@@ -79,12 +79,6 @@ android {
             versionCode getVersionCodeFromManifest("2")
             ndk {
                 abiFilter "armeabi-v7a"
-            }
-        }
-        aV5 {
-            versionCode getVersionCodeFromManifest("1")
-            ndk {
-                abiFilter "armeabi"
             }
         }
     }
