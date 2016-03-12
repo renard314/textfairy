@@ -306,7 +306,7 @@ public class OCRActivity extends MonitoredActivity {
                             });
                         } finally {
                             recycleResultPix(pix);
-                            if (documentUri != null) {
+                            if (documentUri != null && isFinishing()) {
                                 Intent i;
                                 i = new Intent(OCRActivity.this, DocumentActivity.class);
                                 i.putExtra(DocumentActivity.EXTRA_ACCURACY, accuracy);
