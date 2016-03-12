@@ -21,7 +21,7 @@ import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.HintDialog;
 import com.renard.ocr.R;
-import com.renard.ocr.documents.creation.NewDocumentActivitiy;
+import com.renard.ocr.documents.creation.NewDocumentActivity;
 import com.renard.ocr.language.OcrLanguage;
 import com.renard.ocr.util.PreferencesUtils;
 
@@ -54,7 +54,7 @@ import android.widget.Toast;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DocumentActivity extends NewDocumentActivitiy implements LoaderManager.LoaderCallbacks<Cursor>, GetOpinionDialog.FeedbackDialogClickListener {
+public class DocumentActivity extends NewDocumentActivity implements LoaderManager.LoaderCallbacks<Cursor>, GetOpinionDialog.FeedbackDialogClickListener {
 
     public static final String OCR_RESULT_DIALOG = "Ocr Result Dialog";
     private final static String LOG_TAG = DocumentActivity.class.getSimpleName();
@@ -86,7 +86,6 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
     private int mParentId;
     private Cursor mCursor;
     private TtsActionCallback mActionCallback;
-    private final Analytics mAnalytics = new Analytics(getTracker());
 
     @Override
     public String getScreenName() {
@@ -182,32 +181,42 @@ public class DocumentActivity extends NewDocumentActivitiy implements LoaderMana
         }
 
         if (itemId == R.id.item_view_mode) {
+
             DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
-            fragment.setShowText(!fragment.getShowText());
+            final boolean showText = fragment.getShowText();
+            fragment.setShowText(!showText);
+            mAnalytics.optionDocumentViewMode(showText);
             return true;
         } else if (itemId == R.id.item_text_options) {
             Intent i = new Intent(this, TextSettingsActivity.class);
             startActivityForResult(i, REQUEST_CODE_OPTIONS);
+            mAnalytics.optionTextSettings();
             return true;
         } else if (itemId == R.id.item_content) {
             Intent tocIndent = new Intent(this, TableOfContentsActivity.class);
             Uri uri = Uri.parse(DocumentContentProvider.CONTENT_URI + "/" + getParentId());
             tocIndent.setData(uri);
             startActivityForResult(tocIndent, REQUEST_CODE_TABLE_OF_CONTENTS);
+            mAnalytics.optionTableOfContents();
             return true;
         } else if (itemId == R.id.item_delete) {
             deleteDocument();
+            mAnalytics.optionsDeleteDocument();
             return true;
         } else if (itemId == R.id.item_export_as_pdf) {
+            mAnalytics.optionsCreatePdf();
             exportAsPdf();
             return true;
         } else if (itemId == R.id.item_copy_to_clipboard) {
+            mAnalytics.optionsCopyToClipboard();
             copyTextToClipboard();
             return true;
         } else if (itemId == R.id.item_text_to_speech) {
+            mAnalytics.optionsStartTts();
             startTextToSpeech();
             return true;
         } else if (itemId == R.id.item_share_text) {
+            mAnalytics.optionsShareText();
             shareText();
             return true;
 

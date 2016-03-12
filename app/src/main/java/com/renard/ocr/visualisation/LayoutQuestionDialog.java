@@ -72,7 +72,7 @@ public class LayoutQuestionDialog extends DialogFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         MonitoredActivity monitoredActivity = (MonitoredActivity) getActivity();
-        mAnalytics = new Analytics(monitoredActivity.getTracker());
+        mAnalytics = monitoredActivity.getAnaLytics();
     }
 
 
@@ -156,7 +156,7 @@ public class LayoutQuestionDialog extends DialogFragment {
         for (int i = 0; i < installedLanguages.size(); i++) {
             OcrLanguage lang = installedLanguages.get(i);
             if (lang.getValue().equals(language.first)) {
-                langButton.setSelection(i);
+                langButton.setSelection(i, false);
                 break;
             }
         }
@@ -194,22 +194,14 @@ public class LayoutQuestionDialog extends DialogFragment {
                 new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
+                        getActivity().finish();
                         dialog.dismiss();
                         mAnalytics.sendLayoutDialogCancelled();
                     }
                 });
 
-        final AlertDialog alertDialog = builder.create();
 
-        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                getActivity().finish();
-            }
-        });
-
-
-        return alertDialog;
+        return builder.create();
 
     }
 

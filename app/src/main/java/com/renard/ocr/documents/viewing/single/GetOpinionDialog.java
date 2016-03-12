@@ -1,13 +1,10 @@
 package com.renard.ocr.documents.viewing.single;
 
 import com.googlecode.tesseract.android.OCR;
-import com.renard.ocr.Analytics;
-import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.main_menu.ContactActivity;
 import com.renard.ocr.main_menu.FeedbackActivity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -29,9 +26,8 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
     private static final String SCREEN_NAME = "Ocr Opinion Dialog";
     private static final String SCREEN_NAME_LOVE_IT = "Ocr Opinion Dialog - Love it";
     private static final String SCREEN_NAME_COULD_BE_BETTER = "Ocr Opinion Dialog - Could be better";
-    private static final String SCREEN_NAME_RATE_ON_PLAY_STORE = "Ocr Opinion Dialog - Rate on Play Store" ;
+    private static final String SCREEN_NAME_RATE_ON_PLAY_STORE = "Ocr Opinion Dialog - Rate on Play Store";
 
-    private Analytics mAnalytics;
 
     public interface FeedbackDialogClickListener {
         void onContinueClicked();
@@ -66,12 +62,6 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
         return dialog;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        MonitoredActivity monitoredActivity = (MonitoredActivity) getActivity();
-        mAnalytics = new Analytics(monitoredActivity.getTracker());
-    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

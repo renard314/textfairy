@@ -25,10 +25,10 @@ import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Projective;
 import com.googlecode.leptonica.android.Rotate;
 import com.googlecode.tesseract.android.OCR;
-import com.renard.ocr.MonitoredActivity;
-import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
-import com.renard.ocr.R;
 import com.renard.ocr.HintDialog;
+import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
+import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.util.Util;
 
 import android.app.Dialog;
@@ -63,6 +63,7 @@ import de.greenrobot.event.EventBus;
 public class CropImageActivity extends MonitoredActivity implements BlurWarningDialog.BlurDialogClickListener {
     public static final int RESULT_NEW_IMAGE = RESULT_FIRST_USER + 1;
     private static final int HINT_DIALOG_ID = 2;
+    public static final String SCREEN_NAME = "Crop Image";
     private final Handler mHandler = new Handler();
 
     private int mRotation = 0;
@@ -88,7 +89,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
 
     @Override
     public String getScreenName() {
-        return "Crop Image";
+        return "";
     }
 
     @Override
@@ -169,10 +170,13 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
         if (cropData.getBitmap() == null) {
             //should not happen. Scaling of the original document failed some how. Maybe out of memory?
             //TODO send GA event to monitor this
+            mAnalytics.sendCropError();
             Toast.makeText(this, R.string.could_not_load_image, Toast.LENGTH_LONG).show();
             onNewImageClicked();
             return;
         }
+        mAnalytics.sendBlurResult(cropData.getBlurriness());
+
         mCropData = Optional.of(cropData);
         adjustOptionsMenu();
         mViewSwitcher.setDisplayedChild(1);
@@ -185,6 +189,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
 
                 switch (cropData.getBlurriness().getBlurriness()) {
                     case NOT_BLURRED:
+                        mAnalytics.sendScreenView(SCREEN_NAME);
                         showDefaultCroppingRectangle(cropData.getBitmap());
                         break;
                     case MEDIUM_BLUR:
@@ -193,7 +198,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
                         setTitle(R.string.image_is_blurred);
                         BlurWarningDialog dialog = BlurWarningDialog.newInstance((float) cropData.getBlurriness().getBlurValue());
                         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.add(dialog,BlurWarningDialog.TAG).commitAllowingStateLoss();
+                        fragmentTransaction.add(dialog, BlurWarningDialog.TAG).commitAllowingStateLoss();
                         break;
                 }
 
@@ -373,6 +378,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
     @Override
     public void onContinueClicked() {
         if (mCropData.isPresent()) {
+            mAnalytics.sendScreenView(SCREEN_NAME);
             showDefaultCroppingRectangle(mCropData.get().getBitmap());
             setToolbarMessage(R.string.crop_title);
             mImageView.zoomTo(1, 500);

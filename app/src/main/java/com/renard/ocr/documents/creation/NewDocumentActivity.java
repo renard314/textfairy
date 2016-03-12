@@ -17,6 +17,7 @@
 package com.renard.ocr.documents.creation;
 
 import com.googlecode.leptonica.android.Pix;
+import com.renard.ocr.Analytics;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.MonitoredActivity;
@@ -86,9 +87,9 @@ import java.util.Set;
  *
  * @author renard
  */
-public abstract class NewDocumentActivitiy extends MonitoredActivity {
+public abstract class NewDocumentActivity extends MonitoredActivity {
 
-    private final static String LOG_TAG = NewDocumentActivitiy.class.getSimpleName();
+    private final static String LOG_TAG = NewDocumentActivity.class.getSimpleName();
     public final static String EXTRA_NATIVE_PIX = "pix_pointer";
     public final static String EXTRA_IMAGE_URI = "image_uri";
     public final static String EXTRA_ROTATION = "rotation";
@@ -146,6 +147,7 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
     private CameraResult mCameraResult;
 
     protected void startGallery() {
+        mAnalytics.startGallery();
         cameraPicUri = null;
         Intent i;
         if (Build.VERSION.SDK_INT >= 19) {
@@ -167,6 +169,7 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
     }
 
     protected void startCamera() {
+        mAnalytics.startCamera();
         try {
             cameraPicUri = null;
             dateCameraIntentStarted = new Date();
@@ -302,7 +305,7 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
                         cameraPicUri = tempCameraPicUri;
                         rotateXDegrees = myCursor.getInt(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.ORIENTATION));
                     }
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 } finally {
                     if (myCursor != null) {
                         myCursor.close();
@@ -419,7 +422,7 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
             //As a workaround I check for the flag if the receiver is registered
             //Additionally i use commitAllowStateLoss as its not terribly important to preserve the state of the loading dialog
             if (mReceiverRegistered) {
-                Log.i(LOG_TAG, "onReceive " + NewDocumentActivitiy.this);
+                Log.i(LOG_TAG, "onReceive " + NewDocumentActivity.this);
                 if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADED)) {
                     unRegisterImageLoadedReceiver();
                     final long nativePix = intent.getLongExtra(ImageLoadAsyncTask.EXTRA_PIX, 0);
@@ -442,9 +445,9 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
                 startOcrActivity(nativePix, true);
             } else {
                 Intent actionIntent = new Intent(this, CropImageActivity.class);
-                actionIntent.putExtra(NewDocumentActivitiy.EXTRA_NATIVE_PIX, nativePix);
-                actionIntent.putExtra(NewDocumentActivitiy.EXTRA_ROTATION, rotateXDegrees);
-                startActivityForResult(actionIntent, NewDocumentActivitiy.REQUEST_CODE_CROP_PHOTO);
+                actionIntent.putExtra(NewDocumentActivity.EXTRA_NATIVE_PIX, nativePix);
+                actionIntent.putExtra(NewDocumentActivity.EXTRA_ROTATION, rotateXDegrees);
+                startActivityForResult(actionIntent, NewDocumentActivity.REQUEST_CODE_CROP_PHOTO);
             }
         } else {
             showFileError(status);
@@ -775,7 +778,7 @@ public abstract class NewDocumentActivitiy extends MonitoredActivity {
                 } else {
                     overlayImage = false;
                 }
-                images[cursor.getPosition()] = Util.getPathForUri(NewDocumentActivitiy.this, imageUri);
+                images[cursor.getPosition()] = Util.getPathForUri(NewDocumentActivity.this, imageUri);
                 index = cursor.getColumnIndex(Columns.OCR_TEXT);
                 final String text = cursor.getString(index);
                 if (text != null && text.length() > 0) {

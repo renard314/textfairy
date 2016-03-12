@@ -20,7 +20,7 @@ import com.renard.ocr.HintDialog;
 import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.ImageSource;
-import com.renard.ocr.documents.creation.NewDocumentActivitiy;
+import com.renard.ocr.documents.creation.NewDocumentActivity;
 import com.renard.ocr.documents.creation.PixLoadStatus;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
 import com.renard.ocr.language.OCRLanguageActivity;
@@ -83,7 +83,7 @@ import de.greenrobot.event.EventBus;
  *
  * @author renard
  */
-public class DocumentGridActivity extends NewDocumentActivitiy implements DocumentGridAdapter.OnCheckedChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class DocumentGridActivity extends NewDocumentActivity implements DocumentGridAdapter.OnCheckedChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = DocumentGridActivity.class.getSimpleName();
     private DocumentGridAdapter mDocumentAdapter;

@@ -41,7 +41,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
     private int rotateXDegrees;
     private final Uri cameraPicUri;
 
-    ImageLoadAsyncTask(NewDocumentActivitiy activity, boolean skipCrop, int rotateXDegrees, Uri cameraPicUri) {
+    ImageLoadAsyncTask(NewDocumentActivity activity, boolean skipCrop, int rotateXDegrees, Uri cameraPicUri) {
         mContentResolver = new WeakReference<>(activity.getContentResolver());
         context = activity.getApplicationContext();
         this.skipCrop = skipCrop;

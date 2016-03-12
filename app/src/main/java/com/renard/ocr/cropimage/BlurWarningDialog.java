@@ -21,15 +21,18 @@ public class BlurWarningDialog extends TopDialogFragment implements DialogInterf
     public static final String TAG = BlurWarningDialog.class.getSimpleName();
 
     private final static String EXTRA_BLURRINES = "extra_blurrines";
+    private static final String SCREEN_NAME = "Blur Warning Dialog";
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
         BlurDialogClickListener listener = (BlurDialogClickListener) getActivity();
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
+                mAnalytics.newImageBecauseOfBlurWarning();
                 listener.onNewImageClicked();
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
+                mAnalytics.continueDespiteOfBlurWarning();
                 listener.onContinueClicked();
                 break;
         }
@@ -59,6 +62,7 @@ public class BlurWarningDialog extends TopDialogFragment implements DialogInterf
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mAnalytics.sendScreenView(SCREEN_NAME);
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity(), R.style.DialogSlideAnim);
         builder.setCancelable(true);
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_blur_warning, null);

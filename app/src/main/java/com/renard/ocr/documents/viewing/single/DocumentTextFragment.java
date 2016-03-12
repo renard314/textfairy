@@ -18,7 +18,7 @@ package com.renard.ocr.documents.viewing.single;
 
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.R;
-import com.renard.ocr.documents.creation.NewDocumentActivitiy;
+import com.renard.ocr.documents.creation.NewDocumentActivity;
 import com.renard.ocr.util.PreferencesUtils;
 
 import android.net.Uri;
@@ -123,7 +123,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
             List<Spanned> texts = new ArrayList<>();
             ids.add(uri);
             texts.add(mEditText.getText());
-            NewDocumentActivitiy.SaveDocumentTask saveTask = new NewDocumentActivitiy.SaveDocumentTask(getActivity(), ids, texts);
+            NewDocumentActivity.SaveDocumentTask saveTask = new NewDocumentActivity.SaveDocumentTask(getActivity(), ids, texts);
             saveTask.execute();
         }
     }

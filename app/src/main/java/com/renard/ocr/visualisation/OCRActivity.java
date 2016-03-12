@@ -94,7 +94,6 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
     // if >=0 its the id of the parent document to which the current page shall be added
     private int mParentId = -1;
 
-    private final Analytics mAnalytics = new Analytics(getTracker());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,7 +174,7 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
                 case OCR.MESSAGE_TESSERACT_PROGRESS: {
                     if (!mHasStartedOcr) {
                         mAnalytics.sendScreenView("Ocr");
-                        mHasStartedOcr = false;
+                        mHasStartedOcr = true;
                     }
                     int percent = msg.arg1;
                     Bundle data = msg.getData();
@@ -335,7 +334,7 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
                             });
                         } finally {
                             recycleResultPix(pix);
-                            if (documentUri != null && isFinishing()) {
+                            if (documentUri != null && !isFinishing()) {
                                 Intent i;
                                 i = new Intent(OCRActivity.this, DocumentActivity.class);
                                 i.putExtra(DocumentActivity.EXTRA_ACCURACY, accuracy);

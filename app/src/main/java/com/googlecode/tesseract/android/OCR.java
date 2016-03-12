@@ -81,7 +81,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private int mPreviewWidthUnScaled;
 
     public OCR(final MonitoredActivity activity, final Messenger messenger) {
-        mAnalytics = new Analytics(activity.getTracker());
+        mAnalytics = activity.getAnaLytics();
         mMessenger = messenger;
         mIsActivityAttached = true;
         activity.addLifeCycleListener(this);

@@ -1,5 +1,9 @@
 package com.renard.ocr.documents.viewing.single;
 
+import com.renard.ocr.Analytics;
+import com.renard.ocr.MonitoredActivity;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.res.TypedArray;
 import android.support.v4.app.DialogFragment;
@@ -11,6 +15,16 @@ import android.view.WindowManager;
  * @author renard
  */
 public class TopDialogFragment extends DialogFragment {
+
+    protected Analytics mAnalytics;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        MonitoredActivity monitoredActivity = (MonitoredActivity) getActivity();
+        mAnalytics = monitoredActivity.getAnaLytics();
+    }
+
 
     protected void positionDialogAtTop(AlertDialog alertDialog) {
         Window window = alertDialog.getWindow();

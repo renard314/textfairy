@@ -62,6 +62,7 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     private ImageView mAppIcon = null;
     private TextView mToolbarMessage;
     private AlertDialog mPermissionDialog;
+    protected Analytics mAnalytics;
 
 
     public interface LifeCycleListener {
@@ -126,9 +127,7 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         }
         final String screenName = getScreenName();
         if (!TextUtils.isEmpty(screenName)) {
-            Log.i(LOG_TAG, "Setting screen name: " + screenName);
-            getTracker().setScreenName(screenName);
-            getTracker().send(new HitBuilders.ScreenViewBuilder().build());
+            mAnalytics.sendScreenView(screenName);
         }
     }
 
@@ -138,12 +137,15 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityCreated(this);
         }
+        TextFairyApplication application = (TextFairyApplication) getApplication();
+        final Tracker defaultTracker = application.getDefaultTracker();
+        mAnalytics = new Analytics(defaultTracker);
+
         Log.i(LOG_TAG, "onCreate: " + this.getClass());
     }
 
-    public Tracker getTracker() {
-        TextFairyApplication application = (TextFairyApplication) getApplication();
-        return application.getDefaultTracker();
+    public Analytics getAnaLytics() {
+        return mAnalytics;
     }
 
     protected void initToolbar() {

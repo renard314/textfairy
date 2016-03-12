@@ -53,7 +53,6 @@ public class OCRLanguageActivity extends MonitoredActivity {
     private BroadcastReceiver mFailedReceiver;
     private boolean mReceiverRegistered;
     private final DownloadManagerResolver mDownloadManagerResolver = new DownloadManagerResolver();
-    private final Analytics mAnalytics = new Analytics(getTracker());
 
     private class LoadListAsyncTask extends AsyncTask<Void, Void, OCRLanguageAdapter> {
 

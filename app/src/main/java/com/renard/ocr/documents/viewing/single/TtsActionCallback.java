@@ -1,7 +1,8 @@
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.R;
+import com.renard.ocr.Analytics;
 import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
 import com.renard.ocr.language.OcrLanguage;
 import com.renard.ocr.util.ResourceUtils;
 
@@ -35,12 +36,13 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     private boolean mTtsReady = false;
     private ActionMode mActionMode;
     final Map<String, String> hashMapResource;
+    private final Analytics mAnalytics;
 
     TtsActionCallback(DocumentActivity activity) {
+        mAnalytics = activity.getAnaLytics();
         hashMapResource = ResourceUtils.getHashMapResource(activity, R.xml.iso_639_mapping);
         this.activity = activity;
         this.activity.addLifeCycleListener(this);
-
     }
 
     @Override
@@ -77,6 +79,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     }
 
     private void startPlaying(ActionMode actionMode) {
+        mAnalytics.ttsStart(mTts.getLanguage().getLanguage());
         HashMap<String, String> alarm = new HashMap<String, String>();
         alarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(TextToSpeech.Engine.DEFAULT_STREAM));
         alarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, LOG_TAG);
@@ -86,6 +89,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     }
 
     private void stopPlaying(ActionMode actionMode) {
+        mAnalytics.ttsStop();
         mTts.stop();
         actionMode.getMenu().findItem(R.id.item_play).setVisible(true);
         actionMode.getMenu().findItem(R.id.item_stop).setVisible(false);
@@ -208,6 +212,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
      * user has picked a language for tts
      */
     public void onTtsLanguageChosen(OcrLanguage lang) {
+        mAnalytics.ttsLanguageChanged(lang);
         Locale documentLocale = mapTesseractLanguageToLocale(lang.getValue());
         int result = mTts.setLanguage(documentLocale);
         switch (result) {
