@@ -35,9 +35,8 @@ public class ContactActivity extends MonitoredActivity {
 
     private static final String FEEDBACK_MAIL = "textfairyapp@gmail.com";
 
-    public static Intent getFeedbackIntent(Context context) {
-        Intent intent = new Intent(context, BetaTestActivity.class);
-        return intent;
+    public static Intent getBetaTestIntent(Context context) {
+        return new Intent(context, BetaTestActivity.class);
     }
 
     public static Intent getFeedbackIntent(String subject, String body) {
