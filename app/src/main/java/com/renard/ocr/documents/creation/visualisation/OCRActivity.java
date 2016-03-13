@@ -18,7 +18,7 @@ package com.renard.ocr.documents.creation.visualisation;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.WriteFile;
-import com.renard.ocr.documents.creation.OCR;
+import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
 import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.MonitoredActivity;

@@ -4,7 +4,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import com.renard.ocr.documents.creation.crop.image_processing.BlurDetectionResult;
+import com.renard.ocr.cropimage.image_processing.BlurDetectionResult;
 import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 

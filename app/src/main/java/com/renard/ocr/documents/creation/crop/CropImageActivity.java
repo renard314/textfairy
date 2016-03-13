@@ -24,7 +24,7 @@ import com.googlecode.leptonica.android.Clip;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Projective;
 import com.googlecode.leptonica.android.Rotate;
-import com.renard.ocr.documents.creation.OCR;
+import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.HintDialog;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
