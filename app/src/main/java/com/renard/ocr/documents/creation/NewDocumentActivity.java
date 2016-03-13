@@ -17,7 +17,6 @@
 package com.renard.ocr.documents.creation;
 
 import com.googlecode.leptonica.android.Pix;
-import com.renard.ocr.Analytics;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.MonitoredActivity;
@@ -151,7 +150,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         cameraPicUri = null;
         Intent i;
         if (Build.VERSION.SDK_INT >= 19) {
-            i = new Intent(Intent.ACTION_OPEN_DOCUMENT, null);
+            i = new Intent(Intent.ACTION_GET_CONTENT, null);
             i.addCategory(Intent.CATEGORY_OPENABLE);
             i.setType("image/*");
             i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/png", "image/jpg", "image/jpeg"});
