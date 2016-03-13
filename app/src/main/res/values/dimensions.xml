@@ -6,6 +6,7 @@
     <dimen name="crop_edge_width">3dp</dimen>
     <dimen name="crop_hit_hysteresis">40dp</dimen>
     <dimen name="button_height">42dp</dimen>
+    <dimen name="crop_margin">24dp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>

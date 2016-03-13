@@ -135,8 +135,9 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
                 Bundle extras = getIntent().getExtras();
                 final long nativePix = extras.getLong(DocumentGridActivity.EXTRA_NATIVE_PIX);
                 final int rotation = extras.getInt(DocumentGridActivity.EXTRA_ROTATION);
-                final int width = mViewSwitcher.getWidth();
-                final int height = mViewSwitcher.getHeight();
+                final float margin = getResources().getDimension(R.dimen.crop_margin);
+                final int width = (int) (mViewSwitcher.getWidth() - 2 * margin);
+                final int height = (int) (mViewSwitcher.getHeight() - 2 * margin);
                 mPix = new Pix(nativePix);
                 mRotation = rotation / 90;
                 mPrepareTask = Optional.of(new PreparePixForCropTask(mPix, width, height));
