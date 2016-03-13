@@ -79,6 +79,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private boolean mStopped;
     private int mPreviewHeightUnScaled;
     private int mPreviewWidthUnScaled;
+    private boolean mCompleted;
 
     public OCR(final MonitoredActivity activity, final Messenger messenger) {
         mAnalytics = activity.getAnaLytics();
@@ -380,6 +381,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     if (mTess != null) {
                         mTess.end();
                     }
+                    mCompleted = true;
                     sendMessage(MESSAGE_END);
                 }
             }
@@ -478,6 +480,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     if (mTess != null) {
                         mTess.end();
                     }
+                    mCompleted = true;
                     sendMessage(MESSAGE_END);
                 }
             }
@@ -502,7 +505,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     public synchronized void cancel() {
         if (mTess != null) {
-            mAnalytics.sendOcrCancelled();
+            if (!mCompleted) {
+                mAnalytics.sendOcrCancelled();
+            }
             mTess.stop();
             mStopped = true;
         }

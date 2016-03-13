@@ -18,6 +18,16 @@ public class Analytics {
     public static final String CATEGORY_LANGUAGE = "Language";
     public static final String CATEGORY_DOCUMENT_OPTIONS = "Document Options";
     private static final String LOG_TAG = Analytics.class.getSimpleName();
+    public static final String START_TTS_SELECTED = "Start Tts selected";
+    public static final String SHARE_TEXT_SELECTED = "Share text selected";
+    public static final String COPY_TEXT_SELECTED = "Copy text selected";
+    public static final String CREATE_PDF_SELECTED = "Create Pdf selected";
+    public static final String ACTION_RESULT_DIALOG_SHOWN = "Result Dialog shown";
+    public static final String SHOW_TIPS_SELECTED = "Show tips selected";
+    public static final String SEND_FEEDBACK_SELECTED = "Send feedback selected";
+    public static final String ACTION_BLUR_DIALOG = "Blur Dialog shown";
+    public static final String CATEGORY_TEXT_TO_SPEECH = "Text to speech";
+    private static final String CATEGORY_INSTALL = "Install";
     private final Tracker mTracker;
 
     public Analytics(Tracker tracker) {
@@ -79,32 +89,31 @@ public class Analytics {
     }
 
     public void optionsCreatePdf() {
-        sendEvent(CATEGORY_DOCUMENT_OPTIONS, "Create Pdf selected", "", 1);
+        sendEvent(CATEGORY_DOCUMENT_OPTIONS, CREATE_PDF_SELECTED, "", 1);
     }
 
     public void optionsCopyToClipboard() {
-        sendEvent(CATEGORY_DOCUMENT_OPTIONS, "Copy text selected", "", 1);
+        sendEvent(CATEGORY_DOCUMENT_OPTIONS, COPY_TEXT_SELECTED, "", 1);
     }
 
     public void optionsStartTts() {
-        sendEvent(CATEGORY_DOCUMENT_OPTIONS, "Start Tts selected", "", 1);
+        sendEvent(CATEGORY_DOCUMENT_OPTIONS, START_TTS_SELECTED, "", 1);
     }
 
     public void optionsShareText() {
-        sendEvent(CATEGORY_DOCUMENT_OPTIONS, "Share text selected", "", 1);
-
+        sendEvent(CATEGORY_DOCUMENT_OPTIONS, SHARE_TEXT_SELECTED, "", 1);
     }
 
     public void ttsLanguageChanged(OcrLanguage lang) {
-        sendEvent("Text to speech", "Language changed", lang.getValue(), 1);
+        sendEvent(CATEGORY_TEXT_TO_SPEECH, "Language changed", lang.getValue(), 1);
     }
 
     public void ttsStart(String language) {
-        sendEvent("Text to speech", "Started speaking", language, 1);
+        sendEvent(CATEGORY_TEXT_TO_SPEECH, "Started speaking", language, 1);
     }
 
     public void ttsStop() {
-        sendEvent("Text to speech", "Stopped speaking", "", 1);
+        sendEvent(CATEGORY_TEXT_TO_SPEECH, "Stopped speaking", "", 1);
     }
 
     public void startGallery() {
@@ -125,12 +134,37 @@ public class Analytics {
     }
 
     public void newImageBecauseOfBlurWarning() {
-        sendEvent(CATEGORY_OCR, "Blur", "New image requested", 1);
+        sendEvent(CATEGORY_OCR, ACTION_BLUR_DIALOG, "New image requested", 1);
 
     }
 
     public void continueDespiteOfBlurWarning() {
-        sendEvent(CATEGORY_OCR, "Blur", "Continue with blurry image", 1);
+        sendEvent(CATEGORY_OCR, ACTION_BLUR_DIALOG, "Continue with blurry image", 1);
+    }
+
+    public void ocrResultSendFeedback() {
+        sendEvent(CATEGORY_OCR, ACTION_RESULT_DIALOG_SHOWN, SEND_FEEDBACK_SELECTED, 1);
+    }
+
+    public void ocrResultStartTts() {
+        sendEvent(CATEGORY_OCR, ACTION_RESULT_DIALOG_SHOWN, START_TTS_SELECTED, 1);
+    }
+
+    public void ocrResultCopyToClipboard() {
+        sendEvent(CATEGORY_OCR, ACTION_RESULT_DIALOG_SHOWN, COPY_TEXT_SELECTED, 1);
+    }
+
+    public void ocrResultShowTips() {
+        sendEvent(CATEGORY_OCR, ACTION_RESULT_DIALOG_SHOWN, SHOW_TIPS_SELECTED, 1);
+    }
+
+    public void ocrResultCreatePdf() {
+        sendEvent(CATEGORY_OCR, ACTION_RESULT_DIALOG_SHOWN, CREATE_PDF_SELECTED, 1);
+    }
+
+    public void ocrResultShareText() {
+        sendEvent(CATEGORY_OCR, ACTION_RESULT_DIALOG_SHOWN, SHARE_TEXT_SELECTED, 1);
+
     }
 
     private void sendEvent(String category, String action, String label, int value) {

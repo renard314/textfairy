@@ -18,7 +18,7 @@ import java.io.File;
 /**
  * @author renard
  */
-public class OCRResultDialog extends DialogFragment implements View.OnClickListener {
+public class OCRResultDialog extends TopDialogFragment implements View.OnClickListener {
 
     public static final String TAG = OCRResultDialog.class.getSimpleName();
 
@@ -99,6 +99,7 @@ public class OCRResultDialog extends DialogFragment implements View.OnClickListe
         }
         switch (v.getId()) {
             case R.id.button_send_feedback:
+                mAnalytics.ocrResultSendFeedback();
                 File lastOriginalImage = OCR.getLastOriginalImageFromCache(getActivity());
                 final String language = getArguments().getString(EXTRA_LANGUAGE);
                 String body = activity.getString(R.string.document_scanned_as, language);
@@ -106,18 +107,23 @@ public class OCRResultDialog extends DialogFragment implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.button_show_tips:
+                mAnalytics.ocrResultShowTips();
                 startActivity(new Intent(activity, TipsActivity.class));
                 break;
             case R.id.button_copy_to_clipboard:
+                mAnalytics.ocrResultCopyToClipboard();
                 activity.copyTextToClipboard();
                 break;
             case R.id.button_text_to_speech:
+                mAnalytics.ocrResultStartTts();
                 activity.startTextToSpeech();
                 break;
             case R.id.button_export_pdf:
+                mAnalytics.ocrResultCreatePdf();
                 activity.exportAsPdf();
                 break;
             case R.id.button_share_text:
+                mAnalytics.ocrResultShareText();
                 activity.shareText();
                 break;
         }

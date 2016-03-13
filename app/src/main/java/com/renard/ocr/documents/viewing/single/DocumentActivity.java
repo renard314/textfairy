@@ -16,7 +16,6 @@
 
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.Analytics;
 import com.renard.ocr.DocumentContentProvider;
 import com.renard.ocr.DocumentContentProvider.Columns;
 import com.renard.ocr.HintDialog;
@@ -103,8 +102,10 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
             return;
         }
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && isStartedAfterAScan(getIntent())) {
             showResultDialog();
+        } else {
+            mAnalytics.sendScreenView("Document");
         }
         setDocumentFragmentType();
         initToolbar();
@@ -121,7 +122,7 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent.getExtras() != null) {
+        if (isStartedAfterAScan(intent)) {
             mMoveToPageFromIntent = true;
             setIntent(intent);
             showResultDialog();
@@ -129,6 +130,10 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
             mAnalytics.sendScreenView("Document");
         }
 
+    }
+
+    private boolean isStartedAfterAScan(Intent intent) {
+        return intent.getExtras() != null && getIntent().hasExtra(EXTRA_ACCURACY);
     }
 
     private void showResultDialog() {
