@@ -1,4 +1,4 @@
-package com.renard.ocr.documents.creation;
+package com.googlecode.tesseract.android;
 
 import com.googlecode.leptonica.android.Pix;
 import com.renard.ocr.util.Util;

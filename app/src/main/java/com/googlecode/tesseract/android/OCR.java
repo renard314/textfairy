@@ -13,14 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.renard.ocr.documents.creation;
+package com.googlecode.tesseract.android;
 
 import com.googlecode.leptonica.android.Boxa;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.WriteFile;
-import com.googlecode.tesseract.android.OcrProgressListener;
-import com.googlecode.tesseract.android.TessBaseAPI;
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 import com.renard.ocr.Analytics;
 import com.renard.ocr.MonitoredActivity;

@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.renard.ocr.documents.creation.crop.image_processing;
+package com.renard.ocr.cropimage.image_processing;
 
 import com.googlecode.leptonica.android.Pix;
 

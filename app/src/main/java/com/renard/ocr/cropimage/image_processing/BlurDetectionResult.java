@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.renard.ocr.documents.creation.crop.image_processing;
+package com.renard.ocr.cropimage.image_processing;
 
 import com.googlecode.leptonica.android.Box;
 import com.googlecode.leptonica.android.Pix;
