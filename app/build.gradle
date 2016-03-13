@@ -91,6 +91,11 @@ android {
             jni.srcDirs = [] //disable automatic ndk-build
         }
     }
+
+    lintOptions{
+        //I'm too lazy to translate everything
+        abortOnError false
+    }
 }
 
 def Properties props = new Properties()

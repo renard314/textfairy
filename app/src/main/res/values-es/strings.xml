@@ -243,4 +243,8 @@
     <string name="installing_files">La extracción de archivos de idioma</string>
     <string name="install_tip_1">texto nítido y claro le dará los mejores resultados .</string>
     <string name="install_tip_2">No puedo leer la letra .</string>
+    <string name="install_tip_3">Puedo extraer texto de imágenes . Pero I
+        <b>no pueden</b>
+        traducirlo para usted
+    </string>
 </resources>
