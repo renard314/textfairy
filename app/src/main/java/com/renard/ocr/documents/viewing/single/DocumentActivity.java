@@ -190,7 +190,7 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
             DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
             final boolean showText = fragment.getShowText();
             fragment.setShowText(!showText);
-            mAnalytics.optionDocumentViewMode(showText);
+            mAnalytics.optionDocumentViewMode(!showText);
             return true;
         } else if (itemId == R.id.item_text_options) {
             Intent i = new Intent(this, TextSettingsActivity.class);
