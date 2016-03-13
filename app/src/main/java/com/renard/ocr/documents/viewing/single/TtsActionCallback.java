@@ -68,6 +68,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
                 startPlaying(actionMode);
                 break;
             case R.id.item_stop:
+                mAnalytics.ttsStop();
                 stopPlaying(actionMode);
                 break;
             case R.id.item_tts_settings:
@@ -89,7 +90,6 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     }
 
     private void stopPlaying(ActionMode actionMode) {
-        mAnalytics.ttsStop();
         mTts.stop();
         actionMode.getMenu().findItem(R.id.item_play).setVisible(true);
         actionMode.getMenu().findItem(R.id.item_stop).setVisible(false);
