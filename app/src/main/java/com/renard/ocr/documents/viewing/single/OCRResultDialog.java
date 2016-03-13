@@ -1,6 +1,6 @@
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.documents.creation.OCR;
+import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.R;
 import com.renard.ocr.main_menu.ContactActivity;
 import com.renard.ocr.main_menu.TipsActivity;
@@ -98,7 +98,7 @@ public class OCRResultDialog extends TopDialogFragment implements View.OnClickLi
         }
         switch (v.getId()) {
             case R.id.button_send_feedback:
-                mAnalytics.ocrResultSendFeedback();
+                getAnalytics().ocrResultSendFeedback();
                 File lastOriginalImage = OCR.getLastOriginalImageFromCache(getActivity());
                 final String language = getArguments().getString(EXTRA_LANGUAGE);
                 String body = activity.getString(R.string.document_scanned_as, language);
@@ -106,23 +106,23 @@ public class OCRResultDialog extends TopDialogFragment implements View.OnClickLi
                 startActivity(intent);
                 break;
             case R.id.button_show_tips:
-                mAnalytics.ocrResultShowTips();
+                getAnalytics().ocrResultShowTips();
                 startActivity(new Intent(activity, TipsActivity.class));
                 break;
             case R.id.button_copy_to_clipboard:
-                mAnalytics.ocrResultCopyToClipboard();
+                getAnalytics().ocrResultCopyToClipboard();
                 activity.copyTextToClipboard();
                 break;
             case R.id.button_text_to_speech:
-                mAnalytics.ocrResultStartTts();
+                getAnalytics().ocrResultStartTts();
                 activity.startTextToSpeech();
                 break;
             case R.id.button_export_pdf:
-                mAnalytics.ocrResultCreatePdf();
+                getAnalytics().ocrResultCreatePdf();
                 activity.exportAsPdf();
                 break;
             case R.id.button_share_text:
-                mAnalytics.ocrResultShareText();
+                getAnalytics().ocrResultShareText();
                 activity.shareText();
                 break;
         }

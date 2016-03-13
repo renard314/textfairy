@@ -16,7 +16,7 @@ import android.view.WindowManager;
  */
 public class TopDialogFragment extends DialogFragment {
 
-    protected Analytics mAnalytics;
+    private Analytics mAnalytics;
 
     @Override
     public void onAttach(Activity activity) {
@@ -25,6 +25,13 @@ public class TopDialogFragment extends DialogFragment {
         mAnalytics = monitoredActivity.getAnaLytics();
     }
 
+    public Analytics getAnalytics() {
+        if (mAnalytics == null && getActivity() != null) {
+            MonitoredActivity activity = (MonitoredActivity) getActivity();
+            return activity.getAnaLytics();
+        }
+        return mAnalytics;
+    }
 
     protected void positionDialogAtTop(AlertDialog alertDialog) {
         Window window = alertDialog.getWindow();
