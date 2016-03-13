@@ -32,7 +32,7 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class InstallTask extends AsyncTask<Void, Integer, InstallResult> {
+class InstallTask extends AsyncTask<Void, Integer, InstallResult> {
 
     private static final String DEBUG_TAG = InstallTask.class.getSimpleName();
     private static final int PROGRESS_STEP = 100; // when to give feedback to the parent progress dialog
@@ -55,7 +55,7 @@ public class InstallTask extends AsyncTask<Void, Integer, InstallResult> {
 
     @Override
     protected InstallResult doInBackground(Void... unused) {
-        Log.i(DEBUG_TAG, "start installation" );
+        Log.i(DEBUG_TAG, "start installation");
         long freeSpace = Util.GetFreeSpaceB();
         mBytesToInstallTotal = getTotalUnzippedSize();
         if (freeSpace < mBytesToInstallTotal) {

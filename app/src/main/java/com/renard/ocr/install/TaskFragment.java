@@ -1,6 +1,5 @@
 package com.renard.ocr.install;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +11,7 @@ import java.util.concurrent.ExecutionException;
  * This Fragment manages a single background task and retains
  * itself across configuration changes.
  */
-public class TaskFragment extends Fragment {
+class TaskFragment extends Fragment {
 
 
     /**

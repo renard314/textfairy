@@ -143,4 +143,7 @@ public class Analytics {
                 .build());
     }
 
+    public void sendClickYoutubte() {
+        sendEvent(CATEGORY_INSTALL, "Youtube link clicked", "", 1);
+    }
 }

@@ -19,11 +19,12 @@ package com.renard.ocr.install;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
-import com.renard.ocr.language.OcrLanguage;
-import com.renard.ocr.language.OcrLanguageDataStore;
 
 import android.Manifest;
-import android.content.Context;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
@@ -32,13 +33,12 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ViewSwitcher;
 
-import java.util.List;
-
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 
 /**
@@ -49,15 +49,28 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
     @SuppressWarnings("unused")
     private static final String LOG_TAG = InstallActivity.class.getSimpleName();
 
-    private ProgressBar mProgressBar = null;
-    private TextView mTextViewSpeechBubble = null;
-    private ImageView mImageViewFairy;
-    private View mFairyContainer = null;
-    private AnimationDrawable mFairyAnimation;
-    private TextView mButtonStartApp = null;
-    private ViewSwitcher mSwitcher = null;
-    private View mContentView = null;
+    @Bind(R.id.button_start_app)
+    protected TextView mButtonStartApp;
+    @Bind(R.id.content_view)
+    protected View mContentView;
+    @Bind(R.id.fairy_container)
+    protected View mFairyContainer;
+    @Bind(R.id.imageView_fairy)
+    protected ImageView mImageViewFairy;
+    @Bind(R.id.fairy_text_bubble)
+    protected View mFairySpeechBubble;
+    @Bind(R.id.fairy_text)
+    protected TextView mFairyText;
+
+    @Bind(R.id.tip1)
+    protected View mTip1;
+    @Bind(R.id.tip2)
+    protected View mTip2;
+    @Bind(R.id.promo)
+    protected View mYoutube;
+
     private TaskFragment mTaskFragment;
+    private AnimationDrawable mFairyAnimation;
 
     @Override
     public String getScreenName() {
@@ -69,17 +82,9 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
         setContentView(R.layout.activity_install);
-        mImageViewFairy = (ImageView) findViewById(R.id.imageView_fairy);
-        mFairyContainer = findViewById(R.id.fairy_container);
-        mProgressBar = (ProgressBar) findViewById(R.id.installactivity_progressbar);
-        mTextViewSpeechBubble = (TextView) findViewById(R.id.fairy_text);
+        ButterKnife.bind(this);
+
         mFairyAnimation = (AnimationDrawable) mImageViewFairy.getDrawable();
-        mButtonStartApp = (TextView) findViewById(R.id.button_start_app);
-        mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher_progress);
-        mContentView = findViewById(R.id.content_view);
-        TextView mTextViewPromoLink = (TextView) findViewById(R.id.promo);
-
-
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         mTaskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
 
@@ -97,13 +102,6 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
             }
         }
 
-        mTextViewPromoLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                watchYoutubeVideo(getString(R.string.youtube_promo_link));
-            }
-        });
-
     }
 
     @SuppressWarnings("unused")
@@ -115,26 +113,37 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
         supportFragmentManager.beginTransaction().add(mTaskFragment, TAG_TASK_FRAGMENT).commitAllowingStateLoss();
     }
 
+
+    @OnClick(R.id.promo)
+    public void clickOnYoutubeLink() {
+        mAnalytics.sendClickYoutubte();
+        final String link = getString(R.string.youtube_promo_link);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+        startActivity(intent);
+    }
+
+
     @Override
     protected int getHintDialogId() {
         return 0;
     }
 
     private void startInstallAnimation() {
-        mImageViewFairy.post(new Runnable() {
+        mTip1.setAlpha(0);
+        mTip2.setAlpha(0);
+        mYoutube.setAlpha(0);
 
-            @Override
-            public void run() {
-                mFairyAnimation.start();
-            }
-        });
+        ObjectAnimator anim1 = ObjectAnimator.ofFloat(mTip1, "alpha", 1);
+        ObjectAnimator anim2 = ObjectAnimator.ofFloat(mTip2, "alpha", 1);
+        ObjectAnimator anim3 = ObjectAnimator.ofFloat(mYoutube, "alpha", 1);
+        AnimatorSet set = new AnimatorSet();
+        set.setStartDelay(300);
+        set.setDuration(600);
+        set.playTogether(anim1, anim2, anim3);
+        set.start();
+        mFairyAnimation.start();
+
     }
-
-    private void watchYoutubeVideo(String id) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(id));
-        startActivity(intent);
-    }
-
 
     @Override
     protected synchronized void onDestroy() {
@@ -142,8 +151,8 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
         EventBus.getDefault().unregister(this);
     }
 
-    public void markAsDone(InstallResult result) {
-        mSwitcher.setDisplayedChild(1);
+    private void markAsDone(InstallResult result) {
+        fadeInStartButton();
         mFairyAnimation.stop();
         switch (result.getResult()) {
             case OK:
@@ -157,13 +166,14 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
                 };
                 mButtonStartApp.setOnClickListener(onClickListener);
                 mFairyContainer.setOnClickListener(onClickListener);
-                mTextViewSpeechBubble.setText(R.string.start_app);
+                mFairySpeechBubble.setVisibility(View.VISIBLE);
+                mFairyText.setText(R.string.start_app);
                 break;
             case NOT_ENOUGH_DISK_SPACE:
                 String errorMsg = getString(R.string.install_error_disk_space);
                 final long diff = result.getNeededSpace() - result.getFreeSpace();
                 errorMsg = String.format(errorMsg, (diff / (1024 * 1024)));
-                mTextViewSpeechBubble.setText(errorMsg);
+                mFairyText.setText(errorMsg);
                 mButtonStartApp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -174,7 +184,7 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
                 break;
             case UNSPECIFIED_ERROR:
                 errorMsg = getString(R.string.install_error);
-                mTextViewSpeechBubble.setText(errorMsg);
+                mFairyText.setText(errorMsg);
                 mButtonStartApp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -186,6 +196,12 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
         }
     }
 
+    private void fadeInStartButton() {
+        mButtonStartApp.setVisibility(View.VISIBLE);
+        mButtonStartApp.setAlpha(0);
+        mButtonStartApp.animate().alpha(1);
+    }
+
 
     @Override
     public void onPreExecute() {
@@ -194,14 +210,21 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
 
     @Override
     public void onProgressUpdate(int progress) {
+        final float translateX = getTranslateX(progress);
+        translateTextfairy((int) translateX);
+    }
+
+    private void translateTextfairy(int translateX) {
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mFairyContainer.getLayoutParams();
+        lp.leftMargin = translateX;
+        mFairyContainer.setLayoutParams(lp);
+    }
+
+    private float getTranslateX(float progress) {
         final int fairyEndX = mContentView.getWidth() / 2;
         final int fairyStartX = mImageViewFairy.getWidth() / 2;
         final int maxTravelDistance = Math.min(fairyEndX - fairyStartX, mContentView.getWidth() - mFairyContainer.getWidth());
-        final float translateX = maxTravelDistance * ((float) progress / 100);
-        RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) mFairyContainer.getLayoutParams();
-        lp.leftMargin = (int) translateX;
-        mFairyContainer.setLayoutParams(lp);
-        mProgressBar.setProgress(progress);
+        return maxTravelDistance * (progress / 100);
     }
 
     @Override

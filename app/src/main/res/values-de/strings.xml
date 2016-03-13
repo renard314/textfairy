@@ -234,5 +234,8 @@
     <string name="permission_explanation_install">Ich brauche deine Erlaubnis um meine Konfigurationsdateien im Ordner Textfee zu speichern. Dort kannst du auch später die Bilder finden, die du gescannt hast.</string>
     <string name="permission_explanation_title">Berechtigung fehlt</string>
     <string name="no_gallery_found">Keine Gallerie gefunden.</string>
+    <string name="installing_files">Entpacke Sprachdateien</string>
+    <string name="install_tip_2">Ich kann keine Handschrift lesen.</string>
+    <string name="install_tip_1">Ist der Text klar und scharf ist, erzielst du das beste Ergebnis.</string>
 
 </resources>

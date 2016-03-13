@@ -28,8 +28,8 @@ import com.renard.ocr.language.OcrLanguage;
 import com.renard.ocr.language.OcrLanguageDataStore;
 import com.renard.ocr.main_menu.AboutActivity;
 import com.renard.ocr.main_menu.FeedbackActivity;
-import com.renard.ocr.main_menu.TipsActivity;
 import com.renard.ocr.main_menu.ReleaseNoteDialog;
+import com.renard.ocr.main_menu.TipsActivity;
 import com.renard.ocr.util.Util;
 
 import android.Manifest;
@@ -190,16 +190,12 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
         final String state = Environment.getExternalStorageState();
         if (state.equals(Environment.MEDIA_MOUNTED)) {
             if (installedOCRLanguages.isEmpty()) {
-                // install the languages if needed, create directory structure
-                // (one
-                // time)
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setClassName(this, com.renard.ocr.install.InstallActivity.class.getName());
                 startActivityForResult(intent, REQUEST_CODE_INSTALL);
             }
         } else {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            // alert.setTitle(R.string.no_sd_card);
             alert.setMessage(getString(R.string.no_sd_card));
             alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 

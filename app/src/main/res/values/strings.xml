@@ -274,7 +274,7 @@
     </string>
     <string name="crop_image_tutorial">0tcFdaDuLTs</string>
     <string name="image_source">Pick image source.</string>
-    <string name="promo_video_title">A short introduction on Youtube.</string>
+    <string name="promo_video_title">Learn more.</string>
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Hello</string>
     <string name="text_is_in">"The text is in: "</string>
@@ -322,4 +322,8 @@
     </string>
     <string name="permission_explanation_title">Permission missing</string>
     <string name="no_gallery_found">No gallery app found on this phone.</string>
+    <string name="installing_files">Extracting language files</string>
+    <string name="install_tip_1">Sharp and clear text will get you the best results.
+    </string>
+    <string name="install_tip_2">I can\'t read handwriting.</string>
 </resources>
