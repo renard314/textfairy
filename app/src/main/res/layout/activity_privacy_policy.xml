@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent">
+
+    <include layout="@layout/toolbar"
+             android:id="@+id/toolbar"/>
+
+    <ScrollView
+            android:background="@android:color/white"
+            android:layout_below="@+id/toolbar"
+            android:fillViewport="true"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent">
+        <RelativeLayout android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+            <WebView android:id="@+id/webview" android:layout_width="match_parent"
+                     android:layout_height="wrap_content"/>
+
+            <TextView
+                    android:textColor="@android:color/black"
+                    android:id="@+id/tacking_label"
+                    style="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:gravity="center_vertical|left"
+                    android:text="@string/data_tracking_off"
+                    android:layout_width="0dp"
+                    android:layout_toLeftOf="@+id/tracking_toggle"
+                    android:layout_alignParentLeft="true"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                    android:layout_below="@+id/webview"/>
+            <android.support.v7.widget.SwitchCompat
+                    android:layout_below="@id/webview"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/primary"
+                    android:id="@+id/tracking_toggle"
+                    android:layout_alignTop="@+id/tacking_label"
+                    android:layout_alignBottom="@+id/tacking_label"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:textOff="@string/data_tracking_off"
+                    android:textOn="@string/data_tracking_on"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+            />
+        </RelativeLayout>
+
+    </ScrollView>
+</RelativeLayout>

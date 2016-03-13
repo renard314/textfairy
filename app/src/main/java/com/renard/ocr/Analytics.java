@@ -1,12 +1,16 @@
 package com.renard.ocr;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import com.renard.ocr.cropimage.image_processing.BlurDetectionResult;
-import com.renard.ocr.language.OcrLanguage;
-import com.renard.ocr.visualisation.LayoutQuestionDialog;
+import com.renard.ocr.documents.creation.crop.image_processing.BlurDetectionResult;
+import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog;
+import com.renard.ocr.main_menu.language.OcrLanguage;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -29,9 +33,21 @@ public class Analytics {
     public static final String CATEGORY_TEXT_TO_SPEECH = "Text to speech";
     private static final String CATEGORY_INSTALL = "Install";
     private final Tracker mTracker;
+    private final Context mApplicationContext;
 
-    public Analytics(Tracker tracker) {
+    public Analytics(Tracker tracker, Context applicationContext) {
         mTracker = tracker;
+        mApplicationContext = applicationContext;
+    }
+
+    public boolean getAppOptOut() {
+        return GoogleAnalytics.getInstance(mApplicationContext).getAppOptOut();
+    }
+
+    public void toggleTracking(boolean optOut) {
+        Log.i(LOG_TAG, "toggleTracking(" + optOut + ")");
+        SharedPreferences userPrefs = PreferenceManager.getDefaultSharedPreferences(mApplicationContext);
+        userPrefs.edit().putBoolean(TextFairyApplication.TRACKING_PREF_KEY, optOut).apply();
     }
 
     public void sendScreenView(String screenName) {
@@ -177,7 +193,9 @@ public class Analytics {
                 .build());
     }
 
-    public void sendClickYoutubte() {
+    public void sendClickYoutube() {
         sendEvent(CATEGORY_INSTALL, "Youtube link clicked", "", 1);
     }
+
+
 }

@@ -16,7 +16,7 @@
 
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 
 import android.database.Cursor;
 import android.support.v4.app.Fragment;

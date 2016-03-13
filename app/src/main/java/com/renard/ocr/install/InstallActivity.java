@@ -21,8 +21,6 @@ import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
@@ -66,6 +64,8 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
     protected View mTip1;
     @Bind(R.id.tip2)
     protected View mTip2;
+    @Bind(R.id.tip3)
+    protected View mTip3;
     @Bind(R.id.promo)
     protected View mYoutube;
 
@@ -116,7 +116,7 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
 
     @OnClick(R.id.promo)
     public void clickOnYoutubeLink() {
-        mAnalytics.sendClickYoutubte();
+        mAnalytics.sendClickYoutube();
         final String link = getString(R.string.youtube_promo_link);
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
         startActivity(intent);
@@ -131,11 +131,13 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
     private void startInstallAnimation() {
         mTip1.setAlpha(0);
         mTip2.setAlpha(0);
+        mTip3.setAlpha(0);
         mYoutube.setAlpha(0);
 
         ObjectAnimator anim1 = ObjectAnimator.ofFloat(mTip1, "alpha", 1);
         ObjectAnimator anim2 = ObjectAnimator.ofFloat(mTip2, "alpha", 1);
-        ObjectAnimator anim3 = ObjectAnimator.ofFloat(mYoutube, "alpha", 1);
+        ObjectAnimator anim3 = ObjectAnimator.ofFloat(mTip3, "alpha", 1);
+        ObjectAnimator anim4 = ObjectAnimator.ofFloat(mYoutube, "alpha", 1);
         AnimatorSet set = new AnimatorSet();
         set.setStartDelay(300);
         set.setDuration(600);

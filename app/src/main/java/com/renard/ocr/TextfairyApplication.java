@@ -23,7 +23,10 @@ import com.renard.ocr.util.PreferencesUtils;
 import com.squareup.leakcanary.LeakCanary;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.ViewConfiguration;
 
 import java.lang.reflect.Field;
@@ -32,6 +35,8 @@ import io.fabric.sdk.android.Fabric;
 
 public class TextFairyApplication extends Application {
 
+    static final String TRACKING_PREF_KEY = "tracking_key";
+    private static final String LOG_TAG = TextFairyApplication.class.getSimpleName();
     private Tracker mTracker;
 
     /**
@@ -54,6 +59,7 @@ public class TextFairyApplication extends Application {
             Fabric.with(fabric);
         }
 
+        listenForGoogleAnalyticsOptOut();
         GoogleAnalytics.getInstance(this).setDryRun(BuildConfig.DEBUG);
 
         PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
@@ -80,6 +86,21 @@ public class TextFairyApplication extends Application {
             // Ignore
         }
 
+    }
+
+    private void listenForGoogleAnalyticsOptOut() {
+        SharedPreferences userPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        userPrefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (key.equals(TRACKING_PREF_KEY)) {
+                    final boolean optOut = sharedPreferences.getBoolean(key, false);
+                    Log.i(LOG_TAG, "tracking preference was changed. setting app opt out to: " + optOut);
+                    GoogleAnalytics.getInstance(getApplicationContext()).setAppOptOut(optOut);
+                }
+            }
+        });
     }
 
 }

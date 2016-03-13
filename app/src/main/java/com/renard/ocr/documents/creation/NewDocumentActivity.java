@@ -17,17 +17,17 @@
 package com.renard.ocr.documents.creation;
 
 import com.googlecode.leptonica.android.Pix;
-import com.renard.ocr.DocumentContentProvider;
-import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.documents.viewing.DocumentContentProvider;
+import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
-import com.renard.ocr.cropimage.CropImageActivity;
+import com.renard.ocr.documents.creation.crop.CropImageActivity;
 import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
 import com.renard.ocr.pdf.Hocr2Pdf;
 import com.renard.ocr.pdf.Hocr2Pdf.PDFProgressListener;
 import com.renard.ocr.util.Util;
-import com.renard.ocr.visualisation.OCRActivity;
+import com.renard.ocr.documents.creation.visualisation.OCRActivity;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;

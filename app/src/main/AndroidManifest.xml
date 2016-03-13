@@ -30,13 +30,13 @@
                     android:resource="@xml/filepaths"/>
         </provider>
         <provider
-                android:name="com.renard.ocr.DocumentContentProvider"
+                android:name=".documents.viewing.DocumentContentProvider"
                 android:authorities="com.renard.ocr"
                 android:exported="false"/>
 
 
         <activity
-                android:name=".visualisation.OCRActivity"
+                android:name=".documents.creation.visualisation.OCRActivity"
                 android:launchMode="singleTop"/>
         <activity
                 android:name=".documents.viewing.single.DocumentActivity"
@@ -60,7 +60,7 @@
                     android:value=".documents.viewing.grid.DocumentGridActivity"/>
         </activity>
         <activity
-                android:name=".language.OCRLanguageActivity"
+                android:name=".main_menu.language.OCRLanguageActivity"
         >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
@@ -76,7 +76,7 @@
                 android:name=".install.InstallActivity"
                 android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
-                android:name=".cropimage.CropImageActivity"
+                android:name=".documents.creation.crop.CropImageActivity"
                 android:configChanges="orientation|keyboardHidden"/>
         <activity
                 android:name=".documents.viewing.grid.DocumentGridActivity"
@@ -100,9 +100,9 @@
 
         </activity>
 
-        <service android:name=".language.OCRLanguageInstallService"/>
+        <service android:name=".main_menu.language.OCRLanguageInstallService"/>
 
-        <receiver android:name=".language.DownloadBroadCastReceiver">
+        <receiver android:name=".main_menu.language.DownloadBroadCastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
             </intent-filter>
@@ -141,6 +141,14 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".documents.viewing.grid.DocumentGridActivity"/>
         </activity>
+        <activity
+                android:name="com.renard.ocr.main_menu.PrivacyPolicyActivity"
+        >
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".main_menu.AboutActivity"/>
+        </activity>
+
     </application>
 
 </manifest>

@@ -17,11 +17,10 @@
 
 package com.renard.ocr;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.common.base.Optional;
 
-import com.renard.ocr.cropimage.BaseActivityInterface;
+import com.renard.ocr.documents.creation.crop.BaseActivityInterface;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -139,7 +138,7 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         }
         TextFairyApplication application = (TextFairyApplication) getApplication();
         final Tracker defaultTracker = application.getDefaultTracker();
-        mAnalytics = new Analytics(defaultTracker);
+        mAnalytics = new Analytics(defaultTracker, getApplicationContext());
 
         Log.i(LOG_TAG, "onCreate: " + this.getClass());
     }

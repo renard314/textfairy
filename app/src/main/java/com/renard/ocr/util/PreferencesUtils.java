@@ -16,7 +16,7 @@
 package com.renard.ocr.util;
 
 import com.renard.ocr.R;
-import com.renard.ocr.language.OcrLanguage;
+import com.renard.ocr.main_menu.language.OcrLanguage;
 
 import android.content.Context;
 import android.content.SharedPreferences;

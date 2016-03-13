@@ -1,6 +1,6 @@
 package com.renard.ocr.documents.viewing.single;
 
-import com.googlecode.tesseract.android.OCR;
+import com.renard.ocr.documents.creation.OCR;
 import com.renard.ocr.R;
 import com.renard.ocr.main_menu.ContactActivity;
 import com.renard.ocr.main_menu.FeedbackActivity;

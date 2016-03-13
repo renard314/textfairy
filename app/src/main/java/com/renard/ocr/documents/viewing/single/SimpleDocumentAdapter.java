@@ -31,7 +31,7 @@ import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.R;
 
 public class SimpleDocumentAdapter extends CursorAdapter {

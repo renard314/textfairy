@@ -3,7 +3,7 @@ package com.renard.ocr.documents.viewing.single;
 import com.renard.ocr.Analytics;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
-import com.renard.ocr.language.OcrLanguage;
+import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.util.ResourceUtils;
 
 import android.annotation.SuppressLint;

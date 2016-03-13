@@ -16,8 +16,8 @@
 
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.DocumentContentProvider;
-import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.documents.viewing.DocumentContentProvider;
+import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.HintDialog;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;

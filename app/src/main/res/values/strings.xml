@@ -326,4 +326,11 @@
     <string name="install_tip_1">Sharp and clear text will get you the best results.
     </string>
     <string name="install_tip_2">I can\'t read handwriting.</string>
+    <string name="pref_title_privacy">Privacy Policy</string>
+    <string name="pref_summary_privacy">View the privacy policy</string>
+    <string name="install_tip_3">I extract text from images. But I <b>cannot</b> translate it for
+        you.
+    </string>
+    <string name="data_tracking_on">"I'm tracking anonymous usage data."</string>
+    <string name="data_tracking_off">No anonymous usage data is tracked.</string>
 </resources>

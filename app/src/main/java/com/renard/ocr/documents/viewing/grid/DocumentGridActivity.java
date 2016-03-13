@@ -15,7 +15,7 @@
  */
 package com.renard.ocr.documents.viewing.grid;
 
-import com.renard.ocr.DocumentContentProvider;
+import com.renard.ocr.documents.viewing.DocumentContentProvider;
 import com.renard.ocr.HintDialog;
 import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
@@ -23,9 +23,9 @@ import com.renard.ocr.documents.creation.ImageSource;
 import com.renard.ocr.documents.creation.NewDocumentActivity;
 import com.renard.ocr.documents.creation.PixLoadStatus;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
-import com.renard.ocr.language.OCRLanguageActivity;
-import com.renard.ocr.language.OcrLanguage;
-import com.renard.ocr.language.OcrLanguageDataStore;
+import com.renard.ocr.main_menu.language.OCRLanguageActivity;
+import com.renard.ocr.main_menu.language.OcrLanguage;
+import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
 import com.renard.ocr.main_menu.AboutActivity;
 import com.renard.ocr.main_menu.FeedbackActivity;
 import com.renard.ocr.main_menu.ReleaseNoteDialog;

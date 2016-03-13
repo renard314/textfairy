@@ -16,12 +16,12 @@
 
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.DocumentContentProvider;
-import com.renard.ocr.DocumentContentProvider.Columns;
+import com.renard.ocr.documents.viewing.DocumentContentProvider;
+import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.HintDialog;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.NewDocumentActivity;
-import com.renard.ocr.language.OcrLanguage;
+import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.util.PreferencesUtils;
 
 import android.annotation.SuppressLint;

@@ -15,8 +15,8 @@
  */
 package com.renard.ocr.main_menu;
 
-import com.renard.ocr.R;
 import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,45 +26,58 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-public class AboutActivity extends MonitoredActivity implements View.OnClickListener {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class AboutActivity extends MonitoredActivity {
 
     private boolean slideOutLeft = false;
+    @Bind(R.id.version_name)
+    protected TextView mVersionView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        ButterKnife.bind(this);
         initToolbar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setToolbarMessage(R.string.about);
-        findViewById(R.id.show_licences).setOnClickListener(this);
-        findViewById(R.id.show_contact).setOnClickListener(this);
-        TextView version = (TextView) findViewById(R.id.version_name);
+        showVersionNumber();
+    }
+
+    private void showVersionNumber() {
         try {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            version.setText(getString(R.string.app_version, versionName));
+            mVersionView.setText(getString(R.string.app_version, versionName));
         } catch (PackageManager.NameNotFoundException e) {
-            version.setVisibility(View.GONE);
+            mVersionView.setVisibility(View.GONE);
         }
+    }
+
+
+    @OnClick(R.id.show_licences)
+    public void clickOnLicense() {
+        slideOutLeft = true;
+        startActivity(new Intent(this, LicenseActivity.class));
+    }
+
+    @OnClick(R.id.show_contact)
+    public void clickOnContact() {
+        slideOutLeft = true;
+        startActivity(new Intent(this, ContactActivity.class));
+    }
+
+    @OnClick(R.id.privacy_policy)
+    public void clickOnPrivacyPolicy() {
+        slideOutLeft = true;
+        startActivity(new Intent(this, PrivacyPolicyActivity.class));
     }
 
     @Override
     protected int getHintDialogId() {
         return -1;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.show_licences:
-                slideOutLeft = true;
-                startActivity(new Intent(this, LicenseActivity.class));
-                break;
-            case R.id.show_contact:
-                slideOutLeft = true;
-                startActivity(new Intent(this, ContactActivity.class));
-                break;
-        }
     }
 
 

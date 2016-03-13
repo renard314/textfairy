@@ -1,6 +1,6 @@
 package com.renard.ocr.documents.viewing.single;
 
-import com.googlecode.tesseract.android.OCR;
+import com.renard.ocr.documents.creation.OCR;
 import com.renard.ocr.R;
 import com.renard.ocr.main_menu.ContactActivity;
 import com.renard.ocr.main_menu.TipsActivity;
@@ -9,7 +9,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.TextView;
 
