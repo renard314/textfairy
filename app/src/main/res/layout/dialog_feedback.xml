@@ -20,12 +20,6 @@
               android:textAppearance="@style/FairySpeechbubble">
 
     </TextView>
-    <View
-            android:layout_marginTop="@dimen/default_padding_half"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:id="@+id/divider1"
-            android:background="@color/grey6"/>
 
     <TextView android:text="@string/feedback_description"
               android:textSize="16sp"
