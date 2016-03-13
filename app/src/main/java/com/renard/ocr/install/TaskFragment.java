@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutionException;
  * This Fragment manages a single background task and retains
  * itself across configuration changes.
  */
-class TaskFragment extends Fragment {
+public class TaskFragment extends Fragment {
 
 
     /**
