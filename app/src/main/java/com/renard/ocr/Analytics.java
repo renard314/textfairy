@@ -66,6 +66,9 @@ public class Analytics {
     }
 
     public void sendOcrResult(String language, int accuracy) {
+        int rem = accuracy % 10;
+        final int bracket = rem >= 5 ? (accuracy - rem + 10) : (accuracy - rem);
+        sendEvent(CATEGORY_OCR, "Scan accuracy for: " + language, bracket + "", accuracy);
         sendEvent(CATEGORY_OCR, "Scan completed", language, accuracy);
     }
 
