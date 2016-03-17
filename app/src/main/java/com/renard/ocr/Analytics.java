@@ -32,6 +32,7 @@ public class Analytics {
     public static final String ACTION_BLUR_DIALOG = "Blur Dialog shown";
     public static final String CATEGORY_TEXT_TO_SPEECH = "Text to speech";
     private static final String CATEGORY_INSTALL = "Install";
+    public static final String CATEGORY_SCAN_ACCURACY = "Scan accuracy";
     private final Tracker mTracker;
     private final Context mApplicationContext;
 
@@ -67,8 +68,8 @@ public class Analytics {
 
     public void sendOcrResult(String language, int accuracy) {
         int rem = accuracy % 10;
-        final int bracket = rem >= 5 ? (accuracy - rem + 10) : (accuracy - rem);
-        sendEvent(CATEGORY_OCR, "Scan accuracy for: " + language, bracket + "", accuracy);
+        final int bracket = accuracy - rem;
+        sendEvent(CATEGORY_SCAN_ACCURACY, language, bracket + "", accuracy);
         sendEvent(CATEGORY_OCR, "Scan completed", language, accuracy);
     }
 
@@ -152,13 +153,13 @@ public class Analytics {
         sendEvent(CATEGORY_OCR, "Blur test completed", blurriness.getBlurriness().name(), blurValue);
     }
 
-    public void newImageBecauseOfBlurWarning() {
-        sendEvent(CATEGORY_OCR, ACTION_BLUR_DIALOG, "New image requested", 1);
+    public void newImageBecauseOfBlurWarning(float blurriness) {
+        sendEvent(CATEGORY_OCR, ACTION_BLUR_DIALOG, "New image requested", (int) (blurriness * 100));
 
     }
 
-    public void continueDespiteOfBlurWarning() {
-        sendEvent(CATEGORY_OCR, ACTION_BLUR_DIALOG, "Continue with blurry image", 1);
+    public void continueDespiteOfBlurWarning(float blurriness) {
+        sendEvent(CATEGORY_OCR, ACTION_BLUR_DIALOG, "Continue with blurry image", (int) (blurriness * 100));
     }
 
     public void ocrResultSendFeedback() {
