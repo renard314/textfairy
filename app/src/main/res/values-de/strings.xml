@@ -243,5 +243,6 @@
     </string>
     <string name="pref_title_privacy">Datenschutzerklärung</string>
     <string name="pref_summary_privacy">Lies dir meine Datenschutzerklärung durch.</string>
+    <string name="no_mail_app">Keine Email-App gefunden.</string>
 
 </resources>

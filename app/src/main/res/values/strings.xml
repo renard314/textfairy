@@ -333,4 +333,5 @@
     </string>
     <string name="data_tracking_on">"I'm tracking anonymous usage data."</string>
     <string name="data_tracking_off">No anonymous usage data is tracked.</string>
+    <string name="no_mail_app">No mail app found.</string>
 </resources>

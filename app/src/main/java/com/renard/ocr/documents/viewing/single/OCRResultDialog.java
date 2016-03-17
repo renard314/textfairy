@@ -7,10 +7,12 @@ import com.renard.ocr.main_menu.TipsActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -103,7 +105,11 @@ public class OCRResultDialog extends TopDialogFragment implements View.OnClickLi
                 final String language = getArguments().getString(EXTRA_LANGUAGE);
                 String body = activity.getString(R.string.document_scanned_as, language);
                 Intent intent = ContactActivity.getFeedbackIntent(getActivity(), getString(R.string.feedback_subject), lastOriginalImage, body);
-                startActivity(intent);
+                try {
+                    startActivity(intent);
+                } catch (ActivityNotFoundException notFound) {
+                    Toast.makeText(getContext(), R.string.no_mail_app, Toast.LENGTH_LONG).show();
+                }
                 break;
             case R.id.button_show_tips:
                 getAnalytics().ocrResultShowTips();

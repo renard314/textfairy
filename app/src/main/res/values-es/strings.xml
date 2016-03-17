@@ -247,4 +247,7 @@
         <b>no pueden</b>
         traducirlo para usted
     </string>
+    <string name="no_mail_app">No se encontró aplicación de correo electrónico .</string>
+    <string name="pref_summary_privacy">Consulte la política de privacidad</string>
+    <string name="pref_title_privacy">Política de privacidad</string>
 </resources>
