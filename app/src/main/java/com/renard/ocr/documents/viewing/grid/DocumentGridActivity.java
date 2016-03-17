@@ -30,6 +30,7 @@ import com.renard.ocr.main_menu.TipsActivity;
 import com.renard.ocr.main_menu.language.OCRLanguageActivity;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
+import com.renard.ocr.util.PreferencesUtils;
 import com.renard.ocr.util.Util;
 
 import android.Manifest;
@@ -235,7 +236,18 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
         // Enable ActionBar app icon to behave as action to toggle nav drawer
         getSupportActionBar().setHomeButtonEnabled(true);
         actionBarDrawerToggle.syncState();
+        if (checkForFirstStart()) {
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
 
+    }
+
+    private boolean checkForFirstStart() {
+        final boolean firstStart = PreferencesUtils.isFirstStart(getApplicationContext());
+        if (firstStart) {
+            PreferencesUtils.setFirstStart(getApplicationContext(), false);
+        }
+        return firstStart;
     }
 
     private void handleNavigationMenuSelection(final DrawerLayout drawerLayout, NavigationView view) {
