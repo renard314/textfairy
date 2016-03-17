@@ -37,6 +37,7 @@
     </RelativeLayout>
 
     <android.support.design.widget.NavigationView
+            app:itemTextColor="@color/primary"
             android:layout_marginTop="?android:attr/actionBarSize"
             app:menu="@menu/navigation_drawer"
             android:id="@+id/left_drawer"
@@ -46,6 +47,6 @@
             android:background="@android:color/white"
             app:theme="@style/ThemeOverlay.AppCompat.Light"
             app:itemBackground="?android:attr/selectableItemBackground"
-            />
+    />
 
 </android.support.v4.widget.DrawerLayout>
