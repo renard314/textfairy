@@ -43,6 +43,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.WindowManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -513,7 +514,12 @@ public class Util {
 
     public static void startBackgroundJob(MonitoredActivity activity, String title, String message, Runnable job, Handler handler) {
         if (activity.isFinishing()) {
-            ProgressDialog dialog = ProgressDialog.show(activity, title, message, true, false);
+            ProgressDialog dialog;
+            try {
+                dialog = ProgressDialog.show(activity, title, message, true, false);
+            } catch (WindowManager.BadTokenException fuck) {
+                dialog = null;
+            }
             new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
         } else {
             new Thread(new BackgroundJob(activity, job, null, handler)).start();
