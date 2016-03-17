@@ -67,6 +67,13 @@ public class LayoutQuestionDialog extends DialogFragment {
         void onLayoutChosen(final LayoutKind layoutKind, final String language);
     }
 
+    public Analytics getAnalytics() {
+        if (mAnalytics == null && getActivity() != null) {
+            MonitoredActivity activity = (MonitoredActivity) getActivity();
+            return activity.getAnaLytics();
+        }
+        return mAnalytics;
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -79,7 +86,7 @@ public class LayoutQuestionDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        mAnalytics.sendScreenView(SCREEN_NAME);
+        getAnalytics().sendScreenView(SCREEN_NAME);
         final Context context = getContext();
         mLayout = null;
         Pair<String, String> language = PreferencesUtils.getOCRLanguage(context);
@@ -166,7 +173,7 @@ public class LayoutQuestionDialog extends DialogFragment {
                 final OcrLanguage item = adapter.getItem(position);
                 mLanguage = item.getValue();
                 PreferencesUtils.saveOCRLanguage(context, item);
-                mAnalytics.sendOcrLanguageChanged(item);
+                getAnalytics().sendOcrLanguageChanged(item);
             }
 
             @Override
@@ -185,7 +192,7 @@ public class LayoutQuestionDialog extends DialogFragment {
                         }
                         LayoutChoseListener listener = (LayoutChoseListener) getActivity();
                         listener.onLayoutChosen(mLayout, mLanguage);
-                        mAnalytics.sendOcrStarted(mLanguage, mLayout);
+                        getAnalytics().sendOcrStarted(mLanguage, mLayout);
                         dialog.dismiss();
                     }
                 });
@@ -196,7 +203,7 @@ public class LayoutQuestionDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         getActivity().finish();
                         dialog.dismiss();
-                        mAnalytics.sendLayoutDialogCancelled();
+                        getAnalytics().sendLayoutDialogCancelled();
                     }
                 });
 
