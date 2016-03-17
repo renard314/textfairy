@@ -50,12 +50,16 @@ public class TaskFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Retain this fragment across configuration changes.
         setRetainInstance(true);
-        // Create and execute the background task.
         mTask = new InstallTask((TaskCallbacks) getActivity(), getActivity().getAssets());
-        mTask.execute();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (mTask.getStatus() == AsyncTask.Status.PENDING) {
+            mTask.execute();
+        }
     }
 
     /**
