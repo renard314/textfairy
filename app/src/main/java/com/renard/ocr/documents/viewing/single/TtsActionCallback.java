@@ -80,7 +80,12 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
     }
 
     private void startPlaying(ActionMode actionMode) {
-        mAnalytics.ttsStart(mTts.getLanguage().getLanguage());
+        final Locale language = mTts.getLanguage();
+        if (language != null) {
+            mAnalytics.ttsStart(language.getLanguage());
+        } else {
+            mAnalytics.ttsStart("no language");
+        }
         HashMap<String, String> alarm = new HashMap<String, String>();
         alarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(TextToSpeech.Engine.DEFAULT_STREAM));
         alarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, LOG_TAG);
@@ -305,7 +310,7 @@ public class TtsActionCallback implements ActionMode.Callback, TextToSpeech.OnIn
 
     @Override
     public void onActivityDestroyed(MonitoredActivity activity) {
-        if (mTtsReady == true) {
+        if (mTtsReady) {
             mTts.shutdown();
             mTtsReady = false;
             mTts = null;
