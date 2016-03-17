@@ -55,7 +55,7 @@ public class OCRLanguageInstallService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (!intent.hasExtra(DownloadManager.EXTRA_DOWNLOAD_ID)) {
+        if (intent==null || !intent.hasExtra(DownloadManager.EXTRA_DOWNLOAD_ID)) {
             return;
         }
         final long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
