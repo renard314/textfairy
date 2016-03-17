@@ -15,21 +15,21 @@
  */
 package com.renard.ocr.documents.viewing.grid;
 
-import com.renard.ocr.documents.viewing.DocumentContentProvider;
 import com.renard.ocr.HintDialog;
 import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.ImageSource;
 import com.renard.ocr.documents.creation.NewDocumentActivity;
 import com.renard.ocr.documents.creation.PixLoadStatus;
+import com.renard.ocr.documents.viewing.DocumentContentProvider;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
-import com.renard.ocr.main_menu.language.OCRLanguageActivity;
-import com.renard.ocr.main_menu.language.OcrLanguage;
-import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
 import com.renard.ocr.main_menu.AboutActivity;
 import com.renard.ocr.main_menu.FeedbackActivity;
 import com.renard.ocr.main_menu.ReleaseNoteDialog;
 import com.renard.ocr.main_menu.TipsActivity;
+import com.renard.ocr.main_menu.language.OCRLanguageActivity;
+import com.renard.ocr.main_menu.language.OcrLanguage;
+import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
 import com.renard.ocr.util.Util;
 
 import android.Manifest;
@@ -100,6 +100,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
     private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
     private final Handler mScrollHandler = new ScrollHandler();
     private boolean mPendingThumbnailUpdate = false;
+    private boolean mBusIsRegistered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +119,10 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
     protected void onResume() {
         // ViewServer.get(this).setFocusedWindow(this);
         super.onResume();
-        EventBus.getDefault().register(this);
+        if (!mBusIsRegistered) {
+            EventBus.getDefault().register(this);
+            mBusIsRegistered = true;
+        }
         ensurePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, R.string.permission_explanation);
     }
 
@@ -546,6 +550,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
     protected void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
+        mBusIsRegistered = false;
     }
 
     @Override
