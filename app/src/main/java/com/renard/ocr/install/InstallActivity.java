@@ -141,7 +141,7 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
         AnimatorSet set = new AnimatorSet();
         set.setStartDelay(300);
         set.setDuration(600);
-        set.playTogether(anim1, anim2, anim3);
+        set.playTogether(anim1, anim2, anim3, anim4);
         set.start();
         mFairyAnimation.start();
 
