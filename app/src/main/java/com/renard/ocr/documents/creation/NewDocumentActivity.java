@@ -152,6 +152,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         if (Build.VERSION.SDK_INT >= 19) {
             i = new Intent(Intent.ACTION_GET_CONTENT, null);
             i.addCategory(Intent.CATEGORY_OPENABLE);
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             i.setType("image/*");
             i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/png", "image/jpg", "image/jpeg"});
         } else {
