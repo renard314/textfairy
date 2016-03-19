@@ -20,7 +20,7 @@ import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
-import com.renard.ocr.Analytics;
+import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.crop.CropImageScaler;

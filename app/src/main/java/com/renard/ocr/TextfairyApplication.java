@@ -15,18 +15,14 @@
  */
 package com.renard.ocr;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
-
 import com.crashlytics.android.Crashlytics;
+import com.renard.ocr.analytics.Analytics;
+import com.renard.ocr.analytics.AnalyticsFactory;
 import com.renard.ocr.util.PreferencesUtils;
 import com.squareup.leakcanary.LeakCanary;
 
 import android.app.Application;
-import android.content.SharedPreferences;
 import android.os.StrictMode;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.ViewConfiguration;
 
 import java.lang.reflect.Field;
@@ -35,22 +31,7 @@ import io.fabric.sdk.android.Fabric;
 
 public class TextFairyApplication extends Application {
 
-    static final String TRACKING_PREF_KEY = "tracking_key";
-    private static final String LOG_TAG = TextFairyApplication.class.getSimpleName();
-    private Tracker mTracker;
-
-    /**
-     * Gets the default {@link Tracker} for this {@link Application}.
-     *
-     * @return tracker
-     */
-    synchronized public Tracker getDefaultTracker() {
-        if (mTracker == null) {
-            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-            mTracker = analytics.newTracker(R.xml.global_tracker);
-        }
-        return mTracker;
-    }
+    private Analytics mAnalytics;
 
     public void onCreate() {
         super.onCreate();
@@ -59,8 +40,7 @@ public class TextFairyApplication extends Application {
             Fabric.with(fabric);
         }
 
-        listenForGoogleAnalyticsOptOut();
-        GoogleAnalytics.getInstance(this).setDryRun(BuildConfig.DEBUG);
+        mAnalytics = AnalyticsFactory.createAnalytics(this);
 
         PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
 
@@ -88,19 +68,9 @@ public class TextFairyApplication extends Application {
 
     }
 
-    private void listenForGoogleAnalyticsOptOut() {
-        SharedPreferences userPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        userPrefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals(TRACKING_PREF_KEY)) {
-                    final boolean optOut = sharedPreferences.getBoolean(key, false);
-                    Log.i(LOG_TAG, "tracking preference was changed. setting app opt out to: " + optOut);
-                    GoogleAnalytics.getInstance(getApplicationContext()).setAppOptOut(optOut);
-                }
-            }
-        });
+    public Analytics getAnalytics() {
+        return mAnalytics;
     }
+
 
 }

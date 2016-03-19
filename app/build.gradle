@@ -1,7 +1,5 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-import java.util.regex.Pattern
-
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'com.google.gms.google-services'
@@ -29,17 +27,6 @@ tasks.withType(JavaCompile) {
 }
 
 
-def getVersionCodeFromManifest(String prefix) {
-    def manifestFile = file("src/main/AndroidManifest.xml")
-    def pattern = Pattern.compile("versionCode=\"(\\d+)\"")
-    def manifestText = manifestFile.getText()
-    def matcher = pattern.matcher(manifestText)
-    matcher.find()
-    def version = prefix + matcher.group(1)
-    println sprintf("Returning version %s", version)
-    return Integer.parseInt("$version")
-}
-
 
 android {
     compileSdkVersion 23
@@ -48,10 +35,9 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
+        versionCode 46
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
-        //testHandleProfiling true
-        //testFunctionalTest true
     }
     signingConfigs {
         release
@@ -68,20 +54,23 @@ android {
         }
     }
 
-    productFlavors {
-
-        x86 {
-            versionCode getVersionCodeFromManifest("6")
-            ndk {
-                abiFilter "x86"
-            }
-
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'armeabi-v7a'
+            universalApk true
         }
-        aV7 {
-            versionCode getVersionCodeFromManifest("2")
-            ndk {
-                abiFilter "armeabi-v7a"
-            }
+    }
+
+    // map for the version code
+    project.ext.versionCodes = ['armeabi': 1, 'armeabi-v7a': 2, 'arm64-v8a': 3, 'mips': 5, 'mips64': 6, 'x86': 6, 'x86_64': 9]
+
+    android.applicationVariants.all { variant ->
+        // assign different version code for each output
+        variant.outputs.each { output ->
+            output.versionCodeOverride =
+                    project.ext.versionCodes.get(output.getFilter(com.android.build.OutputFile.ABI), 0) * 100 + android.defaultConfig.versionCode
         }
     }
     sourceSets {
@@ -92,7 +81,17 @@ android {
         }
     }
 
-    lintOptions{
+    productFlavors {
+
+        playstore {
+
+        }
+        develop {
+        }
+    }
+
+
+    lintOptions {
         //I'm too lazy to translate everything
         abortOnError false
     }
@@ -117,6 +116,8 @@ if (propFile.canRead()) {
     println 'signing.properties not found'
     android.buildTypes.release.signingConfig = null
 }
+
+
 
 dependencies {
     compile project(":tess-two:tess-two")

@@ -1,6 +1,6 @@
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.Analytics;
+import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.MonitoredActivity;
 
 import android.app.Activity;
