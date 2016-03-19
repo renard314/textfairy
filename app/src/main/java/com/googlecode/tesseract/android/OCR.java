@@ -54,6 +54,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     public static final int MESSAGE_EXPLANATION_TEXT = 12;
     public static final String EXTRA_WORD_BOX = "word_box";
     public static final String EXTRA_OCR_BOX = "ocr_box";
+    private static final String LOG_TAG = OCR.class.getSimpleName();
 
     static {
         System.loadLibrary("pngo");
@@ -282,7 +283,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     // training data the ocr text gets corrupted
     // but adding english will improve overall accuracy for the other languages
     private boolean addEnglishData(String mLanguage) {
-        if (mLanguage.startsWith("chi") || mLanguage.equalsIgnoreCase("tha")
+        return !(mLanguage.startsWith("chi") || mLanguage.equalsIgnoreCase("tha")
                 || mLanguage.equalsIgnoreCase("kor")
                 || mLanguage.equalsIgnoreCase("hin")
                 //|| mLanguage.equalsIgnoreCase("heb")
@@ -292,11 +293,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                 || mLanguage.equalsIgnoreCase("ara")
                 || mLanguage.equalsIgnoreCase("grc")
                 || mLanguage.equalsIgnoreCase("rus")
-                || mLanguage.equalsIgnoreCase("vie")) {
-            return false;
-
-        }
-        return true;
+                || mLanguage.equalsIgnoreCase("vie"));
     }
 
 
@@ -456,21 +453,32 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     synchronized (OCR.this) {
                         final String ocrLanguages = determineOcrLanguage(lang);
                         int ocrMode = determineOcrMode(lang);
-
                         if (!initTessApi(tessDir, ocrLanguages, ocrMode)) return;
+
                         mTess.setPageSegMode(PageSegMode.PSM_AUTO);
                         mTess.setImage(pixText);
                     }
                     String hocrText = mTess.getHOCRText(0);
+                    int accuracy = mTess.meanConfidence();
+                    final String utf8Text = mTess.getUTF8Text();
+
+                    if (accuracy == 95 && utf8Text.isEmpty()) {
+                        Log.i(LOG_TAG, "No words found. Looking for sparse text.");
+                        mTess.setPageSegMode(PageSegMode.PSM_SPARSE_TEXT);
+                        mTess.setImage(pixText);
+                        hocrText = mTess.getHOCRText(0);
+                        accuracy = mTess.meanConfidence();
+                    }
+
                     synchronized (OCR.this) {
                         if (mStopped) {
                             return;
                         }
                         String htmlText = mTess.getHtmlText();
-                        int accuracy = mTess.meanConfidence();
                         if (accuracy == 95) {
                             accuracy = 0;
                         }
+
                         sendMessage(MESSAGE_HOCR_TEXT, hocrText, accuracy);
                         sendMessage(MESSAGE_UTF8_TEXT, htmlText, accuracy);
                     }
