@@ -35,15 +35,29 @@ public class TextFairyApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
+        trackCrashes();
+        createAnalytics();
+        initTextPreferences();
+        enableStrictMode();
+        alwaysShowOverflowButton();
+    }
+
+    private void initTextPreferences() {
+        PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
+    }
+
+    private void createAnalytics() {
+        mAnalytics = AnalyticsFactory.createAnalytics(this);
+    }
+
+    private void trackCrashes() {
         if (!BuildConfig.DEBUG) {
             final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics()).debuggable(BuildConfig.DEBUG).build();
             Fabric.with(fabric);
         }
+    }
 
-        mAnalytics = AnalyticsFactory.createAnalytics(this);
-
-        PreferencesUtils.initPreferencesWithDefaultsIfEmpty(getApplicationContext());
-
+    private void enableStrictMode() {
         if (BuildConfig.DEBUG) {
             LeakCanary.install(this);
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
@@ -52,7 +66,9 @@ public class TextFairyApplication extends Application {
                     .build();
             StrictMode.setThreadPolicy(policy);
         }
+    }
 
+    private void alwaysShowOverflowButton() {
         // force overflow button for actionbar for devices with hardware option
         // button
         try {
@@ -65,7 +81,6 @@ public class TextFairyApplication extends Application {
         } catch (Exception ex) {
             // Ignore
         }
-
     }
 
     public Analytics getAnalytics() {

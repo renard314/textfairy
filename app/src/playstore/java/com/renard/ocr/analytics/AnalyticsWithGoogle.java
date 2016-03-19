@@ -43,8 +43,8 @@ class AnalyticsWithGoogle implements Analytics {
 
 
     public AnalyticsWithGoogle(Context applicationContext) {
-        mTracker = getDefaultTracker();
         mApplicationContext = applicationContext;
+        mTracker = getDefaultTracker();
         GoogleAnalytics.getInstance(mApplicationContext).setDryRun(BuildConfig.DEBUG);
         listenForGoogleAnalyticsOptOut();
     }
