@@ -1,8 +1,10 @@
 package com.renard.ocr.documents.creation;
 
+import com.crashlytics.android.Crashlytics;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.leptonica.android.Rotate;
+import com.googlecode.leptonica.android.Scale;
 import com.renard.ocr.util.Util;
 
 import android.content.ContentResolver;
@@ -35,6 +37,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
     final static String ACTION_IMAGE_LOADED = ImageLoadAsyncTask.class.getName() + ".image.loaded";
     final static String ACTION_IMAGE_LOADING_START = ImageLoadAsyncTask.class.getName() + ".image.loading.start";
     final private static String TMP_FILE_NAME = "loadfiletmp";
+    public static final int MIN_PIXEL_COUNT = 1000000;
     private final boolean skipCrop;
     private final WeakReference<ContentResolver> mContentResolver;
     private final Context context;
@@ -123,7 +126,6 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                 if (p == null) {
                     return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
                 }
-
             } else if (pathForUri != null) {
                 File imageFile = new File(pathForUri);
                 if (imageFile.exists()) {
@@ -176,6 +178,23 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                 p = pix;
                 rotateXDegrees = 0;
             }
+            if (p == null) {
+                return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
+            }
+            final long pixPixelCount = p.getWidth() * p.getHeight();
+            if (pixPixelCount < MIN_PIXEL_COUNT) {
+                final double scale = ((double) MIN_PIXEL_COUNT) / pixPixelCount;
+                Pix scaledPix = Scale.scale(p, (float) scale);
+                if (scaledPix != null) {
+                    p.recycle();
+                    p = scaledPix;
+                } else {
+                    Crashlytics.log("pix = (" + p.getWidth() + ", " + p.getHeight() + ")");
+                    Crashlytics.logException(new IllegalStateException("scaled pix is null"));
+                }
+            }
+
+
             return Pair.create(p, PixLoadStatus.SUCCESS);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
