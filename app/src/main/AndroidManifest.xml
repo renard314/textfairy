@@ -147,6 +147,8 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".main_menu.AboutActivity"/>
         </activity>
+        <meta-data android:name="io.fabric.ApiKey"
+                   android:value="ef8b77a0fd2ef3e87c78497b9595a9234fe5b711"/>
 
     </application>
 

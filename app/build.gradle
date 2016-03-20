@@ -35,7 +35,7 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 46
+        versionCode 47
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
@@ -152,6 +152,14 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2+') {
         transitive = true;
     }
+    compile('com.crashlytics.sdk.android:crashlytics-ndk:1.1.2@aar') {
+        transitive = true;
+    }
 
 
+}
+crashlytics {
+    enableNdk true
+    androidNdkOut '/Users/renard/devel/textfairy/app/src/main/obj'
+    androidNdkLibsOut '/Users/renard/devel/textfairy/app/src/main/libs'
 }

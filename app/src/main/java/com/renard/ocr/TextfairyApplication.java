@@ -16,6 +16,7 @@
 package com.renard.ocr;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.ndk.CrashlyticsNdk;
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.analytics.AnalyticsFactory;
 import com.renard.ocr.util.PreferencesUtils;
@@ -52,7 +53,7 @@ public class TextFairyApplication extends Application {
 
     private void trackCrashes() {
         if (!BuildConfig.DEBUG) {
-            final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics()).debuggable(BuildConfig.DEBUG).build();
+            final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics(), new CrashlyticsNdk()).debuggable(BuildConfig.DEBUG).build();
             Fabric.with(fabric);
         }
     }
