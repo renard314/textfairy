@@ -317,7 +317,7 @@
     <string name="close_app">close app</string>
     <string name="permission_explanation_install">I need permission to write my configuration files
         to your SD
-        card. I will only access the folder texfee which will also contain your scanned documents
+        card. I will only access the folder textfee which will also contain your scanned documents
         later.
     </string>
     <string name="permission_explanation_title">Permission missing</string>
