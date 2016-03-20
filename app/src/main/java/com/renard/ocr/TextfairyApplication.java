@@ -24,6 +24,7 @@ import com.squareup.leakcanary.LeakCanary;
 
 import android.app.Application;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.ViewConfiguration;
 
 import java.lang.reflect.Field;
@@ -32,6 +33,7 @@ import io.fabric.sdk.android.Fabric;
 
 public class TextFairyApplication extends Application {
 
+    private static final String LOG_TAG = TextFairyApplication.class.getSimpleName();
     private Analytics mAnalytics;
 
     public void onCreate() {
@@ -52,7 +54,8 @@ public class TextFairyApplication extends Application {
     }
 
     private void trackCrashes() {
-        if (!BuildConfig.DEBUG) {
+        if (BuildConfig.FLAVOR.contains("playstore")) {
+            Log.i(LOG_TAG,"Starting Crashlytics");
             final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics(), new CrashlyticsNdk()).debuggable(BuildConfig.DEBUG).build();
             Fabric.with(fabric);
         }
