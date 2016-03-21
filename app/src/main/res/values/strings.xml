@@ -334,4 +334,9 @@
     <string name="data_tracking_on">"I'm tracking anonymous usage data."</string>
     <string name="data_tracking_off">No anonymous usage data is tracked.</string>
     <string name="no_mail_app">No mail app found.</string>
+    <string name="memory_low">Memory Low</string>
+    <string name="memory_low_description">You have %d of MB memory left. Please close some
+        background apps or restart your device.
+    </string>
+    <string name="memory_low_warning">The app might crash if you continue.</string>
 </resources>

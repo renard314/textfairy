@@ -180,4 +180,10 @@ public class LoggingAnalytics implements Analytics {
     public void sendClickYoutube() {
         Log.i(LOG_TAG, "sendClickYoutube");
     }
+
+    @Override
+    public void sendIgnoreMemoryWarning(long availableMegs) {
+        Log.i(LOG_TAG, "sendIgnoreMemoryWarning(" + availableMegs + ")");
+
+    }
 }

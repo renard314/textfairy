@@ -244,5 +244,10 @@
     <string name="pref_title_privacy">Datenschutzerklärung</string>
     <string name="pref_summary_privacy">Lies dir meine Datenschutzerklärung durch.</string>
     <string name="no_mail_app">Keine Email-App gefunden.</string>
+    <string name="memory_low">Areitsspeicher niedrig</string>
+    <string name="memory_low_warning">Die App kann abstürzen.</string>
+    <string name="memory_low_description">Du hast nur %d MB frei. Bitte schließe einige Apps oder
+        starte dein Telefon neu.
+    </string>
 
 </resources>

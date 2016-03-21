@@ -17,19 +17,20 @@
 package com.renard.ocr.documents.creation;
 
 import com.googlecode.leptonica.android.Pix;
-import com.renard.ocr.documents.viewing.DocumentContentProvider;
-import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.crop.CropImageActivity;
+import com.renard.ocr.documents.creation.visualisation.OCRActivity;
+import com.renard.ocr.documents.viewing.DocumentContentProvider;
+import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
 import com.renard.ocr.pdf.Hocr2Pdf;
 import com.renard.ocr.pdf.Hocr2Pdf.PDFProgressListener;
 import com.renard.ocr.util.Util;
-import com.renard.ocr.documents.creation.visualisation.OCRActivity;
 
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -77,6 +78,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -90,7 +92,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private final static String LOG_TAG = NewDocumentActivity.class.getSimpleName();
     public final static String EXTRA_NATIVE_PIX = "pix_pointer";
-    public final static String EXTRA_IMAGE_URI = "image_uri";
     public final static String EXTRA_ROTATION = "rotation";
     private final static String IMAGE_LOAD_PROGRESS_TAG = "image_load_progress";
 
@@ -115,6 +116,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     private static final String DATE_CAMERA_INTENT_STARTED_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.dateCameraIntentStarted";
     private static final String STATE_RECEIVER_REGISTERED = "state_receiver_registered";
     private static final String IMAGE_SOURCE = "image_source";
+    public static final int MINIMUM_RECOMMENDED_RAM = 120;
     private static Date dateCameraIntentStarted = null;
     private static final String CAMERA_PIC_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
     private static Uri cameraPicUri = null;
@@ -144,6 +146,22 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     private ProgressDialog deleteProgressDialog;
     private AsyncTask<Void, Void, Pair<Pix, PixLoadStatus>> mBitmapLoadTask;
     private CameraResult mCameraResult;
+
+
+    private void checkRam(MemoryWarningDialog.DoAfter doAfter) {
+        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        activityManager.getMemoryInfo(mi);
+        long availableMegs = mi.availMem / 1048576L;
+        Log.i(LOG_TAG, "available ram = " + availableMegs);
+        if (availableMegs < MINIMUM_RECOMMENDED_RAM) {
+            MemoryWarningDialog.newInstance(availableMegs, doAfter).show(getSupportFragmentManager(), MemoryWarningDialog.TAG);
+        } else if (doAfter == MemoryWarningDialog.DoAfter.START_CAMERA) {
+            startCamera();
+        } else if (doAfter == MemoryWarningDialog.DoAfter.START_GALLERY) {
+            startGallery();
+        }
+    }
 
     protected void startGallery() {
         mAnalytics.startGallery();
@@ -175,11 +193,11 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             dateCameraIntentStarted = new Date();
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // Create an image file name
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
             String imageFileName = "JPEG_" + timeStamp + "_";
 
             File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File image = null;
+            File image;
             try {
                 if (!storageDir.exists()) {
                     storageDir.mkdirs();
@@ -255,10 +273,10 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.item_camera) {
-            startCamera();
+            checkRam(MemoryWarningDialog.DoAfter.START_CAMERA);
             return true;
         } else if (itemId == R.id.item_gallery) {
-            startGallery();
+            checkRam(MemoryWarningDialog.DoAfter.START_GALLERY);
             return true;
         }
 
@@ -276,7 +294,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             rotateXDegrees = -1;
             if (cameraResult.mRequestCode == REQUEST_CODE_MAKE_PHOTO) {
                 Cursor myCursor = null;
-                Date dateOfPicture = null;
+                Date dateOfPicture;
                 //check if there is a file at the uri we specified
                 if (cameraPicUri != null) {
                     File f = new File(cameraPicUri.getPath());
@@ -295,15 +313,17 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                     String[] largeFileProjection = {MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.ORIENTATION, MediaStore.Images.ImageColumns.DATE_TAKEN};
                     String largeFileSort = MediaStore.Images.ImageColumns._ID + " DESC";
                     myCursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, largeFileProjection, null, null, largeFileSort);
-                    myCursor.moveToFirst();
-                    // This will actually give you the file path location of the
-                    // image.
-                    String largeImagePath = myCursor.getString(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
-                    Uri tempCameraPicUri = Uri.fromFile(new File(largeImagePath));
-                    dateOfPicture = new Date(myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)));
-                    if (dateOfPicture.getTime() == 0 || (dateOfPicture.after(dateCameraIntentStarted))) {
-                        cameraPicUri = tempCameraPicUri;
-                        rotateXDegrees = myCursor.getInt(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.ORIENTATION));
+                    if (myCursor != null) {
+                        myCursor.moveToFirst();
+                        // This will actually give you the file path location of the
+                        // image.
+                        String largeImagePath = myCursor.getString(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+                        Uri tempCameraPicUri = Uri.fromFile(new File(largeImagePath));
+                        dateOfPicture = new Date(myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)));
+                        if (dateOfPicture.getTime() == 0 || (dateOfPicture.after(dateCameraIntentStarted))) {
+                            cameraPicUri = tempCameraPicUri;
+                            rotateXDegrees = myCursor.getInt(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.ORIENTATION));
+                        }
                     }
                 } catch (Exception ignored) {
                 } finally {
@@ -437,10 +457,9 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     };
 
     private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop) {
-        PixLoadStatus status = pixLoadStatus;
         dismissLoadingImageProgressDialog();
 
-        if (status == PixLoadStatus.SUCCESS) {
+        if (pixLoadStatus == PixLoadStatus.SUCCESS) {
             if (skipCrop) {
                 startOcrActivity(nativePix, true);
             } else {
@@ -450,7 +469,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                 startActivityForResult(actionIntent, NewDocumentActivity.REQUEST_CODE_CROP_PHOTO);
             }
         } else {
-            showFileError(status);
+            showFileError(pixLoadStatus);
         }
     }
 

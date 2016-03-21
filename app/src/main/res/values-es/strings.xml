@@ -250,4 +250,9 @@
     <string name="no_mail_app">No se encontró aplicación de correo electrónico .</string>
     <string name="pref_summary_privacy">Consulte la política de privacidad</string>
     <string name="pref_title_privacy">Política de privacidad</string>
+    <string name="memory_low">Poca memoria</string>
+    <string name="memory_low_warning">La aplicación puede bloquearse.</string>
+    <string name="memory_low_description">Tienes %d MB de memoria de la izquierda . Por favor,
+        cierre algunas aplicaciones en segundo plano o reinicie el dispositivo.
+    </string>
 </resources>

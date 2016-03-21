@@ -75,4 +75,6 @@ public interface Analytics {
     void ocrResultShareText();
 
     void sendClickYoutube();
+
+    void sendIgnoreMemoryWarning(long availableMegs);
 }

@@ -462,7 +462,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     int accuracy = mTess.meanConfidence();
                     final String utf8Text = mTess.getUTF8Text();
 
-                    if (accuracy == 95 && utf8Text.isEmpty()) {
+                    if (utf8Text.isEmpty()) {
                         Log.i(LOG_TAG, "No words found. Looking for sparse text.");
                         mTess.setPageSegMode(PageSegMode.PSM_SPARSE_TEXT);
                         mTess.setImage(pixText);

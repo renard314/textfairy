@@ -273,5 +273,10 @@ class AnalyticsWithGoogle implements Analytics {
         sendEvent(CATEGORY_INSTALL, "Youtube link clicked", "", 1);
     }
 
+    @Override
+    public void sendIgnoreMemoryWarning(long availableMegs) {
+        sendEvent(CATEGORY_OCR,"Memory Warning","ignored", (int) availableMegs);
+    }
+
 
 }
