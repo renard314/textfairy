@@ -1,0 +1,299 @@
+<resources>
+    <string name="drawer_open">"Mở Trình đơn chính"</string>
+    <string name="drawer_close">"Đóng trình đơn chính "</string>
+    <string name="whats_new_title">"Kiểm tra những gì đã thay đổi"</string>
+    <string name="whats_new">"Ghi chú phát hành"</string>
+    <string name="text_was_copied_to_clipboard">"Văn bản được sao chép vào bộ nhớ tạm."</string>
+    <string name="copy_to_clipboard">"Sao chép vào bộ nhớ tạm"</string>
+    <string name="image_could_not_be_read">"Hình ảnh không được tìm thấy trong các dữ liệu được gửi."</string>
+    <string name="image_does_not_exist">"Hình ảnh không được tìm thấy trên điện thoại của bạn."</string>
+    <string name="camera_app_not_found">"không tìm thấy ứng dụng Máy ảnh."</string>
+    <string name="gallery_io_error">"Hình ảnh có thể không được nạp."</string>
+    <string name="media_store_returned_null">"Bộ sưu tập không trả về hình ảnh cho tôi."</string>
+    <string name="camera_app_error">"Lỗi ứng dụng máy ảnh"</string>
+    <string name="camera_no_image_returned">"Ứng dụng máy ảnh hoàn trả lại không có hình ảnh."</string>
+    <string name="please_wait">"Xin vui lòng chờ"</string>
+    <string name="loading_image">"Đang tải hình ảnh .."</string>
+    <string name="please_tap_on_column">"Vui lòng nhấn vào một cột văn bản đầu tiên"</string>
+    <string name="get_more_languages">"Nhận được nhiều ngôn ngữ hơn"</string>
+    <string name="aborts_scan">"Hủy bỏ lần quét hiện tại!"</string>
+    <string name="send_mail">"Viết cho tôi một dòng."</string>
+    <string name="hocr2pdf_title">"
+        &lt;a href=\"http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/\"&gt; hocr2pdf &lt;/a&gt; từ exactCODE
+    "</string>
+    <string name="hocr2pdf_summary">"hocr2pdf là một dòng lệnh đầu-cuối cho các thư viện xử lý hình ảnh để tạo ra một cách hoàn hảo layouted, các tập tin tìm kiếm PDF từ hOCR, HTML, có chú thích, đầu vào thu được từ một hệ thống OCR.
+    "</string>
+    <string name="leptonica_title">"
+        &lt;a href=\"http://www.leptonica.com/\"&gt; leptonica &lt;/a&gt;
+    "</string>
+    <string name="leptonica_summary">"Leptonica là một trang web mã nguồn mở theo định hướng sư phạm
+   chứa phần mềm này là nhìn chung hữu ích cho xử lý hình ảnh và phân tích hình ảnh
+         các ứng dụng.
+    "</string>
+    <string name="tesseract_ocr_title">"
+        &lt;a href=\"https://code.google.com/p/tesseract-ocr/\"&gt; Tesseract OCR-&lt;/a&gt;
+    "</string>
+    <string name="tesseract_ocr_summary">"Tesseract có lẽ là sự chính xác nhất cho công cụ CR mã nguồn mở có sẵn.
+    "</string>
+    <string name="contact_welcome_text">"Xin chào, tên tôi là Renard. Tôi đã tạo ra văn bản Fairy trong thời gian rảnh rỗi. Tôi hy vọng cô ấy là hữu ích cho bạn.
+    "</string>
+    <string name="download_failed">"Đang tải %1$s không thành công!"</string>
+    <string name="language_downloaded">"%1$s dữ liệu ngôn ngữ đã được tải xuống"</string>
+    <string name="app_name">"Văn bản Fairy"</string>
+    <string name="tips">"Lời khuyên"</string>
+    <string name="ocr_language_delete">"Xóa bỏ"</string>
+    <string name="download_title">"Dữ liệu ngôn ngữ cho %s"</string>
+    <string name="ocr_language_title">"Quản lý các Ngôn ngữ"</string>
+    <string name="pref_summary_rate">"Đánh giá văn bản Fairy"</string>
+    <string name="pref_summary_license">"Tìm hiểu về các phần mềm được sử dụng để tạo ra các văn bản Fairy.
+    "</string>
+    <string name="pref_summary_contact">"Tìm hiểu về người sáng tạo và cung cấp thông tin phản hồi."</string>
+    <string name="pref_summary_default_ocr_lang">"Tải về và quản lý các ngôn ngữ để nhận dạng văn bản.
+    "</string>
+    <string name="pref_summary_data_directory">"Chỉ định thư mục chứa  văn bản fairy nên tìm kiếm các tập tin ngôn ngữ. Chỉ thay đổi điều này nếu bạn biết những gì bạn đang làm.
+    "</string>
+    <string name="pref_title_data_directory">"Thư mục Tessdata"</string>
+    <string name="pref_title_rate">"Tỷ lệ"</string>
+    <string name="pref_title_default_ocr_lang">"Tài liệu ngôn ngữ"</string>
+    <string name="pref_title_help">"Hiển thị các mẹo"</string>
+    <string name="pref_title_contact">"Thông tin liên lạc"</string>
+    <string name="pref_title_license">"Thông tin Giấy phép"</string>
+    <string name="pref_summary_help">"Mẹo cho việc nâng cao nhận dạng ký tự quang học (OCR)
+    "</string>
+    <string name="error_create_file">"Tôi xin lỗi nhưng đã không thể lưu trữ hình ảnh của bạn trên thẻ SD.
+    "</string>
+    <string name="share_subject">"Văn bản đã quét"</string>
+    <string name="save_success">"Lưu thành công"</string>
+    <string name="save_fail">"Lưu không thành công!"</string>
+    <string name="share_chooser_title">"Chọn cách bạn muốn chia sẻ văn bản"</string>
+    <string name="progress_start">"Bắt đầu"</string>
+    <string name="download_language">"Tải về"</string>
+    <string name="empty_grid_download_language">"Tải về một ngôn ngữ."</string>
+    <string name="progress_dewarp">"Làm thẳng văn bản"</string>
+    <string name="progress_ocr">"Đang đọc văn bản"</string>
+    <string name="delete">"Xóa bỏ"</string>
+    <string name="edit_title">"Thay đổi tiêu đề"</string>
+    <string name="cancel">"Hủy bỏ"</string>
+    <string name="edit_dialog_title">"Nhập tiêu đề cho tài liệu của bạn"</string>
+    <string name="delete_error">"Xin lỗi, Tôi không thể xóa tài liệu này"</string>
+    <string name="error_could_not_take_photo">"Xin lỗi, tôi không thể đọc ảnh"</string>
+    <string name="empty">""</string>
+    <string name="cropping_image">"Xén ảnh"</string>
+    <string name="error_title">"Lỗi"</string>
+    <string name="error_load_file">"Tôi xin lỗi nhưng tôi đã không thể tìm thấy các tập tin. Có lẽ nó đã bị xóa?
+    "</string>
+    <string name="pdf_creation_message">"Đang tạo PDF của bạn!"</string>
+    <string name="option_view_mode">"Chuyển xem"</string>
+    <string name="document_layout_dialog">"Có bao nhiêu cột?"</string>
+    <string name="layout_complex">"Nhiều hơn một cột."</string>
+    <string name="layout_simple">"Một cột."</string>
+    <string name="saving_document">"Đang lưu Tài liệu"</string>
+    <string name="button_column_pick_completed">"Bắt đầu nhận dạng văn bản"</string>
+    <string name="export_as_pdf">"Tạo PDF"</string>
+    <string name="delete_language_title">"Xóa %1$s ?"</string>
+    <string name="delete_language_message">"Bạn sẽ giải phóng %1$d kb."</string>
+    <string name="delete_dialog_message">"Đang xóa các Tài liệu .."</string>
+    <string name="progress_pfd_creation">"Đang tạo trang %1$d / %2$d cho %3$s ."</string>
+    <string name="option_text">"Cáccài đặt văn bản"</string>
+    <string name="option_content">"Mục lục"</string>
+    <string name="option_line_spacing">"Khoảng cách dòng"</string>
+    <string name="option_text_alignment">"Căn chỉnh văn bản"</string>
+    <string name="options_preview_text">"Đây là một bản xem trước của các thiết lập văn bản hiện tại của bạn. Bấm phím quay lại để tiếp tục đọc. \ NLorem ipsum dolor sit Amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor ut invidunt labore et dolore magna aliquyam erat, sed diam voluptua.
+    "</string>
+    <string name="progress_analyse_layout">"Tôi đang phân tích bố cục. Xin chờ vài giây.
+    "</string>
+    <string name="progress_image_detection">"Tìm kiếm văn bản"</string>
+    <string name="progress_assemble_pix">"Tôi đang lắp ráp các hình ảnh cuối cùng bây giờ."</string>
+    <string name="progress_choose_columns">"Xin vui lòng chọn ảnh văn bản và bạn muốn trong tài liệu cuối cùng
+    "</string>
+    <string name="new_photo">"Ảnh mới"</string>
+    <string name="no_sd_card">"Thẻ SD không được gắn kết. Điện thoại đang được kết nối với máy tính của bạn? Nếu vậy thì hãy ngắt kết nối nó và thử lại.
+    "</string>
+    <string name="rotate_right">"Xoay phải"</string>
+    <string name="rotate_left">"Xoay trái"</string>
+    <string name="content_description_fairy">"Trợ giúp text fairy"</string>
+    <string name="crop_title">"Chọn phần hình ảnh"</string>
+    <string name="text_options_title">"Thay đổi các cài đặt văn bản của bạn"</string>
+    <string name="app_options_title">"Thay đổi các cài đặt của bạn"</string>
+    <string name="edit_title_hint">"Nhập một tiêu đề"</string>
+    <string name="option_gallery_title">"Chọn một ảnh từ thư viện"</string>
+    <string name="option_camera_title">"Tạo một hình ảnh mới"</string>
+    <string name="option_preference_title">"Các cài đặt"</string>
+    <string name="show_tips">"Hiển thị mẹo"</string>
+    <string name="document_help_title">"Bạn có thể quản lý tài liệu của bạn ở đây."</string>
+    <string name="fairy_welcome_bubble">"Tôi là Văn bản Fairy"</string>
+    <string name="new_photo_gallery">"Chọn thư viện ảnh"</string>
+    <string name="show_documents">"Quản lý các tài liệu"</string>
+    <string name="join">"Nối"</string>
+    <string name="join_documents_title">"Đang nối các Tài liệu"</string>
+    <string name="join_documents_result">"%1$d tài liệu đã được nối"</string>
+    <string name="start_app">"Chúng ta hãy đi thôi"</string>
+    <string name="install_error_disk_space">"Không đủ không gian đĩa. Bạn cần phải giải phóng %1$d MB trên thẻ SD của bạn
+    "</string>
+    <string name="install_error">"Không thể cài đặt các tập tin cấu hình."</string>
+    <string name="toc_title">"Mục lục"</string>
+    <string name="start_text_1">"Những gì tôi có thể làm được!…"</string>
+    <string name="start_text_2">"Tôi trích xuất văn bản có thể chỉnh sửa từ hình ảnh. Chạm vào tôi để tìm hiểu thêm ...
+    "</string>
+    <string name="start_text_3">"Chụp ảnh mới hoặc chọn một từ bộ sưu tập của bạn ..."</string>
+    <string name="start_text_4">"Cắt hình ảnh và cho tôi biết nếu nó có chứa nhiều hơn một cột của văn bản ...
+    "</string>
+    <string name="start_text_5">"Làm thế nào ban có được kinh nghiệm khi sử dụng ứng dụng này?
+    "</string>
+    <string name="start_text_6">"Thử khả năng của nó! Tôi sẽ giúp bạn nếu bạn có câu hỏi ..."</string>
+    <string name="start_text_7">" ... Nhưng đừng quên: ngay cả các người máy cũng không hoàn hảo. không phải tất cả  hình ảnh có thể được chuyển đổi sang văn ...
+    "</string>
+    <string name="start_text_8">"Nhưng tôi sẽ làm tốt nhất việc của tôi ..."</string>
+    <string name="start_text_9">"Bạn có thể gửi cho tôi thông tin phản hồi. Chạm vào sở thích để tìm các chi tiết liên lạc.
+    "</string>
+    <string name="start_text_10">"Loại nhạc yêu thích của người máy là gì? ..."</string>
+    <string name="start_text_11">"Thể loại Kim loại nặng!"</string>
+    <string name="start_text_12">"Hai byte đáp ứng. Các byte đầu tiên hỏi: \"Bạn có bị bệnh không?\" Byte thứ hai trả lời ...
+    "</string>
+    <string name="start_text_13">"\" Không, chỉ cảm thấy hơi ra.\""</string>
+    <string name="start_text_14">"Có hai cách để viết các chương trình máy tính xảy ra lỗi ..."</string>
+    <string name="start_text_15">"Chỉ có một phần ba các công việc."</string>
+    <string name="start_text_16">"Ban đầu Đức Chúa Trời tạo dựng ra Bit và Byte ..."</string>
+    <string name="start_text_17">"Và từ những người mà ông đã tạo ra Từ ngữ."</string>
+    <string name="start_text_18">"Tại sao các luật sư an toàn khỏi sự đe dọa của tự động hóa sẽ tiếp quản nghề nghiệp của họ ...
+    "</string>
+    <string name="start_text_19">"Sẽ không có ai chế tạo rô-bốt để chẳng làm gì. "</string>
+    <string name="start_text_20">"Một con Rô-bốt đi vào một quán bar ..."</string>
+    <string name="start_text_21">"Nó nhìn vào các nhân viên pha chế và nói \"Tôi có thể có được một tuốc nơ vít?\"
+    "</string>
+    <string name="document_list_help_title">"Quản lý các tài liệu  đã quét của bạn ở đây."</string>
+    <string name="toc_help_title">"Ở đây bạn sẽ thấy một danh sách tất cả các trang trong tài liệu"</string>
+    <string name="no_ocr">"Không có xử lý. Lưu hình ảnh chưa được thay đổi."</string>
+    <string name="crop_help_title">"Bạn có thể cắt và xoay hình ảnh của bạn bây giờ"</string>
+    <string name="continue_ocr">"Tiếp tục"</string>
+    <string name="default_ocr_language">"anh"</string>
+    <string name="default_ocr_display_language">"Anh"</string>
+    <string name="title_activity_contact">"Liên hệ"</string>
+    <string name="action_settings">"Các cài đặt"</string>
+    <string name="ocr_accuracy">"OCR chính xác: %1$d"</string>
+    <string name="text_to_speech">"Đọc văn bản"</string>
+    <string name="ocr_result_is_bad">"Rất tiếc. Một cái gì đó có vẻ không đúng."</string>
+    <string name="ocr_result_is_ok">"Tôi nghĩ tôi có hầu hết các văn bản. "</string>
+    <string name="ocr_result_is_good">"Nó diễn ra tốt đẹp. "</string>
+    <string name="play">"Phát"</string>
+    <string name="stop">"Dừng lại"</string>
+    <string name="tts_init_error">"Văn bản để  phát biểu không thể tải."</string>
+    <string name="open_settings">"Cài đặt bài phát biểu"</string>
+    <string name="set_tts_language">"Hãy đặt ngôn ngữ thích hợp trong văn bản của bạn để thiết lập bài phát biểu.
+    "</string>
+    <string name="cannot_speak_language">"Điện thoại của bạn không thể  phát biểu được %s . Chọn một ngôn ngữ khác."</string>
+    <string name="choose_language">"Chọn một ngôn ngữ cho văn bản để phát biểu."</string>
+    <string name="share_text">"Chia sẻ văn bản"</string>
+    <string name="help_to_improve">"Phản hồi"</string>
+    <string name="product_tour">"Tìm hiểu sản phẩm"</string>
+    <string name="empty_grid_greeting">"Chào mừng"</string>
+    <string name="empty_grid_camera">"Hãy nhấn vào đây để chuyển đổi văn bản từ một hình ảnh mới."</string>
+    <string name="empty_grid_gallery">"Hãy nhấn vào đây để chuyển đổi văn bản từ hình ảnh hiện có."</string>
+    <string name="empty_grid_fairy">"Vui lòng chạm vào fairy để biết thêm."</string>
+    <string name="contribute_title">"Cải thiện ứng dụng"</string>
+    <string name="contribute_text">"Tạo ra một ứng dụng OCR là rất nhiều công việc. Nhưng bạn có thể giúp tôi để cải thiện các ứng dụng.
+    "</string>
+    <string name="rating_title">"Xếp hạng ứng dụng"</string>
+    <string name="rating_text">"Ứng dụng hữu ích cho bạn? Xem xét nó trên Play Store."</string>
+    <string name="feedback_title">"Gửi phản hồi"</string>
+    <string name="feedback_text_1">"Các ứng dụng không hoạt động như đã mong đợi?"</string>
+    <string name="feedback_text_2">"Bạn có một gợi ý một tính năng?"</string>
+    <string name="feedback_text_3">"Bạn tìm thấy một lỗi khó chịu?"</string>
+    <string name="beta_test_title">"Trở thành một người dùng  thử nghiệm beta"</string>
+    <string name="beta_test_text_1">"Hãy thử các tính năng mới càng sớm nếu có thể?"</string>
+    <string name="beta_test_text_2">"Sự phát triển ảnh hưởng của các tính năng mới?"</string>
+    <string name="enroll_as_beta_tester">"Ghi danh vào chương trình thử nghiệm phiên bản beta."</string>
+    <string name="about">"Về"</string>
+    <string name="feedback_subject">"Thông tin phản hồi văn bản fairy"</string>
+    <string name="beta_test_body">"Hãy thông báo cho tôi khi có phiên bản mới có sẵn cho thử nghiệm beta.
+    "</string>
+    <string name="beta_test_subject">"Văn bản fairy thử nghiệm beta "</string>
+    <string name="app_version">"Phiên bản%s"</string>
+    <string name="image_not_32_bit">"Hình ảnh cần phải có 32 bit."</string>
+    <string name="image_format_unsupported">"Định dạng ảnh không được nhận diện. Chỉ các tập tin png hoặc jpeg hiện đang được hỗ trợ.
+    "</string>
+    <string name="tts_not_available">"Đọc văn bản là không có sẵn trên điện thoại của bạn."</string>
+    <string name="empty_document">"Tài liệu không chứa văn bản."</string>
+    <string name="join_beta_test_community">"Tham gia vào cộng đồng thử nghiệm beta."</string>
+    <string name="join_beta_program">"Trở thành một người thử nghiệm beta"</string>
+    <string name="follow_steps">"Hãy làm theo các bước sau"</string>
+    <string name="click_image_below">"Một khi bạn là thành viên nhấp vào vào hình ảnh bên dưới."</string>
+    <string name="first_step">"Bước đầu tiên"</string>
+    <string name="second_step">"Bước thứ hai"</string>
+    <string name="first_step_detail">"Nếu bạn không phải là một thành viên bước thứ hai sẽ không hoạt động."</string>
+    <string name="second_step_first_detail">"Bạn có thể chọn không tham gia các chương trình thử nghiệm bất cứ lúc nào."</string>
+    <string name="second_step_second_detail">"Hãy viết cho tôi một email nếu bạn tìm thấy một lỗi."</string>
+    <string name="explanation_crop_video">"(Video) Làm thế nào để sửa chữa góc nhìn"</string>
+    <string name="ocr_tip_1">"Ánh sáng tốt là điều quan trọng nhất. Sử dụng đèn pin nếu có thể.
+    "</string>
+    <string name="ocr_tip_2">"Văn bản mờ khó đọc cho tôi. Hãy chắc chắn rằng máy ảnh đã được lấy nét đúng các văn bản.
+    "</string>
+    <string name="ocr_tip_3">"Thử nghiệm với các giá trị ISO  khác nhau. Giá trị ISO cao có thể gây nhiễu hình ảnh mà làm cho nó khó khăn hơn để nhận ra các chữ cái
+    "</string>
+    <string name="ocr_tip_4">"Thường thì độ phân giải  từ 5-7 điểm ảnh là đủ có được kết quả tốt. Giá trị cao hơn sẽ chỉ làm tăng thêm thời gian xử lý.
+    "</string>
+    <string name="ocr_tip_heading">"Làm thế nào để cải thiện nhận dạng văn bản"</string>
+    <string name="additional_tips">"Các mẹo bổ sung"</string>
+    <string name="ocr_tip_5">"Bạn có thể tăng tốc độ nhận dạng văn bản bằng cách xén các bức ảnh đã chụp.
+    "</string>
+    <string name="ocr_tip_6">"Tôi là sản phẩm tốt nhất trong nhận biết nội dung từ những cuốn sách, tạp chí và báo chí. Các chữ cái công phu hoặc đầy màu sắc là có vấn đề cho tôi.
+    "</string>
+    <string name="ocr_tip_7">"Tôi đang gặp khó khăn không kém khi đọc văn bản có nền sáng tối.
+    "</string>
+    <string name="crop_image_tutorial">"0tcFdaDuLTs"</string>
+    <string name="image_source">"Chọn nguồn ảnh."</string>
+    <string name="promo_video_title">"Tìm hiểu thêm."</string>
+    <string name="youtube_promo_link">"https://youtu.be/vUmZnwyLH6I"</string>
+    <string name="greeting">"Xin chào"</string>
+    <string name="text_is_in">"Nội dung văn bản là: "</string>
+    <string name="empty_grid_language">"Tôi có thể đọc tiếng Đức và tiếng Anh, nhưng bạn có thể tải về thêm các gói ngôn ngữ.
+    "</string>
+    <string name="error_tess_init">"Lỗi nội bộ của OCR. Hãy cài đặt lại các ứng dụng hoặc các dữ liệu ngôn ngữ.
+    "</string>
+    <string name="image_is_blurred">"Tôi có một vấn đề."</string>
+    <string name="new_image">"Hình ảnh mới"</string>
+    <string name="keep_camera_steady">"Giữ cho máy ảnh ổn định."</string>
+    <string name="image_not_too_dark">"Hãy chắc chắn rằng các hình ảnh là không quá tối."</string>
+    <string name="text_is_very_blurry">"Hình ảnh rất mờ. Tôi sẽ không thể đọc được nội dung một cách chính xác.
+    "</string>
+    <string name="text_is_blurry">"Hình ảnh hơi mờ. Tôi Sẽ mất một chút thời gian để đọc các văn bản
+         và tôi sẽ thực hiện một số sai lầm khi làm điều đó.
+    "</string>
+    <string name="nav_drawer_download_language">"Thêm ngôn ngữ"</string>
+    <string name="first_scan_successful">"Xin chúc mừng, bạn đang nhận được tốt ở nó!"</string>
+    <string name="love_it">"Thích nó!"</string>
+    <string name="could_be_better">"Có thể được tốt hơn"</string>
+    <string name="continue_editing">"Tiếp tục"</string>
+    <string name="feedback_description">"Làm thế nào bạn có được kinh nghiệm của mình khi sử dụng ứng dụng này?"</string>
+    <string name="first_time_bad_result">"Hãy đọc những lời khuyên hoặc gửi cho tôi thông tin phản hồi của bạn và tôi sẽ cố gắng giúp bạn.
+    "</string>
+    <string name="start_scan">"Bắt đầu"</string>
+    <string name="could_not_load_image">"Không thể tải hình ảnh."</string>
+    <string name="download_manager_disabled">"Trình quản lý tải về đã bị vô hiệu hóa. Vui lòng kích hoạt nó."</string>
+    <string name="ok">"ĐỒNG Ý"</string>
+    <string name="document_scanned_as">"Ngôn ngữ tài liệu đã được thiết lập để %s ."</string>
+    <string name="delete_whole_document">"Xóa tài liệu?"</string>
+    <string name="delete_document_message">"Tất cả các trang sẽ bị xóa."</string>
+    <string name="permission_explanation">"Tôi cần sự cho phép đọc và ghi vào thẻ SD của bạn. Tôi sẽ truy cập vào thư mục texfee chứa tập tin cấu hình của tôi và tài liệu được quét.
+    "</string>
+    <string name="close_app">"Đóng ứng dụng"</string>
+    <string name="permission_explanation_install">"Tôi cần sự cho phép để ghi tập tin cấu hình của tôi vào thẻ SD của bạn. Tôi sẽ chỉ truy cập textfee thư mục đó cũng sẽ chứa các tài liệu quét của bạn sau này.
+    "</string>
+    <string name="permission_explanation_title">"Giấy phép bị lỗi"</string>
+    <string name="no_gallery_found">"Không tìm thấy ứng dụng thư viện ảnh trên điện thoại này."</string>
+    <string name="installing_files">"Giải nén các tập tin ngôn ngữ"</string>
+    <string name="install_tip_1">"Văn bản sắc nét và rõ ràng sẽ giúp bạn có được kết quả tốt nhất.
+    "</string>
+    <string name="install_tip_2">"Tôi không thể đọc được chữ viết tay."</string>
+    <string name="pref_title_privacy">"Chính sách riêng tư"</string>
+    <string name="pref_summary_privacy">"Xem các chính sách bảo mật"</string>
+    <string name="install_tip_3">"Tôi trích xuất văn bản từ hình ảnh. Nhưng tôi &lt;b&gt; không thể &lt;/ b&gt; dịch nó cho bạn.
+    "</string>
+    <string name="data_tracking_on">"Tôi đang theo dõi sử dụng dữ liệu ẩn danh."</string>
+    <string name="data_tracking_off">"Không có dữ liệu sử dụng ẩn danh được theo dõi."</string>
+    <string name="no_mail_app">"Không có ứng dụng email được tìm thấy."</string>
+    <string name="memory_low">"Bộ nhớ thấp"</string>
+    <string name="memory_low_description">"Bạn có %d của MB bộ nhớ đã dùng. Hãy đóng một số ứng dụng nền hoặc khởi động lại thiết bị của bạn.
+    "</string>
+    <string name="memory_low_warning">"Các ứng dụng có thể sụp đổ nếu bạn tiếp tục."</string>
+</resources>
