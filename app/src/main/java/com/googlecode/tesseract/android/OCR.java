@@ -15,16 +15,18 @@
  */
 package com.googlecode.tesseract.android;
 
+import com.crashlytics.android.Crashlytics;
 import com.googlecode.leptonica.android.Boxa;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
-import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
+import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.documents.creation.crop.CropImageScaler;
 import com.renard.ocr.main_menu.language.OcrLanguage;
+import com.renard.ocr.util.MemoryInfo;
 import com.renard.ocr.util.Util;
 
 import android.content.Context;
@@ -324,6 +326,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     Boxa boxa;
                     Pix pixOcr;
                     synchronized (OCR.this) {
+                        logMemory(context);
                         final String ocrLanguages = determineOcrLanguage(lang);
                         int ocrMode = determineOcrMode(lang);
 
@@ -442,6 +445,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             @Override
             public void run() {
                 try {
+                    logMemory(context);
                     final String tessDir = Util.getTessDir(context);
                     long nativeTextPix = nativeOCRBook(pixs.getNativePix());
                     pixs.recycle();
@@ -494,6 +498,11 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             }
         }).start();
 
+    }
+
+    private void logMemory(Context context) {
+        final long freeMemory = MemoryInfo.getFreeMemory(context);
+        Crashlytics.setLong("Memory", freeMemory);
     }
 
     final static String ORIGINAL_PIX_NAME = "last_scan";

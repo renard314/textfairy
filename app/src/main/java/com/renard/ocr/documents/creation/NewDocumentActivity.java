@@ -27,10 +27,10 @@ import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
 import com.renard.ocr.pdf.Hocr2Pdf;
 import com.renard.ocr.pdf.Hocr2Pdf.PDFProgressListener;
+import com.renard.ocr.util.MemoryInfo;
 import com.renard.ocr.util.Util;
 
 import android.annotation.TargetApi;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -116,7 +116,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     private static final String DATE_CAMERA_INTENT_STARTED_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.dateCameraIntentStarted";
     private static final String STATE_RECEIVER_REGISTERED = "state_receiver_registered";
     private static final String IMAGE_SOURCE = "image_source";
-    public static final int MINIMUM_RECOMMENDED_RAM = 120;
     private static Date dateCameraIntentStarted = null;
     private static final String CAMERA_PIC_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
     private static Uri cameraPicUri = null;
@@ -149,12 +148,10 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
 
     private void checkRam(MemoryWarningDialog.DoAfter doAfter) {
-        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
-        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        activityManager.getMemoryInfo(mi);
-        long availableMegs = mi.availMem / 1048576L;
+
+        long availableMegs = MemoryInfo.getFreeMemory(this);
         Log.i(LOG_TAG, "available ram = " + availableMegs);
-        if (availableMegs < MINIMUM_RECOMMENDED_RAM) {
+        if (availableMegs < MemoryInfo.MINIMUM_RECOMMENDED_RAM) {
             MemoryWarningDialog.newInstance(availableMegs, doAfter).show(getSupportFragmentManager(), MemoryWarningDialog.TAG);
         } else if (doAfter == MemoryWarningDialog.DoAfter.START_CAMERA) {
             startCamera();
