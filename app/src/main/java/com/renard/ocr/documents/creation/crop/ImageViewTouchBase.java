@@ -299,7 +299,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
         float fw = (float) mBitmapDisplayed.getWidth() / (float) mThisWidth;
         float fh = (float) mBitmapDisplayed.getHeight() / (float) mThisHeight;
-        return Math.max(fw, fh) * 4;
+        return Math.max(fw, fh) * 2;
     }
 
     protected void zoomTo(float scale, float centerX, float centerY) {
