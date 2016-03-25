@@ -186,4 +186,10 @@ public class LoggingAnalytics implements Analytics {
         Log.i(LOG_TAG, "sendIgnoreMemoryWarning(" + availableMegs + ")");
 
     }
+
+    @Override
+    public void sendHeedMemoryWarning(long availableMegs) {
+        Log.i(LOG_TAG, "sendHeedMemoryWarning(" + availableMegs + ")");
+
+    }
 }
