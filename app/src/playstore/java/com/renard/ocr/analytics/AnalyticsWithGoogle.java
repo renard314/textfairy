@@ -278,5 +278,10 @@ class AnalyticsWithGoogle implements Analytics {
         sendEvent(CATEGORY_OCR,"Memory Warning","ignored", (int) availableMegs);
     }
 
+    @Override
+    public void sendHeedMemoryWarning(long availableMegs) {
+        sendEvent(CATEGORY_OCR,"Memory Warning","heeded", (int) availableMegs);
+    }
+
 
 }

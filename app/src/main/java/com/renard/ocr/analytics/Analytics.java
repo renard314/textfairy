@@ -77,4 +77,6 @@ public interface Analytics {
     void sendClickYoutube();
 
     void sendIgnoreMemoryWarning(long availableMegs);
+
+    void sendHeedMemoryWarning(long availableMegs);
 }
