@@ -28,6 +28,15 @@
 #include <sstream>
 #include <cmath>
 
+#ifdef __ANDROID_API__
+#include <android/log.h>
+#define LOG_TAG "ImageProcessing"
+#define printf(fmt,args...)  __android_log_print(ANDROID_LOG_INFO  ,LOG_TAG, fmt, ##args)
+/*dont write debug images onto the sd card*/
+#define pixWrite(name,pixs,format)  __android_log_print(ANDROID_LOG_INFO  ,LOG_TAG, name)
+#endif
+
+
 
 static const int MESSAGE_IMAGE_DETECTION = 0;
 static const int MESSAGE_IMAGE_DEWARP = 1;
