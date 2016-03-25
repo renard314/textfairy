@@ -501,8 +501,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
     private void logMemory(Context context) {
-        final long freeMemory = MemoryInfo.getFreeMemory(context);
-        Crashlytics.setLong("Memory", freeMemory);
+        if (com.renard.ocr.BuildConfig.FLAVOR.contains("playstore")) {
+            final long freeMemory = MemoryInfo.getFreeMemory(context);
+            Crashlytics.setLong("Memory", freeMemory);
+        }
     }
 
     final static String ORIGINAL_PIX_NAME = "last_scan";
