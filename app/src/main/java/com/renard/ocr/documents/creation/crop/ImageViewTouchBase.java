@@ -21,6 +21,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -125,17 +128,59 @@ public abstract class ImageViewTouchBase extends ImageView {
     }
 
     private void setImageBitmap(Bitmap bitmap, int rotation) {
-        super.setImageBitmap(bitmap);
         Bitmap old = mBitmapDisplayed.getBitmap();
+
+        if (bitmap != null) {
+            if (getDrawable() != null) {
+                TransitionDrawable oldTransition = (TransitionDrawable) getDrawable();
+                if (oldTransition.getNumberOfLayers() == 2) {
+                    BitmapDrawable layer0 = (BitmapDrawable) oldTransition.getDrawable(0);
+                    layer0.getBitmap().recycle();
+                }
+                startTransition(bitmap, old);
+            } else {
+                startTransition(bitmap, old);
+            }
+        } else {
+            super.setImageBitmap(null);
+        }
+
         mBitmapDisplayed.setBitmap(bitmap);
         mBitmapDisplayed.setRotation(rotation);
 
-        if (old != null && old != bitmap && mRecycler != null) {
-            mRecycler.recycle(old);
-        }
+    }
+
+    private void startTransition(final Bitmap bitmap, final Bitmap old) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                BitmapDrawable layers[];
+                if (old == null) {
+                    layers = new BitmapDrawable[]{new BitmapDrawable(getResources(), bitmap)};
+                } else {
+                    layers = new BitmapDrawable[]{new BitmapDrawable(getResources(), old), new BitmapDrawable(getResources(), bitmap)};
+                }
+                TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
+                setImageDrawable(transitionDrawable);
+                if (old != null) {
+                    transitionDrawable.startTransition(1000);
+                }
+            }
+        });
+
     }
 
     public void clear() {
+        final Drawable drawable = getDrawable();
+        if (drawable != null && drawable instanceof BitmapDrawable) {
+            BitmapDrawable bd = (BitmapDrawable) getDrawable();
+            bd.getBitmap().recycle();
+        } else if (drawable != null && drawable instanceof TransitionDrawable) {
+            BitmapDrawable layer1 = (BitmapDrawable) ((TransitionDrawable) drawable).getDrawable(0);
+            BitmapDrawable layer2 = (BitmapDrawable) ((TransitionDrawable) drawable).getDrawable(1);
+            layer1.getBitmap().recycle();
+            layer2.getBitmap().recycle();
+        }
         setImageBitmapResetBase(null, true, 0);
     }
 

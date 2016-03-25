@@ -113,7 +113,7 @@ public class OCRImageView extends ImageViewTouchBase {
     public OCRImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
-        mTouchedTextRects = new ArrayList<RectF>();
+        mTouchedTextRects = new ArrayList<>();
     }
 
     @Override

@@ -39,6 +39,8 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -437,10 +439,7 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
             mFinalPix.recycle();
             mFinalPix = null;
         }
+        mImageView.clear();
 
-        BitmapDrawable bd = (BitmapDrawable) mImageView.getDrawable();
-        if (bd != null) {
-            bd.getBitmap().recycle();
-        }
     }
 }
