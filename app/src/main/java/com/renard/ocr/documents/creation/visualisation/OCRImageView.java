@@ -47,7 +47,7 @@ public class OCRImageView extends ImageViewTouchBase {
     private final Paint mNumberPaint = new Paint();
     private final Paint mWordPaint = new Paint();
     private final Paint mBackgroundPaint = new Paint();
-    private final Paint mScanlinePaint = new Paint();
+    private final Paint mScanLinePaint = new Paint();
     private final Paint mImageRectPaint = new Paint();
     private final Paint mTextRectPaint = new Paint();
     private final Paint mTouchedImageRectPaint = new Paint();
@@ -55,8 +55,8 @@ public class OCRImageView extends ImageViewTouchBase {
     private ArrayList<RectF> mImageRects;
     private ArrayList<RectF> mTextRects;
 
-    private ArrayList<RectF> mTouchedImageRects = new ArrayList<RectF>();
-    private ArrayList<RectF> mTouchedTextRects = new ArrayList<RectF>();
+    private ArrayList<RectF> mTouchedImageRects = new ArrayList<>();
+    private ArrayList<RectF> mTouchedTextRects = new ArrayList<>();
 
     private int mProgress;
     private RectF mWordBoundingBox = new RectF();
@@ -113,6 +113,7 @@ public class OCRImageView extends ImageViewTouchBase {
     public OCRImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
+        mTouchedTextRects = new ArrayList<RectF>();
     }
 
     @Override
@@ -123,10 +124,10 @@ public class OCRImageView extends ImageViewTouchBase {
     private void init(final Context c) {
         final int progressColor = c.getResources().getColor(R.color.progress_color);
         mBackgroundPaint.setARGB(125, 50, 50, 50);
-        mScanlinePaint.setColor(progressColor);
-        mScanlinePaint.setStrokeWidth(3F);
-        mScanlinePaint.setAntiAlias(true);
-        mScanlinePaint.setStyle(Style.STROKE);
+        mScanLinePaint.setColor(progressColor);
+        mScanLinePaint.setStrokeWidth(3F);
+        mScanLinePaint.setAntiAlias(true);
+        mScanLinePaint.setStyle(Style.STROKE);
         mWordPaint.setARGB(125, Color.red(progressColor), Color.green(progressColor), Color.blue(progressColor));
 
         mImageRectPaint.setColor(progressColor);
@@ -205,39 +206,38 @@ public class OCRImageView extends ImageViewTouchBase {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mProgress >= 0 && getDrawable() != null) {
-            /* draw current word box */
-            if (!mWordBoundingBox.isEmpty()) {
-                getImageViewMatrix().mapRect(mWordBoundingBox);
-                canvas.drawRect(mWordBoundingBox, mWordPaint);
-            }
+        if (getDrawable() == null) {
+            return;
+        }
+        if (mProgress >= 0) {
+            drawBoxAroundCurrentWord(canvas);
             /* draw progress rectangle */
-            // RectF viewDrawingRect = new RectF(0, 0,
-            // mBitmapDisplayed.getWidth(), mBitmapDisplayed.getHeight());
-
             mViewDrawingRect.set(mOCRBoundingBox.left, mOCRBoundingBox.top, mOCRBoundingBox.right, mOCRBoundingBox.bottom);
             getImageViewMatrix().mapRect(mViewDrawingRect);
-            canvas.drawRect(mViewDrawingRect, mScanlinePaint);
+            canvas.drawRect(mViewDrawingRect, mScanLinePaint);
             float centerx = mViewDrawingRect.centerX();
             float centery = mViewDrawingRect.centerY();
 
             int pos = (int) (mViewDrawingRect.height() * (mProgress / 100f));
             mViewDrawingRect.top += pos;
             canvas.drawRect(mViewDrawingRect, mBackgroundPaint);
-            canvas.drawLine(mViewDrawingRect.left, mViewDrawingRect.top, mViewDrawingRect.right, mViewDrawingRect.top, mScanlinePaint);
+            canvas.drawLine(mViewDrawingRect.left, mViewDrawingRect.top, mViewDrawingRect.right, mViewDrawingRect.top, mScanLinePaint);
 
             canvas.drawText(String.valueOf(mProgress) + "%", centerx, centery, mNumberPaint);
             canvas.drawText(String.valueOf(mProgress) + "%", centerx, centery, mNumberStrokePaint);
         }
-		/* draw boxes around text/images */
-        if (getDrawable() != null) {
-            drawRects(canvas, mImageRects, mImageRectPaint);
-            drawRects(canvas, mTextRects, mTextRectPaint);
-        }
-		/* draw special boxes around text/images selected by the user */
-        if (getDrawable() != null) {
-            drawRects(canvas, mTouchedImageRects, mTouchedImageRectPaint);
-            drawRectsWithIndex(canvas, mTouchedTextRects, mTouchedTextRectPaint);
+        /* draw boxes around text/images */
+        drawRects(canvas, mImageRects, mImageRectPaint);
+        drawRects(canvas, mTextRects, mTextRectPaint);
+        /* draw special boxes around text/images selected by the user */
+        drawRects(canvas, mTouchedImageRects, mTouchedImageRectPaint);
+        drawRectsWithIndex(canvas, mTouchedTextRects, mTouchedTextRectPaint);
+    }
+
+    private void drawBoxAroundCurrentWord(Canvas canvas) {
+        if (!mWordBoundingBox.isEmpty()) {
+            getImageViewMatrix().mapRect(mWordBoundingBox);
+            canvas.drawRect(mWordBoundingBox, mWordPaint);
         }
     }
 

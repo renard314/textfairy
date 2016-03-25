@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -73,7 +72,7 @@ public abstract class ImageViewTouchBase extends ImageView {
     // ImageViewTouchBase will pass a Bitmap to the Recycler if it has finished
     // its use of that Bitmap.
     private interface Recycler {
-        public void recycle(Bitmap b);
+        void recycle(Bitmap b);
     }
 
     private final Recycler mRecycler = new Recycler() {
@@ -120,9 +119,6 @@ public abstract class ImageViewTouchBase extends ImageView {
 
     protected Handler mHandler = new Handler();
 
-    protected int mLastXTouchPos;
-    protected int mLastYTouchPos;
-
     @Override
     public void setImageBitmap(Bitmap bitmap) {
         setImageBitmap(bitmap, 0);
@@ -130,11 +126,6 @@ public abstract class ImageViewTouchBase extends ImageView {
 
     private void setImageBitmap(Bitmap bitmap, int rotation) {
         super.setImageBitmap(bitmap);
-        Drawable d = getDrawable();
-        if (d != null) {
-            d.setDither(true);
-        }
-
         Bitmap old = mBitmapDisplayed.getBitmap();
         mBitmapDisplayed.setBitmap(bitmap);
         mBitmapDisplayed.setRotation(rotation);
@@ -308,8 +299,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
         float fw = (float) mBitmapDisplayed.getWidth() / (float) mThisWidth;
         float fh = (float) mBitmapDisplayed.getHeight() / (float) mThisHeight;
-        float max = Math.max(fw, fh) * 4;
-        return max;
+        return Math.max(fw, fh) * 4;
     }
 
     protected void zoomTo(float scale, float centerX, float centerY) {
@@ -355,6 +345,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
         zoomTo(scale, cx, cy);
     }
+
     protected void zoomTo(float scale, final float durationMs) {
         float cx = getWidth() / 2F;
         float cy = getHeight() / 2F;
