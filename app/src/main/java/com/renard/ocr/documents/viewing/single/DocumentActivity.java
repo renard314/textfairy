@@ -145,7 +145,7 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
         if (accuracy >= OCRResultDialog.MEDIUM_ACCURACY) {
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         }
-        if (numberOfSuccessfulScans == 4) {
+        if (numberOfSuccessfulScans == 2) {
             GetOpinionDialog.newInstance(language).show(getSupportFragmentManager(), GetOpinionDialog.TAG);
             PreferencesUtils.setNumberOfSuccessfulScans(getApplicationContext(), ++numberOfSuccessfulScans);
         } else if (accuracy > -1) {
