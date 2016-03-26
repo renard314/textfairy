@@ -17,6 +17,7 @@ LOCAL_SRC_FILES += \
   $(IMAGE_PROCESSING_PATH)/PixEdgeDetector.cpp \
   $(IMAGE_PROCESSING_PATH)/PixAdaptiveBinarizer.cpp \
   $(IMAGE_PROCESSING_PATH)/PixBinarizer.cpp \
+  $(IMAGE_PROCESSING_PATH)/SkewCorrector.cpp \
   image_processing.cpp
 
 

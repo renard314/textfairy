@@ -27,6 +27,7 @@
 #include "PixBlurDetect.h"
 #include "PixBinarizer.h"
 #include <image_processing_util.h>
+#include "SkewCorrector.h"
 
 using namespace std;
 
