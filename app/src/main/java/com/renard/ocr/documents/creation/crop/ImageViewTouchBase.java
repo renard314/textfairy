@@ -131,55 +131,49 @@ public abstract class ImageViewTouchBase extends ImageView {
 
     private void setImageBitmap(final Bitmap bitmap, final int rotation) {
 
-        post(new Runnable() {
-            @Override
-            public void run() {
-                final Bitmap old = mBitmapDisplayed.getBitmap();
+        final Bitmap old = mBitmapDisplayed.getBitmap();
 
-                if (bitmap == null) {
-                    ImageViewTouchBase.super.setImageBitmap(null);
-                    clear();
-                    mBitmapDisplayed.setBitmap(null);
-                    return;
-                }
+        if (bitmap == null) {
+            ImageViewTouchBase.super.setImageBitmap(null);
+            clear();
+            mBitmapDisplayed.setBitmap(null);
+            return;
+        }
 
-                if (getDrawable() != null) {
-                    TransitionDrawable oldTransition = (TransitionDrawable) getDrawable();
-                    oldTransition.resetTransition();
-                    if (oldTransition.getNumberOfLayers() == 2) {
-                        BitmapDrawable layer0 = (BitmapDrawable) oldTransition.getDrawable(0);
-                        Log.i(TAG, "recycle layer 0");
-                        layer0.getBitmap().recycle();
-                    }
-                    if (old.getHeight() != bitmap.getHeight() || old.getWidth() != bitmap.getWidth()) {
-                        Log.i(TAG, "Bitmaps differ: setting single layer");
-                        if (oldTransition.getNumberOfLayers() == 2) {
-                            Log.i(TAG, "recycle layer 1");
-                            BitmapDrawable layer1 = (BitmapDrawable) oldTransition.getDrawable(1);
-                            layer1.getBitmap().recycle();
-                        }
-                        BitmapDrawable layers[] = new BitmapDrawable[]{new BitmapDrawable(getResources(), bitmap)};
-                        TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
-                        setImageDrawable(transitionDrawable);
-                    } else {
-                        Log.i(TAG, "setting double layer");
-                        BitmapDrawable layers[] = new BitmapDrawable[]{new BitmapDrawable(getResources(), old), new BitmapDrawable(getResources(), bitmap)};
-                        TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
-                        setImageDrawable(transitionDrawable);
-                        transitionDrawable.startTransition(TRANSITION_DURATION);
-                    }
-
-                } else {
-                    Log.i(TAG, "setting single layer");
-                    BitmapDrawable layers[] = new BitmapDrawable[]{new BitmapDrawable(getResources(), bitmap)};
-                    TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
-                    setImageDrawable(transitionDrawable);
-                }
-                mBitmapDisplayed.setBitmap(bitmap);
-                mBitmapDisplayed.setRotation(rotation);
+        if (getDrawable() != null) {
+            TransitionDrawable oldTransition = (TransitionDrawable) getDrawable();
+            oldTransition.resetTransition();
+            if (oldTransition.getNumberOfLayers() == 2) {
+                BitmapDrawable layer0 = (BitmapDrawable) oldTransition.getDrawable(0);
+                Log.i(TAG, "recycle layer 0");
+                layer0.getBitmap().recycle();
             }
-        });
+            if (old.getHeight() != bitmap.getHeight() || old.getWidth() != bitmap.getWidth()) {
+                Log.i(TAG, "Bitmaps differ: setting single layer");
+                if (oldTransition.getNumberOfLayers() == 2) {
+                    Log.i(TAG, "recycle layer 1");
+                    BitmapDrawable layer1 = (BitmapDrawable) oldTransition.getDrawable(1);
+                    layer1.getBitmap().recycle();
+                }
+                BitmapDrawable layers[] = new BitmapDrawable[]{new BitmapDrawable(getResources(), bitmap)};
+                TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
+                setImageDrawable(transitionDrawable);
+            } else {
+                Log.i(TAG, "setting double layer");
+                BitmapDrawable layers[] = new BitmapDrawable[]{new BitmapDrawable(getResources(), old), new BitmapDrawable(getResources(), bitmap)};
+                TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
+                setImageDrawable(transitionDrawable);
+                transitionDrawable.startTransition(TRANSITION_DURATION);
+            }
 
+        } else {
+            Log.i(TAG, "setting single layer");
+            BitmapDrawable layers[] = new BitmapDrawable[]{new BitmapDrawable(getResources(), bitmap)};
+            TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
+            setImageDrawable(transitionDrawable);
+        }
+        mBitmapDisplayed.setBitmap(bitmap);
+        mBitmapDisplayed.setRotation(rotation);
 
     }
 
