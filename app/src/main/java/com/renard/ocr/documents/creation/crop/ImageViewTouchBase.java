@@ -65,30 +65,10 @@ public abstract class ImageViewTouchBase extends ImageView {
     int mThisWidth = -1, mThisHeight = -1;
 
     float mMaxZoom;
-
     int mLeft;
-
     int mRight;
-
     int mTop;
-
     int mBottom;
-
-    // ImageViewTouchBase will pass a Bitmap to the Recycler if it has finished
-    // its use of that Bitmap.
-    private interface Recycler {
-        void recycle(Bitmap b);
-    }
-
-    private final Recycler mRecycler = new Recycler() {
-
-        @Override
-        public void recycle(Bitmap b) {
-            if (b != null && !b.isRecycled()) {
-                b.recycle();
-            }
-        }
-    };
 
     @Override
     protected void onLayout(boolean changed, int left, int top,
