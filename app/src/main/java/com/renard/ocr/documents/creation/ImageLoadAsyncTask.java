@@ -37,7 +37,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
     final static String ACTION_IMAGE_LOADED = ImageLoadAsyncTask.class.getName() + ".image.loaded";
     final static String ACTION_IMAGE_LOADING_START = ImageLoadAsyncTask.class.getName() + ".image.loading.start";
     final private static String TMP_FILE_NAME = "loadfiletmp";
-    public static final int MIN_PIXEL_COUNT = 1000000;
+    public static final int MIN_PIXEL_COUNT = 1024 * 1024;
     private final boolean skipCrop;
     private final WeakReference<ContentResolver> mContentResolver;
     private final Context context;
