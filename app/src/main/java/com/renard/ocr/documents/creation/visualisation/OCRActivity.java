@@ -17,19 +17,18 @@ package com.renard.ocr.documents.creation.visualisation;
 
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
-import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.OCR;
-import com.renard.ocr.documents.viewing.DocumentContentProvider;
-import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
+import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutChoseListener;
+import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutKind;
+import com.renard.ocr.documents.viewing.DocumentContentProvider;
+import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
 import com.renard.ocr.util.Screen;
 import com.renard.ocr.util.Util;
-import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutChoseListener;
-import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutKind;
 
 import android.Manifest;
 import android.content.ContentProviderClient;
@@ -38,9 +37,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -158,7 +154,7 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
 
         private String hocrString;
         private String utf8String;
-        private long layoutPix;
+        //private long layoutPix;
         private int mPreviewWith;
         private int mPreviewHeight;
 
@@ -196,16 +192,10 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
                     break;
                 }
                 case OCR.MESSAGE_LAYOUT_PIX: {
-
-                    layoutPix = (long) msg.obj;
-                    if (layoutPix != 0) {
-                        Pix pix = new Pix(layoutPix);
-                        final Bitmap preview = WriteFile.writeBitmap(pix);
-                        mPreviewHeight = pix.getHeight();
-                        mPreviewWith = pix.getWidth();
-                        mImageView.setImageBitmapResetBase(preview, true, 0);
-                        pix.recycle();
-                    }
+                    Bitmap layoutPix = (Bitmap) msg.obj;
+                    mPreviewHeight = layoutPix.getHeight();
+                    mPreviewWith = layoutPix.getWidth();
+                    mImageView.setImageBitmapResetBase(layoutPix, true, 0);
                     break;
                 }
 
@@ -284,6 +274,7 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
                 }
             }
         }
+
     }
 
 
@@ -401,7 +392,7 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
 
     private void askUserAboutDocumentLayout() {
         LayoutQuestionDialog dialog = LayoutQuestionDialog.newInstance();
-        dialog.show(getSupportFragmentManager(),LayoutQuestionDialog.TAG);
+        dialog.show(getSupportFragmentManager(), LayoutQuestionDialog.TAG);
     }
 
 

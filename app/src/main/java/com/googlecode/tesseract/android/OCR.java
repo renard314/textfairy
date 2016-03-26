@@ -172,7 +172,19 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
      * @param nativePix pix pointer
      */
     private void onLayoutPix(long nativePix) {
-        sendMessage(MESSAGE_LAYOUT_PIX, nativePix);
+        if (mMessenger != null && mIsActivityAttached) {
+            Log.i(TAG, "onLayoutPix " + nativePix);
+            Pix preview = new Pix(nativePix);
+            CropImageScaler scaler = new CropImageScaler();
+            final CropImageScaler.ScaleResult scale = scaler.scale(preview, mPreviewWidthUnScaled, mPreviewHeightUnScaled);
+            final Bitmap previewBitmap = WriteFile.writeBitmap(scale.getPix());
+            if (previewBitmap != null) {
+                scale.getPix().recycle();
+                sendMessage(MESSAGE_LAYOUT_PIX, previewBitmap);
+            } else {
+                sendMessage(MESSAGE_ERROR, R.string.error_title);
+            }
+        }
     }
 
     /**
