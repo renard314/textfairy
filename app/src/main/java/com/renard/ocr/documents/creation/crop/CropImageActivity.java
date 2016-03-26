@@ -195,7 +195,6 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
                         break;
                     case MEDIUM_BLUR:
                     case STRONG_BLUR:
-                       // zoomToBlurredRegion(cropData);
                         setTitle(R.string.image_is_blurred);
                         BlurWarningDialog dialog = BlurWarningDialog.newInstance((float) cropData.getBlurriness().getBlurValue());
                         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -303,6 +302,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         unbindDrawables(findViewById(android.R.id.content));
+        mImageView.clear();
         if (mPrepareTask.isPresent()) {
             mPrepareTask.get().cancel(true);
             mPrepareTask = Optional.absent();
