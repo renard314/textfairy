@@ -149,12 +149,11 @@ extern "C" {
         pixb = binarizer.binarize(pixOrg, pixJavaCallback);
         pixJavaCallback(pixb);
         
-        SkewCorrector skewCorrector(false);
-        Pix* pixbRotated = skewCorrector.correctSkew(pixb, NULL);
-        pixDestroy(&pixb);
-        pixb = pixbRotated;
-        
-        pixJavaCallback(pixb);
+//        SkewCorrector skewCorrector(false);
+//        Pix* pixbRotated = skewCorrector.correctSkew(pixb, NULL);
+//        pixDestroy(&pixb);
+//        pixb = pixbRotated;
+//        pixJavaCallback(pixb);
         
         segmentComplexLayout(pixOrg, NULL, pixb, &pixaImages, &pixaTexts, callbackLayout, true);
         
