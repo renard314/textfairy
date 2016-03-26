@@ -128,7 +128,7 @@ public abstract class ImageViewTouchBase extends ImageView {
                 Log.i(TAG, "recycle layer 0");
                 layer0.getBitmap().recycle();
             }
-            if (old.getHeight() != bitmap.getHeight() || old.getWidth() != bitmap.getWidth()) {
+            if (old.getHeight() != bitmap.getHeight() || old.getWidth() != bitmap.getWidth() || mBitmapDisplayed.getRotation() != rotation) {
                 Log.i(TAG, "Bitmaps differ: setting single layer");
                 if (oldTransition.getNumberOfLayers() == 2) {
                     Log.i(TAG, "recycle layer 1");
