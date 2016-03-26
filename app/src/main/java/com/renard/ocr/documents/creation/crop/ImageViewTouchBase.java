@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 
@@ -127,26 +128,43 @@ public abstract class ImageViewTouchBase extends ImageView {
         setImageBitmap(bitmap, 0);
     }
 
-    private void setImageBitmap(Bitmap bitmap, int rotation) {
-        Bitmap old = mBitmapDisplayed.getBitmap();
+    private void setImageBitmap(final Bitmap bitmap, final int rotation) {
 
-        if (bitmap != null) {
-            if (getDrawable() != null) {
-                TransitionDrawable oldTransition = (TransitionDrawable) getDrawable();
-                if (oldTransition.getNumberOfLayers() == 2) {
-                    BitmapDrawable layer0 = (BitmapDrawable) oldTransition.getDrawable(0);
-                    layer0.getBitmap().recycle();
+        post(new Runnable() {
+            @Override
+            public void run() {
+                final Bitmap old = mBitmapDisplayed.getBitmap();
+
+                if (bitmap == null) {
+                    ImageViewTouchBase.super.setImageBitmap(null);
+                    clear();
+                    mBitmapDisplayed.setBitmap(null);
+
                 }
-                startTransition(bitmap, old);
-            } else {
-                startTransition(bitmap, old);
-            }
-        } else {
-            super.setImageBitmap(null);
-        }
 
-        mBitmapDisplayed.setBitmap(bitmap);
-        mBitmapDisplayed.setRotation(rotation);
+                if (getDrawable() != null) {
+                    TransitionDrawable oldTransition = (TransitionDrawable) getDrawable();
+                    if (oldTransition.getNumberOfLayers() == 2) {
+                        BitmapDrawable layer0 = (BitmapDrawable) oldTransition.getDrawable(0);
+                        Log.i(TAG, "recycle layer 0");
+                        layer0.getBitmap().recycle();
+                    }
+                    Log.i(TAG, "setting double layer");
+                    BitmapDrawable layers[] = new BitmapDrawable[]{new BitmapDrawable(getResources(), old), new BitmapDrawable(getResources(), bitmap)};
+                    TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
+                    setImageDrawable(transitionDrawable);
+                    transitionDrawable.startTransition(1000);
+                } else {
+                    Log.i(TAG, "setting single layer");
+                    BitmapDrawable layers[] = new BitmapDrawable[]{new BitmapDrawable(getResources(), bitmap)};
+                    TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
+                    setImageDrawable(transitionDrawable);
+                }
+                mBitmapDisplayed.setBitmap(bitmap);
+                mBitmapDisplayed.setRotation(rotation);
+            }
+        });
+
 
     }
 
@@ -174,14 +192,17 @@ public abstract class ImageViewTouchBase extends ImageView {
         final Drawable drawable = getDrawable();
         if (drawable != null && drawable instanceof BitmapDrawable) {
             BitmapDrawable bd = (BitmapDrawable) getDrawable();
-            bd.getBitmap().recycle();
+            if (bd.getBitmap() != null) {
+                bd.getBitmap().recycle();
+            }
         } else if (drawable != null && drawable instanceof TransitionDrawable) {
-            BitmapDrawable layer1 = (BitmapDrawable) ((TransitionDrawable) drawable).getDrawable(0);
-            BitmapDrawable layer2 = (BitmapDrawable) ((TransitionDrawable) drawable).getDrawable(1);
-            layer1.getBitmap().recycle();
-            layer2.getBitmap().recycle();
+            for (int i = 0; i < ((TransitionDrawable) drawable).getNumberOfLayers(); i++) {
+                BitmapDrawable layer = (BitmapDrawable) ((TransitionDrawable) drawable).getDrawable(i);
+                if (layer.getBitmap() != null) {
+                    layer.getBitmap().recycle();
+                }
+            }
         }
-        setImageBitmapResetBase(null, true, 0);
     }
 
     private Runnable mOnLayoutRunnable = null;
