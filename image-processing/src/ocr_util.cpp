@@ -29,7 +29,7 @@ using namespace std;
 
 
 string GetHTMLText(tesseract::ResultIterator* res_it, const float minConfidenceToShowColor) {
-	int lcnt = 1, bcnt = 1, pcnt = 1, wcnt = 1;
+	int lcnt = 1, pcnt = 1, wcnt = 1;
 	ostringstream html_str;
 	bool isItalic = false;
 	bool para_open = false;

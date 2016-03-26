@@ -34,6 +34,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
     @SuppressWarnings("unused")
     private static final String TAG = "ImageViewTouchBase";
+    public static final int TRANSITION_DURATION = 500;
 
     // This is the base transformation which is used to show the image
     // initially.  The current computation for this shows the image in
@@ -153,7 +154,7 @@ public abstract class ImageViewTouchBase extends ImageView {
                     BitmapDrawable layers[] = new BitmapDrawable[]{new BitmapDrawable(getResources(), old), new BitmapDrawable(getResources(), bitmap)};
                     TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
                     setImageDrawable(transitionDrawable);
-                    transitionDrawable.startTransition(1000);
+                    transitionDrawable.startTransition(TRANSITION_DURATION);
                 } else {
                     Log.i(TAG, "setting single layer");
                     BitmapDrawable layers[] = new BitmapDrawable[]{new BitmapDrawable(getResources(), bitmap)};
@@ -165,26 +166,6 @@ public abstract class ImageViewTouchBase extends ImageView {
             }
         });
 
-
-    }
-
-    private void startTransition(final Bitmap bitmap, final Bitmap old) {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                BitmapDrawable layers[];
-                if (old == null) {
-                    layers = new BitmapDrawable[]{new BitmapDrawable(getResources(), bitmap)};
-                } else {
-                    layers = new BitmapDrawable[]{new BitmapDrawable(getResources(), old), new BitmapDrawable(getResources(), bitmap)};
-                }
-                TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
-                setImageDrawable(transitionDrawable);
-                if (old != null) {
-                    transitionDrawable.startTransition(1000);
-                }
-            }
-        });
 
     }
 

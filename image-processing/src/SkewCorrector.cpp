@@ -32,15 +32,16 @@ Pix* SkewCorrector::correctSkew(Pix* pix, l_float32* angle_out){
     
     Pix* pixRotated;
     l_float32 angle =  0;
-    l_int32 error = pixFindSkewSweep(pix, &angle, 1, 47., 1.);
+    
+    
+    l_int32 error = pixFindSkewSweep(pix, &angle, 2, 47., 1.);
     if (error == 1) {
         pixRotated = pixClone(pix);
     } else {
-        if(mDebug){
-            printf("rotating image by %f degrees\n", angle);
-        }
+        printf("rotating image by %f degrees\n", angle);
         //rotate binary image
         pixRotated = pixRotate(pix, DEG_2_RAD * angle, L_ROTATE_AREA_MAP, L_BRING_IN_WHITE, 0, 0);
+
     }
     if(angle_out!=NULL){
         *angle_out = angle;

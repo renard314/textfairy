@@ -391,13 +391,6 @@ Pix* PixBlurDetect::pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blu
 	l_int32 vertRating, horzRating;
 	Pix* pixBinaryy = makeEdgeMask(pixMedian, L_VERTICAL_EDGES, &vertRating);
 	Pix* pixBinaryx = makeEdgeMask(pixMedian, L_HORIZONTAL_EDGES, &horzRating);
-	if (vertRating < horzRating) {
-		pixCloseBrickDwa(pixBinaryy,pixBinaryy,3,3);
-	} else {
-		pixCloseBrickDwa(pixBinaryx,pixBinaryx,3,3);
-	}
-
-
 	datad = pixGetData(blurMeasure);
 	databx = pixGetData(pixBinaryx);
 	databy = pixGetData(pixBinaryy);
@@ -444,7 +437,6 @@ Pix* PixBlurDetect::pixMakeBlurMask(Pix* pixGrey, Pix* pixMedian, l_float32* blu
 		if (pixBinary != NULL) {
 			*pixBinary = pixCopy(NULL, pixBinaryx);
 		}
-
 		for (x = 1; x < width - 1; x++) {
 			for (y = 1; y < height - 1; y++) {
 				bool hasy = !GET_DATA_BIT(databx + y * wplbx, x);

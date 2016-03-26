@@ -91,16 +91,19 @@ Pixa* pagesegGetColumns(Pix* pixtext, bool debug) {
 	if (debug) {
 		startTimer();
 	}
-	int w = pixGetHeight(pixtext);
+    l_int32 borderSize = 50;
+    Pix* pixBorder = pixAddBlackOrWhiteBorder(pixtext, borderSize, borderSize, borderSize, borderSize, L_GET_WHITE_VAL);
+	int w = pixGetHeight(pixBorder);
+    
 
 	s << "o1.20+c5.20+d10.5+o1." << w / 10;
 
 	/*remove long vertical lines*/
-	Pix* pixvl = pixMorphCompSequence(pixtext, s.str().c_str(), 0);
-	pixSetMasked(pixtext, pixvl, 0);
+	Pix* pixvl = pixMorphCompSequence(pixBorder, s.str().c_str(), 0);
+	pixSetMasked(pixBorder, pixvl, 0);
 	pixDestroy(&pixvl);
 
-	pixBinary = pixReduceRankBinaryCascade(pixtext, 1, 0, 0, 0);
+	pixBinary = pixReduceRankBinaryCascade(pixBorder, 1, 0, 0, 0);
 
 
 	/*remove long horizontal lines*/
@@ -194,10 +197,12 @@ Pixa* pagesegGetColumns(Pix* pixtext, bool debug) {
 	pixDilateBrick(pixBinary, pixBinary, 3, 3);
 
 	Boxa* boxatext = pixConnCompBB(pixBinary, 8);
-	//growTextBounds(boxatext);
-	Pixa* pixaText = pixaCreateFromBoxa(pixtext, boxatext, NULL);
+    Boxa* translated = boxaTranslate(boxatext, -borderSize, -borderSize);
+	Pixa* pixaText = pixaCreateFromBoxa(pixtext, translated, NULL);
+    
 	//substract
 	pixDestroy(&pixBinary);
+    boxaDestroy(&translated);
 	boxaDestroy(&boxatext);
 	if (debug) {
 		Pix* pixdisplay = pixaDisplay(pixaText, 0, 0);
@@ -249,8 +254,9 @@ void segmentComplexLayout(Pix* pixOrg,Pix* pixhm, Pix* pixb, Pixa** pixaImage, P
 	if (debug) {
 		debugstring << "Preview-Image generation: " << stopTimer() << std::endl;
 	}
-
-	callback(pixpreview);
+    if(callback!=NULL){
+        callback(pixpreview);
+    }
 
 	if (debug) {
 		startTimer();
