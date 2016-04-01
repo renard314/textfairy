@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.util.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,15 +28,34 @@ import java.net.URL;
 /**
  * @author renard
  */
-public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadStatus>> {
+public class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask.LoadResult> {
+
+    public class LoadResult {
+        private final Pix mPix;
+        private final int mRotation;
+        private final PixLoadStatus mStatus;
+
+        public LoadResult(PixLoadStatus status) {
+            mStatus = status;
+            mPix = null;
+            mRotation = 0;
+        }
+
+        public LoadResult(Pix pix, int rotation) {
+            mStatus = PixLoadStatus.SUCCESS;
+            mPix = pix;
+            mRotation = rotation;
+        }
+    }
 
     final static String EXTRA_PIX = "pix";
     final static String EXTRA_STATUS = "status";
+    public final static String EXTRA_ROTATION = "rotation";
     final static String EXTRA_SKIP_CROP = "skip_crop";
     final static String ACTION_IMAGE_LOADED = ImageLoadAsyncTask.class.getName() + ".image.loaded";
     final static String ACTION_IMAGE_LOADING_START = ImageLoadAsyncTask.class.getName() + ".image.loading.start";
     final private static String TMP_FILE_NAME = "loadfiletmp";
-    public static final int MIN_PIXEL_COUNT = 1024 * 1024;
+    public static final int MIN_PIXEL_COUNT = 3 * 1024 * 1024;
     private final boolean skipCrop;
     private final WeakReference<ContentResolver> mContentResolver;
     private final Context context;
@@ -97,19 +115,20 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
     }
 
     @Override
-    protected void onPostExecute(Pair<Pix, PixLoadStatus> p) {
+    protected void onPostExecute(LoadResult result) {
         Log.i(LOG_TAG, "onPostExecute");
         Intent intent = new Intent(ACTION_IMAGE_LOADED);
-        if (p.second == PixLoadStatus.SUCCESS) {
-            intent.putExtra(EXTRA_PIX, p.first.getNativePix());
+        if (result.mStatus == PixLoadStatus.SUCCESS) {
+            intent.putExtra(EXTRA_PIX, result.mPix.getNativePix());
+            intent.putExtra(EXTRA_ROTATION, result.mRotation);
         }
-        intent.putExtra(EXTRA_STATUS, p.second.ordinal());
+        intent.putExtra(EXTRA_STATUS, result.mStatus.ordinal());
         intent.putExtra(EXTRA_SKIP_CROP, skipCrop);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     @Override
-    protected Pair<Pix, PixLoadStatus> doInBackground(Void... params) {
+    protected LoadResult doInBackground(Void... params) {
         Log.i(LOG_TAG, "doInBackground");
         if (isCancelled()) {
             Log.i(LOG_TAG, "isCancelled");
@@ -124,7 +143,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
             if (pathForUri != null && pathForUri.startsWith("http")) {
                 p = downloadFile(pathForUri);
                 if (p == null) {
-                    return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
+                    return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
                 }
             } else if (pathForUri != null) {
                 File imageFile = new File(pathForUri);
@@ -135,10 +154,10 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                     p = ReadFile.readFile(context, imageFile);
 
                     if (p == null) {
-                        return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
+                        return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
                     }
                 } else {
-                    return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
+                    return new LoadResult(PixLoadStatus.IMAGE_DOES_NOT_EXIST);
                 }
             } else if (cameraPicUri.toString().startsWith("content")) {
                 InputStream stream = null;
@@ -154,7 +173,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                             p = ReadFile.readFile(context, file);
                         }
                     } else {
-                        return Pair.create(null, PixLoadStatus.IMAGE_COULD_NOT_BE_READ);
+                        return new LoadResult(PixLoadStatus.IMAGE_COULD_NOT_BE_READ);
                     }
                 } finally {
                     if (stream != null) {
@@ -166,10 +185,10 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                     context.deleteFile(TMP_FILE_NAME);
                 }
                 if (p == null) {
-                    return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
+                    return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
                 }
             } else {
-                return Pair.create(null, PixLoadStatus.IO_ERROR);
+                return new LoadResult(PixLoadStatus.IO_ERROR);
             }
 
             if (skipCrop && rotateXDegrees > 0 && rotateXDegrees != 360) {
@@ -179,7 +198,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
                 rotateXDegrees = 0;
             }
             if (p == null) {
-                return Pair.create(null, PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
+                return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
             }
             final long pixPixelCount = p.getWidth() * p.getHeight();
             if (pixPixelCount < MIN_PIXEL_COUNT) {
@@ -195,13 +214,13 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Pair<Pix, PixLoadS
             }
 
 
-            return Pair.create(p, PixLoadStatus.SUCCESS);
+            return new LoadResult(p, rotateXDegrees);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return Pair.create(null, PixLoadStatus.IMAGE_DOES_NOT_EXIST);
+            return new LoadResult(PixLoadStatus.IMAGE_DOES_NOT_EXIST);
         } catch (IOException e) {
             e.printStackTrace();
-            return Pair.create(null, PixLoadStatus.IO_ERROR);
+            return new LoadResult(PixLoadStatus.IO_ERROR);
         }
     }
 

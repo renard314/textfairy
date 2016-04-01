@@ -277,7 +277,6 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
 
     }
 
-
     private void saveDocument(final Pix pix, final String hocrString, final String utf8String, final int accuracy) {
 
         Util.startBackgroundJob(OCRActivity.this, "",

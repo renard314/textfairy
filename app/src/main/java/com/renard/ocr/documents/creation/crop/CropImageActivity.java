@@ -28,6 +28,7 @@ import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.HintDialog;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
+import com.renard.ocr.documents.creation.ImageLoadAsyncTask;
 import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.util.Util;
 
@@ -134,7 +135,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
             public void onGlobalLayout() {
                 Bundle extras = getIntent().getExtras();
                 final long nativePix = extras.getLong(DocumentGridActivity.EXTRA_NATIVE_PIX);
-                final int rotation = extras.getInt(DocumentGridActivity.EXTRA_ROTATION);
+                final int rotation = extras.getInt(ImageLoadAsyncTask.EXTRA_ROTATION);
                 final float margin = getResources().getDimension(R.dimen.crop_margin);
                 final int width = (int) (mViewSwitcher.getWidth() - 2 * margin);
                 final int height = (int) (mViewSwitcher.getHeight() - 2 * margin);

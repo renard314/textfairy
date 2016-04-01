@@ -16,7 +16,6 @@
 
 package com.renard.ocr.documents.creation;
 
-import com.googlecode.leptonica.android.Pix;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.crop.CropImageActivity;
@@ -92,7 +91,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private final static String LOG_TAG = NewDocumentActivity.class.getSimpleName();
     public final static String EXTRA_NATIVE_PIX = "pix_pointer";
-    public final static String EXTRA_ROTATION = "rotation";
     private final static String IMAGE_LOAD_PROGRESS_TAG = "image_load_progress";
 
 
@@ -143,7 +141,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private ProgressDialog pdfProgressDialog;
     private ProgressDialog deleteProgressDialog;
-    private AsyncTask<Void, Void, Pair<Pix, PixLoadStatus>> mBitmapLoadTask;
+    private AsyncTask<Void, Void, ImageLoadAsyncTask.LoadResult> mBitmapLoadTask;
     private CameraResult mCameraResult;
 
 
@@ -443,9 +441,10 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                 if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADED)) {
                     unRegisterImageLoadedReceiver();
                     final long nativePix = intent.getLongExtra(ImageLoadAsyncTask.EXTRA_PIX, 0);
+                    final int rotation = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_ROTATION, 0);
                     final int statusNumber = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_STATUS, PixLoadStatus.SUCCESS.ordinal());
                     final boolean skipCrop = intent.getBooleanExtra(ImageLoadAsyncTask.EXTRA_SKIP_CROP, false);
-                    handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop);
+                    handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop,rotation);
                 } else if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START)) {
                     showLoadingImageProgressDialog();
                 }
@@ -453,7 +452,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         }
     };
 
-    private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop) {
+    private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop, int rotation) {
         dismissLoadingImageProgressDialog();
 
         if (pixLoadStatus == PixLoadStatus.SUCCESS) {
@@ -462,7 +461,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             } else {
                 Intent actionIntent = new Intent(this, CropImageActivity.class);
                 actionIntent.putExtra(NewDocumentActivity.EXTRA_NATIVE_PIX, nativePix);
-                actionIntent.putExtra(NewDocumentActivity.EXTRA_ROTATION, rotateXDegrees);
+                actionIntent.putExtra(ImageLoadAsyncTask.EXTRA_ROTATION, rotation);
                 startActivityForResult(actionIntent, NewDocumentActivity.REQUEST_CODE_CROP_PHOTO);
             }
         } else {
