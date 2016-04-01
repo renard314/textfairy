@@ -43,6 +43,7 @@ public class PreferencesUtils {
     private static final String PREFERENCES_THUMBNAIL_WIDTH = "thumbnail_height";
     private static final String PREFERENCES_HAS_ASKED_FOR_FEEDBACK = "has_asked_for_feedback";
     private static final String PREFERENCES_IS_FIRST_START = "is_first_start";
+    private static final String PREFERENCES_IS_FIRST_SCAN = "is_first_scan";
 
     public static void initPreferencesWithDefaultsIfEmpty(Context appContext) {
         SharedPreferences prefs = getPreferences(appContext);
@@ -208,5 +209,16 @@ public class PreferencesUtils {
         Editor edit = prefs.edit();
         edit.putBoolean(PREFERENCES_IS_FIRST_START, value);
         edit.apply();
+    }
+
+    public static void setFirstScan(Context context, boolean value) {
+        SharedPreferences prefs = getPreferences(context);
+        Editor edit = prefs.edit();
+        edit.putBoolean(PREFERENCES_IS_FIRST_SCAN, value);
+        edit.apply();
+    }
+
+    public static boolean isFirstScan(Context context) {
+        return getPreferences(context).getBoolean(PREFERENCES_IS_FIRST_SCAN, true);
     }
 }

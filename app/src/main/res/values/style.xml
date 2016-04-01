@@ -144,8 +144,8 @@
         <item name="background">@color/accent</item>
     </style>
 
-    <style name="ColoredButton" parent="Widget.AppCompat.Button">
-        <item name="colorButtonNormal">@color/primary</item>
+    <style name="ColoredButton" parent="Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@color/accent</item>
     </style>
 
 </resources>

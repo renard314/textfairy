@@ -339,4 +339,9 @@
         background apps or restart your device.
     </string>
     <string name="memory_low_warning">The app might crash if you continue.</string>
+    <string name="crop_onboarding_title">A Tip for your first scan</string>
+    <string name="crop_onboarding_message">Please make sure the text is upright. You can rotate the
+        image with the buttons at the bottom.
+    </string>
+    <string name="got_it">got it</string>
 </resources>

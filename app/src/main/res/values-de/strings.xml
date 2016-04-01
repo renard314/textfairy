@@ -249,5 +249,10 @@
     <string name="memory_low_description">Du hast nur %d MB frei. Bitte schließe einige Apps oder
         starte dein Telefon neu.
     </string>
+    <string name="crop_onboarding_title">Ein Tipp für deinen ersten Scan</string>
+    <string name="crop_onboarding_message">Bringe den Text immer in eine aufrechte Position. Nutze
+        dazu
+        die Nutze die Buttons am unteren Ende des Bildschirm.
+    </string>
 
 </resources>
