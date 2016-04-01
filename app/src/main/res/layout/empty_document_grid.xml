@@ -84,6 +84,7 @@
             android:layout_below="@+id/install_language"
             android:id="@+id/install_language_button"
             android:gravity="center"
+            android:layout_marginTop="@dimen/default_padding"
             android:drawableLeft="@drawable/ic_action_language"
             android:textColor="@android:color/white"
             android:layout_height="wrap_content"
