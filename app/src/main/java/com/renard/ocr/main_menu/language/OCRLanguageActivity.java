@@ -15,8 +15,8 @@
  */
 package com.renard.ocr.main_menu.language;
 
-import com.renard.ocr.R;
 import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -41,6 +41,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class OCRLanguageActivity extends MonitoredActivity {
@@ -155,9 +156,21 @@ public class OCRLanguageActivity extends MonitoredActivity {
     private OCRLanguageAdapter initLanguageList() {
         OCRLanguageAdapter adapter = new OCRLanguageAdapter(getApplicationContext(), false);
         List<OcrLanguage> languages = OcrLanguageDataStore.getAvailableOcrLanguages(this);
+        hideArabicDownload(languages);
         adapter.addAll(languages);
         updateLanguageListWithDownloadManagerStatus(adapter);
         return adapter;
+    }
+
+    private void hideArabicDownload(List<OcrLanguage> languages) {
+        Iterator<OcrLanguage> it = languages.iterator();
+        while (it.hasNext()) {
+            final OcrLanguage lang = it.next();
+            if (lang.getValue().equalsIgnoreCase("ara")) {
+                it.remove();
+                return;
+            }
+        }
     }
 
 
