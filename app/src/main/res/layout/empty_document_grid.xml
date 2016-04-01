@@ -78,15 +78,14 @@
             android:layout_width="wrap_content"
             android:text="@string/empty_grid_language"/>
 
-    <TextView
-            android:background="@drawable/btn_start_activity2"
-            android:clickable="true"
+    <Button
+            android:theme="@style/ColoredButton"
+            style="@style/Base.TextAppearance.AppCompat.Medium"
             android:layout_below="@+id/install_language"
             android:id="@+id/install_language_button"
-            android:textSize="20dp"
             android:gravity="center"
             android:drawableLeft="@drawable/ic_action_language"
-            android:textColor="@color/grey2"
+            android:textColor="@android:color/white"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="@string/empty_grid_download_language"/>

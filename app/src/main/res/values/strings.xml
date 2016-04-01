@@ -78,7 +78,7 @@
     <string name="share_chooser_title">Select how you want to share the text</string>
     <string name="progress_start">Starting</string>
     <string name="download_language">Download</string>
-    <string name="empty_grid_download_language">Download a language.</string>
+    <string name="empty_grid_download_language">Download your language.</string>
     <string name="progress_dewarp">Straightening text</string>
     <string name="progress_ocr">Reading text</string>
     <string name="delete">Delete</string>
@@ -278,8 +278,7 @@
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Hello</string>
     <string name="text_is_in">"The text is in: "</string>
-    <string name="empty_grid_language">I can read German and English but you can download more
-        languages.
+    <string name="empty_grid_language">I can read English but you can download more languages.
     </string>
     <string name="error_tess_init">Internal OCR Error. Please reinstall the app or the language
         data.
@@ -328,7 +327,9 @@
     <string name="install_tip_2">I can\'t read handwriting.</string>
     <string name="pref_title_privacy">Privacy Policy</string>
     <string name="pref_summary_privacy">View the privacy policy</string>
-    <string name="install_tip_3">I extract text from images. But I <b>cannot</b> translate it for
+    <string name="install_tip_3">I extract text from images. But I
+        <b>cannot</b>
+        translate it for
         you.
     </string>
     <string name="data_tracking_on">"I'm tracking anonymous usage data."</string>

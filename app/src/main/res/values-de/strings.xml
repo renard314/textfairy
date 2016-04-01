@@ -3,13 +3,14 @@
     <string name="whats_new_title">Sieh was es Neues gibt</string>
     <string name="whats_new">Neues</string>
     <string name="text_was_copied_to_clipboard">Text in Zwischenablage kopiert.</string>
-    <string name="copy_to_clipboard">Kopiere Text in Zwischenablage</string>   
+    <string name="copy_to_clipboard">Kopiere Text in Zwischenablage</string>
     <string name="image_could_not_be_read">Das Bild konnte nicht geladen werden.</string>
     <string name="image_does_not_exist">Das Bild wurde nicht gefunden.</string>
     <string name="camera_app_not_found">Kameraapp nicht gefunden.</string>
     <string name="gallery_io_error">Bild konnte nicht von der Galerie geladen werden.</string>
     <string name="media_store_returned_null">Medienspeicher konnte Bild nicht laden.</string>
-    <string name="camera_app_error">Kameraapp meldet Fehler. Bild konnte nicht geladen werden.</string>
+    <string name="camera_app_error">Kameraapp meldet Fehler. Bild konnte nicht geladen werden.
+    </string>
     <string name="camera_no_image_returned">Kameraapp hat kein Bild zurückgegeben.</string>
     <string name="please_wait">Bitte warte</string>
     <string name="loading_image">Dein Bild wird geladen..</string>
@@ -17,13 +18,28 @@
     <string name="get_more_languages">Lade weitere Sprachen.</string>
     <string name="aborts_scan">Bricht aktuellen Scan ab!</string>
     <string name="send_mail">Sende mir eine E-mail.</string>
-    <string name="hocr2pdf_title"><a href="http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/">hocr2pdf</a> von exactCODE</string>
-    <string name="hocr2pdf_summary">hocr2pdf erstellt durchsuchbare PDF-dateien aus der hOCR-Ausgabe einer Texterkennungssoftware.</string>
-    <string name="leptonica_title"><a href="http://www.leptonica.com/">leptonica</a></string>
-    <string name="leptonica_summary">Leptonica ist eine pädagogisch ausgerichtete open source Software die in den Bereichen Bildverarbeitung und -analyse nützlich ist.</string>
-    <string name="tesseract_ocr_title"><a href="https://code.google.com/p/tesseract-ocr/">tesseract-ocr</a></string>
-    <string name="tesseract_ocr_summary">Tesseract ist eine freie Software zur Texterkennung und liefert wahrscheinlich die besten Ergebnisse aller Open-Source-Texterkennungsengines.</string>
-    <string name="contact_welcome_text">Hallo, ich bin Renard und habe die Textfee in meiner Freizeit erschaffen. Ich hoffe sie ist dir von Nutzen.</string>
+    <string name="hocr2pdf_title">
+        <a href="http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/">hocr2pdf</a>
+        von exactCODE
+    </string>
+    <string name="hocr2pdf_summary">hocr2pdf erstellt durchsuchbare PDF-dateien aus der hOCR-Ausgabe
+        einer Texterkennungssoftware.
+    </string>
+    <string name="leptonica_title">
+        <a href="http://www.leptonica.com/">leptonica</a>
+    </string>
+    <string name="leptonica_summary">Leptonica ist eine pädagogisch ausgerichtete open source
+        Software die in den Bereichen Bildverarbeitung und -analyse nützlich ist.
+    </string>
+    <string name="tesseract_ocr_title">
+        <a href="https://code.google.com/p/tesseract-ocr/">tesseract-ocr</a>
+    </string>
+    <string name="tesseract_ocr_summary">Tesseract ist eine freie Software zur Texterkennung und
+        liefert wahrscheinlich die besten Ergebnisse aller Open-Source-Texterkennungsengines.
+    </string>
+    <string name="contact_welcome_text">Hallo, ich bin Renard und habe die Textfee in meiner
+        Freizeit erschaffen. Ich hoffe sie ist dir von Nutzen.
+    </string>
     <string name="download_failed">Laden von %1$s fehlgeschlagen.</string>
     <string name="language_downloaded">%1$s erfolgreich geladen</string>
     <string name="app_name">Textfee</string>
@@ -33,17 +49,24 @@
     <string name="pref_title_contact">Kontakt</string>
     <string name="download_title">Sprachdaten für %s</string>
     <string name="pref_summary_rate">Bewerte die Textfee.</string>
-    <string name="pref_summary_license">Welche open source Software wird von der Textfee genutzt?</string>
+    <string name="pref_summary_license">Welche open source Software wird von der Textfee genutzt?
+    </string>
     <string name="pref_summary_contact">Find heraus wer hinter der Textfee steckt.</string>
-    <string name="ocr_language_title">Wähle Sprache für Texterkennung</string>
+    <string name="ocr_language_title">Lade mehr Sprachen</string>
     <string name="pref_summary_help">Tipps zum Verbessern der Texterkennung</string>
-    <string name="pref_summary_default_ocr_lang">Verwalte und lade Sprachdateien für die Texterkennung</string>
-    <string name="pref_summary_data_directory">Ändere das Verzeichnis in dem die Textfee nach den Sprachdateien sucht. Ändere diese Einstellung nur, wenn du weißt was du tust.</string>
+    <string name="pref_summary_default_ocr_lang">Verwalte und lade Sprachdateien für die
+        Texterkennung
+    </string>
+    <string name="pref_summary_data_directory">Ändere das Verzeichnis in dem die Textfee nach den
+        Sprachdateien sucht. Ändere diese Einstellung nur, wenn du weißt was du tust.
+    </string>
     <string name="pref_title_data_directory">Tessdata-Verzeichnis</string>
     <string name="pref_title_rate">Bewertung</string>
     <string name="pref_title_default_ocr_lang">Sprache für Texterkennung</string>
     <string name="pref_title_license">Software Lizenzen</string>
-    <string name="error_create_file">Sorry, aber ich konnte das bild nicht auf der SD-Karte speichern.</string>
+    <string name="error_create_file">Sorry, aber ich konnte das bild nicht auf der SD-Karte
+        speichern.
+    </string>
     <string name="share_subject">gescannter Text</string>
     <string name="save_success">Speichern erfolgreich</string>
     <string name="save_fail">Speichern nicht erfolgreich!</string>
@@ -58,11 +81,13 @@
     <string name="edit_dialog_title">Gib einen Titel für dein Dokument ein.</string>
     <string name="delete_error">Sorry, ich konnte das Dokument nicht löschen.</string>
     <string name="error_could_not_take_photo">Sorry, Ich konnte kein Photo machen</string>
-    <string name="empty" />
+    <string name="empty"/>
     <string name="cropping_image">Bild wird beschnitten.</string>
     <string name="error_title">Fehler</string>
-    <string name="error_load_file">Sorry aber ich konnte die Datei nicht finden. Wurde sie vielleicht gelöscht?</string>
-    <string name="pdf_creation_message">Deine  PDF wird erstellt!</string>
+    <string name="error_load_file">Sorry aber ich konnte die Datei nicht finden. Wurde sie
+        vielleicht gelöscht?
+    </string>
+    <string name="pdf_creation_message">Deine PDF wird erstellt!</string>
     <string name="option_view_mode">Wechsle Ansicht</string>
     <string name="document_layout_dialog">Wie viele Spalten gibt es?</string>
     <string name="layout_complex">Mehr als eine Spalte.</string>
@@ -78,13 +103,23 @@
     <string name="option_content">Inhaltsübersicht</string>
     <string name="option_line_spacing">Zeilenabstand</string>
     <string name="option_text_alignment">Textausrichtung</string>
-    <string name="options_preview_text">Dies ist eine Vorschau der aktuellen Einstellungen.  Drücken sie die Zurücktaste um weiterzulesen.\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</string>
-    <string name="progress_analyse_layout">Ich analysiere das Layout. Bitte warte ein paar Sekunden.</string>
+    <string name="options_preview_text">Dies ist eine Vorschau der aktuellen Einstellungen. Drücken
+        sie die Zurücktaste um weiterzulesen.\nLorem ipsum dolor sit amet, consetetur sadipscing
+        elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+        diam voluptua.
+    </string>
+    <string name="progress_analyse_layout">Ich analysiere das Layout. Bitte warte ein paar
+        Sekunden.
+    </string>
     <string name="progress_image_detection">Ich suche nach Textbereichen</string>
-    <string name="progress_assemble_pix">Setze die ausgewählten Bereiche zu einem neuen Bild zusammen.</string>
+    <string name="progress_assemble_pix">Setze die ausgewählten Bereiche zu einem neuen Bild
+        zusammen.
+    </string>
     <string name="progress_choose_columns">Auswahl Bild- &amp; Textbereiche.</string>
     <string name="new_photo">Neues Photo</string>
-    <string name="no_sd_card">Die Textfee kann nicht von der Speicherkarte lesen. Ist das Telefon vielleicht mit deinem PC verbunden? Wenn ja, dann entferne das Kabel und versuche es erneut.</string>
+    <string name="no_sd_card">Die Textfee kann nicht von der Speicherkarte lesen. Ist das Telefon
+        vielleicht mit deinem PC verbunden? Wenn ja, dann entferne das Kabel und versuche es erneut.
+    </string>
     <string name="rotate_right">Rechts drehen</string>
     <string name="rotate_left">Links drehen</string>
     <string name="content_description_fairy">Die hilfreiche Textfee</string>
@@ -100,7 +135,9 @@
     <string name="default_ocr_display_language">Englisch</string>
     <string name="title_activity_contact">Kontakt</string>
     <string name="action_settings">Einstellungen</string>
-    <string name="document_help_title">Hier kannst du auf die Seiten deines Dokumentes zugreifen und sie verwalten.</string>
+    <string name="document_help_title">Hier kannst du auf die Seiten deines Dokumentes zugreifen und
+        sie verwalten.
+    </string>
     <string name="fairy_welcome_bubble">Ich bin die Textfee</string>
     <string name="new_photo_gallery">Photo aus Galerie</string>
     <string name="show_documents">Verwalte Dokumente</string>
@@ -108,38 +145,61 @@
     <string name="join_documents_title">Fasse Dokumente zusammen</string>
     <string name="join_documents_result">%1$d Dokumente zusammegeführt</string>
     <string name="start_app">Los gehts</string>
-    <string name="install_error_disk_space">Du hast nicht genügend Speicher frei. Es werden zusätzlich %1$d MB benötigt.</string>
+    <string name="install_error_disk_space">Du hast nicht genügend Speicher frei. Es werden
+        zusätzlich %1$d MB benötigt.
+    </string>
     <string name="install_error">Fehler bei der Installation.</string>
     <string name="toc_title">Inhaltsübersicht</string>
     <string name="start_text_1">Was ich kann!..</string>
-    <string name="start_text_2">Ich extrahiere für dich Texte aus Bilddateien und mache sie editierbar. Tippe mich an, um mehr zu erfahren…</string>
-    <string name="start_text_3">Erstelle ein neues Foto oder wähle ein Foto aus deiner Galerie aus…</string>
-    <string name="start_text_4">Wähle einen Bildausschnitt aus und entscheide, ob du eine oder mehrere Spalten (z.B. Zeitungsartikel) gescannt haben möchtest…</string>
-    <string name="start_text_5">Speichere und fertig ist deine Textdatei. Du kannst sie auf deiner SD-Karte finden oder direkt von mir als PDF versenden lassen…</string>
+    <string name="start_text_2">Ich extrahiere für dich Texte aus Bilddateien und mache sie
+        editierbar. Tippe mich an, um mehr zu erfahren…
+    </string>
+    <string name="start_text_3">Erstelle ein neues Foto oder wähle ein Foto aus deiner Galerie
+        aus…
+    </string>
+    <string name="start_text_4">Wähle einen Bildausschnitt aus und entscheide, ob du eine oder
+        mehrere Spalten (z.B. Zeitungsartikel) gescannt haben möchtest…
+    </string>
+    <string name="start_text_5">Speichere und fertig ist deine Textdatei. Du kannst sie auf deiner
+        SD-Karte finden oder direkt von mir als PDF versenden lassen…
+    </string>
     <string name="start_text_6">Probier es aus. Ich helfe dir, falls du Fragen hast…</string>
-    <string name="start_text_7">…und vergiss nicht:  Auch Androiden sind nicht perfekt. Nicht jedes Bild lässt sich in Textformate umwandeln…</string>
+    <string name="start_text_7">…und vergiss nicht: Auch Androiden sind nicht perfekt. Nicht jedes
+        Bild lässt sich in Textformate umwandeln…
+    </string>
     <string name="start_text_8">Aber ich gebe dir immer Tipps, damit es klappt…</string>
-    <string name="start_text_9">Willst du mir schreiben? In den Einstellungen findest du Kontaktdaten.</string>
+    <string name="start_text_9">Willst du mir schreiben? In den Einstellungen findest du
+        Kontaktdaten.
+    </string>
     <string name="start_text_10">What is a robot’s favorite type of music?…</string>
     <string name="start_text_11">Heavy metal!</string>
-    <string name="start_text_12">Two bytes meet.  The first byte asks, “Are you ill?” The second byte replies…</string>
+    <string name="start_text_12">Two bytes meet. The first byte asks, “Are you ill?” The second byte
+        replies…
+    </string>
     <string name="start_text_13">“No, just feeling a bit off.”</string>
     <string name="start_text_14">There are two ways to write error-free computer programs…</string>
     <string name="start_text_15">only the third one works.</string>
     <string name="start_text_16">In the beginning God created the Bit and the Byte…</string>
     <string name="start_text_17">And from those he created the Word.</string>
-    <string name="start_text_18">Why are lawyers are safe from the threat of automation taking over their professions?…</string>
+    <string name="start_text_18">Why are lawyers are safe from the threat of automation taking over
+        their professions?…
+    </string>
     <string name="start_text_19">No one would build a robot to do nothing.</string>
     <string name="start_text_20">A robot walks into a bar…</string>
-    <string name="start_text_21">He looks at the bartender and says "Can I get a screwdriver?"</string>
-    <string name="document_list_help_title">Hier siehst du eine Liste mit deinen Dokumenten.</string>
-    <string name="toc_help_title">Hier kannst du dir einen Überblick über die Seiten deines Dokuments verschaffen.</string>
+    <string name="start_text_21">He looks at the bartender and says "Can I get a screwdriver?"
+    </string>
+    <string name="document_list_help_title">Hier siehst du eine Liste mit deinen Dokumenten.
+    </string>
+    <string name="toc_help_title">Hier kannst du dir einen Überblick über die Seiten deines
+        Dokuments verschaffen.
+    </string>
     <string name="no_ocr">Keine Texterkennung. Bild nur speichern</string>
     <string name="crop_help_title">Hier kannst Du dein Photo beschneiden und drehen.</string>
     <string name="continue_ocr">Weiter</string>
     <string name="ocr_accuracy">OCR Genauigkeit: %1$d</string>
     <string name="text_to_speech">Text vorlesen</string>
-    <string name="ocr_result_is_bad">Ups, da lief etwas schief! Ich konnte nicht viel erkennen.</string>
+    <string name="ocr_result_is_bad">Ups, da lief etwas schief! Ich konnte nicht viel erkennen.
+    </string>
     <string name="ocr_result_is_ok">Ich denke ich konnte das meiste lesen.</string>
     <string name="ocr_result_is_good">Das lief ganz gut!</string>
     <string name="play">Play</string>
@@ -147,7 +207,9 @@
     <string name="tts_init_error">Sprachmodul konnte nicht geladen werden.</string>
     <string name="open_settings">Sprachoptionen</string>
     <string name="set_tts_language">Wähle die gewünschte Sprache in den Systemeinstellungen</string>
-    <string name="cannot_speak_language">Dein Telefon kann leider kein %s. Wähle eine andere Sprache.</string>
+    <string name="cannot_speak_language">Dein Telefon kann leider kein %s. Wähle eine andere
+        Sprache.
+    </string>
     <string name="choose_language">Wähle die Sprache zum Vorlesen.</string>
     <string name="share_text">Text teilen</string>
     <string name="help_to_improve">Feedback</string>
@@ -156,12 +218,18 @@
     <string name="product_tour">Produkttour</string>
     <string name="empty_grid_greeting">Hallo</string>
     <string name="empty_grid_camera">Hier tippen um Text auf einem neuem Bild zu erkennen.</string>
-    <string name="empty_grid_gallery">Hier tippen um Text auf einem Bild aus deiner Galerie zu erkennen.</string>
+    <string name="empty_grid_gallery">Hier tippen um Text auf einem Bild aus deiner Galerie zu
+        erkennen.
+    </string>
     <string name="empty_grid_fairy">PS: Tippe auf die Fee für noch mehr Infos.</string>
     <string name="contribute_title">Verbessere die App</string>
-    <string name="contribute_text">Eine OCR-App zu programmieren is viel Arbeit. Aber Du kannst mir helfen, die App zu verbessern</string>
+    <string name="contribute_text">Eine OCR-App zu programmieren is viel Arbeit. Aber Du kannst mir
+        helfen, die App zu verbessern
+    </string>
     <string name="rating_title">Bewerte die App</string>
-    <string name="rating_text">Du findest die App nützlich? Ich freue mich immer über hilfreiche Bewertungen.</string>
+    <string name="rating_text">Du findest die App nützlich? Ich freue mich immer über hilfreiche
+        Bewertungen.
+    </string>
     <string name="feedback_title">Sende Feedback</string>
     <string name="feedback_text_1">Die App funktioniert nicht wie erwartet?</string>
     <string name="feedback_text_2">Du hast einen Verbesserungsvorschlag?</string>
@@ -172,11 +240,15 @@
     <string name="enroll_as_beta_tester">Werde Betatester</string>
     <string name="about">Über die Textfee</string>
     <string name="feedback_subject">Feedback für die Textfee</string>
-    <string name="beta_test_body">Bitte informiere mich wenn eine neue Version für den Beta-Test zur Verfügung steht.</string>
+    <string name="beta_test_body">Bitte informiere mich wenn eine neue Version für den Beta-Test zur
+        Verfügung steht.
+    </string>
     <string name="beta_test_subject">Textfee Beta Test</string>
     <string name="app_version">Version %s</string>
     <string name="image_not_32_bit">Das Bild muss 32 Bit Farbtiefe haben.</string>
-    <string name="image_format_unsupported">Das Bildformat wurde nicht erkannt. Bitte wähle ein Bild im Png oder Jpeg-Format.</string>
+    <string name="image_format_unsupported">Das Bildformat wurde nicht erkannt. Bitte wähle ein Bild
+        im Png oder Jpeg-Format.
+    </string>
     <string name="tts_not_available">Text zu Sprache ist nicht verfügbar.</string>
     <string name="empty_document">Das Dokument enthält keinen Text.</string>
     <string name="join_beta_test_community">Werde Mitglied der Gruppe der Betatester.</string>
@@ -185,19 +257,37 @@
     <string name="click_image_below">Bist du Mitglied? Dann tappe auf das untere Bild.</string>
     <string name="first_step">1. Schritt</string>
     <string name="second_step">2. Schritt</string>
-    <string name="first_step_detail">Du musst Mitglied dieser Gruppe sein damit der zweite Schritt funktioniert.</string>
-    <string name="second_step_first_detail">Sie können jederzeit das Betaprogramm jederzeit verlassen.</string>
-    <string name="second_step_second_detail">Schreib mir eine Mail wenn du einen Fehler findes.</string>
+    <string name="first_step_detail">Du musst Mitglied dieser Gruppe sein damit der zweite Schritt
+        funktioniert.
+    </string>
+    <string name="second_step_first_detail">Sie können jederzeit das Betaprogramm jederzeit
+        verlassen.
+    </string>
+    <string name="second_step_second_detail">Schreib mir eine Mail wenn du einen Fehler findes.
+    </string>
     <string name="crop_image_tutorial">AFjRvJr34e4</string>
     <string name="additional_tips">Was noch wichtig ist.</string>
     <string name="explanation_crop_video">(Video) Blickwinkel Korrektur.</string>
-    <string name="ocr_tip_1">Eine gute Ausleuchtung des Bildes ist sehr wichtig. Mache wenn möglich dein Bild mit Blitz.</string>
+    <string name="ocr_tip_1">Eine gute Ausleuchtung des Bildes ist sehr wichtig. Mache wenn möglich
+        dein Bild mit Blitz.
+    </string>
     <string name="ocr_tip_2">Achte darauf, dass die Kamera das Bild richtig fokussiert.</string>
-    <string name="ocr_tip_3">Verwende beim Fotographieren keinen zu hohen ISO-Wert. Bildrauschen, das aus einem zu hohen ISO-Wert resultiert, macht mir Probleme.</string>
-    <string name="ocr_tip_4">Fotos mit mehr als fünf Megapixel erhöhen eigentlich nur die Berechnungszeit der Texterkennung aber nicht unbedingt die Genauigkeit!</string>
-    <string name="ocr_tip_5">Verwaschene Buchstaben sind schwer zu filtern für die Texterkennung. Mache lieber ein neues Bild bis du ein Ergebnis hast das gut fokussiert ist.</string>
-    <string name="ocr_tip_6">Ich bin darauf trainiert Text zu erkennen wie er in Büchern, Magazinen und Zeitungsartikeln vorkommt. Verschnörkelte und bunte Schriftzeichen kann ich leider nicht so gut erkennen.</string>
-    <string name="ocr_tip_7">Genauso schwierig ist es für mich hellen Text zu erkennen der auf dunklem Untergrund gedruckt ist.</string>
+    <string name="ocr_tip_3">Verwende beim Fotographieren keinen zu hohen ISO-Wert. Bildrauschen,
+        das aus einem zu hohen ISO-Wert resultiert, macht mir Probleme.
+    </string>
+    <string name="ocr_tip_4">Fotos mit mehr als fünf Megapixel erhöhen eigentlich nur die
+        Berechnungszeit der Texterkennung aber nicht unbedingt die Genauigkeit!
+    </string>
+    <string name="ocr_tip_5">Verwaschene Buchstaben sind schwer zu filtern für die Texterkennung.
+        Mache lieber ein neues Bild bis du ein Ergebnis hast das gut fokussiert ist.
+    </string>
+    <string name="ocr_tip_6">Ich bin darauf trainiert Text zu erkennen wie er in Büchern, Magazinen
+        und Zeitungsartikeln vorkommt. Verschnörkelte und bunte Schriftzeichen kann ich leider nicht
+        so gut erkennen.
+    </string>
+    <string name="ocr_tip_7">Genauso schwierig ist es für mich hellen Text zu erkennen der auf
+        dunklem Untergrund gedruckt ist.
+    </string>
     <string name="ocr_tip_heading">Wie ich die Texterkennung verbessern kann:</string>
     <string name="image_source">Wähle Bildquelle.</string>
     <string name="promo_video_title">Eine kurze Einführung auf Youtube.</string>
@@ -205,14 +295,22 @@
     <string name="greeting">Hallo</string>
     <string name="text_is_in">"Der Text ist in: "</string>
     <string name="empty_grid_download_language">Lade weitere Sprache.</string>
-    <string name="empty_grid_language">Ich kann deutschen und englischen Text lesen, aber auch zusätzliche Sprachen lernen.</string>
-    <string name="error_tess_init">Interner Fehler. Lösche die Daten der App in den Systemsettings und versuche es erneut.</string>
+    <string name="empty_grid_language">Ich kann deutschen und englischen Text lesen, aber auch
+        zusätzliche Sprachen lernen.
+    </string>
+    <string name="error_tess_init">Interner Fehler. Lösche die Daten der App in den
+        Systemeinstellungen und versuche es erneut.
+    </string>
     <string name="image_is_blurred">Es gibt ein Problem.</string>
     <string name="new_image">Neues Bild</string>
     <string name="keep_camera_steady">Halte die Kamera ruhig.</string>
     <string name="image_not_too_dark">Achte darauf, dass das Bild möglichst hell ist.</string>
-    <string name="text_is_very_blurry">Das Bild ist sehr unscharf. Ich kann den Text kaum erkennen.</string>
-    <string name="text_is_blurry">Das Bild ist teilweise unscharf. Ich werde den Text nicht fehlerfrei lesen können.</string>
+    <string name="text_is_very_blurry">Das Bild ist sehr unscharf. Ich kann den Text kaum
+        erkennen.
+    </string>
+    <string name="text_is_blurry">Das Bild ist teilweise unscharf. Ich werde den Text nicht
+        fehlerfrei lesen können.
+    </string>
     <string name="nav_drawer_download_language">Lade Sprachen</string>
     <string name="love_it">sehr gut</string>
     <string name="continue_editing">Weiter</string>
@@ -229,14 +327,21 @@
     <string name="document_scanned_as">Textsprache ist %s.</string>
     <string name="delete_document_message">Alle Seiten werden gelöscht.</string>
     <string name="delete_whole_document">Document löschen?</string>
-    <string name="permission_explanation">Ich brauche deine Erlaubnis um auf die SD Karte zuzugreifen. Im Ordner Textfee liegen meine Konfigurationsdateien die Bilder die du gescannt hast.</string>
+    <string name="permission_explanation">Ich brauche deine Erlaubnis um auf die SD Karte
+        zuzugreifen. Im Ordner Textfee liegen meine Konfigurationsdateien die Bilder die du gescannt
+        hast.
+    </string>
     <string name="close_app">App beenden</string>
-    <string name="permission_explanation_install">Ich brauche deine Erlaubnis um meine Konfigurationsdateien im Ordner Textfee zu speichern. Dort kannst du auch später die Bilder finden, die du gescannt hast.</string>
+    <string name="permission_explanation_install">Ich brauche deine Erlaubnis um meine
+        Konfigurationsdateien im Ordner Textfee zu speichern. Dort kannst du auch später die Bilder
+        finden, die du gescannt hast.
+    </string>
     <string name="permission_explanation_title">Berechtigung fehlt</string>
     <string name="no_gallery_found">Keine Gallerie gefunden.</string>
     <string name="installing_files">Entpacke Sprachdateien</string>
     <string name="install_tip_2">Ich kann keine Handschrift lesen.</string>
-    <string name="install_tip_1">Ist der Text klar und scharf ist, erzielst du das beste Ergebnis.</string>
+    <string name="install_tip_1">Ist der Text klar und scharf ist, erzielst du das beste Ergebnis.
+    </string>
     <string name="install_tip_3">Ich extrahiere Text aus Bildern. Aber Ich kann den Text
         <b>nicht</b>
         übersetzen.
