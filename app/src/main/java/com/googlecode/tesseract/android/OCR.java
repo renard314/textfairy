@@ -467,6 +467,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
                     sendMessage(MESSAGE_FINAL_IMAGE, nativeTextPix);
                     synchronized (OCR.this) {
+                        if (mStopped) {
+                            return;
+                        }
                         final String ocrLanguages = determineOcrLanguage(lang);
                         int ocrMode = determineOcrMode(lang);
                         if (!initTessApi(tessDir, ocrLanguages, ocrMode)) return;
@@ -540,8 +543,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                 mAnalytics.sendOcrCancelled();
             }
             mTess.stop();
-            mStopped = true;
         }
+        mStopped = true;
     }
 
 
