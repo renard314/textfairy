@@ -55,7 +55,7 @@ public class TextFairyApplication extends Application {
 
     private void trackCrashes() {
         if (BuildConfig.FLAVOR.contains("playstore")) {
-            Log.i(LOG_TAG,"Starting Crashlytics");
+            Log.i(LOG_TAG, "Starting Crashlytics");
             final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics(), new CrashlyticsNdk()).debuggable(BuildConfig.DEBUG).build();
             Fabric.with(fabric);
         }
@@ -92,4 +92,7 @@ public class TextFairyApplication extends Application {
     }
 
 
+    public static boolean isRelease() {
+        return com.renard.ocr.BuildConfig.FLAVOR.contains("playstore");
+    }
 }

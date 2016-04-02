@@ -23,6 +23,7 @@ import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
+import com.renard.ocr.TextFairyApplication;
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.documents.creation.crop.CropImageScaler;
 import com.renard.ocr.main_menu.language.OcrLanguage;
@@ -516,7 +517,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
     private void logMemory(Context context) {
-        if (com.renard.ocr.BuildConfig.FLAVOR.contains("playstore")) {
+        if (TextFairyApplication.isRelease()) {
             final long freeMemory = MemoryInfo.getFreeMemory(context);
             Crashlytics.setLong("Memory", freeMemory);
         }
