@@ -117,8 +117,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     private static Date dateCameraIntentStarted = null;
     private static final String CAMERA_PIC_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
     private static Uri cameraPicUri = null;
-    private static final String ROTATE_X_DEGREES_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.ROTATE_X_DEGREES_STATE";
-    private static int rotateXDegrees = 0;
     private boolean mReceiverRegistered = false;
     private ImageSource mImageSource = ImageSource.CAMERA;
 
@@ -228,9 +226,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             savedInstanceState.putString(CAMERA_PIC_URI_STATE, cameraPicUri.toString());
         }
         savedInstanceState.putInt(IMAGE_SOURCE, mImageSource.ordinal());
-
-        savedInstanceState.putInt(ROTATE_X_DEGREES_STATE, rotateXDegrees);
-
     }
 
     @TargetApi(11)
@@ -255,8 +250,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         if (savedInstanceState.containsKey(CAMERA_PIC_URI_STATE)) {
             cameraPicUri = Uri.parse(savedInstanceState.getString(CAMERA_PIC_URI_STATE));
         }
-        rotateXDegrees = savedInstanceState.getInt(ROTATE_X_DEGREES_STATE);
-
         if (savedInstanceState.getBoolean(STATE_RECEIVER_REGISTERED)) {
             registerImageLoaderReceiver();
         }
@@ -286,7 +279,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private void onTakePhotoActivityResult(CameraResult cameraResult) {
         if (cameraResult.mResultCode == RESULT_OK) {
-            rotateXDegrees = -1;
             if (cameraResult.mRequestCode == REQUEST_CODE_MAKE_PHOTO) {
                 Cursor myCursor = null;
                 Date dateOfPicture;
@@ -317,7 +309,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                         dateOfPicture = new Date(myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)));
                         if (dateOfPicture.getTime() == 0 || (dateOfPicture.after(dateCameraIntentStarted))) {
                             cameraPicUri = tempCameraPicUri;
-                            rotateXDegrees = myCursor.getInt(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.ORIENTATION));
                         }
                     }
                 } catch (Exception ignored) {
@@ -355,7 +346,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         final boolean skipCrop = isExploreByTouchEnabled && isAccessibilityEnabled;
 
         registerImageLoaderReceiver();
-        mBitmapLoadTask = new ImageLoadAsyncTask(this, skipCrop, rotateXDegrees, cameraPicUri).execute();
+        mBitmapLoadTask = new ImageLoadAsyncTask(this, skipCrop, cameraPicUri).execute();
 
     }
 
@@ -441,10 +432,9 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                 if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADED)) {
                     unRegisterImageLoadedReceiver();
                     final long nativePix = intent.getLongExtra(ImageLoadAsyncTask.EXTRA_PIX, 0);
-                    final int rotation = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_ROTATION, 0);
                     final int statusNumber = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_STATUS, PixLoadStatus.SUCCESS.ordinal());
                     final boolean skipCrop = intent.getBooleanExtra(ImageLoadAsyncTask.EXTRA_SKIP_CROP, false);
-                    handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop,rotation);
+                    handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop);
                 } else if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START)) {
                     showLoadingImageProgressDialog();
                 }
@@ -452,7 +442,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         }
     };
 
-    private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop, int rotation) {
+    private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop) {
         dismissLoadingImageProgressDialog();
 
         if (pixLoadStatus == PixLoadStatus.SUCCESS) {
@@ -461,7 +451,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             } else {
                 Intent actionIntent = new Intent(this, CropImageActivity.class);
                 actionIntent.putExtra(NewDocumentActivity.EXTRA_NATIVE_PIX, nativePix);
-                actionIntent.putExtra(ImageLoadAsyncTask.EXTRA_ROTATION, rotation);
                 startActivityForResult(actionIntent, NewDocumentActivity.REQUEST_CODE_CROP_PHOTO);
             }
         } else {
