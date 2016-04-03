@@ -124,11 +124,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
      * @param bottom  edge of current word boundary
      */
     public void onProgressValues(final int percent, final int left, final int right, final int top, final int bottom, final int left2, final int right2, final int top2, final int bottom2) {
-        if (TextFairyApplication.isRelease()) {
-            long availableMegs = MemoryInfo.getFreeMemory(mApplicationContext);
-            Crashlytics.log("available ram = " + availableMegs);
-            Crashlytics.setInt("ocr progress", percent);
-        }
+        logProgressToCrashlytics(percent);
         int newBottom = (bottom2 - top2) - bottom;
         int newTop = (bottom2 - top2) - top;
         // scale the word bounding rectangle to the preview image space
@@ -140,6 +136,14 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         b.putParcelable(EXTRA_OCR_BOX, mOCRBoundingBox);
         b.putParcelable(EXTRA_WORD_BOX, mWordBoundingBox);
         sendMessage(MESSAGE_TESSERACT_PROGRESS, percent, b);
+    }
+
+    private void logProgressToCrashlytics(int percent) {
+        if (TextFairyApplication.isRelease()) {
+            long availableMegs = MemoryInfo.getFreeMemory(mApplicationContext);
+            Crashlytics.log("available ram = " + availableMegs);
+            Crashlytics.setInt("ocr progress", percent);
+        }
     }
 
     /**
@@ -410,6 +414,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
 
     private boolean initTessApi(String tessDir, String lang, int ocrMode) {
+        logTessParams(lang, ocrMode);
         mTess = new TessBaseAPI(OCR.this);
         boolean result = mTess.init(tessDir, lang, ocrMode);
         if (!result) {
@@ -418,6 +423,22 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         }
         mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "ﬀﬁﬂﬃﬄﬅﬆ");
         return true;
+    }
+
+    private void logTessParams(String lang, int ocrMode) {
+        if (TextFairyApplication.isRelease()) {
+            String pageSegMode = "";
+            if (ocrMode == TessBaseAPI.OEM_TESSERACT_ONLY) {
+                pageSegMode = "OEM_TESSERACT_ONLY";
+            } else if (ocrMode == TessBaseAPI.OEM_TESSERACT_CUBE_COMBINED) {
+                pageSegMode = "OEM_TESSERACT_CUBE_COMBINED";
+                Crashlytics.setString("page seg mode", "OEM_TESSERACT_CUBE_COMBINED");
+            } else if (ocrMode == TessBaseAPI.OEM_DEFAULT) {
+                pageSegMode = "OEM_DEFAULT";
+            }
+            Crashlytics.setString("page seg mode", pageSegMode);
+            Crashlytics.setString("ocr language", lang);
+        }
     }
 
     /**
@@ -465,6 +486,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             @Override
             public void run() {
                 try {
+                    startCaptureLogs();
                     logMemory(context);
                     final String tessDir = Util.getTessDir(context);
                     long nativeTextPix = nativeOCRBook(pixs.getNativePix());
@@ -515,6 +537,12 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     if (mTess != null) {
                         mTess.end();
                     }
+                    String logs = stopCaptureLogs();
+                    if (TextFairyApplication.isRelease()) {
+                        Crashlytics.log(logs);
+                    } else {
+                        Log.i(LOG_TAG, logs);
+                    }
                     mCompleted = true;
                     sendMessage(MESSAGE_END);
                 }
@@ -555,6 +583,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         mStopped = true;
     }
 
+
+    private static native void startCaptureLogs();
+
+    private static native String stopCaptureLogs();
 
     private static native void nativeInit();
 

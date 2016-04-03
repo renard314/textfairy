@@ -28,6 +28,7 @@
 #include "PixBinarizer.h"
 #include <image_processing_util.h>
 #include "SkewCorrector.h"
+#include <fcntl.h>
 
 using namespace std;
 
@@ -39,10 +40,14 @@ extern "C" {
     
     static JNIEnv *cachedEnv;
     static jobject* cachedObject;
-    
+    static FILE *inputFile;
+    static int pipes[2];
+
+
     jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         return JNI_VERSION_1_6;
     }
+
     
     void Java_com_googlecode_tesseract_android_OCR_nativeInit(JNIEnv *env, jobject _thiz) {
         jclass cls = env->FindClass("com/googlecode/tesseract/android/OCR");
@@ -52,6 +57,45 @@ extern "C" {
         onUTF8Result = env->GetMethodID(cls, "onUTF8Result", "(Ljava/lang/String;)V");
         onLayoutPix = env->GetMethodID(cls, "onLayoutPix", "(J)V");
         
+    }
+    jstring Java_com_googlecode_tesseract_android_OCR_stopCaptureLogs(JNIEnv *env, jobject _thiz) {
+        char readBuffer[256];
+        std:stringstream logbuffer;
+        while (fgets(readBuffer, sizeof readBuffer, inputFile) != NULL) {
+            logbuffer<<readBuffer;
+            __android_log_print(ANDROID_LOG_ERROR, "stderr", readBuffer);
+        }
+
+        close(pipes[0]);
+        fclose(inputFile);
+        const std::string& tmp = logbuffer.str();
+        const char* cstr = tmp.c_str();
+        return env->NewStringUTF(cstr);
+    }
+
+    void Java_com_googlecode_tesseract_android_OCR_startCaptureLogs(JNIEnv *env, jobject _thiz) {
+        int lWriteFD = dup(STDERR_FILENO);
+        if ( lWriteFD < 0 )
+        {
+            LOGE("Unable to get STDERR file descriptor.");
+            return;
+        }
+
+        pipe(pipes);
+        dup2(pipes[1], STDERR_FILENO);
+        inputFile = fdopen(pipes[0], "r");
+
+        close(pipes[1]);
+
+        int fd = fileno(inputFile);
+        int flags = fcntl(fd, F_GETFL, 0);
+        flags |= O_NONBLOCK;
+        fcntl(fd, F_SETFL, flags);
+
+        if ( 0 == inputFile ) {
+            LOGE("Unable to get read pipe for STDERR");
+            return;
+        }
     }
     
     void JNI_OnUnload(JavaVM *vm, void *reserved) {
@@ -189,8 +233,9 @@ extern "C" {
         Pix *pixOrg = (PIX *) nativePix;
         Pix* pixText;
         initStateVariables(env, &thiz);
-        
+
         bookpage(pixOrg, &pixText , messageJavaCallback, pixJavaCallback, false);
+
         resetStateVariables();
         
         return (jlong)pixText;
