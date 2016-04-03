@@ -35,7 +35,7 @@
         applications.
     </string>
     <string name="tesseract_ocr_title">
-        <a href="https://code.google.com/p/tesseract-ocr/">tesseract-ocr</a>
+        <a href="https://github.com/tesseract-ocr/tesseract">tesseract-ocr</a>
     </string>
     <string name="tesseract_ocr_summary">Tesseract is probably the most accurate open source OCR
         engine available.

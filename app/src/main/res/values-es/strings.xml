@@ -21,7 +21,7 @@
     <string name="hocr2pdf_summary">hocr2pdf is a command line front-end for the image processing library to create perfectly layouted, searchable PDF files from hOCR, annotated HTML, input obtained from an OCR system.</string>
     <string name="leptonica_title"><a href="http://www.leptonica.com/">leptonica</a></string>
     <string name="leptonica_summary">Leptonica is a pedagogically-oriented open source site containing software that is broadly useful for image processing and image analysis applications.</string>
-    <string name="tesseract_ocr_title"><a href="https://code.google.com/p/tesseract-ocr/">tesseract-ocr</a></string>
+    <string name="tesseract_ocr_title"><a href="https://github.com/tesseract-ocr/tesseract">tesseract-ocr</a></string>
     <string name="tesseract_ocr_summary">Tesseract es posiblemente la más precisa ingeniería de reconocimiento de texto de software libre. -Tesseract is probably the most accurate open source OCR engine available.</string>
     <string name="contact_welcome_text">Hola, mi nombre es Renard. Cree Text Fairy en mi tiempo libre. Espero que te resulte útil.</string>
     <string name="download_failed">Descarga de %1$s fallida!</string>
