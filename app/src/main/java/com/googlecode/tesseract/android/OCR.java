@@ -584,9 +584,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
 
-    private static native void startCaptureLogs();
+    public static native void startCaptureLogs();
 
-    private static native String stopCaptureLogs();
+    public static native String stopCaptureLogs();
 
     private static native void nativeInit();
 

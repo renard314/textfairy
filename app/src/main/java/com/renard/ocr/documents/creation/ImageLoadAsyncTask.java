@@ -4,6 +4,7 @@ import com.crashlytics.android.Crashlytics;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.leptonica.android.Scale;
+import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.TextFairyApplication;
 
 import android.content.ContentResolver;
@@ -86,32 +87,42 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask
             Log.i(LOG_TAG, "isCancelled");
             return null;
         }
-        Pix p = ReadFile.loadWithPicasso(context, cameraPicUri);
-        if (p == null) {
-            if (TextFairyApplication.isRelease()) {
-                Crashlytics.setString("image uri", cameraPicUri.toString());
-                Crashlytics.logException(new IOException("could not load image."));
-            }
-            return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
-        }
-
-        final long pixPixelCount = p.getWidth() * p.getHeight();
-        if (pixPixelCount < MIN_PIXEL_COUNT) {
-            final double scale = ((double) MIN_PIXEL_COUNT) / pixPixelCount;
-            Pix scaledPix = Scale.scale(p, (float) scale);
-            if (scaledPix.getNativePix() == 0) {
+        try {
+            OCR.startCaptureLogs();
+            Pix p = ReadFile.loadWithPicasso(context, cameraPicUri);
+            if (p == null) {
                 if (TextFairyApplication.isRelease()) {
-                    Crashlytics.log("pix = (" + p.getWidth() + ", " + p.getHeight() + ")");
-                    Crashlytics.logException(new IllegalStateException("scaled pix is 0"));
+                    Crashlytics.setString("image uri", cameraPicUri.toString());
+                    Crashlytics.logException(new IOException("could not load image."));
                 }
+                return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
+            }
+
+            final long pixPixelCount = p.getWidth() * p.getHeight();
+            if (pixPixelCount < MIN_PIXEL_COUNT) {
+                final double scale = ((double) MIN_PIXEL_COUNT) / pixPixelCount;
+                Pix scaledPix = Scale.scale(p, (float) scale);
+                if (scaledPix.getNativePix() == 0) {
+                    if (TextFairyApplication.isRelease()) {
+                        Crashlytics.log("pix = (" + p.getWidth() + ", " + p.getHeight() + ")");
+                        Crashlytics.logException(new IllegalStateException("scaled pix is 0"));
+                    }
+                } else {
+                    p.recycle();
+                    p = scaledPix;
+                }
+            }
+
+
+            return new LoadResult(p);
+        } finally {
+            final String msg = OCR.stopCaptureLogs();
+            if (TextFairyApplication.isRelease() && !msg.isEmpty()) {
+                Crashlytics.log(msg);
             } else {
-                p.recycle();
-                p = scaledPix;
+                Log.e(LOG_TAG, msg);
             }
         }
-
-
-        return new LoadResult(p);
 
     }
 
