@@ -82,15 +82,16 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask
 
     @Override
     protected LoadResult doInBackground(Void... params) {
-        Log.i(LOG_TAG, "doInBackground");
         if (isCancelled()) {
             Log.i(LOG_TAG, "isCancelled");
             return null;
         }
         Pix p = ReadFile.loadWithPicasso(context, cameraPicUri);
         if (p == null) {
-            Crashlytics.setString("image uri", cameraPicUri.toString());
-            Crashlytics.logException(new IOException("could not load image."));
+            if (TextFairyApplication.isRelease()) {
+                Crashlytics.setString("image uri", cameraPicUri.toString());
+                Crashlytics.logException(new IOException("could not load image."));
+            }
             return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
         }
 
@@ -98,12 +99,14 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask
         if (pixPixelCount < MIN_PIXEL_COUNT) {
             final double scale = ((double) MIN_PIXEL_COUNT) / pixPixelCount;
             Pix scaledPix = Scale.scale(p, (float) scale);
-            if (scaledPix != null) {
+            if (scaledPix.getNativePix() == 0) {
+                if (TextFairyApplication.isRelease()) {
+                    Crashlytics.log("pix = (" + p.getWidth() + ", " + p.getHeight() + ")");
+                    Crashlytics.logException(new IllegalStateException("scaled pix is 0"));
+                }
+            } else {
                 p.recycle();
                 p = scaledPix;
-            } else if (TextFairyApplication.isRelease()) {
-                Crashlytics.log("pix = (" + p.getWidth() + ", " + p.getHeight() + ")");
-                Crashlytics.logException(new IllegalStateException("scaled pix is null"));
             }
         }
 

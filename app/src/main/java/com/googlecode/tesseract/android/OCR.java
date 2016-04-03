@@ -69,6 +69,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
     private final Analytics mAnalytics;
+    private final Context mApplicationContext;
 
     private int mPreviewWith;
     private int mPreviewHeight;
@@ -86,6 +87,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private boolean mCompleted;
 
     public OCR(final MonitoredActivity activity, final Messenger messenger) {
+        mApplicationContext = activity.getApplicationContext();
         mAnalytics = activity.getAnaLytics();
         mMessenger = messenger;
         mIsActivityAttached = true;
@@ -122,6 +124,11 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
      * @param bottom  edge of current word boundary
      */
     public void onProgressValues(final int percent, final int left, final int right, final int top, final int bottom, final int left2, final int right2, final int top2, final int bottom2) {
+        if (TextFairyApplication.isRelease()) {
+            long availableMegs = MemoryInfo.getFreeMemory(mApplicationContext);
+            Crashlytics.log("available ram = " + availableMegs);
+            Crashlytics.setInt("ocr progress", percent);
+        }
         int newBottom = (bottom2 - top2) - bottom;
         int newTop = (bottom2 - top2) - top;
         // scale the word bounding rectangle to the preview image space

@@ -16,8 +16,10 @@
 
 package com.renard.ocr.documents.creation;
 
+import com.crashlytics.android.Crashlytics;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
+import com.renard.ocr.TextFairyApplication;
 import com.renard.ocr.documents.creation.crop.CropImageActivity;
 import com.renard.ocr.documents.creation.visualisation.OCRActivity;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
@@ -336,6 +338,9 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     }
 
     protected void loadBitmapFromContentUri(final Uri cameraPicUri, ImageSource source) {
+        if (TextFairyApplication.isRelease()) {
+            Crashlytics.log("Loading " + cameraPicUri.toString() + " from " + source.name());
+        }
         mImageSource = source;
         if (mBitmapLoadTask != null) {
             mBitmapLoadTask.cancel(true);
