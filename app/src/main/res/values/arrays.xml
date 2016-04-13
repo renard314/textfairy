@@ -13,7 +13,10 @@
         <item>tam Tamil</item>
         <item>swe Swedish</item>
         <item>swa Swahili</item>
-        <item>srp Serbian (Latin)</item>
+        <item>mar Marathi</item>
+        <item>sin Sinhala</item>
+        <item>srp Serbian</item>
+        <item>srp_latn Serbian (Latin)</item>
         <item>sqi Albanian</item>
         <item>spa Spanish</item>
         <item>slv Slovenian</item>
@@ -58,6 +61,7 @@
         <item>ben Bengali</item>
         <item>bel Belarusian</item>
         <item>aze Azerbaijani</item>
+        <item>guj Gujarathi</item>
         <item>ara Arabic</item>
         <item>afr Afrikaans</item>
         <item>jpn Japanese</item>
@@ -66,6 +70,7 @@
         <item>grc Ancient Greek</item>
         <item>rus Russian</item>
         <item>vie Vietnamese</item>
+        <item>tam Tamil</item>
         <item>deu_frak Deutsch (Fraktur)</item>
     </string-array>
     <string-array name="start_activity_texts">
