@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 
 import com.googlecode.leptonica.android.Box;
 import com.googlecode.leptonica.android.Clip;
+import com.googlecode.leptonica.android.Convert;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Projective;
 import com.googlecode.leptonica.android.Rotate;
@@ -284,10 +285,15 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
                     final RectF perspectiveCorrectedBoundingRect = new RectF(mCrop.getPerspectiveCorrectedBoundingRect());
                     scaleMatrix.mapRect(perspectiveCorrectedBoundingRect);
                     Box bb = new Box((int) perspectiveCorrectedBoundingRect.left, (int) perspectiveCorrectedBoundingRect.top, (int) perspectiveCorrectedBoundingRect.width(), (int) perspectiveCorrectedBoundingRect.height());
-                    Pix croppedPix = Clip.clipRectangle2(mPix, bb);
+
+                    Pix pix8 = Convert.convertTo8(mPix);
+                    mPix.recycle();
+
+                    Pix croppedPix = Clip.clipRectangle2(pix8, bb);
                     if (croppedPix == null) {
                         throw new IllegalStateException();
                     }
+                    pix8.recycle();
 
                     scaleMatrix.postTranslate(-bb.getX(), -bb.getY());
                     scaleMatrix.mapPoints(trapezoid);
@@ -316,7 +322,6 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
                 } catch (IllegalStateException e) {
                     setResult(RESULT_CANCELED);
                 } finally {
-                    mPix.recycle();
                     finish();
                 }
             }
