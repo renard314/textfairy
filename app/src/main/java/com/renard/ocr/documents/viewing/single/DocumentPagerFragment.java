@@ -157,6 +157,13 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     }
 
     @Override
+    public String getTextOfCurrentlyShownDocument() {
+        int currentItem = mPager.getCurrentItem();
+        final DocumentTextFragment fragment = mAdapter.getFragment(currentItem);
+        return fragment.getDocumentText().toString();
+    }
+
+    @Override
     public int getDocumentCount() {
         if (mCursor != null) {
             return mCursor.getCount();

@@ -62,8 +62,10 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
     private boolean mIsCursorLoaded = false;
     private boolean mMoveToPageFromIntent;
 
+
     public interface DocumentContainerFragment {
         String getLangOfCurrentlyShownDocument();
+        String getTextOfCurrentlyShownDocument();
 
         int getDocumentCount();
 
@@ -269,6 +271,10 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
         }
 
         Toast.makeText(this, getString(R.string.text_was_copied_to_clipboard), Toast.LENGTH_LONG).show();
+    }
+
+    public String getCurrentDocumentText() {
+        return getDocumentContainer().getTextOfCurrentlyShownDocument();
     }
 
     String getLanguageOfDocument() {
