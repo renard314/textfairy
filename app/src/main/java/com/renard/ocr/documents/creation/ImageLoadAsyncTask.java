@@ -7,7 +7,6 @@ import com.googlecode.leptonica.android.Scale;
 import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.TextFairyApplication;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -47,12 +46,10 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask
     final static String ACTION_IMAGE_LOADING_START = ImageLoadAsyncTask.class.getName() + ".image.loading.start";
     public static final int MIN_PIXEL_COUNT = 3 * 1024 * 1024;
     private final boolean skipCrop;
-    private final WeakReference<ContentResolver> mContentResolver;
     private final Context context;
     private final Uri cameraPicUri;
 
     ImageLoadAsyncTask(NewDocumentActivity activity, boolean skipCrop, Uri cameraPicUri) {
-        mContentResolver = new WeakReference<>(activity.getContentResolver());
         context = activity.getApplicationContext();
         this.skipCrop = skipCrop;
         this.cameraPicUri = cameraPicUri;
@@ -100,7 +97,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask
 
             final long pixPixelCount = p.getWidth() * p.getHeight();
             if (pixPixelCount < MIN_PIXEL_COUNT) {
-                final double scale = ((double) MIN_PIXEL_COUNT) / pixPixelCount;
+                double scale = Math.sqrt(((double) MIN_PIXEL_COUNT) / pixPixelCount);
                 Pix scaledPix = Scale.scale(p, (float) scale);
                 if (scaledPix.getNativePix() == 0) {
                     if (TextFairyApplication.isRelease()) {
