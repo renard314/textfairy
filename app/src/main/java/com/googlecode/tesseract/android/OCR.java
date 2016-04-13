@@ -490,7 +490,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     logMemory(context);
                     final String tessDir = Util.getTessDir(context);
                     long nativeTextPix = nativeOCRBook(pixs.getNativePix());
-                    pixs.recycle();
                     Pix pixText = new Pix(nativeTextPix);
                     mOriginalHeight = pixText.getHeight();
                     mOriginalWidth = pixText.getWidth();
@@ -590,6 +589,11 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     private static native void nativeInit();
 
+    /**
+     * takes ownership of nativePix.
+     * @param nativePix
+     * @return binarized and dewarped version of input pix
+     */
     private native long nativeOCRBook(long nativePix);
 
     private native long[] combineSelectedPixa(long nativePixaTexts, long nativePixaImages, int[] selectedTexts, int[] selectedImages);
