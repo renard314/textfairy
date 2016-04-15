@@ -190,7 +190,8 @@ extern "C" {
         messageJavaCallback(MESSAGE_IMAGE_DETECTION);
         
         PixBinarizer binarizer(false);
-        pixb = binarizer.binarize(pixOrg, pixJavaCallback);
+        Pix* pixOrgClone = pixClone(pixOrg);
+        pixb = binarizer.binarize(pixOrgClone, pixJavaCallback);
         pixJavaCallback(pixb);
         
 //        SkewCorrector skewCorrector(false);
