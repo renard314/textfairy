@@ -104,6 +104,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
         setContentView(R.layout.activity_cropimage);
         ButterKnife.bind(this);
         initToolbar();
+        setToolbarMessage(R.string.crop_title);
         initNavigationAsUp();
         startCropping();
     }
