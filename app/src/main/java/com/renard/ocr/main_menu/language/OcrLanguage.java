@@ -140,7 +140,7 @@ public class OcrLanguage implements Parcelable {
     }
 
     public static boolean canCombineCubeAndTesseract(String lang) {
-        return "hin".equalsIgnoreCase(lang);
+        return false;
     }
 
     private boolean needsCubeData() {
