@@ -159,8 +159,12 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     @Override
     public String getTextOfCurrentlyShownDocument() {
         int currentItem = mPager.getCurrentItem();
-        final DocumentTextFragment fragment = mAdapter.getFragment(currentItem);
-        return fragment.getDocumentText().toString();
+        final String htmlText = mAdapter.getText(currentItem);
+        if (htmlText != null) {
+            return Html.fromHtml(htmlText).toString();
+        } else {
+            return null;
+        }
     }
 
     @Override
