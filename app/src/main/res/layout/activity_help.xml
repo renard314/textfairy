@@ -59,6 +59,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         style="@style/ocr_tip_style_check"/>
+                <TextView
+                        style="@style/ocr_tip_style_check"
+                        android:text="@string/ocr_tip_8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
                 <TextView
                         style="@style/ocr_tip_style_check"

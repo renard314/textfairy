@@ -345,4 +345,7 @@
         image with the buttons at the bottom.
     </string>
     <string name="got_it">got it</string>
+    <string name="ocr_tip_8">Please make sure that the text is upright. Use the rotate buttons at
+        the bottom of the screen to rotate the image.
+    </string>
 </resources>

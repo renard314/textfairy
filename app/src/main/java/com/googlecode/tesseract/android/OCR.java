@@ -591,7 +591,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
     /**
      * takes ownership of nativePix.
-     * @param nativePix
+     *
      * @return binarized and dewarped version of input pix
      */
     private native long nativeOCRBook(long nativePix);
