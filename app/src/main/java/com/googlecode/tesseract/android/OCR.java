@@ -486,7 +486,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
             @Override
             public void run() {
                 try {
-                    startCaptureLogs();
                     logMemory(context);
                     final String tessDir = Util.getTessDir(context);
                     long nativeTextPix = nativeOCRBook(pixs.getNativePix());
@@ -536,12 +535,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     if (mTess != null) {
                         mTess.end();
                     }
-                    String logs = stopCaptureLogs();
-                    if (TextFairyApplication.isRelease()) {
-                        Crashlytics.log(logs);
-                    } else {
-                        Log.i(LOG_TAG, logs);
-                    }
                     mCompleted = true;
                     sendMessage(MESSAGE_END);
                 }
@@ -583,9 +576,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
 
-    public static native void startCaptureLogs();
-
-    public static native String stopCaptureLogs();
+//    public static native void startCaptureLogs();
+//
+//    public static native String stopCaptureLogs();
 
     private static native void nativeInit();
 
