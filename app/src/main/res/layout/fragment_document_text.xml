@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
-              android:background="@color/text_background"
               android:inAnimation="@android:anim/fade_in"
               android:outAnimation="@android:anim/fade_out"
               android:id="@+id/viewSwitcher"
@@ -22,6 +21,7 @@
             android:layout_height="wrap_content">
 
         <EditText
+                android:background="@null"
                 android:layout_gravity="top"
                 android:id="@+id/editText_document"
                 android:textColor="?android:textColorPrimary"
@@ -29,7 +29,6 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textMultiLine"
-                android:singleLine="false"
                 android:paddingLeft="8dp"
                 android:paddingRight="5dp"/>
 

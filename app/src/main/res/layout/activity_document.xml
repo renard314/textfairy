@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
+        android:background="@color/text_background"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
