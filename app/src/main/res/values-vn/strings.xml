@@ -296,4 +296,6 @@
     <string name="memory_low_description">"Bạn có %d của MB bộ nhớ đã dùng. Hãy đóng một số ứng dụng nền hoặc khởi động lại thiết bị của bạn.
     "</string>
     <string name="memory_low_warning">"Các ứng dụng có thể sụp đổ nếu bạn tiếp tục."</string>
+    <string name="translate">Dịch</string>
+
 </resources>

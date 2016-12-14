@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:elevation="4dp"
+        android:minHeight="@dimen/document_bottom_sheet_peek_height"
+        app:behavior_peekHeight="@dimen/document_bottom_sheet_peek_height"
+        tools:showIn="@layout/activity_document"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        app:theme="@style/ThemeOverlay.AppCompat.Light"
+        android:background="@android:color/white"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingBottom="16dp"
+        android:orientation="vertical"
+>
+    <FrameLayout
+            android:id="@+id/expand_collapse_button"
+            android:layout_width="match_parent"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:layout_height="wrap_content">
+        <ImageView
+                android:tint="#757575"
+                android:id="@+id/expand_collapse_icon"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"
+                android:padding="10dp"
+                android:layout_width="@dimen/document_bottom_sheet_peek_height"
+                android:layout_height="@dimen/document_bottom_sheet_peek_height"
+                android:src="@drawable/ic_navigation_arrow_drop_up"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:id="@+id/bottom_sheet"
+            android:orientation="horizontal">
+
+        <ViewSwitcher
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:id="@+id/view_mode_switcher"
+                android:outAnimation="@android:anim/fade_out"
+                android:inAnimation="@android:anim/fade_in">
+            <TextView
+                    android:id="@+id/switch_view_to_image"
+                    android:drawableTop="@drawable/ic_action_show_image"
+                    android:text="@string/option_view_mode"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:lines="1"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:drawablePadding="4dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:textColorSecondary"/>
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:id="@+id/switch_view_to_text"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:lines="1"
+                    android:gravity="center"
+                    android:drawableTop="@drawable/ic_action_show_text"
+                    android:padding="2dp"
+                    android:drawablePadding="4dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:textColorSecondary"
+                    android:text="@string/option_view_mode"/>
+
+
+        </ViewSwitcher>
+
+
+        <TextView
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground"
+                android:id="@+id/share_text"
+                android:lines="1"
+                android:gravity="center"
+                android:drawableTop="@drawable/ic_action_share"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:padding="2dp"
+                android:drawablePadding="4dp"
+                android:textColor="?android:textColorSecondary"
+                android:layout_height="wrap_content"
+                android:text="@string/share_text"/>
+        <TextView
+                android:clickable="true"
+                android:textColor="?android:textColorSecondary"
+                android:background="?attr/selectableItemBackground"
+                android:id="@+id/copy_to_clipboard"
+                android:lines="1"
+                android:padding="2dp"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:drawableTop="@drawable/ic_action_content_copy"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/copy_to_clipboard"/>
+        <TextView
+                android:textColor="?android:textColorSecondary"
+                android:background="?attr/selectableItemBackground"
+                android:id="@+id/translate"
+                android:lines="1"
+                android:padding="2dp"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:drawableTop="@drawable/ic_action_translate"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/translate"/>
+        <TextView
+                android:textColor="?android:textColorSecondary"
+                android:background="?attr/selectableItemBackground"
+                android:id="@+id/pdf"
+                android:lines="1"
+                android:padding="2dp"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:drawableTop="@drawable/ic_action_pdf"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/export_as_pdf"/>
+
+    </LinearLayout>
+</LinearLayout>

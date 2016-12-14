@@ -79,4 +79,6 @@ public interface Analytics {
     void sendIgnoreMemoryWarning(long availableMegs);
 
     void sendHeedMemoryWarning(long availableMegs);
+
+    void optionTranslateText();
 }

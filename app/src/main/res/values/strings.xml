@@ -5,7 +5,7 @@
     <string name="whats_new_title">Check out what has changed</string>
     <string name="whats_new">Release notes</string>
     <string name="text_was_copied_to_clipboard">Text copied to clipboard.</string>
-    <string name="copy_to_clipboard">Copy to clipboard</string>
+    <string name="copy_to_clipboard">Copy</string>
     <string name="image_could_not_be_read">The image was not found in the data sent.</string>
     <string name="image_does_not_exist">The image was not found on your phone.</string>
     <string name="camera_app_not_found">Camera app not found.</string>
@@ -94,7 +94,7 @@
         deleted?
     </string>
     <string name="pdf_creation_message">Creating your PDF!</string>
-    <string name="option_view_mode">Switch view</string>
+    <string name="option_view_mode">Switch</string>
     <string name="document_layout_dialog">How many columns?</string>
     <string name="layout_complex">More than one column.</string>
     <string name="layout_simple">One column.</string>
@@ -207,7 +207,7 @@
     </string>
     <string name="cannot_speak_language">Your phone cannot speak %s. Pick another language.</string>
     <string name="choose_language">Pick a language for text to speech.</string>
-    <string name="share_text">Share text</string>
+    <string name="share_text">Share</string>
     <string name="help_to_improve">Feedback</string>
     <string name="product_tour">Product tour</string>
     <string name="empty_grid_greeting">Welcome</string>
@@ -348,4 +348,5 @@
     <string name="ocr_tip_8">Please make sure that the text is upright. Use the rotate buttons at
         the bottom of the screen to rotate the image.
     </string>
+    <string name="translate">Translate</string>
 </resources>

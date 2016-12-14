@@ -4,12 +4,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'com.google.gms.google-services'
 
-def versions = ['appcompat_v7' : '23.2.1',
+def versions = ['appcompat_v7' : '25.0.1',
                 'butterknife'  : '7.0.1',
-                'card_view'    : '23.2.1',
-                'design'       : '23.2.1',
+                'card_view'    : '25.0.1',
+                'design'       : '25.0.1',
                 'photoview'    : '1.2.4',
-                'play_services': '8.4.0']
+                'play_services': '10.0.1']
 
 task ndkBuild(type: Exec, description: 'run ndk-build') {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -30,7 +30,7 @@ tasks.withType(JavaCompile) {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         minSdkVersion 15

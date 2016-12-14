@@ -12,5 +12,8 @@
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:colorControlHighlight">@color/colorControlHighlight</item>
         <item name="android:actionModeStyle">@style/ActionMode</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+
     </style>
 </resources>

@@ -5,9 +5,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.22.0'
         classpath 'com.google.gms:google-services:1.3.0-beta1'
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:2.2.3'
     }
 }
 

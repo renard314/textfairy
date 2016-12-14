@@ -17,7 +17,6 @@
 
 package com.renard.ocr;
 
-import com.google.android.gms.analytics.Tracker;
 import com.google.common.base.Optional;
 
 import com.renard.ocr.analytics.Analytics;

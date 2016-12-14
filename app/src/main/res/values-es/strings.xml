@@ -3,7 +3,7 @@
     <string name="whats_new_title">Mirá que hay de nuevo</string>
     <string name="whats_new">Notas de la versión</string>
     <string name="text_was_copied_to_clipboard">Texto copiado en portapapeles.</string>
-    <string name="copy_to_clipboard">Copiado en portapapeles</string>
+    <string name="copy_to_clipboard">Copiado</string>
     <string name="image_could_not_be_read">La imagen no pudo ser leída.</string>
     <string name="image_does_not_exist">La imagen no fue encontrada en el teléfono.</string>
     <string name="camera_app_not_found">La aplicación de cámara no fue encontrada.</string>
@@ -150,7 +150,7 @@
     <string name="set_tts_language">Por favor elige el idioma apropiado en tu texto para las opciones de voz.</string>
     <string name="cannot_speak_language">Tu teléfono no puede hablar %s. Elige otro idioma.</string>
     <string name="choose_language">Elige un idioma para el texto para hablar.</string>
-    <string name="share_text">Compartir texto</string>
+    <string name="share_text">Compartir</string>
     <string name="help_to_improve">Feedback</string>
     <string name="drawer_open">Abrir barra lateral</string>
     <string name="drawer_close">Cerrar barra lateral</string>
@@ -255,4 +255,6 @@
     <string name="memory_low_description">Tienes %d MB de memoria de la izquierda . Por favor,
         cierre algunas aplicaciones en segundo plano o reinicie el dispositivo.
     </string>
+    <string name="translate">Traducir</string>
+
 </resources>

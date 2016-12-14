@@ -16,11 +16,11 @@
 
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.documents.viewing.DocumentContentProvider;
-import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.HintDialog;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.NewDocumentActivity;
+import com.renard.ocr.documents.viewing.DocumentContentProvider;
+import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.util.PreferencesUtils;
 
@@ -36,6 +36,8 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
@@ -47,11 +49,17 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class DocumentActivity extends NewDocumentActivity implements LoaderManager.LoaderCallbacks<Cursor>, GetOpinionDialog.FeedbackDialogClickListener {
 
@@ -61,10 +69,21 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
     public static final int DOCUMENT_CURSOR_LOADER_ID = 45678998;
     private boolean mIsCursorLoaded = false;
     private boolean mMoveToPageFromIntent;
+    private final Translator mTranslator = new Translator();
 
+
+    @Bind(R.id.expand_collapse_button)
+    protected View mCollapseExpandButton;
+    @Bind(R.id.expand_collapse_icon)
+    protected View mCollapseExpandIcon;
+    @Bind(R.id.bottom_sheet)
+    protected LinearLayout mBottomSheet;
+    @Bind(R.id.view_mode_switcher)
+    protected ViewSwitcher mViewModeSwitcher;
 
     public interface DocumentContainerFragment {
         String getLangOfCurrentlyShownDocument();
+
         String getTextOfCurrentlyShownDocument();
 
         int getDocumentCount();
@@ -93,12 +112,13 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
         return "";
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_ALARM);
-        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_document);
+        ButterKnife.bind(this);
         if (!init(savedInstanceState)) {
             finish();
             return;
@@ -113,6 +133,22 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
         initToolbar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mActionCallback = new TtsActionCallback(this);
+        initBottomSheet();
+    }
+
+    private void initBottomSheet() {
+        BottomSheetBehavior behavior = BottomSheetBehavior.from(mBottomSheet);
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                mCollapseExpandIcon.setRotation(slideOffset * 180);
+            }
+        });
     }
 
     @Override
@@ -132,6 +168,66 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
             mAnalytics.sendScreenView("Document");
         }
 
+    }
+
+
+    @OnClick(R.id.switch_view_to_image)
+    public void onSwitchToImage() {
+        toggleViewMode();
+    }
+
+    @OnClick(R.id.switch_view_to_text)
+    public void onSwitchToText() {
+        toggleViewMode();
+    }
+
+    private void toggleViewMode() {
+        DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
+        final boolean showText = fragment.getShowText();
+        fragment.setShowText(!showText);
+        mAnalytics.optionDocumentViewMode(!showText);
+        if (showText) {
+            mViewModeSwitcher.setDisplayedChild(1);
+        } else {
+            mViewModeSwitcher.setDisplayedChild(0);
+        }
+
+    }
+
+
+    @OnClick(R.id.share_text)
+    public void onShareText() {
+        mAnalytics.optionsShareText();
+        shareText();
+    }
+
+    @OnClick(R.id.expand_collapse_button)
+    public void onExpandCollapseButtonClicked() {
+        BottomSheetBehavior behavior = BottomSheetBehavior.from(mBottomSheet);
+        if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        } else if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
+
+    }
+
+    @OnClick(R.id.pdf)
+    public void onCreatePdf() {
+        mAnalytics.optionsCreatePdf();
+        exportAsPdf();
+    }
+
+    @OnClick(R.id.copy_to_clipboard)
+    public void onCopyToClipboard() {
+        mAnalytics.optionsCopyToClipboard();
+        copyTextToClipboard();
+    }
+
+    @OnClick(R.id.translate)
+    public void onTranslate() {
+        mAnalytics.optionTranslateText();
+        translateText();
     }
 
     private boolean isStartedAfterAScan(Intent intent) {
@@ -187,14 +283,7 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
             return true;
         }
 
-        if (itemId == R.id.item_view_mode) {
-
-            DocumentContainerFragment fragment = (DocumentContainerFragment) getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
-            final boolean showText = fragment.getShowText();
-            fragment.setShowText(!showText);
-            mAnalytics.optionDocumentViewMode(!showText);
-            return true;
-        } else if (itemId == R.id.item_text_options) {
+        if (itemId == R.id.item_text_options) {
             Intent i = new Intent(this, TextSettingsActivity.class);
             startActivityForResult(i, REQUEST_CODE_OPTIONS);
             mAnalytics.optionTextSettings();
@@ -210,25 +299,30 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
             deleteDocument();
             mAnalytics.optionsDeleteDocument();
             return true;
-        } else if (itemId == R.id.item_export_as_pdf) {
-            mAnalytics.optionsCreatePdf();
-            exportAsPdf();
-            return true;
-        } else if (itemId == R.id.item_copy_to_clipboard) {
-            mAnalytics.optionsCopyToClipboard();
-            copyTextToClipboard();
-            return true;
         } else if (itemId == R.id.item_text_to_speech) {
             mAnalytics.optionsStartTts();
             startTextToSpeech();
             return true;
-        } else if (itemId == R.id.item_share_text) {
-            mAnalytics.optionsShareText();
-            shareText();
-            return true;
-
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void translateText() {
+        String documentText = getPlainDocumentText();
+        if (documentText == null) {
+            Toast.makeText(DocumentActivity.this, R.string.empty_document, Toast.LENGTH_LONG).show();
+            return;
+        }
+        mTranslator.startTranslation(this, documentText);
+
+    }
+
+    @Override
+    protected synchronized void onDestroy() {
+        super.onDestroy();
+        BottomSheetBehavior behavior = BottomSheetBehavior.from(mBottomSheet);
+        behavior.setBottomSheetCallback(null);
+        ButterKnife.unbind(this);
     }
 
     private void deleteDocument() {

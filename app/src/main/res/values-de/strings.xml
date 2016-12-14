@@ -3,7 +3,7 @@
     <string name="whats_new_title">Sieh was es Neues gibt</string>
     <string name="whats_new">Neues</string>
     <string name="text_was_copied_to_clipboard">Text in Zwischenablage kopiert.</string>
-    <string name="copy_to_clipboard">Kopiere Text in Zwischenablage</string>
+    <string name="copy_to_clipboard">Kopieren</string>
     <string name="image_could_not_be_read">Das Bild konnte nicht geladen werden.</string>
     <string name="image_does_not_exist">Das Bild wurde nicht gefunden.</string>
     <string name="camera_app_not_found">Kameraapp nicht gefunden.</string>
@@ -211,7 +211,7 @@
         Sprache.
     </string>
     <string name="choose_language">Wähle die Sprache zum Vorlesen.</string>
-    <string name="share_text">Text teilen</string>
+    <string name="share_text">Teilen</string>
     <string name="help_to_improve">Feedback</string>
     <string name="drawer_open">Öffne Navigationsleiste</string>
     <string name="drawer_close">Schließe Navigationsleiste</string>
@@ -360,5 +360,6 @@
         die Nutze die Buttons am unteren Ende des Bildschirm.
     </string>
     <string name="got_it">Alles klar</string>
+    <string name="translate">Übersetzen</string>
 
 </resources>

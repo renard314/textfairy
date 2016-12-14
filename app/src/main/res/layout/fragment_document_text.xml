@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
-              android:background="@android:color/white"
+              android:background="@color/text_background"
               android:inAnimation="@android:anim/fade_in"
               android:outAnimation="@android:anim/fade_out"
               android:id="@+id/viewSwitcher"
@@ -24,8 +24,7 @@
         <EditText
                 android:layout_gravity="top"
                 android:id="@+id/editText_document"
-                android:textColor="@android:color/primary_text_light"
-                android:background="@android:color/background_light"
+                android:textColor="?android:textColorPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
