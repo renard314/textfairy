@@ -100,7 +100,6 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         EventBus.getDefault().register(this);
-        getWindow().setFormat(PixelFormat.RGBA_8888);
         setContentView(R.layout.activity_cropimage);
         ButterKnife.bind(this);
         initToolbar();
@@ -178,8 +177,6 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
 
 
     private void initNavigationAsUp() {
-        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_arrow_back_white);
-        getSupportActionBar().setHomeAsUpIndicator(upArrow);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
