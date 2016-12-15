@@ -15,8 +15,6 @@
     <string name="please_wait">Bitte warte</string>
     <string name="loading_image">Dein Bild wird geladen..</string>
     <string name="please_tap_on_column">Tappe erst auf die gewünschten Textspalten!</string>
-    <string name="get_more_languages">Lade weitere Sprachen.</string>
-    <string name="aborts_scan">Bricht aktuellen Scan ab!</string>
     <string name="send_mail">Sende mir eine E-mail.</string>
     <string name="hocr2pdf_title">
         <a href="http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/">hocr2pdf</a>
@@ -41,28 +39,16 @@
         Freizeit erschaffen. Ich hoffe sie ist dir von Nutzen.
     </string>
     <string name="download_failed">Laden von %1$s fehlgeschlagen.</string>
-    <string name="language_downloaded">%1$s erfolgreich geladen</string>
     <string name="app_name">Textfee</string>
     <string name="tips">Tipps</string>
     <string name="ocr_language_delete">Löschen</string>
     <string name="pref_title_help">Zeige Tipps</string>
     <string name="pref_title_contact">Kontakt</string>
-    <string name="download_title">Sprachdaten für %s</string>
     <string name="pref_summary_rate">Bewerte die Textfee.</string>
     <string name="pref_summary_license">Welche open source Software wird von der Textfee genutzt?
     </string>
     <string name="pref_summary_contact">Find heraus wer hinter der Textfee steckt.</string>
     <string name="ocr_language_title">Lade mehr Sprachen</string>
-    <string name="pref_summary_help">Tipps zum Verbessern der Texterkennung</string>
-    <string name="pref_summary_default_ocr_lang">Verwalte und lade Sprachdateien für die
-        Texterkennung
-    </string>
-    <string name="pref_summary_data_directory">Ändere das Verzeichnis in dem die Textfee nach den
-        Sprachdateien sucht. Ändere diese Einstellung nur, wenn du weißt was du tust.
-    </string>
-    <string name="pref_title_data_directory">Tessdata-Verzeichnis</string>
-    <string name="pref_title_rate">Bewertung</string>
-    <string name="pref_title_default_ocr_lang">Sprache für Texterkennung</string>
     <string name="pref_title_license">Software Lizenzen</string>
     <string name="error_create_file">Sorry, aber ich konnte das bild nicht auf der SD-Karte
         speichern.
@@ -84,9 +70,6 @@
     <string name="empty"/>
     <string name="cropping_image">Bild wird beschnitten.</string>
     <string name="error_title">Fehler</string>
-    <string name="error_load_file">Sorry aber ich konnte die Datei nicht finden. Wurde sie
-        vielleicht gelöscht?
-    </string>
     <string name="pdf_creation_message">Deine PDF wird erstellt!</string>
     <string name="option_view_mode">Wechsle Ansicht</string>
     <string name="document_layout_dialog">Wie viele Spalten gibt es?</string>
@@ -94,7 +77,7 @@
     <string name="layout_simple">Eine Spalte.</string>
     <string name="saving_document">Speichere Dokument</string>
     <string name="button_column_pick_completed">Starte Texterkennung</string>
-    <string name="export_as_pdf">Erstelle PDF</string>
+    <string name="export_as_pdf">PDF</string>
     <string name="delete_language_title">%1$s löschen?</string>
     <string name="delete_language_message">Du erhälst %1$d kb Speicher zurück.</string>
     <string name="delete_dialog_message">Dokumente werden gelöscht..</string>
@@ -116,31 +99,21 @@
         zusammen.
     </string>
     <string name="progress_choose_columns">Auswahl Bild- &amp; Textbereiche.</string>
-    <string name="new_photo">Neues Photo</string>
     <string name="no_sd_card">Die Textfee kann nicht von der Speicherkarte lesen. Ist das Telefon
         vielleicht mit deinem PC verbunden? Wenn ja, dann entferne das Kabel und versuche es erneut.
     </string>
-    <string name="rotate_right">Rechts drehen</string>
-    <string name="rotate_left">Links drehen</string>
     <string name="content_description_fairy">Die hilfreiche Textfee</string>
     <string name="crop_title">Wähle einen Bildauschnitt</string>
     <string name="text_options_title">Ändere Deine Texteinstellungen</string>
     <string name="default_ocr_language">deu</string>
-    <string name="app_options_title">Ändere die Einstellungen</string>
     <string name="edit_title_hint">Titel eingeben</string>
     <string name="option_gallery_title">Wähle ein Bild aus deiner Galerie</string>
     <string name="option_camera_title">Mache eine neues Photo</string>
-    <string name="option_preference_title">Optionen</string>
     <string name="show_tips">Zeige Tipps.</string>
     <string name="default_ocr_display_language">Englisch</string>
-    <string name="title_activity_contact">Kontakt</string>
-    <string name="action_settings">Einstellungen</string>
     <string name="document_help_title">Hier kannst du auf die Seiten deines Dokumentes zugreifen und
         sie verwalten.
     </string>
-    <string name="fairy_welcome_bubble">Ich bin die Textfee</string>
-    <string name="new_photo_gallery">Photo aus Galerie</string>
-    <string name="show_documents">Verwalte Dokumente</string>
     <string name="join">Zusammenführen</string>
     <string name="join_documents_title">Fasse Dokumente zusammen</string>
     <string name="join_documents_result">%1$d Dokumente zusammegeführt</string>
@@ -150,53 +123,13 @@
     </string>
     <string name="install_error">Fehler bei der Installation.</string>
     <string name="toc_title">Inhaltsübersicht</string>
-    <string name="start_text_1">Was ich kann!..</string>
-    <string name="start_text_2">Ich extrahiere für dich Texte aus Bilddateien und mache sie
-        editierbar. Tippe mich an, um mehr zu erfahren…
-    </string>
-    <string name="start_text_3">Erstelle ein neues Foto oder wähle ein Foto aus deiner Galerie
-        aus…
-    </string>
-    <string name="start_text_4">Wähle einen Bildausschnitt aus und entscheide, ob du eine oder
-        mehrere Spalten (z.B. Zeitungsartikel) gescannt haben möchtest…
-    </string>
-    <string name="start_text_5">Speichere und fertig ist deine Textdatei. Du kannst sie auf deiner
-        SD-Karte finden oder direkt von mir als PDF versenden lassen…
-    </string>
-    <string name="start_text_6">Probier es aus. Ich helfe dir, falls du Fragen hast…</string>
-    <string name="start_text_7">…und vergiss nicht: Auch Androiden sind nicht perfekt. Nicht jedes
-        Bild lässt sich in Textformate umwandeln…
-    </string>
-    <string name="start_text_8">Aber ich gebe dir immer Tipps, damit es klappt…</string>
-    <string name="start_text_9">Willst du mir schreiben? In den Einstellungen findest du
-        Kontaktdaten.
-    </string>
-    <string name="start_text_10">What is a robot’s favorite type of music?…</string>
-    <string name="start_text_11">Heavy metal!</string>
-    <string name="start_text_12">Two bytes meet. The first byte asks, “Are you ill?” The second byte
-        replies…
-    </string>
-    <string name="start_text_13">“No, just feeling a bit off.”</string>
-    <string name="start_text_14">There are two ways to write error-free computer programs…</string>
-    <string name="start_text_15">only the third one works.</string>
-    <string name="start_text_16">In the beginning God created the Bit and the Byte…</string>
-    <string name="start_text_17">And from those he created the Word.</string>
-    <string name="start_text_18">Why are lawyers are safe from the threat of automation taking over
-        their professions?…
-    </string>
-    <string name="start_text_19">No one would build a robot to do nothing.</string>
-    <string name="start_text_20">A robot walks into a bar…</string>
-    <string name="start_text_21">He looks at the bartender and says "Can I get a screwdriver?"
-    </string>
     <string name="document_list_help_title">Hier siehst du eine Liste mit deinen Dokumenten.
     </string>
     <string name="toc_help_title">Hier kannst du dir einen Überblick über die Seiten deines
         Dokuments verschaffen.
     </string>
-    <string name="no_ocr">Keine Texterkennung. Bild nur speichern</string>
     <string name="crop_help_title">Hier kannst Du dein Photo beschneiden und drehen.</string>
     <string name="continue_ocr">Weiter</string>
-    <string name="ocr_accuracy">OCR Genauigkeit: %1$d</string>
     <string name="text_to_speech">Text vorlesen</string>
     <string name="ocr_result_is_bad">Ups, da lief etwas schief! Ich konnte nicht viel erkennen.
     </string>
@@ -205,8 +138,6 @@
     <string name="play">Play</string>
     <string name="stop">stop</string>
     <string name="tts_init_error">Sprachmodul konnte nicht geladen werden.</string>
-    <string name="open_settings">Sprachoptionen</string>
-    <string name="set_tts_language">Wähle die gewünschte Sprache in den Systemeinstellungen</string>
     <string name="cannot_speak_language">Dein Telefon kann leider kein %s. Wähle eine andere
         Sprache.
     </string>
@@ -215,8 +146,6 @@
     <string name="help_to_improve">Feedback</string>
     <string name="drawer_open">Öffne Navigationsleiste</string>
     <string name="drawer_close">Schließe Navigationsleiste</string>
-    <string name="product_tour">Produkttour</string>
-    <string name="empty_grid_greeting">Hallo</string>
     <string name="empty_grid_camera">Hier tippen um Text auf einem neuem Bild zu erkennen.</string>
     <string name="empty_grid_gallery">Hier tippen um Text auf einem Bild aus deiner Galerie zu
         erkennen.
@@ -240,10 +169,6 @@
     <string name="enroll_as_beta_tester">Werde Betatester</string>
     <string name="about">Über die Textfee</string>
     <string name="feedback_subject">Feedback für die Textfee</string>
-    <string name="beta_test_body">Bitte informiere mich wenn eine neue Version für den Beta-Test zur
-        Verfügung steht.
-    </string>
-    <string name="beta_test_subject">Textfee Beta Test</string>
     <string name="app_version">Version %s</string>
     <string name="image_not_32_bit">Das Bild muss 32 Bit Farbtiefe haben.</string>
     <string name="image_format_unsupported">Das Bildformat wurde nicht erkannt. Bitte wähle ein Bild
@@ -253,8 +178,6 @@
     <string name="empty_document">Das Dokument enthält keinen Text.</string>
     <string name="join_beta_test_community">Werde Mitglied der Gruppe der Betatester.</string>
     <string name="join_beta_program">Werde Betatester.</string>
-    <string name="follow_steps">Führe folgende Schritte durch:</string>
-    <string name="click_image_below">Bist du Mitglied? Dann tappe auf das untere Bild.</string>
     <string name="first_step">1. Schritt</string>
     <string name="second_step">2. Schritt</string>
     <string name="first_step_detail">Du musst Mitglied dieser Gruppe sein damit der zweite Schritt
@@ -337,8 +260,7 @@
         finden, die du gescannt hast.
     </string>
     <string name="permission_explanation_title">Berechtigung fehlt</string>
-    <string name="no_gallery_found">Keine Gallerie gefunden.</string>
-    <string name="installing_files">Entpacke Sprachdateien</string>
+    <string name="no_gallery_found">Keine Galerie gefunden.</string>
     <string name="install_tip_2">Ich kann keine Handschrift lesen.</string>
     <string name="install_tip_1">Ist der Text klar und scharf ist, erzielst du das beste Ergebnis.
     </string>
@@ -361,5 +283,8 @@
     </string>
     <string name="got_it">Alles klar</string>
     <string name="translate">Übersetzen</string>
+    <string name="ocr_tip_8">Bitte stelle sicher, dass der Text aufrecht ist. Benutze die Schalter am unteren Ende
+        um das Bild zu drehen.
+    </string>
 
 </resources>

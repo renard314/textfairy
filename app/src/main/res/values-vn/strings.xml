@@ -15,8 +15,6 @@
     <string name="please_wait">"Xin vui lòng chờ"</string>
     <string name="loading_image">"Đang tải hình ảnh .."</string>
     <string name="please_tap_on_column">"Vui lòng nhấn vào một cột văn bản đầu tiên"</string>
-    <string name="get_more_languages">"Nhận được nhiều ngôn ngữ hơn"</string>
-    <string name="aborts_scan">"Hủy bỏ lần quét hiện tại!"</string>
     <string name="send_mail">"Viết cho tôi một dòng."</string>
     <string name="hocr2pdf_title">"
         &lt;a href=\"http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/\"&gt; hocr2pdf &lt;/a&gt; từ exactCODE
@@ -38,28 +36,17 @@
     <string name="contact_welcome_text">"Xin chào, tên tôi là Renard. Tôi đã tạo ra văn bản Fairy trong thời gian rảnh rỗi. Tôi hy vọng cô ấy là hữu ích cho bạn.
     "</string>
     <string name="download_failed">"Đang tải %1$s không thành công!"</string>
-    <string name="language_downloaded">"%1$s dữ liệu ngôn ngữ đã được tải xuống"</string>
     <string name="app_name">"Văn bản Fairy"</string>
     <string name="tips">"Lời khuyên"</string>
     <string name="ocr_language_delete">"Xóa bỏ"</string>
-    <string name="download_title">"Dữ liệu ngôn ngữ cho %s"</string>
     <string name="ocr_language_title">"Quản lý các Ngôn ngữ"</string>
     <string name="pref_summary_rate">"Đánh giá văn bản Fairy"</string>
     <string name="pref_summary_license">"Tìm hiểu về các phần mềm được sử dụng để tạo ra các văn bản Fairy.
     "</string>
     <string name="pref_summary_contact">"Tìm hiểu về người sáng tạo và cung cấp thông tin phản hồi."</string>
-    <string name="pref_summary_default_ocr_lang">"Tải về và quản lý các ngôn ngữ để nhận dạng văn bản.
-    "</string>
-    <string name="pref_summary_data_directory">"Chỉ định thư mục chứa  văn bản fairy nên tìm kiếm các tập tin ngôn ngữ. Chỉ thay đổi điều này nếu bạn biết những gì bạn đang làm.
-    "</string>
-    <string name="pref_title_data_directory">"Thư mục Tessdata"</string>
-    <string name="pref_title_rate">"Tỷ lệ"</string>
-    <string name="pref_title_default_ocr_lang">"Tài liệu ngôn ngữ"</string>
     <string name="pref_title_help">"Hiển thị các mẹo"</string>
     <string name="pref_title_contact">"Thông tin liên lạc"</string>
     <string name="pref_title_license">"Thông tin Giấy phép"</string>
-    <string name="pref_summary_help">"Mẹo cho việc nâng cao nhận dạng ký tự quang học (OCR)
-    "</string>
     <string name="error_create_file">"Tôi xin lỗi nhưng đã không thể lưu trữ hình ảnh của bạn trên thẻ SD.
     "</string>
     <string name="share_subject">"Văn bản đã quét"</string>
@@ -80,8 +67,6 @@
     <string name="empty">""</string>
     <string name="cropping_image">"Xén ảnh"</string>
     <string name="error_title">"Lỗi"</string>
-    <string name="error_load_file">"Tôi xin lỗi nhưng tôi đã không thể tìm thấy các tập tin. Có lẽ nó đã bị xóa?
-    "</string>
     <string name="pdf_creation_message">"Đang tạo PDF của bạn!"</string>
     <string name="option_view_mode">"Chuyển xem"</string>
     <string name="document_layout_dialog">"Có bao nhiêu cột?"</string>
@@ -89,7 +74,7 @@
     <string name="layout_simple">"Một cột."</string>
     <string name="saving_document">"Đang lưu Tài liệu"</string>
     <string name="button_column_pick_completed">"Bắt đầu nhận dạng văn bản"</string>
-    <string name="export_as_pdf">"Tạo PDF"</string>
+    <string name="export_as_pdf">"PDF"</string>
     <string name="delete_language_title">"Xóa %1$s ?"</string>
     <string name="delete_language_message">"Bạn sẽ giải phóng %1$d kb."</string>
     <string name="delete_dialog_message">"Đang xóa các Tài liệu .."</string>
@@ -106,24 +91,16 @@
     <string name="progress_assemble_pix">"Tôi đang lắp ráp các hình ảnh cuối cùng bây giờ."</string>
     <string name="progress_choose_columns">"Xin vui lòng chọn ảnh văn bản và bạn muốn trong tài liệu cuối cùng
     "</string>
-    <string name="new_photo">"Ảnh mới"</string>
     <string name="no_sd_card">"Thẻ SD không được gắn kết. Điện thoại đang được kết nối với máy tính của bạn? Nếu vậy thì hãy ngắt kết nối nó và thử lại.
     "</string>
-    <string name="rotate_right">"Xoay phải"</string>
-    <string name="rotate_left">"Xoay trái"</string>
     <string name="content_description_fairy">"Trợ giúp text fairy"</string>
     <string name="crop_title">"Chọn phần hình ảnh"</string>
     <string name="text_options_title">"Thay đổi các cài đặt văn bản của bạn"</string>
-    <string name="app_options_title">"Thay đổi các cài đặt của bạn"</string>
     <string name="edit_title_hint">"Nhập một tiêu đề"</string>
     <string name="option_gallery_title">"Chọn một ảnh từ thư viện"</string>
     <string name="option_camera_title">"Tạo một hình ảnh mới"</string>
-    <string name="option_preference_title">"Các cài đặt"</string>
     <string name="show_tips">"Hiển thị mẹo"</string>
     <string name="document_help_title">"Bạn có thể quản lý tài liệu của bạn ở đây."</string>
-    <string name="fairy_welcome_bubble">"Tôi là Văn bản Fairy"</string>
-    <string name="new_photo_gallery">"Chọn thư viện ảnh"</string>
-    <string name="show_documents">"Quản lý các tài liệu"</string>
     <string name="join">"Nối"</string>
     <string name="join_documents_title">"Đang nối các Tài liệu"</string>
     <string name="join_documents_result">"%1$d tài liệu đã được nối"</string>
@@ -132,45 +109,12 @@
     "</string>
     <string name="install_error">"Không thể cài đặt các tập tin cấu hình."</string>
     <string name="toc_title">"Mục lục"</string>
-    <string name="start_text_1">"Những gì tôi có thể làm được!…"</string>
-    <string name="start_text_2">"Tôi trích xuất văn bản có thể chỉnh sửa từ hình ảnh. Chạm vào tôi để tìm hiểu thêm ...
-    "</string>
-    <string name="start_text_3">"Chụp ảnh mới hoặc chọn một từ bộ sưu tập của bạn ..."</string>
-    <string name="start_text_4">"Cắt hình ảnh và cho tôi biết nếu nó có chứa nhiều hơn một cột của văn bản ...
-    "</string>
-    <string name="start_text_5">"Làm thế nào ban có được kinh nghiệm khi sử dụng ứng dụng này?
-    "</string>
-    <string name="start_text_6">"Thử khả năng của nó! Tôi sẽ giúp bạn nếu bạn có câu hỏi ..."</string>
-    <string name="start_text_7">" ... Nhưng đừng quên: ngay cả các người máy cũng không hoàn hảo. không phải tất cả  hình ảnh có thể được chuyển đổi sang văn ...
-    "</string>
-    <string name="start_text_8">"Nhưng tôi sẽ làm tốt nhất việc của tôi ..."</string>
-    <string name="start_text_9">"Bạn có thể gửi cho tôi thông tin phản hồi. Chạm vào sở thích để tìm các chi tiết liên lạc.
-    "</string>
-    <string name="start_text_10">"Loại nhạc yêu thích của người máy là gì? ..."</string>
-    <string name="start_text_11">"Thể loại Kim loại nặng!"</string>
-    <string name="start_text_12">"Hai byte đáp ứng. Các byte đầu tiên hỏi: \"Bạn có bị bệnh không?\" Byte thứ hai trả lời ...
-    "</string>
-    <string name="start_text_13">"\" Không, chỉ cảm thấy hơi ra.\""</string>
-    <string name="start_text_14">"Có hai cách để viết các chương trình máy tính xảy ra lỗi ..."</string>
-    <string name="start_text_15">"Chỉ có một phần ba các công việc."</string>
-    <string name="start_text_16">"Ban đầu Đức Chúa Trời tạo dựng ra Bit và Byte ..."</string>
-    <string name="start_text_17">"Và từ những người mà ông đã tạo ra Từ ngữ."</string>
-    <string name="start_text_18">"Tại sao các luật sư an toàn khỏi sự đe dọa của tự động hóa sẽ tiếp quản nghề nghiệp của họ ...
-    "</string>
-    <string name="start_text_19">"Sẽ không có ai chế tạo rô-bốt để chẳng làm gì. "</string>
-    <string name="start_text_20">"Một con Rô-bốt đi vào một quán bar ..."</string>
-    <string name="start_text_21">"Nó nhìn vào các nhân viên pha chế và nói \"Tôi có thể có được một tuốc nơ vít?\"
-    "</string>
     <string name="document_list_help_title">"Quản lý các tài liệu  đã quét của bạn ở đây."</string>
     <string name="toc_help_title">"Ở đây bạn sẽ thấy một danh sách tất cả các trang trong tài liệu"</string>
-    <string name="no_ocr">"Không có xử lý. Lưu hình ảnh chưa được thay đổi."</string>
     <string name="crop_help_title">"Bạn có thể cắt và xoay hình ảnh của bạn bây giờ"</string>
     <string name="continue_ocr">"Tiếp tục"</string>
     <string name="default_ocr_language">"anh"</string>
     <string name="default_ocr_display_language">"Anh"</string>
-    <string name="title_activity_contact">"Liên hệ"</string>
-    <string name="action_settings">"Các cài đặt"</string>
-    <string name="ocr_accuracy">"OCR chính xác: %1$d"</string>
     <string name="text_to_speech">"Đọc văn bản"</string>
     <string name="ocr_result_is_bad">"Rất tiếc. Một cái gì đó có vẻ không đúng."</string>
     <string name="ocr_result_is_ok">"Tôi nghĩ tôi có hầu hết các văn bản. "</string>
@@ -178,15 +122,10 @@
     <string name="play">"Phát"</string>
     <string name="stop">"Dừng lại"</string>
     <string name="tts_init_error">"Văn bản để  phát biểu không thể tải."</string>
-    <string name="open_settings">"Cài đặt bài phát biểu"</string>
-    <string name="set_tts_language">"Hãy đặt ngôn ngữ thích hợp trong văn bản của bạn để thiết lập bài phát biểu.
-    "</string>
     <string name="cannot_speak_language">"Điện thoại của bạn không thể  phát biểu được %s . Chọn một ngôn ngữ khác."</string>
     <string name="choose_language">"Chọn một ngôn ngữ cho văn bản để phát biểu."</string>
     <string name="share_text">"Chia sẻ văn bản"</string>
     <string name="help_to_improve">"Phản hồi"</string>
-    <string name="product_tour">"Tìm hiểu sản phẩm"</string>
-    <string name="empty_grid_greeting">"Chào mừng"</string>
     <string name="empty_grid_camera">"Hãy nhấn vào đây để chuyển đổi văn bản từ một hình ảnh mới."</string>
     <string name="empty_grid_gallery">"Hãy nhấn vào đây để chuyển đổi văn bản từ hình ảnh hiện có."</string>
     <string name="empty_grid_fairy">"Vui lòng chạm vào fairy để biết thêm."</string>
@@ -205,9 +144,6 @@
     <string name="enroll_as_beta_tester">"Ghi danh vào chương trình thử nghiệm phiên bản beta."</string>
     <string name="about">"Về"</string>
     <string name="feedback_subject">"Thông tin phản hồi văn bản fairy"</string>
-    <string name="beta_test_body">"Hãy thông báo cho tôi khi có phiên bản mới có sẵn cho thử nghiệm beta.
-    "</string>
-    <string name="beta_test_subject">"Văn bản fairy thử nghiệm beta "</string>
     <string name="app_version">"Phiên bản%s"</string>
     <string name="image_not_32_bit">"Hình ảnh cần phải có 32 bit."</string>
     <string name="image_format_unsupported">"Định dạng ảnh không được nhận diện. Chỉ các tập tin png hoặc jpeg hiện đang được hỗ trợ.
@@ -216,8 +152,6 @@
     <string name="empty_document">"Tài liệu không chứa văn bản."</string>
     <string name="join_beta_test_community">"Tham gia vào cộng đồng thử nghiệm beta."</string>
     <string name="join_beta_program">"Trở thành một người thử nghiệm beta"</string>
-    <string name="follow_steps">"Hãy làm theo các bước sau"</string>
-    <string name="click_image_below">"Một khi bạn là thành viên nhấp vào vào hình ảnh bên dưới."</string>
     <string name="first_step">"Bước đầu tiên"</string>
     <string name="second_step">"Bước thứ hai"</string>
     <string name="first_step_detail">"Nếu bạn không phải là một thành viên bước thứ hai sẽ không hoạt động."</string>
@@ -281,7 +215,6 @@
     "</string>
     <string name="permission_explanation_title">"Giấy phép bị lỗi"</string>
     <string name="no_gallery_found">"Không tìm thấy ứng dụng thư viện ảnh trên điện thoại này."</string>
-    <string name="installing_files">"Giải nén các tập tin ngôn ngữ"</string>
     <string name="install_tip_1">"Văn bản sắc nét và rõ ràng sẽ giúp bạn có được kết quả tốt nhất.
     "</string>
     <string name="install_tip_2">"Tôi không thể đọc được chữ viết tay."</string>

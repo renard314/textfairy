@@ -56,7 +56,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
@@ -73,17 +73,17 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
     private int mRotation = 0;
     boolean mSaving;
     private Pix mPix;
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     protected Toolbar mToolbar;
-    @Bind(R.id.cropImageView)
+    @BindView(R.id.cropImageView)
     protected CropImageView mImageView;
-    @Bind(R.id.crop_layout)
+    @BindView(R.id.crop_layout)
     protected ViewSwitcher mViewSwitcher;
-    @Bind(R.id.item_rotate_left)
+    @BindView(R.id.item_rotate_left)
     protected ImageView mRotateLeft;
-    @Bind(R.id.item_rotate_right)
+    @BindView(R.id.item_rotate_right)
     protected ImageView mRotateRight;
-    @Bind(R.id.item_save)
+    @BindView(R.id.item_save)
     protected ImageView mSave;
 
 
@@ -247,7 +247,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
     protected Dialog onCreateDialog(int id, Bundle args) {
         switch (id) {
             case HINT_DIALOG_ID:
-                return HintDialog.createDialog(this, R.string.crop_help_title, "file:///android_res/raw/crop_help.html");
+                return HintDialog.createDialog(this, R.string.crop_help_title, R.raw.crop_help);
         }
         return super.onCreateDialog(id, args);
     }

@@ -1761,7 +1761,7 @@ s%@LIBS@%$LIBS%g
 s%@exec_prefix@%$exec_prefix%g
 s%@prefix@%$prefix%g
 s%@program_transform_name@%$program_transform_name%g
-s%@bindir@%$bindir%g
+s%@BindViewir@%$bindir%g
 s%@sbindir@%$sbindir%g
 s%@libexecdir@%$libexecdir%g
 s%@datadir@%$datadir%g

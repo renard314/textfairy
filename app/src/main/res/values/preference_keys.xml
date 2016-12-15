@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string translatable="false" name="pref_key_default_ocr_lang">pref_key_default_ocr_lang</string>
-    <string translatable="false" name="pref_key_help">pref_key_help</string>
-    <string translatable="false" name="pref_key_contact">pref_key_contact</string>
-    <string translatable="false" name="pref_key_license">pref_key_license</string>
-    <string translatable="false" name="pref_key_rate">pref_key_rate</string>
-    <string translatable="false" name="pref_key_data_directory">pref_key_data_directory</string>
-</resources>

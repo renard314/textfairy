@@ -17,6 +17,8 @@ package com.renard.ocr;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.support.annotation.AnyRes;
+import android.support.annotation.RawRes;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
@@ -29,14 +31,15 @@ public class HintDialog{
 		
 	}
 	
-	public static AlertDialog createDialog(final Context context,final int speechBubbleText, final String pathToHTML){
+	public static AlertDialog createDialog(final Context context,final int speechBubbleText, @RawRes  final int pathToHTML){
 		AlertDialog.Builder builder;
 
 		View layout = View.inflate(context, R.layout.dialog_fairy_helping, null);
 		TextView speech = (TextView) layout.findViewById(R.id.help_header);
 		speech.setText(speechBubbleText);
 		WebView webView = (WebView) layout.findViewById(R.id.webView_help);
-		webView.loadUrl(pathToHTML);
+        final String path = convertResourceIdToPath(context, pathToHTML);
+		webView.loadUrl(path);
 		builder = new AlertDialog.Builder(context);
 		builder.setView(layout);
 		builder.setNegativeButton(android.R.string.ok, null);
@@ -44,5 +47,11 @@ public class HintDialog{
 		return builder.create();
 		
 	}
+
+    public static String convertResourceIdToPath(Context context, @AnyRes int resId) {
+        final String type = context.getResources().getResourceTypeName(resId);
+        final String name = context.getResources().getResourceEntryName(resId);
+        return "file:///android_res/" + type +"/" + name + ".html";
+    }
 
 }

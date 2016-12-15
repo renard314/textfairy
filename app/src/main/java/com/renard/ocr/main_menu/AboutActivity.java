@@ -26,14 +26,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class AboutActivity extends MonitoredActivity {
 
     private boolean slideOutLeft = false;
-    @Bind(R.id.version_name)
+    @BindView(R.id.version_name)
     protected TextView mVersionView;
 
     @Override

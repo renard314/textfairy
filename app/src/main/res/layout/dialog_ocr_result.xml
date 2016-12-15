@@ -144,7 +144,7 @@
             android:text="@string/export_as_pdf"
             android:gravity="left|center"
             android:drawablePadding="@dimen/default_padding"
-            android:drawableLeft="@drawable/ic_action_pdf_light"
+            android:drawableLeft="@drawable/ic_action_pdf"
             android:layout_width="match_parent"
             android:background="@drawable/btn_start_activity2"
             android:layout_height="wrap_content"/>

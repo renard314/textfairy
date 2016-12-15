@@ -57,7 +57,7 @@ import android.widget.ViewSwitcher;
 import java.util.HashSet;
 import java.util.Set;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -72,13 +72,11 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
     private final Translator mTranslator = new Translator();
 
 
-    @Bind(R.id.expand_collapse_button)
-    protected View mCollapseExpandButton;
-    @Bind(R.id.expand_collapse_icon)
+    @BindView(R.id.expand_collapse_icon)
     protected View mCollapseExpandIcon;
-    @Bind(R.id.bottom_sheet)
+    @BindView(R.id.bottom_sheet)
     protected LinearLayout mBottomSheet;
-    @Bind(R.id.view_mode_switcher)
+    @BindView(R.id.view_mode_switcher)
     protected ViewSwitcher mViewModeSwitcher;
 
     public interface DocumentContainerFragment {
@@ -250,7 +248,13 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
             OCRResultDialog.newInstance(accuracy, language).show(getSupportFragmentManager(), OCRResultDialog.TAG);
             mAnalytics.sendScreenView(OCR_RESULT_DIALOG);
         }
+        expandBottomSheet();
+    }
 
+    private void expandBottomSheet() {
+        BottomSheetBehavior behavior = BottomSheetBehavior.from(mBottomSheet);
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        mCollapseExpandIcon.setRotation(180);
     }
 
     @Override
@@ -322,7 +326,6 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
         super.onDestroy();
         BottomSheetBehavior behavior = BottomSheetBehavior.from(mBottomSheet);
         behavior.setBottomSheetCallback(null);
-        ButterKnife.unbind(this);
     }
 
     private void deleteDocument() {
@@ -452,7 +455,7 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
     protected Dialog onCreateDialog(int id, Bundle args) {
         switch (id) {
             case HINT_DIALOG_ID:
-                return HintDialog.createDialog(this, R.string.document_help_title, "file:///android_res/raw/document_help.html");
+                return HintDialog.createDialog(this, R.string.document_help_title, R.raw.document_help);
         }
         return super.onCreateDialog(id, args);
     }

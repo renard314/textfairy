@@ -34,7 +34,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import butterknife.Bind;
+import butterknife.BindView;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
@@ -47,26 +48,26 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
     @SuppressWarnings("unused")
     private static final String LOG_TAG = InstallActivity.class.getSimpleName();
 
-    @Bind(R.id.button_start_app)
+    @BindView(R.id.button_start_app)
     protected TextView mButtonStartApp;
-    @Bind(R.id.content_view)
+    @BindView(R.id.content_view)
     protected View mContentView;
-    @Bind(R.id.fairy_container)
+    @BindView(R.id.fairy_container)
     protected View mFairyContainer;
-    @Bind(R.id.imageView_fairy)
+    @BindView(R.id.imageView_fairy)
     protected ImageView mImageViewFairy;
-    @Bind(R.id.fairy_text_bubble)
+    @BindView(R.id.fairy_text_bubble)
     protected View mFairySpeechBubble;
-    @Bind(R.id.fairy_text)
+    @BindView(R.id.fairy_text)
     protected TextView mFairyText;
 
-    @Bind(R.id.tip1)
+    @BindView(R.id.tip1)
     protected View mTip1;
-    @Bind(R.id.tip2)
+    @BindView(R.id.tip2)
     protected View mTip2;
-    @Bind(R.id.tip3)
+    @BindView(R.id.tip3)
     protected View mTip3;
-    @Bind(R.id.promo)
+    @BindView(R.id.promo)
     protected View mYoutube;
 
     private TaskFragment mTaskFragment;

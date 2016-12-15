@@ -54,7 +54,6 @@ public class SimpleDocumentAdapter extends CursorAdapter {
 		public TextView date;
 		public TextView mPageNumber;
 		public EditText edit;
-		public Button editTitleButton;
 		public int boundId = -1;
 		public TextWatcher watcher;
 		
@@ -63,7 +62,6 @@ public class SimpleDocumentAdapter extends CursorAdapter {
 			date = (TextView) v.findViewById(R.id.date);
 			edit = (EditText) v.findViewById(R.id.editText_document);
 			mPageNumber = (TextView) v.findViewById(R.id.page_number);
-			editTitleButton = (Button) v.findViewById(R.id.button_edit);
 		}
 
 	}

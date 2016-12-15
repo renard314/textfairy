@@ -322,7 +322,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
     protected Dialog onCreateDialog(int id, Bundle args) {
         switch (id) {
             case HINT_DIALOG_ID:
-                return HintDialog.createDialog(this, R.string.document_list_help_title, "file:///android_res/raw/document_list_help.html");
+                return HintDialog.createDialog(this, R.string.document_list_help_title, R.raw.document_list_help);
         }
         return super.onCreateDialog(id, args);
     }

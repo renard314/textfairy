@@ -34,8 +34,8 @@
     </FrameLayout>
 
     <LinearLayout
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:id="@+id/bottom_sheet"

@@ -2,6 +2,7 @@ package com.renard.ocr.main_menu;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 import com.renard.ocr.HintDialog;
@@ -11,10 +12,10 @@ public class ReleaseNoteDialog extends DialogFragment {
 
 	public final static String TAG = ReleaseNoteDialog.class.getSimpleName();
 
+	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		final String htmlPath = "file:///android_res/raw/release_notes.html";
-		return HintDialog.createDialog(getActivity(), R.string.whats_new_title, htmlPath);
+		return HintDialog.createDialog(getActivity(), R.string.whats_new_title, R.raw.release_notes);
 	}
 
 }

@@ -54,7 +54,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 
@@ -73,9 +73,9 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
     public static final String EXTRA_USE_ACCESSIBILITY_MODE = "ACCESSIBILTY_MODE";
 
 
-    @Bind(R.id.column_pick_completed)
+    @BindView(R.id.column_pick_completed)
     protected Button mButtonStartOCR;
-    @Bind(R.id.progress_image)
+    @BindView(R.id.progress_image)
     protected OCRImageView mImageView;
 
     private int mOriginalHeight = 0;

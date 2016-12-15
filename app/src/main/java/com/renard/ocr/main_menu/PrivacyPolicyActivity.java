@@ -1,5 +1,6 @@
 package com.renard.ocr.main_menu;
 
+import com.renard.ocr.HintDialog;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 
@@ -10,7 +11,7 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.TextView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 
@@ -19,11 +20,11 @@ import butterknife.OnCheckedChanged;
  */
 public class PrivacyPolicyActivity extends MonitoredActivity {
 
-    @Bind(R.id.webview)
+    @BindView(R.id.webview)
     protected WebView mWebView;
-    @Bind(R.id.tracking_toggle)
+    @BindView(R.id.tracking_toggle)
     protected SwitchCompat mSwitchCompat;
-    @Bind(R.id.tacking_label)
+    @BindView(R.id.tacking_label)
     protected TextView mTrackingLabel;
 
 
@@ -52,7 +53,8 @@ public class PrivacyPolicyActivity extends MonitoredActivity {
     }
 
     private void initWebView() {
-        mWebView.loadUrl("file:///android_res/raw/privacy_policy.html");
+        final String path = HintDialog.convertResourceIdToPath(getApplication(), R.raw.privacy_policy);
+        mWebView.loadUrl(path);
     }
 
     @Override

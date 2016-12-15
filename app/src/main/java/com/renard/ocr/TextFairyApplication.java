@@ -23,9 +23,7 @@ import com.renard.ocr.util.PreferencesUtils;
 import com.squareup.leakcanary.LeakCanary;
 
 import android.app.Application;
-import android.os.Build;
 import android.os.StrictMode;
-import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.ViewConfiguration;
 
