@@ -9,7 +9,7 @@
         tools:showIn="@layout/activity_document"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
         app:theme="@style/ThemeOverlay.AppCompat.Light"
-        android:background="@android:color/white"
+        android:background="@color/primary"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:paddingBottom="16dp"
@@ -59,7 +59,8 @@
                     android:padding="2dp"
                     android:drawablePadding="4dp"
                     android:layout_height="wrap_content"
-                    android:textColor="?android:textColorSecondary"/>
+                    android:textColor="?android:textColorSecondaryInverse"
+            />
 
             <TextView
                     android:layout_width="match_parent"
@@ -71,7 +72,7 @@
                     android:padding="2dp"
                     android:drawablePadding="4dp"
                     android:layout_height="wrap_content"
-                    android:textColor="?android:textColorSecondary"
+                    android:textColor="?android:textColorSecondaryInverse"
                     android:text="@string/option_view_mode"/>
 
 
@@ -89,12 +90,12 @@
                 android:layout_width="0dp"
                 android:padding="2dp"
                 android:drawablePadding="4dp"
-                android:textColor="?android:textColorSecondary"
+                android:textColor="?android:textColorSecondaryInverse"
                 android:layout_height="wrap_content"
                 android:text="@string/share_text"/>
         <TextView
                 android:clickable="true"
-                android:textColor="?android:textColorSecondary"
+                android:textColor="?android:textColorSecondaryInverse"
                 android:background="?attr/selectableItemBackground"
                 android:id="@+id/copy_to_clipboard"
                 android:lines="1"
@@ -107,7 +108,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/copy_to_clipboard"/>
         <TextView
-                android:textColor="?android:textColorSecondary"
+                android:textColor="?android:textColorSecondaryInverse"
                 android:background="?attr/selectableItemBackground"
                 android:id="@+id/translate"
                 android:lines="1"
@@ -120,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/translate"/>
         <TextView
-                android:textColor="?android:textColorSecondary"
+                android:textColor="?android:textColorSecondaryInverse"
                 android:background="?attr/selectableItemBackground"
                 android:id="@+id/pdf"
                 android:lines="1"
