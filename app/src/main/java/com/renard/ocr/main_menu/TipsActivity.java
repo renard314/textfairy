@@ -15,14 +15,15 @@
  */
 package com.renard.ocr.main_menu;
 
-import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
-
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
-import com.renard.ocr.R;
+
 import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
+
+import android.support.v4.app.NavUtils;
+import android.view.MenuItem;
 
 public class TipsActivity extends MonitoredActivity implements YouTubePlayer.OnInitializedListener {
 

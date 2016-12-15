@@ -26,7 +26,6 @@ import com.renard.ocr.R;
 import com.renard.ocr.TextFairyApplication;
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.documents.creation.crop.CropImageScaler;
-import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.util.MemoryInfo;
 import com.renard.ocr.util.Util;
 
@@ -283,15 +282,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
     private int determineOcrMode(String lang) {
-        boolean hasCubeSupport = OcrLanguage.hasCubeSupport(lang);
-        boolean canCombine = OcrLanguage.canCombineCubeAndTesseract(lang);
-        if (canCombine) {
-            return TessBaseAPI.OEM_TESSERACT_CUBE_COMBINED;
-        } else if (hasCubeSupport) {
-            return TessBaseAPI.OEM_DEFAULT;
-        } else {
-            return TessBaseAPI.OEM_TESSERACT_ONLY;
-        }
+        return TessBaseAPI.OEM_TESSERACT_ONLY;
     }
 
 

@@ -11,15 +11,13 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.renard.ocr.main_menu.language.OcrLanguage.InstallStatus;
-
 /**
  * @author renard
  */
 public class OcrLanguageDataStore {
 
 
-    public static final File[] EMPTY_FILE_ARRAY = new File[0];
+    private static final File[] EMPTY_FILE_ARRAY = new File[0];
 
     public static List<OcrLanguage> getInstalledOCRLanguages(Context appContext) {
         final List<OcrLanguage> ocrLanguages = getAvailableOcrLanguages(appContext);
@@ -32,7 +30,7 @@ public class OcrLanguageDataStore {
         return result;
     }
 
-    public static List<OcrLanguage> getAvailableOcrLanguages(Context context) {
+    static List<OcrLanguage> getAvailableOcrLanguages(Context context) {
         List<OcrLanguage> languages = new ArrayList<>();
         // actual values uses by tesseract
         final String[] languageValues = context.getResources().getStringArray(R.array.ocr_languages);

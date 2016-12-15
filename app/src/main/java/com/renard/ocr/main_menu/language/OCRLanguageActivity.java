@@ -252,7 +252,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
     private void updateLanguage(final OcrLanguage language, int status) {
         if (status == DownloadManager.STATUS_SUCCESSFUL) {
-            final OcrLanguage.InstallStatus installStatus = OcrLanguageDataStore.isLanguageInstalled(language.getValue(), OCRLanguageActivity.this);
+            final InstallStatus installStatus = OcrLanguageDataStore.isLanguageInstalled(language.getValue(), OCRLanguageActivity.this);
             language.setInstallStatus(installStatus);
             if (installStatus.isInstalled()) {
                 language.setDownloading(false);

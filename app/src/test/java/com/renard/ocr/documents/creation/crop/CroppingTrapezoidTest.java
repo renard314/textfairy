@@ -1,9 +1,5 @@
 package com.renard.ocr.documents.creation.crop;
 
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.RectF;
-
 import com.renard.ocr.BuildConfig;
 
 import junit.framework.Assert;
@@ -14,6 +10,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
+
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,13 +117,13 @@ public class CroppingTrapezoidTest {
         Assert.assertEquals(MOVE, hit);
 
         hit = trap.getHit(50, 50, 29);
-        Assert.assertEquals( MOVE, hit);
+        Assert.assertEquals(MOVE, hit);
 
         hit = trap.getHit(78, 78, 1);
         Assert.assertEquals(MOVE, hit);
 
         hit = trap.getHit(22, 22, 1);
-        Assert.assertEquals( MOVE, hit);
+        Assert.assertEquals(MOVE, hit);
     }
 
     @Test
@@ -131,53 +131,53 @@ public class CroppingTrapezoidTest {
         Rect imageRect = new Rect(0, 0, 100, 100);
         RectF cropRect = new RectF(20, 20, 80, 80);
         CroppingTrapezoid trap = new CroppingTrapezoid(cropRect, imageRect);
-        trap.growBy(GROW_TOP_EDGE|GROW_RIGHT_EDGE, -30,0);
+        trap.growBy(GROW_TOP_EDGE | GROW_RIGHT_EDGE, -30, 0);
         final Point bottomLeft = trap.getBottomLeft();
-        Assert.assertEquals(bottomLeft.x,20);
-        Assert.assertEquals(bottomLeft.y,80);
+        Assert.assertEquals(bottomLeft.x, 20);
+        Assert.assertEquals(bottomLeft.y, 80);
 
         Point topLeft = trap.getTopLeft();
-        Assert.assertEquals(topLeft.x,20);
-        Assert.assertEquals(topLeft.y,20);
+        Assert.assertEquals(topLeft.x, 20);
+        Assert.assertEquals(topLeft.y, 20);
 
         Point bottomRight = trap.getBottomRight();
-        Assert.assertEquals(bottomRight.x,80);
-        Assert.assertEquals(bottomRight.y,80);
+        Assert.assertEquals(bottomRight.x, 80);
+        Assert.assertEquals(bottomRight.y, 80);
 
         Point topRight = trap.getTopRight();
-        Assert.assertEquals(70,topRight.x);
-        Assert.assertEquals(20,topRight.y);
+        Assert.assertEquals(70, topRight.x);
+        Assert.assertEquals(20, topRight.y);
 
-        trap.growBy(GROW_RIGHT_EDGE|GROW_BOTTOM_EDGE,-30,-30);
-        bottomRight=trap.getBottomRight();
+        trap.growBy(GROW_RIGHT_EDGE | GROW_BOTTOM_EDGE, -30, -30);
+        bottomRight = trap.getBottomRight();
         Assert.assertEquals(bottomRight.x, 70);
-        Assert.assertEquals(bottomRight.y,70);
+        Assert.assertEquals(bottomRight.y, 70);
 
-        trap.growBy(GROW_TOP_EDGE,5,5);
+        trap.growBy(GROW_TOP_EDGE, 5, 5);
         topLeft = trap.getTopLeft();
         Assert.assertEquals(25, topLeft.x);
         Assert.assertEquals(20, topLeft.y);
         topRight = trap.getTopRight();
-        Assert.assertEquals(75,topRight.x);
-        Assert.assertEquals(20,topRight.y);
+        Assert.assertEquals(75, topRight.x);
+        Assert.assertEquals(20, topRight.y);
     }
 
 
     @Test
-    public void testHitEdgesOfTrapezoid(){
+    public void testHitEdgesOfTrapezoid() {
         Rect imageRect = new Rect(0, 0, 100, 100);
         RectF cropRect = new RectF(20, 20, 80, 80);
         CroppingTrapezoid trap = new CroppingTrapezoid(cropRect, imageRect);
-        trap.growBy(GROW_TOP_EDGE|GROW_RIGHT_EDGE, -30,0);
+        trap.growBy(GROW_TOP_EDGE | GROW_RIGHT_EDGE, -30, 0);
 
-        int hit = trap.getHit(75,50,1);
-        Assert.assertEquals(GROW_RIGHT_EDGE,hit);
+        int hit = trap.getHit(75, 50, 1);
+        Assert.assertEquals(GROW_RIGHT_EDGE, hit);
 
-        hit = trap.getHit(75,30,1);
-        Assert.assertEquals(GROW_NONE,hit);
+        hit = trap.getHit(75, 30, 1);
+        Assert.assertEquals(GROW_NONE, hit);
 
-        hit = trap.getHit(55,50,1);
-        Assert.assertEquals(MOVE,hit);
+        hit = trap.getHit(55, 50, 1);
+        Assert.assertEquals(MOVE, hit);
 
     }
 }

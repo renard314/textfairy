@@ -36,11 +36,11 @@ public class CropImageScalerTest {
 
         CropImageScaler scaler = new CropImageScaler();
         //2448 × 3264
-        Pix pix = new Pix(2448,3264,32);
+        Pix pix = new Pix(2448, 3264, 32);
         //w = 768
         //h = 1038
         final CropImageScaler.ScaleResult scale = scaler.scale(pix, 768, 1038);
-        Log.d(LOG_TAG,"scale factor = " + scale.getScaleFactor() + "; w/h = ("+scale.getPix().getWidth()+","+scale.getPix().getHeight()+")");
+        Log.d(LOG_TAG, "scale factor = " + scale.getScaleFactor() + "; w/h = (" + scale.getPix().getWidth() + "," + scale.getPix().getHeight() + ")");
         Assert.assertEquals(scale.getPix().getHeight(), 100);
         Assert.assertEquals(scale.getPix().getWidth(), 100);
         pix.recycle();

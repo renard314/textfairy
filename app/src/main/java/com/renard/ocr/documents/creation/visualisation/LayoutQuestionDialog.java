@@ -18,6 +18,7 @@ package com.renard.ocr.documents.creation.visualisation;
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
+import com.renard.ocr.main_menu.language.InstallStatus;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
 import com.renard.ocr.util.PreferencesUtils;
@@ -91,7 +92,7 @@ public class LayoutQuestionDialog extends DialogFragment {
         mLayout = null;
         Pair<String, String> language = PreferencesUtils.getOCRLanguage(context);
 
-        final OcrLanguage.InstallStatus installStatus = OcrLanguageDataStore.isLanguageInstalled(language.first, context);
+        final InstallStatus installStatus = OcrLanguageDataStore.isLanguageInstalled(language.first, context);
 
         if (!installStatus.isInstalled()) {
             final String defaultLanguage = context.getString(R.string.default_ocr_language);
