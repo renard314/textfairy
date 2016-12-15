@@ -139,6 +139,12 @@ class AnalyticsWithGoogle implements Analytics {
     }
 
     @Override
+    public void optionTranslateText() {
+        sendEvent(CATEGORY_DOCUMENT_OPTIONS,"Translate started","", 1);
+    }
+
+
+    @Override
     public void optionDocumentViewMode(boolean showingText) {
         String label = showingText ? "Text" : "Image";
         sendEvent(CATEGORY_DOCUMENT_OPTIONS, "View mode changed", label, 1);
@@ -282,6 +288,7 @@ class AnalyticsWithGoogle implements Analytics {
     public void sendHeedMemoryWarning(long availableMegs) {
         sendEvent(CATEGORY_OCR,"Memory Warning","heeded", (int) availableMegs);
     }
+
 
 
 }
