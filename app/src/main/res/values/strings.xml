@@ -201,7 +201,7 @@
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Hello</string>
     <string name="text_is_in">"The text is in: "</string>
-    <string name="empty_grid_language">I can read English but you can download more languages.
+    <string name="empty_grid_language">I can read English, Russian and German but you can download more languages.
     </string>
     <string name="error_tess_init">Internal OCR Error. Please reinstall the app or the language
         data.
