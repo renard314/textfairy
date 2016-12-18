@@ -164,7 +164,7 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2+') {
         transitive = true;
     }
-    compile('com.crashlytics.sdk.android:crashlytics-ndk:1.1.2@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics-ndk:1+@aar') {
         transitive = true;
     }
 
@@ -172,6 +172,6 @@ dependencies {
 }
 crashlytics {
     enableNdk true
-    androidNdkOut '/Users/renard/devel/textfairy/app/src/main/obj'
-    androidNdkLibsOut '/Users/renard/devel/textfairy/app/src/main/libs'
+    androidNdkOut '/Users/renard/devel/textfairy/tess-two/tess-two/obj'
+    androidNdkLibsOut '/Users/renard/devel/textfairy/tess-two/tess-two/libs'
 }
