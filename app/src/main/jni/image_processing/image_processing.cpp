@@ -39,7 +39,7 @@ extern "C" {
     static jmethodID onProgressImage, onProgressValues, onProgressText, onLayoutElements, onUTF8Result, onLayoutPix;
     
     static JNIEnv *cachedEnv;
-    static jobject* cachedObject;
+    static jobject cachedObject;
     static FILE *inputFile;
     static int pipes[2];
 
@@ -101,18 +101,18 @@ extern "C" {
     void JNI_OnUnload(JavaVM *vm, void *reserved) {
     }
     
-    void initStateVariables(JNIEnv* env, jobject *object) {
+    void initStateVariables(JNIEnv* env, jobject object) {
         cachedEnv = env;
-        cachedObject = object;
+        cachedObject = env->NewGlobalRef(object);
     }
     
     void resetStateVariables() {
+        cachedEnv->DeleteGlobalRef(cachedObject);
         cachedEnv = NULL;
-        cachedObject = NULL;
     }
     
     bool isStateValid() {
-        if (cachedEnv != NULL && cachedObject != NULL) {
+        if (cachedEnv != NULL) {
             return true;
         } else {
             LOGI("state is cancelled");
@@ -123,19 +123,19 @@ extern "C" {
     
     void messageJavaCallback(int message) {
         if (isStateValid()) {
-            cachedEnv->CallVoidMethod(*cachedObject, onProgressText, message);
+            cachedEnv->CallVoidMethod(cachedObject, onProgressText, message);
         }
     }
     
     void pixJavaCallback(Pix* pix) {
         if (isStateValid()) {
-            cachedEnv->CallVoidMethod(*cachedObject, onProgressImage, (jlong) pix);
+            cachedEnv->CallVoidMethod(cachedObject, onProgressImage, (jlong) pix);
         }
     }
     
     void callbackLayout(const Pix* pixpreview) {
         if (isStateValid()) {
-            cachedEnv->CallVoidMethod(*cachedObject, onLayoutPix, (jlong)pixpreview);
+            cachedEnv->CallVoidMethod(cachedObject, onLayoutPix, (jlong)pixpreview);
         }
         messageJavaCallback(MESSAGE_ANALYSE_LAYOUT);
     }
@@ -145,7 +145,7 @@ extern "C" {
         LOGV(__FUNCTION__);
         Pixa *pixaTexts = (PIXA *) nativePixaText;
         Pixa *pixaImages = (PIXA *) nativePixaImage;
-        initStateVariables(env, &thiz);
+        initStateVariables(env, thiz);
         jint* textindexes = env->GetIntArrayElements(selectedTexts, NULL);
         jsize textCount = env->GetArrayLength(selectedTexts);
         jint* imageindexes = env->GetIntArrayElements(selectedImages, NULL);
@@ -184,7 +184,7 @@ extern "C" {
         Pix *pixOrg = (PIX *) nativePix;
         Pix* pixTextlines = NULL;
         Pixa* pixaTexts, *pixaImages;
-        initStateVariables(env, &thiz);
+        initStateVariables(env, thiz);
         
         Pix* pixb, *pixhm;
         messageJavaCallback(MESSAGE_IMAGE_DETECTION);
@@ -192,6 +192,7 @@ extern "C" {
         PixBinarizer binarizer(false);
         Pix* pixOrgClone = pixClone(pixOrg);
         pixb = binarizer.binarize(pixOrgClone, pixJavaCallback);
+
         pixJavaCallback(pixb);
         
 //        SkewCorrector skewCorrector(false);
@@ -233,7 +234,7 @@ extern "C" {
         LOGV(__FUNCTION__);
         Pix *pixOrg = (PIX *) nativePix;
         Pix* pixText;
-        initStateVariables(env, &thiz);
+        initStateVariables(env, thiz);
 
         bookpage(pixOrg, &pixText , messageJavaCallback, pixJavaCallback, false);
 
