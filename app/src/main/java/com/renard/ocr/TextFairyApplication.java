@@ -17,6 +17,7 @@ package com.renard.ocr;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.ndk.CrashlyticsNdk;
+import com.googlecode.tesseract.android.TessBaseAPI;
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.analytics.AnalyticsFactory;
 import com.renard.ocr.util.PreferencesUtils;
@@ -24,7 +25,6 @@ import com.squareup.leakcanary.LeakCanary;
 
 import android.app.Application;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.ViewConfiguration;
 
 import java.lang.reflect.Field;
@@ -55,9 +55,9 @@ public class TextFairyApplication extends Application {
 
     private void trackCrashes() {
         if (BuildConfig.FLAVOR.contains("playstore")) {
-            Log.i(LOG_TAG, "Starting Crashlytics");
             final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics(), new CrashlyticsNdk()).debuggable(BuildConfig.DEBUG).build();
             Fabric.with(fabric);
+            TessBaseAPI.initCrashlytics();
         }
     }
 
