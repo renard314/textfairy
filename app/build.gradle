@@ -7,6 +7,7 @@ apply plugin: 'checkstyle'
 
 def versions = ['appcompat_v7' : '25.1.0',
                 'butterknife'  : '8.4.0',
+                'leak_canary'  : '1.5',
                 'card_view'    : '25.1.0',
                 'design'       : '25.1.0',
                 'photoview'    : '1.2.4',
@@ -16,7 +17,8 @@ def versions = ['appcompat_v7' : '25.1.0',
 
 task checkstyle(type: Checkstyle) {
     configFile file("${project.rootDir}/checkstyle/checkstyle.xml")
-    configProperties.checkstyleSuppressionsPath = file("${project.rootDir}/config/quality/checkstyle/suppressions.xml").absolutePath // Where is my suppressions file for checkstyle is...
+    configProperties.checkstyleSuppressionsPath = file("${project.rootDir}/config/quality/checkstyle/suppressions.xml").absolutePath
+    // Where is my suppressions file for checkstyle is...
     source 'src'
     include '**/*.java'
     exclude '**/gen/**'
@@ -46,7 +48,7 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 55
+        versionCode 56
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
@@ -134,8 +136,8 @@ dependencies {
     compile project(":tess-two:tess-two")
     compile fileTree(dir: 'src/main/libs', include: '*.jar')
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
+    debugCompile "com.squareup.leakcanary:leakcanary-android:${versions.leak_canary}"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${versions.leak_canary}"
     compile 'com.viewpagerindicator:library:2.4.1@aar'
     compile "com.commit451:PhotoView:${versions.photoview}"
     compile 'com.google.code.findbugs:jsr305:2.0.2'

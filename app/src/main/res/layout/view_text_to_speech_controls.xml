@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:tools="http://schemas.android.com/tools"
+       tools:layout="@layout/fragment_document_text"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+
+    <ViewFlipper
+            android:outAnimation="@android:anim/fade_out"
+            android:inAnimation="@android:anim/fade_in"
+            android:id="@+id/view_flipper_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <ImageButton
+                android:id="@+id/button_speak_text"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_action_speak_text"
+                android:contentDescription="@string/start_speaking"/>
+        <ProgressBar
+                android:layout_margin="8dp"
+                android:layout_gravity="center"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+        />
+        <ImageButton
+                android:id="@+id/button_stop_speaking"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="12dp"
+                android:src="@drawable/ic_action_stop_speaking"
+                android:contentDescription="@string/stop_speaking"/>
+
+    </ViewFlipper>
+
+    <TextView
+            android:layout_marginLeft="48dp"
+            android:gravity="center"
+            tools:text='English'
+            android:drawableEnd="@drawable/ic_action_arrow_dropdown"
+            android:drawableRight="@drawable/ic_action_arrow_dropdown"
+            android:background="?attr/selectableItemBackground"
+            android:layout_gravity="center"
+            android:id="@+id/button_language"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:drawSelectorOnTop="true"
+            android:layout_toRightOf="@+id/button_speak_text"
+            android:layout_toEndOf="@+id/button_speak_text"/>
+
+
+</merge>

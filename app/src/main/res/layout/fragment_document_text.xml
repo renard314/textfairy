@@ -7,7 +7,6 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-
     <ProgressBar
             android:layout_margin="75dp"
             android:layout_gravity="center"
@@ -15,22 +14,34 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-
-    <ScrollView
+    <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <EditText
-                android:background="@null"
-                android:layout_gravity="top"
-                android:id="@+id/editText_document"
-                android:textColor="?android:textColorPrimary"
+        <com.renard.ocr.documents.viewing.single.tts.TextToSpeechControls
+                android:id="@+id/text_to_speech_controls"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textMultiLine"
-                android:paddingLeft="8dp"
-                android:paddingRight="5dp"/>
+                android:layout_height="wrap_content"/>
 
-    </ScrollView>
+        <ScrollView
+                android:layout_below="@+id/text_to_speech_controls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+            <EditText
+                    android:background="@null"
+                    android:layout_gravity="top"
+                    android:id="@+id/editText_document"
+                    android:textColor="?android:textColorPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textMultiLine"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="5dp"/>
+
+        </ScrollView>
+    </RelativeLayout>
+
 </ViewSwitcher>

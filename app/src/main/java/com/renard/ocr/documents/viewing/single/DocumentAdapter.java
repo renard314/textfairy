@@ -35,7 +35,7 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
 	private int mIndexOCRText;
 	private int mIndexId;
 
-	Cursor mCursor;
+	private Cursor mCursor;
     private Map<Integer, DocumentTextFragment> mPageReferenceMap = new HashMap<>();
     private boolean mShowText = true;
 

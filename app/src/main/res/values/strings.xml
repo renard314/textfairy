@@ -129,7 +129,7 @@
     <string name="continue_ocr">Continue</string>
     <string name="default_ocr_language">eng</string>
     <string name="default_ocr_display_language">English</string>
-    <string name="text_to_speech">Speak text</string>
+    <string name="start_speaking">Speak text</string>
     <string name="ocr_result_is_bad">Oops. Something doesn\'t seem right.</string>
     <string name="ocr_result_is_ok">I think i got most of the text.</string>
     <string name="ocr_result_is_good">That went well.</string>
@@ -271,4 +271,6 @@
         the bottom of the screen to rotate the image.
     </string>
     <string name="translate">Translate</string>
+    <string name="stop_speaking">stop speaking</string>
+    <string name="volume_is_off">Volume is off</string>
 </resources>

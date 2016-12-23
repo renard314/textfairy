@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ public class OCRResultDialog extends TopDialogFragment implements View.OnClickLi
         return ocrResultDialog;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
@@ -71,7 +73,6 @@ public class OCRResultDialog extends TopDialogFragment implements View.OnClickLi
         view.findViewById(R.id.divider5).setVisibility(View.GONE);
         view.findViewById(R.id.divider6).setVisibility(View.GONE);
         view.findViewById(R.id.button_copy_to_clipboard).setVisibility(View.GONE);
-        view.findViewById(R.id.button_text_to_speech).setVisibility(View.GONE);
         view.findViewById(R.id.button_export_pdf).setVisibility(View.GONE);
         view.findViewById(R.id.button_share_text).setVisibility(View.GONE);
     }
@@ -80,7 +81,6 @@ public class OCRResultDialog extends TopDialogFragment implements View.OnClickLi
         view.findViewById(R.id.button_send_feedback).setOnClickListener(this);
         view.findViewById(R.id.button_show_tips).setOnClickListener(this);
         view.findViewById(R.id.button_copy_to_clipboard).setOnClickListener(this);
-        view.findViewById(R.id.button_text_to_speech).setOnClickListener(this);
         view.findViewById(R.id.button_export_pdf).setOnClickListener(this);
         view.findViewById(R.id.button_share_text).setOnClickListener(this);
     }
@@ -118,10 +118,6 @@ public class OCRResultDialog extends TopDialogFragment implements View.OnClickLi
             case R.id.button_copy_to_clipboard:
                 getAnalytics().ocrResultCopyToClipboard();
                 activity.copyTextToClipboard();
-                break;
-            case R.id.button_text_to_speech:
-                getAnalytics().ocrResultStartTts();
-                activity.startTextToSpeech();
                 break;
             case R.id.button_export_pdf:
                 getAnalytics().ocrResultCreatePdf();

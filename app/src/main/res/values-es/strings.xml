@@ -95,7 +95,7 @@
     <string name="continue_ocr">Continuar</string>
     <string name="default_ocr_language">eng</string>
     <string name="default_ocr_display_language">Inglés</string>
-    <string name="text_to_speech">Lee el texto</string>
+    <string name="start_speaking">Lee el texto</string>
     <string name="ocr_result_is_bad">Oops. Algo salió mal.</string>
     <string name="ocr_result_is_ok">Creo haber reconocido la mayor parte del texto.</string>
     <string name="ocr_result_is_good">Eso estuvo bien.</string>

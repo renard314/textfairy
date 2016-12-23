@@ -21,7 +21,6 @@ import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.NewDocumentActivity;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
 import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
-import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.util.PreferencesUtils;
 
 import android.annotation.SuppressLint;
@@ -95,7 +94,6 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
         boolean getShowText();
     }
 
-    static final int REQUEST_CODE_TTS_CHECK = 6;
     private static final int REQUEST_CODE_OPTIONS = 4;
     private static final int REQUEST_CODE_TABLE_OF_CONTENTS = 5;
     public static final String EXTRA_ACCURACY = "extra_accuracy";
@@ -103,7 +101,6 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
 
     private int mParentId;
     private Cursor mCursor;
-    private TtsActionCallback mActionCallback;
 
     @Override
     public String getScreenName() {
@@ -114,7 +111,7 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setVolumeControlStream(AudioManager.STREAM_ALARM);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_document);
         ButterKnife.bind(this);
         if (!init(savedInstanceState)) {
@@ -130,7 +127,6 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
         setDocumentFragmentType();
         initToolbar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mActionCallback = new TtsActionCallback(this);
         initBottomSheet();
     }
 
@@ -303,10 +299,6 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
             deleteDocument();
             mAnalytics.optionsDeleteDocument();
             return true;
-        } else if (itemId == R.id.item_text_to_speech) {
-            mAnalytics.optionsStartTts();
-            startTextToSpeech();
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -347,11 +339,6 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
             }
         });
         builder.show();
-    }
-
-
-    void startTextToSpeech() {
-        startSupportActionMode(mActionCallback);
     }
 
 
@@ -415,24 +402,10 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
         clipboard.setText(text);
     }
 
-    public void onTtsLanguageChosen(OcrLanguage lang) {
-        mActionCallback.onTtsLanguageChosen(lang);
-    }
-
-    public void onTtsCancelled() {
-        mActionCallback.onTtsCancelled();
-    }
-
-    public boolean isTtsLanguageAvailable(OcrLanguage lang) {
-        return mActionCallback.isLanguageAvailable(lang);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_TTS_CHECK) {
-            mActionCallback.onTtsCheck(resultCode);
-        } else if (requestCode == REQUEST_CODE_OPTIONS) {
+        if (requestCode == REQUEST_CODE_OPTIONS) {
             Fragment frag = getSupportFragmentManager().findFragmentById(R.id.document_fragment_container);
             if (frag instanceof DocumentPagerFragment) {
                 DocumentPagerFragment pagerFragment = (DocumentPagerFragment) frag;
@@ -449,6 +422,11 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
                     break;
             }
         }
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
+
+
     }
 
     @Override

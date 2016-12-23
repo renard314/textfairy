@@ -573,7 +573,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
 
     private void initGridView() {
         mGridView = (GridView) findViewById(R.id.gridview);
-        mDocumentAdapter = new DocumentGridAdapter(this, R.layout.document_element, this);
+        mDocumentAdapter = new DocumentGridAdapter(this, R.layout.item_grid_document_element, this);
         registerForContextMenu(mGridView);
         mGridView.setAdapter(mDocumentAdapter);
         mGridView.setLongClickable(true);

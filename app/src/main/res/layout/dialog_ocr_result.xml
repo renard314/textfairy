@@ -117,20 +117,7 @@
             android:layout_height="1dp"
             android:id="@+id/divider5"
             android:background="@color/grey6"/>
-
-    <Button
-            android:paddingLeft="@dimen/default_padding"
-            android:paddingRight="@dimen/default_padding"
-
-            android:id="@+id/button_text_to_speech"
-            android:text="@string/text_to_speech"
-            android:gravity="left|center"
-            android:drawablePadding="@dimen/default_padding"
-            android:drawableLeft="@drawable/ic_action_text_to_speech"
-            android:layout_width="match_parent"
-            android:background="@drawable/btn_start_activity2"
-            android:layout_height="wrap_content"/>
-
+    
     <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

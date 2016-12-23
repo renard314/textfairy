@@ -557,7 +557,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                 deleteProgressDialog.setCancelable(false);
                 return deleteProgressDialog;
             case EDIT_TITLE_DIALOG_ID:
-                View layout = getLayoutInflater().inflate(R.layout.edit_title_dialog, null);
+                View layout = getLayoutInflater().inflate(R.layout.dialog_edit_title, null);
                 final Uri documentUri = Uri.parse(args.getString(DIALOG_ARG_DOCUMENT_URI));
                 final String oldTitle = args.getString(DIALOG_ARG_TITLE);
                 final EditText edit = (EditText) layout.findViewById(R.id.edit_title);

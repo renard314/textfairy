@@ -115,7 +115,7 @@
     <string name="continue_ocr">"Tiếp tục"</string>
     <string name="default_ocr_language">"anh"</string>
     <string name="default_ocr_display_language">"Anh"</string>
-    <string name="text_to_speech">"Đọc văn bản"</string>
+    <string name="start_speaking">"Đọc văn bản"</string>
     <string name="ocr_result_is_bad">"Rất tiếc. Một cái gì đó có vẻ không đúng."</string>
     <string name="ocr_result_is_ok">"Tôi nghĩ tôi có hầu hết các văn bản. "</string>
     <string name="ocr_result_is_good">"Nó diễn ra tốt đẹp. "</string>

@@ -79,7 +79,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private Messenger mMessenger;
     private boolean mIsActivityAttached = false;
 
-    protected TessBaseAPI mTess;
+    private TessBaseAPI mTess;
     private boolean mStopped;
     private int mPreviewHeightUnScaled;
     private int mPreviewWidthUnScaled;
@@ -442,6 +442,9 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
         if (pixs == null) {
             throw new IllegalArgumentException("Source pix must be non-null");
+        }
+        if(pixs.getNativePix()==0){
+            //TODO
         }
 
         mPreviewHeightUnScaled = height;

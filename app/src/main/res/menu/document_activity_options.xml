@@ -19,10 +19,4 @@
             yourapp:showAsAction="ifRoom"
             android:title="@string/delete">
     </item>
-    <item
-            android:id="@+id/item_text_to_speech"
-            android:icon="@drawable/ic_action_text_to_speech"
-            yourapp:showAsAction="ifRoom"
-            android:title="@string/text_to_speech">
-    </item>
 </menu>

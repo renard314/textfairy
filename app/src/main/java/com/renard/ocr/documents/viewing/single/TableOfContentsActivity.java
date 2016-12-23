@@ -96,7 +96,7 @@ public class TableOfContentsActivity extends MonitoredActivity implements Loader
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
 
-        final SimpleDocumentAdapter adapter = new SimpleDocumentAdapter(this, R.layout.table_of_contents_element, cursor, new ViewBinder() {
+        final SimpleDocumentAdapter adapter = new SimpleDocumentAdapter(this, R.layout.item_list_table_of_contents_element, cursor, new ViewBinder() {
 
             @Override
             public void bind(View v, DocumentViewHolder holder, String title, CharSequence formattedDate, String text, int position, final int id) {

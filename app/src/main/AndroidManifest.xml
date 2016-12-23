@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.renard.ocr"
           android:installLocation="auto"
-          android:versionName="3.0.9">
+          android:versionName="3.0.10">
 
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>

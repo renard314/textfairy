@@ -130,7 +130,7 @@
     </string>
     <string name="crop_help_title">Hier kannst Du dein Photo beschneiden und drehen.</string>
     <string name="continue_ocr">Weiter</string>
-    <string name="text_to_speech">Text vorlesen</string>
+    <string name="start_speaking">Text vorlesen</string>
     <string name="ocr_result_is_bad">Ups, da lief etwas schief! Ich konnte nicht viel erkennen.
     </string>
     <string name="ocr_result_is_ok">Ich denke ich konnte das meiste lesen.</string>
@@ -218,7 +218,8 @@
     <string name="greeting">Hallo</string>
     <string name="text_is_in">"Der Text ist in: "</string>
     <string name="empty_grid_download_language">Lade weitere Sprache.</string>
-    <string name="empty_grid_language">Ich kann deutschen russischen und englischen Text lesen, aber auch
+    <string name="empty_grid_language">Ich kann deutschen russischen und englischen Text lesen, aber
+        auch
         zusätzliche Sprachen lernen.
     </string>
     <string name="error_tess_init">Interner Fehler. Lösche die Daten der App in den
@@ -283,8 +284,11 @@
     </string>
     <string name="got_it">Alles klar</string>
     <string name="translate">Übersetzen</string>
-    <string name="ocr_tip_8">Bitte stelle sicher, dass der Text aufrecht ist. Benutze die Schalter am unteren Ende
+    <string name="ocr_tip_8">Bitte stelle sicher, dass der Text aufrecht ist. Benutze die Schalter
+        am unteren Ende
         um das Bild zu drehen.
     </string>
+    <string name="stop_speaking">Sprachausgabe stoppen</string>
+    <string name="volume_is_off">Lautsprecher ist stumm.</string>
 
 </resources>

@@ -16,21 +16,21 @@
 
 package com.renard.ocr.documents.viewing.single;
 
-import com.renard.ocr.documents.viewing.DocumentContentProvider;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.NewDocumentActivity;
+import com.renard.ocr.documents.viewing.DocumentContentProvider;
+import com.renard.ocr.documents.viewing.single.tts.TextToSpeechControls;
+import com.renard.ocr.documents.viewing.single.tts.TtsInitError;
+import com.renard.ocr.documents.viewing.single.tts.TtsInitSuccess;
 import com.renard.ocr.util.PreferencesUtils;
 
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
-import android.text.Html;
 import android.text.Spanned;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,20 +40,26 @@ import android.widget.ViewSwitcher;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
+
 public class DocumentTextFragment extends Fragment implements TextWatcher {
 
-    private final static String LOG_TAG = DocumentTextFragment.class.getSimpleName();
     private final static String IS_STATE_SAVED = "is_state_saved";
-    private EditText mEditText;
+
+    @BindView(R.id.text_to_speech_controls)
+    protected TextToSpeechControls mTextToSpeechControls;
+    @BindView(R.id.editText_document)
+    protected EditText mEditText;
+    @BindView(R.id.viewSwitcher)
+    protected ViewSwitcher mViewSwitcher;
+
+
     private int mDocumentId;
     private boolean mHasTextChanged;
     private HtmlToSpannedAsyncTask mHtmlTask;
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(IS_STATE_SAVED, true);
-    }
+    private boolean mIsInitialTextChange = true;
 
     public static DocumentTextFragment newInstance(final String text, Integer documentId, final String imagePath) {
         DocumentTextFragment f = new DocumentTextFragment();
@@ -71,14 +77,53 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mDocumentId = getArguments().getInt("id");
+        View view = inflater.inflate(R.layout.fragment_document_text, container, false);
+        ButterKnife.bind(this, view);
+        EventBus.getDefault().register(this);
+
+        if (mHtmlTask != null) {
+            mHtmlTask.cancel(true);
+        }
+
+        DocumentPagerFragment pagerFragment = (DocumentPagerFragment) getParentFragment();
+
+        final boolean hasTts = pagerFragment.hasTts();
+        DocumentActivity documentActivity = (DocumentActivity) getActivity();
+        mTextToSpeechControls.onCreateView(getChildFragmentManager(), documentActivity.getAnaLytics());
+        if (!hasTts) {
+            mTextToSpeechControls.setVisibility(View.GONE);
+        } else if (pagerFragment.getTextSpeaker().isInitialized()) {
+            mTextToSpeechControls.onInitSuccess(pagerFragment.getTextSpeaker());
+        }
+        PreferencesUtils.applyTextPreferences(mEditText, getActivity());
+
+        return view;
+    }
+
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (mHtmlTask != null) {
             mHtmlTask.cancel(true);
         }
         mEditText.removeTextChangedListener(this);
+        mTextToSpeechControls.onDestroyView();
+        EventBus.getDefault().unregister(this);
     }
 
+    @SuppressWarnings("unused")
+    public void onEventMainThread(final TtsInitError event) {
+        mTextToSpeechControls.onInitError();
+    }
+
+    @SuppressWarnings("unused")
+    public void onEventMainThread(final TtsInitSuccess event) {
+        DocumentPagerFragment pagerFragment = (DocumentPagerFragment) getParentFragment();
+        mTextToSpeechControls.onInitSuccess(pagerFragment.getTextSpeaker());
+    }
 
     @Override
     public void onPause() {
@@ -87,31 +132,23 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mDocumentId = getArguments().getInt("id");
-        View view = inflater.inflate(R.layout.fragment_document_text, container, false);
-        mEditText = (EditText) view.findViewById(R.id.editText_document);
-        if (mHtmlTask != null) {
-            mHtmlTask.cancel(true);
-        }
-
-        PreferencesUtils.applyTextPreferences(mEditText, getActivity());
-
-        return view;
-    }
-
-    @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         String text = getArguments().getString("text");
-        ViewSwitcher viewSwitcher = (ViewSwitcher) getView().findViewById(R.id.viewSwitcher);
         if (savedInstanceState == null || !savedInstanceState.getBoolean(IS_STATE_SAVED)) {
-            mHtmlTask = new HtmlToSpannedAsyncTask(mEditText, viewSwitcher, this);
+            mHtmlTask = new HtmlToSpannedAsyncTask(mEditText, mViewSwitcher, this);
             mHtmlTask.execute(text);
         } else {
-            viewSwitcher.setDisplayedChild(1);
+            mViewSwitcher.setDisplayedChild(1);
             mEditText.addTextChangedListener(this);
+            mTextToSpeechControls.setCurrentText(mEditText.getText());
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(IS_STATE_SAVED, true);
     }
 
 
@@ -142,7 +179,12 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        mHasTextChanged = true;
+        if (mIsInitialTextChange) {
+            mIsInitialTextChange = false;
+        } else {
+            mHasTextChanged = true;
+        }
+        mTextToSpeechControls.setCurrentText(s);
     }
 
     @Override
@@ -150,39 +192,4 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 
     }
 
-    private static class HtmlToSpannedAsyncTask extends AsyncTask<String, Void, Spanned> {
-
-        private final EditText mEditText;
-        private final ViewSwitcher mViewSwitcher;
-        private final TextWatcher mTextWatcher;
-
-        private HtmlToSpannedAsyncTask(final EditText editText, ViewSwitcher viewSwitcher, TextWatcher textWatcher) {
-            mEditText = editText;
-            mViewSwitcher = viewSwitcher;
-            mTextWatcher = textWatcher;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mViewSwitcher.setDisplayedChild(0);
-        }
-
-        @Override
-        protected Spanned doInBackground(String... params) {
-            if (params != null && params.length > 0 && params[0] != null && params[0].length() > 0) {
-                return Html.fromHtml(params[0]);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Spanned spanned) {
-            super.onPostExecute(spanned);
-            Log.i(LOG_TAG, "setText()");
-            mEditText.setText(spanned);
-            mEditText.addTextChangedListener(mTextWatcher);
-            mViewSwitcher.setDisplayedChild(1);
-        }
-    }
 }
