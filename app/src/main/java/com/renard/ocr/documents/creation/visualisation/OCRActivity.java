@@ -330,7 +330,6 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
                                 i.putExtra(DocumentActivity.EXTRA_ACCURACY, accuracy);
                                 i.putExtra(DocumentActivity.EXTRA_LANGUAGE, mOcrLanguage);
                                 i.setData(documentUri);
-                                i.putExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, pix.getNativePix());
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(i);
                                 finish();

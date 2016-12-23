@@ -29,8 +29,6 @@ import com.renard.ocr.util.ResourceUtils;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -41,12 +39,10 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.util.Locale;
 import java.util.Map;
@@ -65,7 +61,6 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     private int mLastPosition = -1;
     static final int REQUEST_CODE_TTS_CHECK = 6;
     private TextSpeaker mTextSpeaker;
-    private boolean mHasTts;
     private Map<String, String> hashMapResource;
 
     @Override
@@ -74,9 +69,8 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
         mPager = (ViewPager) v.findViewById(R.id.document_pager);
         mTitleIndicator = (CirclePageIndicator) v.findViewById(R.id.titles);
         mLastPosition = 0;
-        mTextSpeaker = new TextSpeaker();
         hashMapResource = ResourceUtils.getHashMapResource(getContext(), R.xml.iso_639_mapping);
-        mHasTts = checkTtsData();
+        initTts();
         initPager();
         EventBus.getDefault().register(this);
         return v;
@@ -89,50 +83,27 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
         EventBus.getDefault().unregister(this);
     }
 
-    private boolean checkTtsData() {
-        Intent checkIntent = new Intent();
-        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        ResolveInfo resolveInfo = getContext().getPackageManager().resolveActivity(checkIntent, PackageManager.MATCH_DEFAULT_ONLY);
-        if (resolveInfo != null) {
-            getActivity().startActivityForResult(checkIntent, REQUEST_CODE_TTS_CHECK);
-            return true;
-        } else {
-            Toast.makeText(getContext(), R.string.tts_not_available, Toast.LENGTH_LONG).show();
-            return false;
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_TTS_CHECK) {
-            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                mTextSpeaker.createTts(getContext(), new TtsInitListener() {
-                    @Override
-                    public void onInitError() {
-                        EventBus.getDefault().post(new TtsInitError());
-                    }
-
-                    @Override
-                    public void onInitSuccess() {
-                        final String langOfCurrentlyShownDocument = getLangOfCurrentlyShownDocument();
-                        Locale documentLocale = mapTesseractLanguageToLocale(langOfCurrentlyShownDocument);
-
-                        final boolean localeSupported = mTextSpeaker.isLocaleSupported(documentLocale);
-                        if (localeSupported) {
-                            mTextSpeaker.setTtsLocale(documentLocale);
-                        }
-                        EventBus.getDefault().post(new TtsInitSuccess());
-
-                    }
-                });
-            } else {
-                Intent installIntent = new Intent();
-                installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                startActivity(installIntent);
+    private void initTts() {
+        mTextSpeaker = new TextSpeaker();
+        mTextSpeaker.createTts(getContext(), new TtsInitListener() {
+            @Override
+            public void onInitError() {
+                EventBus.getDefault().post(new TtsInitError());
             }
-        }
 
+            @Override
+            public void onInitSuccess() {
+                final String langOfCurrentlyShownDocument = getLangOfCurrentlyShownDocument();
+                Locale documentLocale = mapTesseractLanguageToLocale(langOfCurrentlyShownDocument);
+
+                final boolean localeSupported = mTextSpeaker.isLocaleSupported(documentLocale);
+                if (localeSupported) {
+                    mTextSpeaker.setTtsLocale(documentLocale);
+                }
+                EventBus.getDefault().post(new TtsInitSuccess());
+
+            }
+        });
     }
 
     public Locale mapTesseractLanguageToLocale(String ocrLanguage) {
@@ -313,10 +284,6 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     @Override
     public boolean getShowText() {
         return mAdapter.getShowText();
-    }
-
-    public boolean hasTts() {
-        return mHasTts;
     }
 
     public TextSpeaker getTextSpeaker() {

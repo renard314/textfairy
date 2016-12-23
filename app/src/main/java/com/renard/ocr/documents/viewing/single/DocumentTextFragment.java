@@ -89,12 +89,9 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
 
         DocumentPagerFragment pagerFragment = (DocumentPagerFragment) getParentFragment();
 
-        final boolean hasTts = pagerFragment.hasTts();
         DocumentActivity documentActivity = (DocumentActivity) getActivity();
         mTextToSpeechControls.onCreateView(getChildFragmentManager(), documentActivity.getAnaLytics());
-        if (!hasTts) {
-            mTextToSpeechControls.setVisibility(View.GONE);
-        } else if (pagerFragment.getTextSpeaker().isInitialized()) {
+        if (pagerFragment.getTextSpeaker().isInitialized()) {
             mTextToSpeechControls.onInitSuccess(pagerFragment.getTextSpeaker());
         }
         PreferencesUtils.applyTextPreferences(mEditText, getActivity());

@@ -33,7 +33,6 @@ import io.fabric.sdk.android.Fabric;
 
 public class TextFairyApplication extends Application {
 
-    private static final String LOG_TAG = TextFairyApplication.class.getSimpleName();
     private Analytics mAnalytics;
 
     public void onCreate() {
@@ -43,6 +42,16 @@ public class TextFairyApplication extends Application {
         initTextPreferences();
         enableStrictMode();
         alwaysShowOverflowButton();
+        startLeakCanary();
+    }
+
+    private void startLeakCanary() {
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
     }
 
     private void initTextPreferences() {
@@ -63,7 +72,6 @@ public class TextFairyApplication extends Application {
 
     private void enableStrictMode() {
         if (BuildConfig.DEBUG) {
-            LeakCanary.install(this);
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .penaltyLog()

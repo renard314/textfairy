@@ -422,11 +422,6 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
                     break;
             }
         }
-        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-            fragment.onActivityResult(requestCode, resultCode, data);
-        }
-
-
     }
 
     @Override
