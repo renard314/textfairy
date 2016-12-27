@@ -19,9 +19,8 @@ package com.renard.ocr.documents.viewing.single;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.NewDocumentActivity;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
+import com.renard.ocr.documents.viewing.single.tts.TextSpeaker;
 import com.renard.ocr.documents.viewing.single.tts.TextToSpeechControls;
-import com.renard.ocr.documents.viewing.single.tts.TtsInitError;
-import com.renard.ocr.documents.viewing.single.tts.TtsInitSuccess;
 import com.renard.ocr.util.PreferencesUtils;
 
 import android.net.Uri;
@@ -42,11 +41,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.greenrobot.event.EventBus;
 
 public class DocumentTextFragment extends Fragment implements TextWatcher {
 
     private final static String IS_STATE_SAVED = "is_state_saved";
+    public static final String EXTRA_LANG = "lang";
+    private static final String EXTRA_POSITION = "position";
 
     @BindView(R.id.text_to_speech_controls)
     protected TextToSpeechControls mTextToSpeechControls;
@@ -61,10 +61,12 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
     private HtmlToSpannedAsyncTask mHtmlTask;
     private boolean mIsInitialTextChange = true;
 
-    public static DocumentTextFragment newInstance(final String text, Integer documentId, final String imagePath) {
+    public static DocumentTextFragment newInstance(final String text, Integer documentId, final String imagePath, String lang, int position) {
         DocumentTextFragment f = new DocumentTextFragment();
         // Supply text input as an argument.
         Bundle args = new Bundle();
+        args.putString(EXTRA_LANG, lang);
+        args.putInt(EXTRA_POSITION, position);
         args.putString("text", text);
         args.putInt("id", documentId);
         args.putString("image_path", imagePath);
@@ -81,19 +83,15 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
         mDocumentId = getArguments().getInt("id");
         View view = inflater.inflate(R.layout.fragment_document_text, container, false);
         ButterKnife.bind(this, view);
-        EventBus.getDefault().register(this);
 
         if (mHtmlTask != null) {
             mHtmlTask.cancel(true);
         }
 
-        DocumentPagerFragment pagerFragment = (DocumentPagerFragment) getParentFragment();
-
         DocumentActivity documentActivity = (DocumentActivity) getActivity();
-        mTextToSpeechControls.onCreateView(getChildFragmentManager(), documentActivity.getAnaLytics());
-        if (pagerFragment.getTextSpeaker().isInitialized()) {
-            mTextToSpeechControls.onInitSuccess(pagerFragment.getTextSpeaker());
-        }
+        DocumentPagerFragment pagerFragment = (DocumentPagerFragment) getParentFragment();
+        TextSpeaker textSpeaker = pagerFragment.getTextSpeaker();
+        mTextToSpeechControls.onCreateView(getChildFragmentManager(), documentActivity.getAnaLytics(), textSpeaker);
         PreferencesUtils.applyTextPreferences(mEditText, getActivity());
 
         return view;
@@ -108,18 +106,6 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
         }
         mEditText.removeTextChangedListener(this);
         mTextToSpeechControls.onDestroyView();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @SuppressWarnings("unused")
-    public void onEventMainThread(final TtsInitError event) {
-        mTextToSpeechControls.onInitError();
-    }
-
-    @SuppressWarnings("unused")
-    public void onEventMainThread(final TtsInitSuccess event) {
-        DocumentPagerFragment pagerFragment = (DocumentPagerFragment) getParentFragment();
-        mTextToSpeechControls.onInitSuccess(pagerFragment.getTextSpeaker());
     }
 
     @Override
@@ -138,8 +124,16 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
         } else {
             mViewSwitcher.setDisplayedChild(1);
             mEditText.addTextChangedListener(this);
-            mTextToSpeechControls.setCurrentText(mEditText.getText());
+            mTextToSpeechControls.setCurrentText(mEditText.getText(), getLangOfCurrentlyShownDocument(), getIndexOfCurrentlyShownDocument());
         }
+    }
+
+    private int getIndexOfCurrentlyShownDocument() {
+        return getArguments().getInt(EXTRA_POSITION);
+    }
+
+    private String getLangOfCurrentlyShownDocument() {
+        return getArguments().getString(EXTRA_LANG);
     }
 
     @Override
@@ -181,7 +175,7 @@ public class DocumentTextFragment extends Fragment implements TextWatcher {
         } else {
             mHasTextChanged = true;
         }
-        mTextToSpeechControls.setCurrentText(s);
+        mTextToSpeechControls.setCurrentText(s, getLangOfCurrentlyShownDocument(), getIndexOfCurrentlyShownDocument());
     }
 
     @Override

@@ -79,8 +79,7 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
     protected ViewSwitcher mViewModeSwitcher;
 
     public interface DocumentContainerFragment {
-        String getLangOfCurrentlyShownDocument();
-
+        
         String getTextOfCurrentlyShownDocument();
 
         int getDocumentCount();
@@ -355,14 +354,6 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
         }
 
         Toast.makeText(this, getString(R.string.text_was_copied_to_clipboard), Toast.LENGTH_LONG).show();
-    }
-
-    public String getCurrentDocumentText() {
-        return getDocumentContainer().getTextOfCurrentlyShownDocument();
-    }
-
-    String getLanguageOfDocument() {
-        return getDocumentContainer().getLangOfCurrentlyShownDocument();
     }
 
     String getPlainDocumentText() {

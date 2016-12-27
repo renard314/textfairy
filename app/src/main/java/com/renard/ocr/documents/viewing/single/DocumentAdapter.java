@@ -31,11 +31,11 @@ import java.util.Map;
 public class DocumentAdapter extends FragmentStatePagerAdapter {
     private int mIndexLanguage;
     private int mIndexImagePath;
-	private int mIndexTitle;
-	private int mIndexOCRText;
-	private int mIndexId;
+    private int mIndexTitle;
+    private int mIndexOCRText;
+    private int mIndexId;
 
-	private Cursor mCursor;
+    private Cursor mCursor;
     private Map<Integer, DocumentTextFragment> mPageReferenceMap = new HashMap<>();
     private boolean mShowText = true;
 
@@ -52,10 +52,10 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         final Object o = super.instantiateItem(container, position);
-        if (o instanceof  DocumentTextFragment) {
+        if (o instanceof DocumentTextFragment) {
             mPageReferenceMap.put(position, (DocumentTextFragment) o);
         } else {
-            mPageReferenceMap.put(position,null);
+            mPageReferenceMap.put(position, null);
         }
         return o;
 
@@ -78,8 +78,8 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
             imagePath = mCursor.getString(mIndexImagePath);
         }
         if (mShowText) {
-            return DocumentTextFragment.newInstance(text, documentId, imagePath);
-        }else {
+            return DocumentTextFragment.newInstance(text, documentId, imagePath, getLanguage(position), position);
+        } else {
             return DocumentImageFragment.newInstance(imagePath);
 
         }
@@ -94,34 +94,34 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
         mPageReferenceMap.remove(position);
     }
 
-	@Override
-	public int getCount() {
-		return mCursor.getCount();
-	}
+    @Override
+    public int getCount() {
+        return mCursor.getCount();
+    }
 
 
-    public String getLanguage(int position){
-        if(mCursor.moveToPosition(position)){
+    public String getLanguage(int position) {
+        if (mCursor.moveToPosition(position)) {
             return mCursor.getString(mIndexLanguage);
         }
         return null;
     }
 
-    public int getId(int position){
-        if(mCursor.moveToPosition(position)){
+    public int getId(int position) {
+        if (mCursor.moveToPosition(position)) {
             return mCursor.getInt(mIndexId);
         }
         return -1;
     }
 
-	public String getLongTitle(int position) {
-		if (mCursor.moveToPosition(position)) {
-			return mCursor.getString(mIndexTitle);
-		}
-		return null;
-	}
+    public String getLongTitle(int position) {
+        if (mCursor.moveToPosition(position)) {
+            return mCursor.getString(mIndexTitle);
+        }
+        return null;
+    }
 
-    public String getText(int position){
+    public String getText(int position) {
         boolean success = mCursor.moveToPosition(position);
         if (success) {
             return mCursor.getString(mIndexOCRText);
@@ -131,9 +131,9 @@ public class DocumentAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getItemPosition(Object object) {
-        if(object instanceof  DocumentTextFragment && !mShowText){
+        if (object instanceof DocumentTextFragment && !mShowText) {
             return POSITION_NONE;
-        }else if(object instanceof  DocumentImageFragment && mShowText){
+        } else if (object instanceof DocumentImageFragment && mShowText) {
             return POSITION_NONE;
         }
         return POSITION_UNCHANGED;

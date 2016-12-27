@@ -290,5 +290,6 @@
     </string>
     <string name="stop_speaking">Sprachausgabe stoppen</string>
     <string name="volume_is_off">Lautsprecher ist stumm.</string>
+    <string name="install_tts_prompt">Sie müssen zuerst die Text-zu-Sprache-Daten installieren.</string>
 
 </resources>

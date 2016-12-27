@@ -1,14 +1,14 @@
 package com.renard.ocr.documents.viewing.single.tts;
 
-class OnUtteranceDone {
+class OnUtteranceStart {
     private final String mUtteranceId;
 
-    public OnUtteranceDone(String utteranceId) {
+    public OnUtteranceStart(String utteranceId) {
 
         mUtteranceId = utteranceId;
     }
 
-    public String getUtteranceId() {
+    public Object getUtteranceId() {
         return mUtteranceId;
     }
 }

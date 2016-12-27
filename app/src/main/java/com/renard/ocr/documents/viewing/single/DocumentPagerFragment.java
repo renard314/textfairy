@@ -20,19 +20,12 @@ import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.viewing.single.DocumentActivity.DocumentContainerFragment;
 import com.renard.ocr.documents.viewing.single.tts.TextSpeaker;
-import com.renard.ocr.documents.viewing.single.tts.TtsInitError;
-import com.renard.ocr.documents.viewing.single.tts.TtsInitListener;
-import com.renard.ocr.documents.viewing.single.tts.TtsInitSuccess;
-import com.renard.ocr.documents.viewing.single.tts.TtsLanguageChoosen;
 import com.renard.ocr.util.PreferencesUtils;
-import com.renard.ocr.util.ResourceUtils;
 import com.viewpagerindicator.CirclePageIndicator;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -44,11 +37,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import java.util.Locale;
-import java.util.Map;
-
-import de.greenrobot.event.EventBus;
-
 public class DocumentPagerFragment extends Fragment implements DocumentContainerFragment {
 
 
@@ -59,9 +47,8 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
     private Cursor mCursor;
     private DocumentAdapter mAdapter;
     private int mLastPosition = -1;
-    static final int REQUEST_CODE_TTS_CHECK = 6;
-    private TextSpeaker mTextSpeaker;
-    private Map<String, String> hashMapResource;
+    private TextSpeaker mTextSpeaker = new TextSpeaker();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,63 +56,13 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
         mPager = (ViewPager) v.findViewById(R.id.document_pager);
         mTitleIndicator = (CirclePageIndicator) v.findViewById(R.id.titles);
         mLastPosition = 0;
-        hashMapResource = ResourceUtils.getHashMapResource(getContext(), R.xml.iso_639_mapping);
-        initTts();
         initPager();
-        EventBus.getDefault().register(this);
         return v;
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mTextSpeaker.onDestroyView();
-        EventBus.getDefault().unregister(this);
-    }
-
-    private void initTts() {
-        mTextSpeaker = new TextSpeaker();
-        mTextSpeaker.createTts(getContext(), new TtsInitListener() {
-            @Override
-            public void onInitError() {
-                EventBus.getDefault().post(new TtsInitError());
-            }
-
-            @Override
-            public void onInitSuccess() {
-                final String langOfCurrentlyShownDocument = getLangOfCurrentlyShownDocument();
-                Locale documentLocale = mapTesseractLanguageToLocale(langOfCurrentlyShownDocument);
-
-                final boolean localeSupported = mTextSpeaker.isLocaleSupported(documentLocale);
-                if (localeSupported) {
-                    mTextSpeaker.setTtsLocale(documentLocale);
-                }
-                EventBus.getDefault().post(new TtsInitSuccess());
-
-            }
-        });
-    }
-
-    public Locale mapTesseractLanguageToLocale(String ocrLanguage) {
-        final String s = hashMapResource.get(ocrLanguage);
-        if (s != null) {
-            return new Locale(s);
-        } else {
-            return null;
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public void onEventMainThread(final TtsLanguageChoosen event) {
-        Locale documentLocale = event.getLocale();
-        mTextSpeaker.setTtsLocale(documentLocale);
-    }
-
-
-    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
         boolean isKeyboardHidden = Configuration.KEYBOARDHIDDEN_YES == newConfig.hardKeyboardHidden;
         boolean isKeyboardShown = Configuration.KEYBOARDHIDDEN_NO == newConfig.hardKeyboardHidden;
         if (isKeyboardShown) {
@@ -135,7 +72,6 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
         }
     }
 
-
     private void showTitleIndicator(final boolean show) {
         if (mIsTitleIndicatorVisible) {
             if (show) {
@@ -144,6 +80,12 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
                 mTitleIndicator.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mTextSpeaker.onDestroyView();
     }
 
     public void applyTextPreferences() {
@@ -182,6 +124,7 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
                 mPager.setAdapter(mAdapter);
             }
 
+
             if (mAdapter.getCount() > 1) {
                 mTitleIndicator.setViewPager(mPager);
                 mIsTitleIndicatorVisible = true;
@@ -215,12 +158,6 @@ public class DocumentPagerFragment extends Fragment implements DocumentContainer
         }
     }
 
-    @Override
-    public String getLangOfCurrentlyShownDocument() {
-        DocumentAdapter adapter = (DocumentAdapter) mPager.getAdapter();
-        int currentItem = mPager.getCurrentItem();
-        return adapter.getLanguage(currentItem);
-    }
 
     @Override
     public String getTextOfCurrentlyShownDocument() {

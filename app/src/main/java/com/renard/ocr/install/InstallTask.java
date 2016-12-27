@@ -72,7 +72,7 @@ class InstallTask extends AsyncTask<Void, Integer, InstallResult> {
      * @return the total size of the language-assets in the zip file
      */
     private long getTotalUnzippedSize() {
-        return 24314653;
+        return 51402414;
     }
 
 

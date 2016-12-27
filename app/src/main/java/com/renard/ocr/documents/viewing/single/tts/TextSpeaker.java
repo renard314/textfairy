@@ -14,18 +14,15 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import de.greenrobot.event.EventBus;
 
 public class TextSpeaker {
 
-    private static final String LOG_TAG = "TextSpeaker";
-
     private TextToSpeech mTts;
     private boolean mIsInitialized;
-
 
     public void onDestroyView() {
         if (mTts != null) {
@@ -35,32 +32,31 @@ public class TextSpeaker {
     }
 
 
-    public void setTtsLocale(Locale ttsLocale) {
-        mTts.setLanguage(ttsLocale);
-    }
+    void setTtsLocale(Locale ttsLocale) {
+        final boolean localeSupported = isLocaleSupported(ttsLocale);
+        if (localeSupported) {
+            try {
+                mTts.setLanguage(ttsLocale);
+            } catch (IllegalArgumentException ignored) {
 
-    public Locale getTtsLocale() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return mTts.getVoice().getLocale();
-        } else {
-            return mTts.getLanguage();
+            }
         }
     }
 
-    public void stopSpeaking() {
+    void stopSpeaking() {
         mTts.stop();
     }
 
-    int startSpeaking(CharSequence text) {
+    int startSpeaking(CharSequence text, String utteranceId) {
         int result;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bundle params = new Bundle();
             params.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, TextToSpeech.Engine.DEFAULT_STREAM);
-            result = mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, LOG_TAG);
+            result = mTts.speak(text, TextToSpeech.QUEUE_FLUSH, params, utteranceId);
         } else {
             HashMap<String, String> alarm = new HashMap<>();
             alarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(TextToSpeech.Engine.DEFAULT_STREAM));
-            alarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, LOG_TAG);
+            alarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId);
             result = mTts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, alarm);
         }
         return result;
@@ -75,7 +71,7 @@ public class TextSpeaker {
         return mTts.getLanguage();
     }
 
-    public void createTts(final Context context, final TtsInitListener listener) {
+    void createTts(final Context context, final TtsInitListener listener) {
         mTts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -98,12 +94,12 @@ public class TextSpeaker {
             mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                 @Override
                 public void onStart(String utteranceId) {
-
+                    onUtteranceStart(utteranceId);
                 }
 
                 @Override
                 public void onDone(String utteranceId) {
-                    onUtteranceDone();
+                    onUtteranceDone(utteranceId);
                 }
 
                 @Override
@@ -117,18 +113,23 @@ public class TextSpeaker {
 
                 @Override
                 public void onUtteranceCompleted(String utteranceId) {
-                    onUtteranceDone();
+                    onUtteranceDone(utteranceId);
                 }
             };
             mTts.setOnUtteranceCompletedListener(onUtteranceCompletedListener);
         }
     }
 
-    private void onUtteranceDone() {
-        EventBus.getDefault().post(new OnUtteranceDone());
+
+    private void onUtteranceStart(String utteranceId) {
+        EventBus.getDefault().post(new OnUtteranceStart(utteranceId));
     }
 
-    public boolean isLocaleSupported(@Nullable Locale locale) {
+    private void onUtteranceDone(String utteranceId) {
+        EventBus.getDefault().post(new OnUtteranceDone(utteranceId));
+    }
+
+    boolean isLocaleSupported(@Nullable Locale locale) {
         boolean result;
         try {
             if (locale == null) {
@@ -150,25 +151,35 @@ public class TextSpeaker {
 
     Collection<Locale> getAvailableLanguages() {
         if (Build.VERSION.SDK_INT >= 21) {
-            return mTts.getAvailableLanguages();
-        } else {
-            HashMap<String, Locale> localeMap = new HashMap<>();
-            Locale[] allLocales = Locale.getAvailableLocales();
-            for (Locale locale : allLocales) {
-                if (isLocaleSupported(locale)) {
-                    localeMap.put(locale.getLanguage(), locale);
+            try {
+                final Set<Locale> availableLanguages = mTts.getAvailableLanguages();
+                if (availableLanguages == null) {
+                    return new ArrayList<>();
+                } else {
+                    return availableLanguages;
                 }
+            } catch (IllegalArgumentException exception) {
+                return getValidTtsLocales();
             }
-            return localeMap.values();
+        } else {
+            return getValidTtsLocales();
         }
     }
 
+    private Collection<Locale> getValidTtsLocales() {
+        HashMap<String, Locale> localeMap = new HashMap<>();
+        Locale[] allLocales = Locale.getAvailableLocales();
+        for (Locale locale : allLocales) {
+            if (isLocaleSupported(locale)) {
+                localeMap.put(locale.getLanguage(), locale);
+            }
+        }
+        return localeMap.values();
+    }
 
-    public boolean isInitialized() {
+
+    boolean isInitialized() {
         return mIsInitialized;
     }
 
-    public boolean isSpeaking() {
-        return mTts.isSpeaking();
-    }
 }

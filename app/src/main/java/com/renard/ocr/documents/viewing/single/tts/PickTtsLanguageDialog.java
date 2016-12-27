@@ -4,7 +4,6 @@ import com.renard.ocr.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,7 +31,7 @@ public class PickTtsLanguageDialog extends DialogFragment {
     private final static String ARG_COUNTRIES = "countries";
 
 
-    public static PickTtsLanguageDialog newInstance(Collection<Locale> locales, Context c) {
+    public static PickTtsLanguageDialog newInstance(Collection<Locale> locales) {
         Bundle arguments = new Bundle();
         saveLocalesToArguments(locales, arguments);
         final PickTtsLanguageDialog dialog = new PickTtsLanguageDialog();
@@ -109,6 +108,13 @@ public class PickTtsLanguageDialog extends DialogFragment {
         builder.setTitle(getString(R.string.choose_language));
 
         final List<DisplayLocale> locales = readLocaleListFromArguments();
+
+        showListOfLanguages(builder, locales);
+
+        return builder.create();
+    }
+
+    private void showListOfLanguages(AlertDialog.Builder builder, List<DisplayLocale> locales) {
         final ArrayAdapter<DisplayLocale> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.item_tts_language);
 
         Collections.sort(locales, new Comparator<DisplayLocale>() {
@@ -127,8 +133,6 @@ public class PickTtsLanguageDialog extends DialogFragment {
                 EventBus.getDefault().post(new TtsLanguageChoosen(locale.getLocale()));
             }
         });
-
-        return builder.create();
     }
 
 
