@@ -267,7 +267,7 @@
     </string>
     <string name="install_tip_3">Ich extrahiere Text aus Bildern. Aber Ich kann den Text
         <b>nicht</b>
-        übersetzen.
+        sofort übersetzen.
     </string>
     <string name="pref_title_privacy">Datenschutzerklärung</string>
     <string name="pref_summary_privacy">Lies dir meine Datenschutzerklärung durch.</string>
@@ -290,6 +290,7 @@
     </string>
     <string name="stop_speaking">Sprachausgabe stoppen</string>
     <string name="volume_is_off">Lautsprecher ist stumm.</string>
-    <string name="install_tts_prompt">Sie müssen zuerst die Text-zu-Sprache-Daten installieren.</string>
+    <string name="install_tts_prompt">Sie müssen zuerst die Text-zu-Sprache-Daten installieren.
+    </string>
 
 </resources>
