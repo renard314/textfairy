@@ -22,22 +22,22 @@ public class Hocr2Pdf {
     static {
         System.loadLibrary("pngo");
         System.loadLibrary("hocr2pdf");
-		System.loadLibrary("hocr2pdfjni");
+        System.loadLibrary("hocr2pdfjni");
     }
-    
+
     private PDFProgressListener mListener;
-    
-    public interface PDFProgressListener{
-    	void onNewPage(int pageNumber);
+
+    public interface PDFProgressListener {
+        void onNewPage(int pageNumber);
     }
-    
+
     public Hocr2Pdf(PDFProgressListener listener) {
-    	mListener = listener;
+        mListener = listener;
     }
 
     public void hocr2pdf(String[] images, String[] hocr, String pdfFileName, boolean sloppy, boolean overlayImage) {
         byte[][] hocrBytes = new byte[hocr.length][];
-        for(int i = 0; i<hocr.length; i++){
+        for (int i = 0; i < hocr.length; i++) {
             try {
                 hocrBytes[i] = hocr[i].getBytes("UTF-8");
             } catch (UnsupportedEncodingException e) {
@@ -47,12 +47,16 @@ public class Hocr2Pdf {
         }
         nativeHocr2pdf(images, hocrBytes, pdfFileName, sloppy, overlayImage);
     }
-    
+
+    /**
+     * called by native coe
+     */
+    @SuppressWarnings("unused")
     private void onProgress(int pageNumber) {
-    	if (mListener!=null){
-    		mListener.onNewPage(pageNumber);
-    	}
+        if (mListener != null) {
+            mListener.onNewPage(pageNumber);
+        }
     }
-    
-    private native void nativeHocr2pdf( String[] images, byte[][] hocr, String pdfFileName, boolean sloppy, boolean overlayImage);
+
+    private native void nativeHocr2pdf(String[] images, byte[][] hocr, String pdfFileName, boolean sloppy, boolean overlayImage);
 }

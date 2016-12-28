@@ -64,8 +64,12 @@ public class TextSpeaker {
 
     Locale getLanguageFromTts() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (mTts.getVoice() != null) {
-                return mTts.getVoice().getLocale();
+            try {
+                if (mTts.getVoice() != null) {
+                    return mTts.getVoice().getLocale();
+                }
+            } catch (Exception why) {
+                return Locale.getDefault();
             }
         }
         return mTts.getLanguage();
@@ -159,6 +163,8 @@ public class TextSpeaker {
                     return availableLanguages;
                 }
             } catch (IllegalArgumentException exception) {
+                return getValidTtsLocales();
+            } catch (NullPointerException npe) {
                 return getValidTtsLocales();
             }
         } else {

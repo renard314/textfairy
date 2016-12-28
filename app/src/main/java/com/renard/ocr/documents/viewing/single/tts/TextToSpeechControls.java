@@ -59,7 +59,7 @@ public class TextToSpeechControls extends RelativeLayout {
         if (s != null) {
             return new Locale(s);
         } else {
-            return null;
+            return Locale.getDefault();
         }
     }
 

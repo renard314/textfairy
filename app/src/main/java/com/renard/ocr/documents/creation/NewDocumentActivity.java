@@ -689,20 +689,26 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         }
 
         @Override
-        public void onNewPage(int pageNumber) {
-            Bundle args = new Bundle(5);
+        public void onNewPage(final int pageNumber) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Bundle args = new Bundle(5);
 
-            String progressMsg = getResources().getString(R.string.progress_pfd_creation);
-            progressMsg = String.format(progressMsg, pageNumber, mCurrentPageCount, mCurrentDocumentName);
+                    String progressMsg = getResources().getString(R.string.progress_pfd_creation);
+                    progressMsg = String.format(progressMsg, pageNumber, mCurrentPageCount, mCurrentDocumentName);
 
-            String title = getResources().getString(R.string.pdf_creation_message);
+                    String title = getResources().getString(R.string.pdf_creation_message);
 
-            args.putString(DIALOG_ARG_MESSAGE, title);
-            args.putString(DIALOG_ARG_MESSAGE, progressMsg);
-            args.putInt(DIALOG_ARG_MAX, mIds.size());
-            args.putInt(DIALOG_ARG_PROGRESS, mCurrentDocumentIndex);
-            args.putInt(DIALOG_ARG_SECONDARY_PROGRESS, pageNumber);
-            showDialog(PDF_PROGRESS_DIALOG_ID, args);
+                    args.putString(DIALOG_ARG_MESSAGE, title);
+                    args.putString(DIALOG_ARG_MESSAGE, progressMsg);
+                    args.putInt(DIALOG_ARG_MAX, mIds.size());
+                    args.putInt(DIALOG_ARG_PROGRESS, mCurrentDocumentIndex);
+                    args.putInt(DIALOG_ARG_SECONDARY_PROGRESS, pageNumber);
+                    showDialog(PDF_PROGRESS_DIALOG_ID, args);
+                }
+            });
+
         }
 
         @Override
