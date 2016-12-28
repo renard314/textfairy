@@ -30,7 +30,7 @@ public class OcrLanguageDataStore {
         return result;
     }
 
-    static List<OcrLanguage> getAvailableOcrLanguages(Context context) {
+    public static List<OcrLanguage> getAvailableOcrLanguages(Context context) {
         List<OcrLanguage> languages = new ArrayList<>();
         // actual values uses by tesseract
         final String[] languageValues = context.getResources().getStringArray(R.array.ocr_languages);

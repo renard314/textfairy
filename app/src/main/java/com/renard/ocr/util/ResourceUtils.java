@@ -38,7 +38,7 @@ public class ResourceUtils {
 
                         if (null == key) {
                             parser.close();
-                            return null;
+                            return new HashMap<>();
                         }
                     }
                 } else if (eventType == XmlPullParser.END_TAG) {
@@ -56,7 +56,7 @@ public class ResourceUtils {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new HashMap<>();
         }
 
         return map;
