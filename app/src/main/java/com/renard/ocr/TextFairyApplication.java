@@ -56,29 +56,30 @@ public class TextFairyApplication extends Application {
     private static final String TAG = "TextFairyApplication";
 
     private void checkLanguages() {
-        Map<String, String> hashMapResource = ResourceUtils.getHashMapResource(this, R.xml.iso_639_mapping);
-        final List<OcrLanguage> availableOcrLanguages = OcrLanguageDataStore.getAvailableOcrLanguages(this);
-        final Iterator<OcrLanguage> iterator = availableOcrLanguages.iterator();
-        while (iterator.hasNext()) {
-            OcrLanguage language = iterator.next();
-            if (hashMapResource.remove(language.getValue()) != null) {
-                iterator.remove();
+        if (BuildConfig.DEBUG) {
+            Map<String, String> hashMapResource = ResourceUtils.getHashMapResource(this, R.xml.iso_639_mapping);
+            final List<OcrLanguage> availableOcrLanguages = OcrLanguageDataStore.getAvailableOcrLanguages(this);
+            final Iterator<OcrLanguage> iterator = availableOcrLanguages.iterator();
+            while (iterator.hasNext()) {
+                OcrLanguage language = iterator.next();
+                if (hashMapResource.remove(language.getValue()) != null) {
+                    iterator.remove();
+                }
             }
-        }
-        if (!availableOcrLanguages.isEmpty()) {
-            Log.w(TAG, "Some OCR languages dont have mapping to iso 636");
-            for (OcrLanguage language : availableOcrLanguages) {
-                Log.w(TAG, language.getDisplayText());
+            if (!availableOcrLanguages.isEmpty()) {
+                Log.w(TAG, "Some OCR languages don't have a mapping to iso 636");
+                for (OcrLanguage language : availableOcrLanguages) {
+                    Log.w(TAG, language.getDisplayText());
+                }
             }
-        }
 
-        if (!hashMapResource.isEmpty()) {
-            Log.w(TAG, "Some iso 636 mappings don't have a corresponding OCR language");
-            for (String key : hashMapResource.keySet()) {
-                Log.w(TAG, key);
+            if (!hashMapResource.isEmpty()) {
+                Log.w(TAG, "Some iso 636 mappings don't have a corresponding OCR language");
+                for (String key : hashMapResource.keySet()) {
+                    Log.w(TAG, key);
+                }
             }
         }
-
 
     }
 
