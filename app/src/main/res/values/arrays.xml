@@ -73,6 +73,9 @@
         <item>vie Vietnamese</item>
         <item>urd Urdu</item>
         <item>deu_frak Deutsch (Fraktur)</item>
+        <item>lao Lao</item>
+        <item>mya Burmese</item>
+        <item>khm Khmer</item>
     </string-array>
 
 </resources>
