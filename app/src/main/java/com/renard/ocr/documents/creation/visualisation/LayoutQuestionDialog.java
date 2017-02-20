@@ -209,7 +209,9 @@ public class LayoutQuestionDialog extends DialogFragment {
                 });
 
 
-        return builder.create();
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        return alertDialog;
 
     }
 

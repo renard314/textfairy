@@ -55,7 +55,7 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     private static final String LOG_TAG = MonitoredActivity.class.getSimpleName();
     static final int MY_PERMISSIONS_REQUEST = 232;
 
-    private final ArrayList<LifeCycleListener> mListeners = new ArrayList<LifeCycleListener>();
+    private final ArrayList<LifeCycleListener> mListeners = new ArrayList<>();
     private int mDialogId = -1;
     private final Handler mHandler = new Handler();
     private ImageView mAppIcon = null;
@@ -109,17 +109,24 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     }
 
     @Override
-    protected void onPause() {
+    protected synchronized void onPause() {
         super.onPause();
-        for (LifeCycleListener listener : mListeners) {
+        final ArrayList<LifeCycleListener> lifeCycleListeners = copyListeners();
+        for (LifeCycleListener listener : lifeCycleListeners) {
             listener.onActivityPaused(this);
         }
+    }
+
+    private ArrayList<LifeCycleListener> copyListeners() {
+        final ArrayList<LifeCycleListener> lifeCycleListeners = new ArrayList<>(mListeners.size());
+        lifeCycleListeners.addAll(mListeners);
+        return lifeCycleListeners;
     }
 
     public abstract String getScreenName();
 
     @Override
-    protected void onResume() {
+    protected synchronized void onResume() {
         super.onResume();
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityResumed(this);
@@ -133,7 +140,9 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     @Override
     protected synchronized void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        for (LifeCycleListener listener : mListeners) {
+        final ArrayList<LifeCycleListener> lifeCycleListeners = copyListeners();
+
+        for (LifeCycleListener listener : lifeCycleListeners) {
             listener.onActivityCreated(this);
         }
         TextFairyApplication application = (TextFairyApplication) getApplication();
@@ -173,7 +182,8 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         if (mPermissionDialog != null) {
             mPermissionDialog.cancel();
         }
-        for (LifeCycleListener listener : mListeners) {
+        final ArrayList<LifeCycleListener> lifeCycleListeners = copyListeners();
+        for (LifeCycleListener listener : lifeCycleListeners) {
             listener.onActivityDestroyed(this);
         }
     }
@@ -181,15 +191,17 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     @Override
     protected synchronized void onStart() {
         super.onStart();
-        for (LifeCycleListener listener : mListeners) {
+        final ArrayList<LifeCycleListener> lifeCycleListeners = copyListeners();
+        for (LifeCycleListener listener : lifeCycleListeners) {
             listener.onActivityStarted(this);
         }
     }
 
     @Override
-    protected void onStop() {
+    protected synchronized  void onStop() {
         super.onStop();
-        for (LifeCycleListener listener : mListeners) {
+        final ArrayList<LifeCycleListener> lifeCycleListeners = copyListeners();
+        for (LifeCycleListener listener : lifeCycleListeners) {
             listener.onActivityStopped(this);
         }
         Log.i(LOG_TAG, "onStop: " + this.getClass());

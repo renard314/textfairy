@@ -17,6 +17,7 @@ package com.renard.ocr.documents.creation.visualisation;
 
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
+import com.googlecode.tesseract.android.NativeBinding;
 import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.PermissionGrantedEvent;
@@ -43,6 +44,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v4.util.Pair;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -104,7 +106,7 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
             return;
         }
 
-        mOCR = new OCR(this, mMessageReceiver);
+        mOCR = new OCR(this, mMessageReceiver, new NativeBinding());
         Screen.lockOrientation(this);
         setContentView(R.layout.activity_ocr);
         ButterKnife.bind(this);
@@ -117,28 +119,33 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
     @SuppressWarnings("unused")
     public void onEventMainThread(final PermissionGrantedEvent event) {
         long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1);
-        final Pix pixOrg = new Pix(nativePix);
-        mOriginalHeight = pixOrg.getHeight();
-        mOriginalWidth = pixOrg.getWidth();
-        askUserAboutDocumentLayout();
+        if (nativePix != -1) {
+            final Pix pixOrg = new Pix(nativePix);
+            mOriginalHeight = pixOrg.getHeight();
+            mOriginalWidth = pixOrg.getWidth();
+            askUserAboutDocumentLayout();
+        }
     }
 
     @Override
     public void onLayoutChosen(LayoutKind layoutKind, String ocrLanguage) {
         long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1);
-        final Pix pixOrg = new Pix(nativePix);
-        if (layoutKind == LayoutKind.DO_NOTHING) {
-            saveDocument(pixOrg, null, null, 0);
-        } else {
-            mOcrLanguage = ocrLanguage;
+        if (nativePix != -1) {
+            final Pix pixOrg = new Pix(nativePix);
+            if (layoutKind == LayoutKind.DO_NOTHING) {
+                saveDocument(pixOrg, null, null, 0);
+            } else {
+                mOcrLanguage = ocrLanguage;
 
-            setToolbarMessage(R.string.progress_start);
+                setToolbarMessage(R.string.progress_start);
 
-            if (layoutKind == LayoutKind.SIMPLE) {
-                mOCR.startOCRForSimpleLayout(OCRActivity.this, ocrLanguage, pixOrg, mImageView.getWidth(), mImageView.getHeight());
-            } else if (layoutKind == LayoutKind.COMPLEX) {
-                mAccuracy = 0;
-                mOCR.startLayoutAnalysis(OCRActivity.this, pixOrg, mImageView.getWidth(), mImageView.getHeight());
+                getIntent().removeExtra(DocumentGridActivity.EXTRA_NATIVE_PIX);
+                if (layoutKind == LayoutKind.SIMPLE) {
+                    mOCR.startOCRForSimpleLayout(OCRActivity.this, ocrLanguage, pixOrg, mImageView.getWidth(), mImageView.getHeight());
+                } else if (layoutKind == LayoutKind.COMPLEX) {
+                    mAccuracy = 0;
+                    mOCR.startLayoutAnalysis(pixOrg, mImageView.getWidth(), mImageView.getHeight());
+                }
             }
         }
 
@@ -200,8 +207,9 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
                 }
 
                 case OCR.MESSAGE_LAYOUT_ELEMENTS: {
-                    int nativePixaText = msg.arg1;
-                    int nativePixaImages = msg.arg2;
+                    Pair<Long, Long> longLongPair = (Pair<Long, Long>) msg.obj;
+                    long nativePixaText = longLongPair.first;
+                    long nativePixaImages = longLongPair.second;
                     final Pixa texts = new Pixa(nativePixaText, 0, 0);
                     final Pixa images = new Pixa(nativePixaImages, 0, 0);
                     ArrayList<Rect> boxes = images.getBoxRects();

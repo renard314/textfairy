@@ -23,15 +23,15 @@ import com.googlecode.leptonica.android.Pix;
  */
 public class BlurDetectionResult {
 
-    public enum Blurriness{
+
+    public enum Blurriness {
         NOT_BLURRED, MEDIUM_BLUR, STRONG_BLUR;
     }
 
+    private boolean mDestroyed;
     private final Pix mPixBlur;
     private final double mBlurValue;
     private final Box mMostBlurredRegion;
-
-
 
 
     public BlurDetectionResult(long blurPixPointer, double mBlurValue, long blurRegionPointer) {
@@ -44,7 +44,14 @@ public class BlurDetectionResult {
      * Pix with overlay showing the extend of blurriness.
      */
     public Pix getPixBlur() {
+        checkDestroyed();
         return mPixBlur;
+    }
+
+    private void checkDestroyed() {
+        if (mDestroyed) {
+            throw new IllegalStateException("BlurDetectionResult has been destroyed");
+        }
     }
 
     /**
@@ -56,19 +63,28 @@ public class BlurDetectionResult {
     }
 
     public Blurriness getBlurriness() {
-        if(mBlurValue<0.5){
+        checkDestroyed();
+        if (mBlurValue < 0.5) {
             return Blurriness.NOT_BLURRED;
-        } else if(mBlurValue<0.67) {
+        } else if (mBlurValue < 0.67) {
             return Blurriness.MEDIUM_BLUR;
         } else {
             return Blurriness.STRONG_BLUR;
         }
     }
 
+    public void destroy() {
+        checkDestroyed();
+        mDestroyed = true;
+        mPixBlur.recycle();
+        mMostBlurredRegion.recycle();
+    }
+
     /**
      * Bounding box of the most blurry region.
      */
     public Box getMostBlurredRegion() {
+        checkDestroyed();
         return mMostBlurredRegion;
     }
 }

@@ -34,7 +34,7 @@ class CropData {
 
     public void recylce() {
         mScaleResult.getPix().recycle();
-        mBlurriness.getPixBlur().recycle();
+        mBlurriness.destroy();
     }
 }
 
@@ -78,14 +78,22 @@ public class PreparePixForCropTask extends AsyncTask<Void, Void, CropData> {
         CropImageScaler.ScaleResult scaleResult;
         // scale it so that it fits the screen
         if (isCancelled()) {
+            blurDetectionResult.destroy();
             return null;
         }
         scaleResult = scaler.scale(mPix, mWidth, mHeight);
         if (isCancelled()) {
+            scaleResult.getPix().recycle();
+            blurDetectionResult.destroy();
             return null;
         }
         Bitmap bitmap = WriteFile.writeBitmap(scaleResult.getPix());
         if (isCancelled()) {
+            scaleResult.getPix().recycle();
+            blurDetectionResult.destroy();
+            if (bitmap != null) {
+                bitmap.recycle();
+            }
             return null;
         }
         if (bitmap != null) {
