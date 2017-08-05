@@ -134,6 +134,7 @@ if (propFile.canRead()) {
 
 dependencies {
     compile project(":tess-two:tess-two")
+    compile 'com.github.barteksc:pdfium-android:1.5.0'
     compile fileTree(dir: 'src/main/libs', include: '*.jar')
 
     debugCompile "com.squareup.leakcanary:leakcanary-android:${versions.leak_canary}"
