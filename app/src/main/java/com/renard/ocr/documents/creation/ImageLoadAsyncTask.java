@@ -5,32 +5,38 @@ import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.leptonica.android.Scale;
 import com.renard.ocr.TextFairyApplication;
+import com.shockwave.pdfium.PdfDocument;
+import com.shockwave.pdfium.PdfiumCore;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.ParcelFileDescriptor;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 
 /**
  * @author renard
  */
-public class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask.LoadResult> {
+class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask.LoadResult> {
 
-    public class LoadResult {
+    class LoadResult {
         private final Pix mPix;
         private final PixLoadStatus mStatus;
 
-        public LoadResult(PixLoadStatus status) {
+        LoadResult(PixLoadStatus status) {
             mStatus = status;
             mPix = null;
         }
 
-        public LoadResult(Pix p) {
+        LoadResult(Pix p) {
             mStatus = PixLoadStatus.SUCCESS;
             mPix = p;
         }
@@ -42,7 +48,7 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask
     final static String EXTRA_SKIP_CROP = "skip_crop";
     final static String ACTION_IMAGE_LOADED = ImageLoadAsyncTask.class.getName() + ".image.loaded";
     final static String ACTION_IMAGE_LOADING_START = ImageLoadAsyncTask.class.getName() + ".image.loading.start";
-    public static final int MIN_PIXEL_COUNT = 3 * 1024 * 1024;
+    private static final int MIN_PIXEL_COUNT = 3 * 1024 * 1024;
     private final boolean skipCrop;
     private final Context context;
     private final Uri cameraPicUri;
@@ -82,17 +88,28 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask
             Log.i(LOG_TAG, "isCancelled");
             return null;
         }
-        Pix p = ReadFile.loadWithPicasso(context, cameraPicUri);
-        if (p == null) {
-            if (TextFairyApplication.isRelease()) {
-                Crashlytics.setString("image uri", cameraPicUri.toString());
-                Crashlytics.logException(new IOException("could not load image."));
+        Pix p;
+        if (cameraPicUri.getPath().endsWith(".pdf")) {
+            p = loadAsPdf(cameraPicUri);
+            if (p == null) {
+                return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
             }
-            return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
+        } else {
+            p = ReadFile.loadWithPicasso(context, cameraPicUri);
+            if (p == null) {
+                if (TextFairyApplication.isRelease()) {
+                    Crashlytics.setString("image uri", cameraPicUri.toString());
+                    Crashlytics.logException(new IOException("could not load image."));
+                }
+                return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
+            }
         }
 
+
         final long pixPixelCount = p.getWidth() * p.getHeight();
-        if (pixPixelCount < MIN_PIXEL_COUNT) {
+        if (pixPixelCount < MIN_PIXEL_COUNT)
+
+        {
             double scale = Math.sqrt(((double) MIN_PIXEL_COUNT) / pixPixelCount);
             Pix scaledPix = Scale.scale(p, (float) scale);
             if (scaledPix.getNativePix() == 0) {
@@ -106,9 +123,42 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask
             }
         }
 
-
         return new LoadResult(p);
+    }
 
+    private Pix loadAsPdf(Uri cameraPicUri) {
+        Pix p = null;
+        Bitmap bitmap = null;
+        int pageNum = 0;
+        PdfiumCore pdfiumCore = new PdfiumCore(context);
+        try {
+
+            final String replace = cameraPicUri.toString().replace("/file/file", "/file");
+            final Uri fixedUri = Uri.parse(replace);
+
+            final ParcelFileDescriptor fd = context.getContentResolver().openFileDescriptor(fixedUri, "r");
+            PdfDocument pdfDocument = pdfiumCore.newDocument(fd);
+
+            pdfiumCore.openPage(pdfDocument, pageNum);
+
+            int width = pdfiumCore.getPageWidthPoint(pdfDocument, pageNum);
+            int height = pdfiumCore.getPageHeightPoint(pdfDocument, pageNum);
+            int widthPixels = (int) (width / (72.0 / 300.0));
+            int heightPixels = (int) (height / (72.0 / 300.0));
+
+            bitmap = Bitmap.createBitmap(widthPixels, heightPixels, Bitmap.Config.ARGB_8888);
+            pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, widthPixels, heightPixels);
+            p = ReadFile.readBitmap(bitmap);
+            pdfiumCore.closeDocument(pdfDocument);
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (bitmap != null) {
+                bitmap.recycle();
+            }
+        }
+        return p;
     }
 
 }
