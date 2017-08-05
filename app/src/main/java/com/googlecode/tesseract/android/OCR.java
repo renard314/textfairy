@@ -57,7 +57,6 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     public static final int MESSAGE_UTF8_TEXT = 8;
     public static final int MESSAGE_HOCR_TEXT = 9;
     public static final int MESSAGE_LAYOUT_ELEMENTS = 10;
-    public static final int MESSAGE_LAYOUT_PIX = 11;
     public static final int MESSAGE_EXPLANATION_TEXT = 12;
     public static final String EXTRA_WORD_BOX = "word_box";
     public static final String EXTRA_OCR_BOX = "ocr_box";

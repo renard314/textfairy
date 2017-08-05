@@ -187,6 +187,8 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
                     break;
                 }
                 case OCR.MESSAGE_PREVIEW_IMAGE: {
+                    mPreviewHeight = ((Bitmap) msg.obj).getHeight();
+                    mPreviewWith = ((Bitmap) msg.obj).getWidth();
                     mImageView.setImageBitmapResetBase((Bitmap) msg.obj, true, 0);
                     break;
                 }
@@ -196,13 +198,6 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
                     if (nativePix != 0) {
                         mFinalPix = new Pix(nativePix);
                     }
-                    break;
-                }
-                case OCR.MESSAGE_LAYOUT_PIX: {
-                    Bitmap layoutPix = (Bitmap) msg.obj;
-                    mPreviewHeight = layoutPix.getHeight();
-                    mPreviewWith = layoutPix.getWidth();
-                    mImageView.setImageBitmapResetBase(layoutPix, true, 0);
                     break;
                 }
 
