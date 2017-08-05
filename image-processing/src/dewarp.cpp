@@ -28,7 +28,7 @@ l_int32 pixDewarp(Pix* pixb, Pix** pixd) {
 	L_DEWARPA  *dewa;
 	l_int32 vsuccess, applyResult = 1;
 
-	dewa = dewarpaCreate(0, 15, 1, 8, 0);
+	dewa = dewarpaCreate(0, 15, 1, 12, 0);
 	//relax constraints on max curves as pictures taken by phone cameras can be extremely distorted
 	dewarpaSetCurvatures(dewa, -1, 0, 330, -1, -1, -1);
 	dewarpaUseBothArrays(dewa, 1);  // try to use both disparity arrays for this example

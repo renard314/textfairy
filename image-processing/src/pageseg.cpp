@@ -217,7 +217,7 @@ Pixa* pagesegGetColumns(Pix* pixtext, bool debug) {
 
 
 
-void segmentComplexLayout(Pix* pixOrg,Pix* pixhm, Pix* pixb, Pixa** pixaImage, Pixa** pixaText,void(*callback) (const Pix*), bool debug) {
+void segmentComplexLayout(Pix* pixOrg,Pix* pixhm, Pix* pixb, Pixa** pixaImage, Pixa** pixaText, ProgressCallback* callback, bool debug) {
 	ostringstream debugstring;
 
 	if (debug) {
@@ -245,9 +245,7 @@ void segmentComplexLayout(Pix* pixOrg,Pix* pixhm, Pix* pixb, Pixa** pixaImage, P
 		pixDestroy(&pixtext32);
 		pixpreview = pixOrg2;
 	} else {
-		Pix* pixb2 = pixReduceBinary2(pixb, NULL);
-		Pix* pixtext32 = pixConvertTo32(pixb2);
-		pixDestroy(&pixb2);
+		Pix* pixtext32 = pixConvertTo32(pixb);
 		pixpreview = pixtext32;
 	}
 
@@ -255,8 +253,9 @@ void segmentComplexLayout(Pix* pixOrg,Pix* pixhm, Pix* pixb, Pixa** pixaImage, P
 		debugstring << "Preview-Image generation: " << stopTimer() << std::endl;
 	}
     if(callback!=NULL){
-        callback(pixpreview);
+        callback->sendMessage(MESSAGE_ANALYSE_LAYOUT);
     }
+    pixDestroy(&pixpreview);
 
 	if (debug) {
 		startTimer();

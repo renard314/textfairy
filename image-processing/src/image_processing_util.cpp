@@ -37,9 +37,11 @@
 
 using namespace std;
 
+#define CORRECT_ORIENTATION 0
 
 
-void bookpage(Pix* pixOrg, Pix** pixText, void (*messageJavaCallback)(int), void (*pixJavaCallback)(Pix*), bool debug) {
+
+void bookpage(Pix* pixOrg, Pix** pixText, ProgressCallback* callback, bool debug) {
     
     Pix *pixb = NULL;
     Pix* pixDewarped = NULL;
@@ -47,11 +49,11 @@ void bookpage(Pix* pixOrg, Pix** pixText, void (*messageJavaCallback)(int), void
         startTimer();
     }
     
-    PixBinarizer binarizer(false);
-    pixb = binarizer.binarize(pixOrg, pixJavaCallback);
+    PixBinarizer binarizer(debug);
+    pixb = binarizer.binarize(pixOrg, callback);
     
-    if(pixJavaCallback!=NULL){
-        pixJavaCallback(pixb);
+    if(callback!=NULL){
+        callback->sendPix(pixb);
     }
     
     if (debug>0){
@@ -59,32 +61,65 @@ void bookpage(Pix* pixOrg, Pix** pixText, void (*messageJavaCallback)(int), void
         pixWrite("binarized.png", pixb, IFF_PNG);
     }
     
-    SkewCorrector skewCorrector(false);
-    Pix* pixbRotated = skewCorrector.correctSkew(pixb, NULL);
-    pixDestroy(&pixb);
-    pixb = pixbRotated;
     
-    if(pixJavaCallback!=NULL){
-        pixJavaCallback(pixb);
+    if (CORRECT_ORIENTATION) {
+        l_float32 upConf,leftConf;
+        l_int32 orientDetectResult = pixOrientDetectDwa(pixb, &upConf, &leftConf, 0, 0);
+        if(!orientDetectResult){
+            l_int32 orient;
+            orientDetectResult = makeOrientDecision(upConf, leftConf, 0, 0, &orient, 0);
+            if(!orientDetectResult){
+                printf("upConf = %.2f, leftConf = %.2f, orientation = %i\n", upConf, leftConf, orient);
+                Pix* pixRotated;
+                switch (orient) {
+                    case L_TEXT_ORIENT_UNKNOWN:
+                    case L_TEXT_ORIENT_UP:
+                        pixRotated = pixClone(pixb);
+                        break;
+                    case L_TEXT_ORIENT_LEFT:
+                        pixRotated = pixRotateOrth(pixb, 1);
+                        break;
+                    case L_TEXT_ORIENT_DOWN:
+                        pixRotated = pixRotateOrth(pixb, 2);
+                        break;
+                    case L_TEXT_ORIENT_RIGHT:
+                        pixRotated = pixRotateOrth(pixb, 3);
+                        break;
+                    default:
+                        break;
+                }
+                pixDestroy(&pixb);
+                pixb = pixRotated;
+            }
+        }
+        
+        if(callback!=NULL){
+            callback->sendPix(pixb);
+        }
     }
     
-    if(messageJavaCallback!=NULL){
-        messageJavaCallback(MESSAGE_IMAGE_DEWARP);
+    if(callback!=NULL){
+        callback->sendMessage(MESSAGE_IMAGE_DEWARP);
     }
     
     startTimer();
     l_int32 dewarpResult = pixDewarp(pixb, &pixDewarped);
     
     if(dewarpResult){
-        *pixText = pixClone(pixb);
         log("dewarp failed in: %f",stopTimer());
+        log("attempting to correct skew instead.");
+        SkewCorrector skewCorrector(debug);
+        l_float32 angle;
+        *pixText = skewCorrector.correctSkew(pixb, &angle);
+        log("%.2f degree of skew detected.", angle);
     } else {
         log("dewarp success in: %f",stopTimer());
-        if(pixJavaCallback!=NULL){
-            pixJavaCallback(pixDewarped);
-        }
         *pixText = pixDewarped;
     }
+    if(callback!=NULL){
+        callback->sendPix(*pixText);
+    }
+
     pixDestroy(&pixb);
 }
 
@@ -121,7 +156,7 @@ void translateBoxa(Pixa* pixa, l_int32 dx, l_int32 dy, l_int32 left, l_int32 top
 /**
  * destroys all pixa
  */
-void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, l_int32 textCount, l_int32* imageindexes, l_int32 imageCount, void (*callbackMessage)(const int), Pix** pPixFinal, Pix** pPixOcr,Boxa** pBoxaColumns, bool debug) {
+void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, l_int32 textCount, l_int32* imageindexes, l_int32 imageCount, ProgressCallback* callback, Pix** pPixFinal, Pix** pPixOcr,Boxa** pBoxaColumns, bool debug) {
     ostringstream debugstring;
     
     if (debug) {
@@ -190,7 +225,9 @@ void combineSelectedPixa(Pixa* pixaText, Pixa* pixaImage, l_int32* textindexes, 
         }
     }
     
-    callbackMessage(MESSAGE_ASSEMBLE_PIX);
+    if(callback!=NULL){
+        callback->sendMessage(MESSAGE_ASSEMBLE_PIX);
+    }
     
     int xb, yb, wb, hb;
     int left = MAX_INT16;

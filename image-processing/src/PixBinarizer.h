@@ -9,14 +9,14 @@
 #define PIXBINARIZER_H_
 
 #include "allheaders.h"
-
+#include "ProgressCallback.h"
 class PixBinarizer {
 public:
-	PixBinarizer(bool debug);
-    Pix* binarize(Pix* pix,  void(*previewCallBack) (Pix*));
-
-	virtual ~PixBinarizer();
-
+    PixBinarizer(bool debug);
+    Pix* binarize(Pix* pix,  ProgressCallback* callback);
+    
+    virtual ~PixBinarizer();
+    
 private:
 	void binarizeInternal(Pix* pixGrey, Pix* pixhm, Pix** pixb);
 	Pix* binarizeTiled(Pix* pixs, const l_uint32 tileSize);

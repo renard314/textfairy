@@ -56,8 +56,13 @@ void PixBlurDetect::getCenterOfGravity(Pix* pixs, l_uint32* cx, l_uint32* cy) {
 			total += val;
 		}
 	}
-	*cx = cogx / total;
-	*cy = cogy / total;
+    if(total!=0){
+        *cx = cogx / total;
+        *cy = cogy / total;
+    } else {
+        *cx=0;
+        *cy=0;
+    }
 }
 
 /**
@@ -122,6 +127,8 @@ Pix* PixBlurDetect::makeBlurIndicator(Pix* pixOrg, l_float32* blurValue, Box** m
 	case 32:
 		pixGrey = pixConvertRGBToGrayFast(pixOrg);
 		break;
+    default:
+        pixGrey = pixConvertTo8(pixOrg, FALSE);
 	}
 	Pix* pixScaled;
 	int targetw = pixGetWidth(pixGrey);

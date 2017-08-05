@@ -253,7 +253,7 @@ void PixBinarizer::binarizeInternal(Pix* pixGrey, Pix* pixhm, Pix** pixb) {
     }
 }
 
-Pix *PixBinarizer::binarize(Pix *pix, void(*previewCallBack)(Pix *)) {
+Pix *PixBinarizer::binarize(Pix *pix, ProgressCallback* callback) {
     
     l_int32 depth = pixGetDepth(pix);
     Pix* pixGrey = NULL;

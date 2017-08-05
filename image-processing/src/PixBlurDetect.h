@@ -23,7 +23,7 @@
 #ifndef BLUR_DETTECT_H_
 #define BLUR_DETTECT_H_
 
-#include <allheaders.h>
+#include "allheaders.h"
 
 
 class PixBlurDetect {
