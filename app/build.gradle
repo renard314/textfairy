@@ -44,7 +44,7 @@ tasks.withType(JavaCompile) {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.2"
+    buildToolsVersion '25.0.2'
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
