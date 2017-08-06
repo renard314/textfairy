@@ -25,27 +25,16 @@ task checkstyle(type: Checkstyle) {
     classpath = files()
 }
 
-task ndkBuild(type: Exec, description: 'run ndk-build') {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        workingDir 'src/main/jni'
-        commandLine 'ndk-build.cmd', '-j', Runtime.runtime.availableProcessors()
-
-    } else {
-        workingDir 'src/main/jni'
-        commandLine "$ndkDir/ndk-build", '-j', Runtime.runtime.availableProcessors()
-    }
-}
-
-tasks.withType(JavaCompile) {
-    compileTask -> compileTask.dependsOn(ndkBuild)
-}
-
-
 
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     defaultConfig {
+
+        ndk {
+            abiFilters 'x86', 'armeabi-v7a'
+        }
+
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 62
@@ -86,13 +75,13 @@ android {
                     project.ext.versionCodes.get(output.getFilter(com.android.build.OutputFile.ABI), 0) * 100 + android.defaultConfig.versionCode
         }
     }
-    sourceSets {
-        main {
-            //jniLibs.srcDirs = ['native-libs']
-            jniLibs.srcDir 'src/main/libs'
-            jni.srcDirs = [] //disable automatic ndk-build
-        }
-    }
+//    sourceSets {
+//        main {
+//            //jniLibs.srcDirs = ['native-libs']
+//            jniLibs.srcDir 'src/main/libs'
+//            jni.srcDirs = [] //disable automatic ndk-build
+//        }
+//    }
 
     productFlavors {
 
@@ -107,6 +96,11 @@ android {
     lintOptions {
         //I'm too lazy to translate everything
         abortOnError false
+    }
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
+        }
     }
 }
 
