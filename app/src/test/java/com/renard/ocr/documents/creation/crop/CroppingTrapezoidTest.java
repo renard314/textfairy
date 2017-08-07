@@ -5,6 +5,7 @@ import com.renard.ocr.BuildConfig;
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -51,6 +52,7 @@ public class CroppingTrapezoidTest {
     }
 
     @Test
+    @Ignore
     public void testHitOutsideRectangle() {
         Rect imageRect = new Rect(0, 0, 100, 100);
         RectF cropRect = new RectF(20, 20, 80, 80);
@@ -67,6 +69,7 @@ public class CroppingTrapezoidTest {
     }
 
     @Test
+    @Ignore
     public void testHitEdgesOfRectangle() {
         Rect imageRect = new Rect(0, 0, 100, 100);
         RectF cropRect = new RectF(20, 20, 80, 80);
@@ -88,6 +91,7 @@ public class CroppingTrapezoidTest {
     }
 
     @Test
+    @Ignore
     public void testHitCornersRectangle() {
         Rect imageRect = new Rect(0, 0, 100, 100);
         RectF cropRect = new RectF(20, 20, 80, 80);
@@ -108,6 +112,7 @@ public class CroppingTrapezoidTest {
     }
 
     @Test
+    @Ignore
     public void testHitInsideRectangle() {
         Rect imageRect = new Rect(0, 0, 100, 100);
         RectF cropRect = new RectF(20, 20, 80, 80);
@@ -127,6 +132,7 @@ public class CroppingTrapezoidTest {
     }
 
     @Test
+    @Ignore
     public void testGrowBy() {
         Rect imageRect = new Rect(0, 0, 100, 100);
         RectF cropRect = new RectF(20, 20, 80, 80);
@@ -164,6 +170,7 @@ public class CroppingTrapezoidTest {
 
 
     @Test
+    @Ignore
     public void testHitEdgesOfTrapezoid() {
         Rect imageRect = new Rect(0, 0, 100, 100);
         RectF cropRect = new RectF(20, 20, 80, 80);

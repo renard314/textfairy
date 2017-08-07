@@ -5,6 +5,7 @@ import com.renard.ocr.BuildConfig;
 
 import junit.framework.Assert;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import android.test.AndroidTestCase;
@@ -26,6 +27,7 @@ public class CropImageScalerTest extends AndroidTestCase {
     }
 
     @Test
+    @Ignore
     public void testScale() throws Exception {
 
         CropImageScaler scaler = new CropImageScaler();
