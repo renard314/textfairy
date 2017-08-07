@@ -1,5 +1,3 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'com.google.gms.google-services'
@@ -29,6 +27,12 @@ task checkstyle(type: Checkstyle) {
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
+
+    dexOptions {
+        // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
+        preDexLibraries = preDexEnabled && !travisBuild
+    }
+    
     defaultConfig {
 
         ndk {
