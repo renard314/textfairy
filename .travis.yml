@@ -9,23 +9,27 @@ android:
     - tools # to get the new `repository-11.xml`
     - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
     - platform-tools
+    - extra-android-support
     - extra-android-m2repository
     - extra-google-m2repository
     - build-tools-25.0.2
     - android-25
-  before_install:
-    - export ANDROID_HOME=/usr/local/android-sdk
-    - wget https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip -O ndk.bin
-    - 7z x ndk.bin > /dev/null
-    - export ANDROID_NDK_HOME=`pwd`/android-ndk-r15c
-    - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
-    - echo "sdk.dir=$ANDROID_HOME" > local.properties
-    - echo "ndk.dir=$ANDROID_NDK_HOME" >> local.properties
-    - echo $ANDROID_NDK_HOME
-  install:
-    - cd tess-two/tess-two
-    - $ANDROID_NDK_HOME/ndk-build
-    - cd ../../
-    - ./gradlew tasks
+before_install:
+  - export ANDROID_HOME=/usr/local/android-sdk
+  - wget https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip -O ndk.bin
+  - 7z x ndk.bin > /dev/null
+  - export ANDROID_NDK_HOME=`pwd`/android-ndk-r15c
+  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
+  - echo "sdk.dir=$ANDROID_HOME" > local.properties
+  - echo "ndk.dir=$ANDROID_NDK_HOME" >> local.properties
+  - echo $ANDROID_NDK_HOME
+
+script:
+  - cd tess-two/tess-two
+  - $ANDROID_NDK_HOME/ndk-build
+  - cd ../../
+  - ./gradlew tasks
 
 after_failure: "cat $TRAVIS_BUILD_DIR/app/build/outputs/lint-results-debug.xml"
+
+
