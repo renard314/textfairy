@@ -75,13 +75,7 @@ android {
                     project.ext.versionCodes.get(output.getFilter(com.android.build.OutputFile.ABI), 0) * 100 + android.defaultConfig.versionCode
         }
     }
-//    sourceSets {
-//        main {
-//            //jniLibs.srcDirs = ['native-libs']
-//            jniLibs.srcDir 'src/main/libs'
-//            jni.srcDirs = [] //disable automatic ndk-build
-//        }
-//    }
+
 
     productFlavors {
 
