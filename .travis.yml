@@ -22,7 +22,10 @@ android:
     - echo "sdk.dir=$ANDROID_HOME" > local.properties
     - echo "ndk.dir=$ANDROID_NDK_HOME" >> local.properties
     - echo $ANDROID_NDK_HOME
-  script:
+  install:
+    - cd tess-two/tess-two
+    - $ANDROID_NDK_HOME/ndk-build
+    - cd ../../
     - ./gradlew tasks
 
 after_failure: "cat $TRAVIS_BUILD_DIR/app/build/outputs/lint-results-debug.xml"
