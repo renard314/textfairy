@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/renard314/textfairy.svg?branch=master)](https://travis-ci.org/renard314/textfairy)
+
 textfairy
 =========
 
@@ -6,7 +8,6 @@ Android OCR App
 available in the [play store] [p]
 [p]: https://play.google.com/store/apps/details?id=com.renard.ocr
 
-[![Build Status](https://travis-ci.org/renard314/textfairy.svg?branch=master)](https://travis-ci.org/renard314/textfairy)
 
 Features
 --------
@@ -44,14 +45,14 @@ The following projects where added to the sources directly either because they w
 
 Building with gradle
 --------------------------------------
-make sure that you have got the android sdk as well as ndk (r8e) installed
+make sure that you have got the android sdk as well as ndk (r15c) installed
 
 * `git clone git@github.com:renard314/textfairy.git`
 * `cd textfairy`
 * `git submodule update`
 * `git submodule init`
-* modify `path` to `ndk-build` in `gradle.properties`
-* cd tess-two/tess-two
-* ndk-build -j4
-* cd ../../
-* ./gradlew app:assembleDevelopDebug
+* set `ndk.dir` to point to your `ndk-build` in `gradle.properties`
+* `cd tess-two/tess-two`
+* `ndk-build -j4`
+* `cd ../../`
+* `./gradlew app:assembleDevelopDebug`
