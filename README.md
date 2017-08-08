@@ -6,6 +6,8 @@ Android OCR App
 available in the [play store] [p]
 [p]: https://play.google.com/store/apps/details?id=com.renard.ocr
 
+[![Build Status](https://travis-ci.org/renard314/textfairy.svg?branch=master)](https://travis-ci.org/renard314/textfairy)
+
 Features
 --------
 * convert images to pdf
