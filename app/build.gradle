@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-apply plugin: 'com.google.gms.google-services'
 apply plugin: 'checkstyle'
+
 
 def versions = ['appcompat_v7' : '25.1.0',
                 'butterknife'  : '8.4.0',
@@ -9,14 +9,13 @@ def versions = ['appcompat_v7' : '25.1.0',
                 'card_view'    : '25.1.0',
                 'design'       : '25.1.0',
                 'photoview'    : '1.2.4',
-                'play_services': '10.0.1']
+                'play_services': '10.2.4']
 
 
 
 task checkstyle(type: Checkstyle) {
     configFile file("${project.rootDir}/checkstyle/checkstyle.xml")
     configProperties.checkstyleSuppressionsPath = file("${project.rootDir}/config/quality/checkstyle/suppressions.xml").absolutePath
-    // Where is my suppressions file for checkstyle is...
     source 'src'
     include '**/*.java'
     exclude '**/gen/**'
@@ -26,7 +25,7 @@ task checkstyle(type: Checkstyle) {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '26.0.2'
 
     dexOptions {
         // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
@@ -79,14 +78,15 @@ android {
                     project.ext.versionCodes.get(output.getFilter(com.android.build.OutputFile.ABI), 0) * 100 + android.defaultConfig.versionCode
         }
     }
-
+    flavorDimensions "mode"
 
     productFlavors {
 
         playstore {
-
+            dimension "mode"
         }
         develop {
+            dimension "mode"
         }
     }
 
@@ -102,7 +102,7 @@ android {
     }
 }
 
-def Properties props = new Properties()
+Properties props = new Properties()
 def propFile = new File('signing.properties')
 if (propFile.canRead()) {
     props.load(new FileInputStream(propFile))
@@ -133,13 +133,12 @@ dependencies {
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${versions.leak_canary}"
     compile 'com.viewpagerindicator:library:2.4.1@aar'
     compile "com.commit451:PhotoView:${versions.photoview}"
-    compile 'com.google.code.findbugs:jsr305:2.0.2'
-    compile "com.google.guava:guava:18.0"
+    compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile "com.android.support:design:${versions.design}"
     compile "com.android.support:appcompat-v7:${versions.appcompat_v7}"
-    compile 'org.apache.commons:commons-compress:1.5'
+    compile 'org.apache.commons:commons-compress:1.12'
     compile "com.android.support:cardview-v7:${versions.card_view}"
     compile "com.jakewharton:butterknife:${versions.butterknife}"
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
@@ -170,3 +169,4 @@ crashlytics {
     androidNdkOut '/Users/renard/devel/textfairy/tess-two/tess-two/obj'
     androidNdkLibsOut '/Users/renard/devel/textfairy/tess-two/tess-two/libs'
 }
+apply plugin: 'com.google.gms.google-services'
