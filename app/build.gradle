@@ -133,6 +133,7 @@ dependencies {
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${versions.leak_canary}"
     compile 'com.viewpagerindicator:library:2.4.1@aar'
     compile "com.commit451:PhotoView:${versions.photoview}"
+    compile "com.google.guava:guava:18.0"
     compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.nineoldandroids:library:2.4.0'
