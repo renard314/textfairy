@@ -81,7 +81,7 @@ int determineThresholdForTile(Pix* pixt, bool debug) {
 		GPLOT *gplot;
 		ostringstream name;
 		name << mean;
-		gplot = gplotCreate(name.str().c_str(), GPLOT_X11, name.str().c_str(),
+		gplot = gplotCreate(name.str().c_str(), GPLOT_PNG, name.str().c_str(),
 				"x", "y");
 		ostringstream title;
 		title << "mean = " << mean << ", " << "variance = " << variance
