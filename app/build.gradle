@@ -27,6 +27,10 @@ android {
     compileSdkVersion 25
     buildToolsVersion '26.0.2'
 
+    lintOptions {
+        disable 'MissingTranslation'
+    }
+
     dexOptions {
         // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
         preDexLibraries = preDexEnabled && !travisBuild
@@ -40,7 +44,7 @@ android {
 
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 62
+        versionCode 64
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
@@ -156,15 +160,15 @@ dependencies {
     testCompile("org.robolectric:robolectric:3.0-rc2") {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
-    compile('com.crashlytics.sdk.android:crashlytics:2+') {
+    compile('com.crashlytics.sdk.android:crashlytics:+') {
         transitive = true;
     }
-    compile('com.crashlytics.sdk.android:crashlytics-ndk:1+@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics-ndk:+@aar') {
         transitive = true;
     }
-
 
 }
+
 crashlytics {
     enableNdk true
     androidNdkOut '/Users/renard/devel/textfairy/tess-two/tess-two/obj'
