@@ -57,13 +57,8 @@ build.xml
 # Avoid ignoring tessdata.zip
 !tessdata.zip
 
-libjpeg/testoutt.jpg
-libjpeg/testoutp.ppm
-libjpeg/testoutp.jpg
-libjpeg/testout.ppm
-libjpeg/testout.jpg
-libjpeg/testout.bmp
-tesseract-ocr-read-only/autom4te.cache
+
+app/libs/image_processing/image-processing-private
 Makefile
 Makefile.in
 aclocal.m4
