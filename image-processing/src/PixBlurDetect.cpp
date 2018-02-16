@@ -93,8 +93,8 @@ Pix* PixBlurDetect::blurTileTest(Pix* pixs, Pix* pixBlurMeasure) {
 	for (int i = 0; i < ny; i++) {
 		for (int j = 0; j < nx; j++) {
 			pixt = pixTilingGetTile(pt, i, j);
-			l_uint32 grayValue = 0;
-			l_uint32 error = pixGetAverageValue(pixt, 1, L_MEAN_ABSVAL, &grayValue);
+			l_float32 grayValue = 0;
+			l_uint32 error = ::pixGetAverageMasked(pixt, NULL, 0, 0, 1, L_MEAN_ABSVAL, &grayValue);
 			if (!error && grayValue > 5) {
 				//grayValue = lept_roundftoi(mean);
 				float frac = ((float) grayValue * 10) / 255.0;
