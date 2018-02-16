@@ -322,7 +322,7 @@ PIXA    *pixat;
         }
         pix1 = pixaGetPix(pixat, i, L_CLONE);
         if (i == 0) res = pixGetXRes(pix1);
-        pixRasterop(pixd, xb, yb, wb, hb, PIX_SRC, pix1, 0, 0);
+        pixRasterop(pixd, xb, yb, wb, hb, PIX_SRC|PIX_DST, pix1, 0, 0);
         pixDestroy(&pix1);
     }
     pixSetResolution(pixd, res, res);

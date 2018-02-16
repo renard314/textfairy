@@ -3420,8 +3420,12 @@ PIX     *pixd;
         /* Sanity check on result */
     d = pixGetDepth(pixd);
     if (d != 8 && d != 32) {
-        pixDestroy(&pixd);
-        return (PIX *)ERROR_PTR("depth not 8 or 32 bpp", procName, NULL);
+        pixd = pixConvertTo8(pixs, FALSE);
+        d = pixGetDepth(pixd);
+        if (d != 8 && d != 32) {
+            pixDestroy(&pixd);
+            return (PIX *)ERROR_PTR("depth not 8 or 32 bpp", procName, NULL);
+        }
     }
 
     return pixd;
