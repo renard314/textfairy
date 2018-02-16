@@ -129,42 +129,42 @@ if (propFile.canRead()) {
 
 
 dependencies {
-    //compile project(":tess-two:tess-two")
-    compile 'com.github.barteksc:pdfium-android:1.5.0'
-    compile fileTree(dir: 'src/main/libs', include: '*.jar')
+    implementation 'com.github.barteksc:pdfium-android:1.5.0'
+    implementation fileTree(dir: 'src/main/libs', include: '*.jar')
 
-    debugCompile "com.squareup.leakcanary:leakcanary-android:${versions.leak_canary}"
-    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${versions.leak_canary}"
-    compile 'com.viewpagerindicator:library:2.4.1@aar'
-    compile "com.commit451:PhotoView:${versions.photoview}"
-    compile "com.google.guava:guava:18.0"
-    compile 'com.google.code.findbugs:jsr305:3.0.1'
-    compile 'de.greenrobot:eventbus:2.4.0'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile "com.android.support:design:${versions.design}"
-    compile "com.android.support:appcompat-v7:${versions.appcompat_v7}"
-    compile 'org.apache.commons:commons-compress:1.12'
-    compile "com.android.support:cardview-v7:${versions.card_view}"
-    compile "com.jakewharton:butterknife:${versions.butterknife}"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:${versions.leak_canary}"
+    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${versions.leak_canary}"
+    implementation 'com.viewpagerindicator:library:2.4.1@aar'
+    implementation "com.commit451:PhotoView:${versions.photoview}"
+    implementation "com.google.guava:guava:18.0"
+    implementation 'com.google.code.findbugs:jsr305:3.0.1'
+    implementation 'de.greenrobot:eventbus:2.4.0'
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation "com.android.support:design:${versions.design}"
+    implementation "com.android.support:appcompat-v7:${versions.appcompat_v7}"
+    implementation 'org.apache.commons:commons-compress:1.12'
+    implementation "com.android.support:cardview-v7:${versions.card_view}"
+    implementation "com.jakewharton:butterknife:${versions.butterknife}"
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
-    compile "com.google.android.gms:play-services-analytics:${versions.play_services}"
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    implementation "com.google.android.gms:play-services-analytics:${versions.play_services}"
+    implementation 'com.squareup.picasso:picasso:2.5.2'
 
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
-    androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
-    androidTestCompile 'org.mockito:mockito-core:1.10.17'
-    androidTestCompile 'junit:junit:4.12'
+    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.0'
+    androidTestImplementation 'com.google.dexmaker:dexmaker:1.0'
+    androidTestImplementation 'org.mockito:mockito-core:1.10.17'
+    androidTestImplementation 'junit:junit:4.12'
 
 
-    testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-all:1.10.19"
-    testCompile("org.robolectric:robolectric:3.0-rc2") {
+    testImplementation 'junit:junit:4.12'
+    testImplementation "org.mockito:mockito-all:1.10.19"
+    testImplementation("org.robolectric:robolectric:3.0-rc2") {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
-    compile('com.crashlytics.sdk.android:crashlytics:+') {
+    implementation('com.crashlytics.sdk.android:crashlytics:+') {
         transitive = true
     }
-    compile('com.crashlytics.sdk.android:crashlytics-ndk:+@aar') {
+    implementation('com.cr' +
+            'ashlytics.sdk.android:crashlytics-ndk:+@aar') {
         transitive = true
     }
 
