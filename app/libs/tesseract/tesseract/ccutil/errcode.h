@@ -21,6 +21,7 @@
 #define           ERRCODE_H
 
 #include          "host.h"
+#include          "crashlytics.h"
 
 /*Control parameters for error()*/
 enum TessErrorLogCode {
@@ -77,6 +78,10 @@ class TESS_API ERRCODE {           // error handler class
   ERRCODE(const char *string) {
     message = string;
   }                            // initialize with string
+    static void setCrashLyticsContext(crashlytics_context_t*);
+private:
+    static crashlytics_context_t* context;
+
 };
 
 const ERRCODE ASSERT_FAILED = "Assert failed";

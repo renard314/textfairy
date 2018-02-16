@@ -21,8 +21,8 @@ import java.io.UnsupportedEncodingException;
 public class Hocr2Pdf {
     static {
         System.loadLibrary("pngo");
+        System.loadLibrary("libjpeg");
         System.loadLibrary("hocr2pdf");
-        System.loadLibrary("hocr2pdfjni");
     }
 
     private PDFProgressListener mListener;
@@ -49,7 +49,7 @@ public class Hocr2Pdf {
     }
 
     /**
-     * called by native coe
+     * called by native code
      */
     @SuppressWarnings("unused")
     private void onProgress(int pageNumber) {

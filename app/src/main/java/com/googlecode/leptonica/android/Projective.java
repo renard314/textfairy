@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Renard Wellnitz.
+ * Copyright (C) 2010 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,31 +14,44 @@
  * the License.
  */
 
-package com.renard.ocr.cropimage.image_processing;
-
-import com.googlecode.leptonica.android.Pix;
+package com.googlecode.leptonica.android;
 
 /**
  * @author renard
  */
-public class Blur {
+public class Projective {
     static {
         System.loadLibrary("pngo");
         System.loadLibrary("lept");
-        System.loadLibrary("image_processing");
     }
 
 
-    public static BlurDetectionResult blurDetect(Pix pixs) {
+
+    /**
+     *  pixProjectivePtaColor()
+     *
+     *      Input:  pixs (32 bpp)
+     *              ptad  (4 pts of final coordinate space)
+     *              ptas  (4 pts of initial coordinate space)
+     *
+     *      Return: pixd, or null on error
+     *
+     **/
+    public static Pix projectiveTransform(Pix pixs, float[] dest, float[] src) {
         if (pixs == null) {
             throw new IllegalArgumentException("Source pix must be non-null");
         }
-        return nativeBlurDetect(pixs.getNativePix());
+        final long result = nativeProjectivePtaGray(pixs.getNativePix(), dest, src);
+        if(result!=0){
+            return new Pix(result);
+        } else {
+            return null;
+        }
     }
 
 
     // ***************
     // * NATIVE CODE *
     // ***************
-    private static native BlurDetectionResult nativeBlurDetect(long pix);
+    private static native long nativeProjectivePtaGray(long pix , float[] dest, float[] src);
 }

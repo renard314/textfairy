@@ -129,7 +129,7 @@ if (propFile.canRead()) {
 
 
 dependencies {
-    compile project(":tess-two:tess-two")
+    //compile project(":tess-two:tess-two")
     compile 'com.github.barteksc:pdfium-android:1.5.0'
     compile fileTree(dir: 'src/main/libs', include: '*.jar')
 
@@ -148,6 +148,7 @@ dependencies {
     compile "com.jakewharton:butterknife:${versions.butterknife}"
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     compile "com.google.android.gms:play-services-analytics:${versions.play_services}"
+    compile 'com.squareup.picasso:picasso:2.5.2'
 
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.0'

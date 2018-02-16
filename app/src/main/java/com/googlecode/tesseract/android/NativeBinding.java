@@ -24,7 +24,7 @@ public class NativeBinding {
         System.loadLibrary("pngo");
         System.loadLibrary("lept");
         System.loadLibrary("tess");
-        System.loadLibrary("image_processing_jni");
+        System.loadLibrary("image_processing");
         nativeClassInit();
     }
 

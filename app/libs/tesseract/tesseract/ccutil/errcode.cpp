@@ -30,6 +30,12 @@
 const ERRCODE BADERRACTION = "Illegal error action";
 #define MAX_MSG       1024
 
+crashlytics_context_t* ERRCODE::context = NULL;
+
+void ERRCODE::setCrashLyticsContext(crashlytics_context_t* _context){
+  context = _context;
+}
+
 /**********************************************************************
  * error
  *
@@ -73,6 +79,10 @@ const char *format, ...          // special message
 
   // %s is needed here so msg is printed correctly!
   fprintf(stderr, "%s", msg);
+
+  if(context != NULL){
+    context->log(context, msg);
+  }
 
   int* p = NULL;
   switch (action) {
