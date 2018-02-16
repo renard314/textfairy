@@ -2,7 +2,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := hocr2pdf
+LOCAL_MODULE := libhocr2pdf
 
 LOCAL_CPP_EXTENSION :=.cc
 
