@@ -296,7 +296,7 @@ dewarpFindVertDisparity(L_DEWARP  *dew,
                         l_int32    rotflag)
 {
 l_int32     i, j, nlines, npts, nx, ny, sampling;
-l_float32   c0, c1, c2, x, y, midy, val, medval, medvar, minval, maxval;
+l_float32   c0, c1, c2, c3, c4, x, y, midy, val, medval, medvar, minval, maxval;
 l_float32  *famidys;
 NUMA       *nax, *nafit, *nacurve0, *nacurve1, *nacurves;
 NUMA       *namidy, *namidys, *namidysi;
@@ -331,12 +331,25 @@ FPIX       *fpix;
     pixdb = (rotflag) ? pixRotateOrth(dew->pixs, 1) : pixClone(dew->pixs);
     for (i = 0; i < nlines; i++) {  /* for each line */
         pta = ptaaGetPta(ptaa, i, L_CLONE);
-        ptaGetQuadraticLSF(pta, &c2, &c1, &c0, NULL);
-        numaAddNumber(nacurve0, c2);
+        l_int32 left, right;
+        l_int32 count = ptaGetCount(pta);
+        ptaGetIPt(pta,0,&left,NULL);
+        ptaGetIPt(pta,count-1,&right,NULL);
+        l_float32   cc0, cc1, cc2;
+        //ptaGetCubicLSF(pta,&c3,&c2,&c1,&c0,NULL);
+        ptaGetQuadraticLSF(pta, &cc2, &cc1, &cc0, NULL);
+        ptaGetQuarticLSF(pta, &c4, &c3, &c2, &c1, &c0, NULL);
+        numaAddNumber(nacurve0, cc2);
         ptad = ptaCreate(nx);
+
         for (j = 0; j < nx; j++) {  /* uniformly sampled in x */
              x = j * sampling;
-             applyQuadraticFit(c2, c1, c0, x, &y);
+             if(x>=left && x<=right){
+                 applyQuarticFit(c4,c3,c2,c1,c0,x,&y);
+             } else {
+                 applyQuadraticFit(cc2, cc1, cc0, x, &y);
+             }
+             //applyCubicFit(c3, c2, c1, c0, x, &y);
              ptaAddPt(ptad, x, y);
         }
         ptaaAddPta(ptaa0, ptad, L_INSERT);
@@ -350,7 +363,9 @@ FPIX       *fpix;
         for (i = 0; i < nlines; i++) {
             pta = ptaaGetPta(ptaa, i, L_CLONE);
             ptaGetArrays(pta, &nax, NULL);
-            ptaGetQuadraticLSF(pta, NULL, NULL, NULL, &nafit);
+            //ptaGetQuadraticLSF(pta, NULL, NULL, NULL, &nafit);
+            //ptaGetCubicLSF(pta,NULL,NULL,NULL,NULL,&nafit);
+            ptaGetQuarticLSF(pta,NULL,NULL,NULL,NULL,NULL,&nafit);
             ptad = ptaCreateFromNuma(nax, nafit);
             ptaaAddPta(ptaat, ptad, L_INSERT);
             ptaDestroy(&pta);
@@ -358,10 +373,13 @@ FPIX       *fpix;
             numaDestroy(&nafit);
         }
         pix1 = pixConvertTo32(pixdb);
-        pta = generatePtaFilledCircle(1);
+        pta = generatePtaFilledCircle(2);
         pixcirc = pixGenerateFromPta(pta, 5, 5);
-        pix2 = pixDisplayPtaaPattern(NULL, pix1, ptaat, pixcirc, 2, 2);
+        pix2 = pixDisplayPtaaPattern(NULL, pix1, ptaa0, pixcirc, 2, 2);
         pixWrite("/tmp/lept/dewmod/0041.png", pix2, IFF_PNG);
+        pixDestroy(&pix2);
+        pix2 = pixDisplayPtaaPattern(NULL, pix1, ptaat, pixcirc, 2, 2);
+        pixWrite("/tmp/lept/dewmod/00411.png", pix2, IFF_PNG);
         pixDestroy(&pix1);
         pixDestroy(&pix2);
         ptaDestroy(&pta);
