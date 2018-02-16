@@ -21,7 +21,7 @@ import java.io.UnsupportedEncodingException;
 public class Hocr2Pdf {
     static {
         System.loadLibrary("pngo");
-        System.loadLibrary("libjpeg");
+        System.loadLibrary("jpeg");
         System.loadLibrary("hocr2pdf");
     }
 
