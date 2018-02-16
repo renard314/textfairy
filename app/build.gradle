@@ -162,17 +162,15 @@ dependencies {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
     compile('com.crashlytics.sdk.android:crashlytics:+') {
-        transitive = true;
+        transitive = true
     }
     compile('com.crashlytics.sdk.android:crashlytics-ndk:+@aar') {
-        transitive = true;
+        transitive = true
     }
 
 }
 
 crashlytics {
     enableNdk true
-    androidNdkOut '/Users/renard/devel/textfairy/tess-two/tess-two/obj'
-    androidNdkLibsOut '/Users/renard/devel/textfairy/tess-two/tess-two/libs'
 }
 apply plugin: 'com.google.gms.google-services'
