@@ -13,7 +13,6 @@
 
 #include <stdio.h>
 #include "allheaders.h"
-#include "pix.h"
 #include "tprintf.h"
 
 // including CL/cl.h doesn't occur until USE_OPENCL defined below
