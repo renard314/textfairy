@@ -393,23 +393,6 @@ public class TessBaseAPI {
     }
 
     /**
-     * Provides an image for Tesseract to recognize. Copies the image buffer.
-     * The source image may be destroyed immediately after SetImage is called.
-     * SetImage clears all recognition results, and sets the rectangle to the
-     * full image, so it may be followed immediately by a GetUTF8Text, and it
-     * will automatically perform recognition.
-     *
-     * @param imagedata byte representation of the image
-     * @param width     image width
-     * @param height    image height
-     * @param bpp       bytes per pixel
-     * @param bpl       bytes per line
-     */
-    public void setImage(byte[] imagedata, int width, int height, int bpp, int bpl) {
-        nativeSetImageBytes(imagedata, width, height, bpp, bpl);
-    }
-
-    /**
      * The recognized text is returned as a String which is coded as UTF8.
      *
      * @return the recognized text
@@ -608,11 +591,6 @@ public class TessBaseAPI {
      */
     private native void nativeConstruct();
 
-    /**
-     * Finalizes native data. Must be called on object destruction.
-     */
-    private native void nativeFinalize();
-
     private native boolean nativeInit(String datapath, String language);
 
     private native boolean nativeInitOem(String datapath, String language, int mode);
@@ -622,9 +600,6 @@ public class TessBaseAPI {
     private native void nativeClear();
 
     private native void nativeEnd();
-
-    private native void nativeSetImageBytes(
-            byte[] imagedata, int width, int height, int bpp, int bpl);
 
     private native void nativeSetImagePix(long nativePix);
 
