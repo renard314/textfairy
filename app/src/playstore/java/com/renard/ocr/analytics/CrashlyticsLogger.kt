@@ -7,13 +7,13 @@ import com.googlecode.tesseract.android.TessBaseAPI
 import com.renard.ocr.BuildConfig
 import io.fabric.sdk.android.Fabric
 
-object CrashlyticsLoggerFactory {
-    fun createCrashLyticsLogger(context: Context): CrashLogger {
+object CrashLoggerFactory {
+    fun createCrashLogger(context: Context): CrashLogger {
         return CrashlyticsLogger(context)
     }
 }
 
-class CrashlyticsLogger(val context: Context) : CrashLogger {
+private class CrashlyticsLogger(val context: Context) : CrashLogger {
 
     init {
         val fabric = Fabric.Builder(context).kits(Crashlytics(), CrashlyticsNdk()).debuggable(BuildConfig.DEBUG).build()

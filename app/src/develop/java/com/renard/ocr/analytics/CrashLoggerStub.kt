@@ -11,10 +11,10 @@ object CrashLoggerFactory {
             override fun logMessage(message: String) {
             }
 
-            override fun setString(s: String, pageSegMode: String) {
+            override fun setString(tag: String, value: String) {
             }
 
-            override fun setLong(s: String, freeMemory: Long) {
+            override fun setLong(tag: String, value: Long) {
             }
         }
     }

@@ -18,7 +18,7 @@ package com.renard.ocr;
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.analytics.AnalyticsFactory;
 import com.renard.ocr.analytics.CrashLogger;
-import com.renard.ocr.analytics.CrashlyticsLoggerFactory;
+import com.renard.ocr.analytics.CrashLoggerFactory;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
 import com.renard.ocr.util.PreferencesUtils;
@@ -100,7 +100,7 @@ public class TextFairyApplication extends Application {
     }
 
     private void createCrashLogger() {
-        mCrashLogger = CrashlyticsLoggerFactory.INSTANCE.createCrashLyticsLogger(getApplicationContext());
+        mCrashLogger = CrashLoggerFactory.INSTANCE.createCrashLogger(getApplicationContext());
     }
 
     private void enableStrictMode() {
