@@ -916,14 +916,8 @@ char            fullpath[_MAX_PATH];
     }
 
     index++;
-    if (pixGetDepth(pix2) < 8 || pixGetColormap(pix2) ||
-        (w < MAX_SIZE_FOR_PNG && h < MAX_SIZE_FOR_PNG)) {
         snprintf(buffer, L_BUF_SIZE, "/tmp/lept/disp/write.%03d.png", index);
         pixWrite(buffer, pix2, IFF_PNG);
-    } else {
-        snprintf(buffer, L_BUF_SIZE, "/tmp/lept/disp/write.%03d.jpg", index);
-        pixWrite(buffer, pix2, IFF_JFIF_JPEG);
-    }
     tempname = genPathname(buffer, NULL);
 
 #ifndef _WIN32
