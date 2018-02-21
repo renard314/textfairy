@@ -38,6 +38,7 @@ android {
     }
     
     defaultConfig {
+        applicationId "com.renard.ocr"
 
         ndk {
             abiFilters 'x86', 'armeabi-v7a'
