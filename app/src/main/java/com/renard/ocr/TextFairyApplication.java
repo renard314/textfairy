@@ -136,8 +136,4 @@ public class TextFairyApplication extends Application {
         return mCrashLogger;
     }
 
-    public static boolean isRelease() {
-        return com.renard.ocr.BuildConfig.FLAVOR.contains("playstore");
-    }
-
 }

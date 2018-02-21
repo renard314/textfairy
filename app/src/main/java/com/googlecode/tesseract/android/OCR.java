@@ -22,7 +22,6 @@ import com.googlecode.leptonica.android.WriteFile;
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
-import com.renard.ocr.TextFairyApplication;
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.analytics.CrashLogger;
 import com.renard.ocr.documents.creation.crop.CropImageScaler;
@@ -149,10 +148,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
 
     private void logProgressToCrashlytics(int percent) {
-        if (TextFairyApplication.isRelease()) {
-            long availableMegs = MemoryInfo.getFreeMemory(mApplicationContext);
-            mCrashLogger.logMessage("available ram = " + availableMegs);
-        }
+        long availableMegs = MemoryInfo.getFreeMemory(mApplicationContext);
+        mCrashLogger.logMessage("available ram = " + availableMegs);
     }
 
     private void sendMessage(int what) {
@@ -479,10 +476,8 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
     private void logMemory(Context context) {
-        if (TextFairyApplication.isRelease()) {
-            final long freeMemory = MemoryInfo.getFreeMemory(context);
-            mCrashLogger.setLong("Memory", freeMemory);
-        }
+        final long freeMemory = MemoryInfo.getFreeMemory(context);
+        mCrashLogger.setLong("Memory", freeMemory);
     }
 
 
