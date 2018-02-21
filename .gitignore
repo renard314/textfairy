@@ -49,7 +49,6 @@ build.xml
 # mac finder
 .DS_Store
 
-image-processing-private/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
@@ -58,13 +57,8 @@ image-processing-private/
 # Avoid ignoring tessdata.zip
 !tessdata.zip
 
-libjpeg/testoutt.jpg
-libjpeg/testoutp.ppm
-libjpeg/testoutp.jpg
-libjpeg/testout.ppm
-libjpeg/testout.jpg
-libjpeg/testout.bmp
-tesseract-ocr-read-only/autom4te.cache
+
+app/libs/image_processing/image-processing-private
 Makefile
 Makefile.in
 aclocal.m4
@@ -81,3 +75,4 @@ CppTestProject/ImageProcessing/ImageProcessing.xcodeproj/project.xcworkspace/xcu
 CppTestProject/ImageProcessing/ImageProcessing.xcodeproj/xcuserdata/renard.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
 
 google-services.json
+tests

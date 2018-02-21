@@ -25,9 +25,6 @@ before_install:
   - echo $ANDROID_NDK_HOME
 
 script:
-  - cd tess-two/tess-two
-  - $ANDROID_NDK_HOME/ndk-build
-  - cd ../../
   - ./gradlew assembleDevelopDebug
 
 after_failure: "cat $TRAVIS_BUILD_DIR/app/build/outputs/lint-results-debug.xml"

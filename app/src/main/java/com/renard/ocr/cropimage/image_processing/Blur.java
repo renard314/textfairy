@@ -25,7 +25,7 @@ public class Blur {
     static {
         System.loadLibrary("pngo");
         System.loadLibrary("lept");
-        System.loadLibrary("image_processing_jni");
+        System.loadLibrary("image_processing");
     }
 
 
