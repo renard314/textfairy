@@ -91,6 +91,7 @@ android {
             dimension "mode"
         }
         develop {
+            applicationIdSuffix ".dev"
             dimension "mode"
         }
     }
@@ -176,6 +177,3 @@ crashlytics {
     enableNdk true
 }
 apply plugin: 'com.google.gms.google-services'
-repositories {
-    mavenCentral()
-}
