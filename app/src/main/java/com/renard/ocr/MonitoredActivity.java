@@ -20,6 +20,7 @@ package com.renard.ocr;
 import com.google.common.base.Optional;
 
 import com.renard.ocr.analytics.Analytics;
+import com.renard.ocr.analytics.CrashLogger;
 import com.renard.ocr.documents.creation.crop.BaseActivityInterface;
 
 import android.app.Activity;
@@ -62,7 +63,7 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     private TextView mToolbarMessage;
     private AlertDialog mPermissionDialog;
     protected Analytics mAnalytics;
-
+    protected  CrashLogger mCrashLogger;
 
     public interface LifeCycleListener {
         void onActivityCreated(MonitoredActivity activity);
@@ -147,12 +148,17 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         }
         TextFairyApplication application = (TextFairyApplication) getApplication();
         mAnalytics = application.getAnalytics();
+        mCrashLogger = application.getCrashLogger();
 
         Log.i(LOG_TAG, "onCreate: " + this.getClass());
     }
 
     public Analytics getAnaLytics() {
         return mAnalytics;
+    }
+
+    public CrashLogger getCrashLogger() {
+        return mCrashLogger;
     }
 
     protected void initToolbar() {

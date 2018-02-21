@@ -15,7 +15,6 @@
  */
 package com.googlecode.tesseract.android;
 
-import com.crashlytics.android.Crashlytics;
 import com.googlecode.leptonica.android.Boxa;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
@@ -25,6 +24,7 @@ import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.TextFairyApplication;
 import com.renard.ocr.analytics.Analytics;
+import com.renard.ocr.analytics.CrashLogger;
 import com.renard.ocr.documents.creation.crop.CropImageScaler;
 import com.renard.ocr.util.MemoryInfo;
 import com.renard.ocr.util.Util;
@@ -64,6 +64,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
 
     private final Analytics mAnalytics;
+    private final CrashLogger mCrashLogger;
     private final Context mApplicationContext;
 
     private int mPreviewWith;
@@ -88,6 +89,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     public OCR(final MonitoredActivity activity, final Messenger messenger, NativeBinding nativeBinding) {
         mApplicationContext = activity.getApplicationContext();
         mAnalytics = activity.getAnaLytics();
+        mCrashLogger = activity.getCrashLogger();
         mMessenger = messenger;
         mNativeBinding = nativeBinding;
         mIsActivityAttached = true;
@@ -149,8 +151,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private void logProgressToCrashlytics(int percent) {
         if (TextFairyApplication.isRelease()) {
             long availableMegs = MemoryInfo.getFreeMemory(mApplicationContext);
-            Crashlytics.log("available ram = " + availableMegs);
-            Crashlytics.setInt("ocr progress", percent);
+            mCrashLogger.logMessage("available ram = " + availableMegs);
         }
     }
 
@@ -360,19 +361,17 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
     private void logTessParams(String lang, int ocrMode) {
-        if (TextFairyApplication.isRelease()) {
-            String pageSegMode = "";
-            if (ocrMode == TessBaseAPI.OEM_TESSERACT_ONLY) {
-                pageSegMode = "OEM_TESSERACT_ONLY";
-            } else if (ocrMode == TessBaseAPI.OEM_TESSERACT_CUBE_COMBINED) {
-                pageSegMode = "OEM_TESSERACT_CUBE_COMBINED";
-                Crashlytics.setString("page seg mode", "OEM_TESSERACT_CUBE_COMBINED");
-            } else if (ocrMode == TessBaseAPI.OEM_DEFAULT) {
-                pageSegMode = "OEM_DEFAULT";
-            }
-            Crashlytics.setString("page seg mode", pageSegMode);
-            Crashlytics.setString("ocr language", lang);
+        String pageSegMode = "";
+        if (ocrMode == TessBaseAPI.OEM_TESSERACT_ONLY) {
+            pageSegMode = "OEM_TESSERACT_ONLY";
+        } else if (ocrMode == TessBaseAPI.OEM_TESSERACT_CUBE_COMBINED) {
+            pageSegMode = "OEM_TESSERACT_CUBE_COMBINED";
+        } else if (ocrMode == TessBaseAPI.OEM_DEFAULT) {
+            pageSegMode = "OEM_DEFAULT";
         }
+
+        mCrashLogger.setString("page seg mode", pageSegMode);
+        mCrashLogger.setString("ocr language", lang);
     }
 
     /**
@@ -482,7 +481,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private void logMemory(Context context) {
         if (TextFairyApplication.isRelease()) {
             final long freeMemory = MemoryInfo.getFreeMemory(context);
-            Crashlytics.setLong("Memory", freeMemory);
+            mCrashLogger.setLong("Memory", freeMemory);
         }
     }
 

@@ -100,6 +100,7 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
         long nativePix = getIntent().getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1);
         mParentId = getIntent().getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1);
         if (nativePix == -1) {
+            mCrashLogger.logException(new IllegalStateException("native pix not defined"));
             Intent intent = new Intent(this, DocumentGridActivity.class);
             startActivity(intent);
             finish();
@@ -431,7 +432,9 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
             mFinalPix.recycle();
             mFinalPix = null;
         }
-        mImageView.clear();
+        if (mImageView != null) {
+            mImageView.clear();
+        }
 
     }
 }

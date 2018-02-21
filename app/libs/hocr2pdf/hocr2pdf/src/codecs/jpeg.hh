@@ -17,8 +17,8 @@
  */
 #define WITHLIBJPEG 1
 extern "C" {
-#include <jpeglib.h>
-#include <jerror.h>
+#include "jpeglib.h"
+#include "jerror.h"
 #include "transupp.h"
 }
 

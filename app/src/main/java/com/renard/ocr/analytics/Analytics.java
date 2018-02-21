@@ -4,9 +4,6 @@ import com.renard.ocr.cropimage.image_processing.BlurDetectionResult;
 import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 
-/**
- * Created by renard on 19/03/16.
- */
 public interface Analytics {
     boolean getAppOptOut();
 

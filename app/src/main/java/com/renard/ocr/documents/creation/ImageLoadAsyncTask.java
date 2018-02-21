@@ -1,10 +1,10 @@
 package com.renard.ocr.documents.creation;
 
-import com.crashlytics.android.Crashlytics;
+
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.leptonica.android.Scale;
-import com.renard.ocr.TextFairyApplication;
+import com.renard.ocr.analytics.CrashLogger;
 import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.PdfiumCore;
 
@@ -14,12 +14,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.ParcelFileDescriptor;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 
 /**
@@ -52,9 +51,11 @@ class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask.LoadRe
     private final boolean skipCrop;
     private final Context context;
     private final Uri cameraPicUri;
+    private final CrashLogger mCrashLogger;
 
     ImageLoadAsyncTask(NewDocumentActivity activity, boolean skipCrop, Uri cameraPicUri) {
         context = activity.getApplicationContext();
+        mCrashLogger = activity.getCrashLogger();
         this.skipCrop = skipCrop;
         this.cameraPicUri = cameraPicUri;
     }
@@ -97,10 +98,8 @@ class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask.LoadRe
         } else {
             p = ReadFile.loadWithPicasso(context, cameraPicUri);
             if (p == null) {
-                if (TextFairyApplication.isRelease()) {
-                    Crashlytics.setString("image uri", cameraPicUri.toString());
-                    Crashlytics.logException(new IOException("could not load image."));
-                }
+                mCrashLogger.setString("image uri", cameraPicUri.toString());
+                mCrashLogger.logException(new IOException("could not load image."));
                 return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
             }
         }
@@ -113,10 +112,8 @@ class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask.LoadRe
             double scale = Math.sqrt(((double) MIN_PIXEL_COUNT) / pixPixelCount);
             Pix scaledPix = Scale.scale(p, (float) scale);
             if (scaledPix.getNativePix() == 0) {
-                if (TextFairyApplication.isRelease()) {
-                    Crashlytics.log("pix = (" + p.getWidth() + ", " + p.getHeight() + ")");
-                    Crashlytics.logException(new IllegalStateException("scaled pix is 0"));
-                }
+                mCrashLogger.logMessage("pix = (" + p.getWidth() + ", " + p.getHeight() + ")");
+                mCrashLogger.logException(new IllegalStateException("scaled pix is 0"));
             } else {
                 p.recycle();
                 p = scaledPix;
@@ -126,13 +123,14 @@ class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask.LoadRe
         return new LoadResult(p);
     }
 
+    @Nullable
     private Pix loadAsPdf(Uri cameraPicUri) {
         Pix p = null;
         Bitmap bitmap = null;
         int pageNum = 0;
         PdfiumCore pdfiumCore = new PdfiumCore(context);
         try {
-
+            mCrashLogger.logMessage(cameraPicUri.toString());
             final String replace = cameraPicUri.toString().replace("/file/file", "/file");
             final Uri fixedUri = Uri.parse(replace);
 
@@ -152,6 +150,7 @@ class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask.LoadRe
             pdfiumCore.closeDocument(pdfDocument);
 
         } catch (IOException ex) {
+            mCrashLogger.logException(ex);
             ex.printStackTrace();
         } finally {
             if (bitmap != null) {

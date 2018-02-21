@@ -16,7 +16,6 @@
 
 package com.renard.ocr.documents.creation;
 
-import com.crashlytics.android.Crashlytics;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.TextFairyApplication;
@@ -339,7 +338,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     protected void loadBitmapFromContentUri(final Uri cameraPicUri, ImageSource source) {
         if (TextFairyApplication.isRelease()) {
-            Crashlytics.log("Loading " + cameraPicUri.toString() + " from " + source.name());
+            mCrashLogger.logMessage("Loading " + cameraPicUri.toString() + " from " + source.name());
         }
         mImageSource = source;
         if (mBitmapLoadTask != null) {
@@ -787,13 +786,12 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                 int hocrIndex = cursor.getColumnIndex(Columns.HOCR_TEXT);
                 index = cursor.getColumnIndex(Columns.PHOTO_PATH);
                 final String photoPath = cursor.getString(index);
-                Uri imageUri = null;
                 if (photoPath != null) {
-                    imageUri = Uri.parse(photoPath);
+                    Uri imageUri = Uri.parse(photoPath);
+                    images[cursor.getPosition()] = Util.getPathForUri(NewDocumentActivity.this, imageUri);
                 } else {
                     overlayImage = false;
                 }
-                images[cursor.getPosition()] = Util.getPathForUri(NewDocumentActivity.this, imageUri);
                 index = cursor.getColumnIndex(Columns.OCR_TEXT);
                 final String text = cursor.getString(index);
                 if (text != null && text.length() > 0) {

@@ -15,11 +15,10 @@
  */
 package com.renard.ocr;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.ndk.CrashlyticsNdk;
-import com.googlecode.tesseract.android.TessBaseAPI;
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.analytics.AnalyticsFactory;
+import com.renard.ocr.analytics.CrashLogger;
+import com.renard.ocr.analytics.CrashlyticsLoggerFactory;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
 import com.renard.ocr.util.PreferencesUtils;
@@ -36,22 +35,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import io.fabric.sdk.android.Fabric;
-
 public class TextFairyApplication extends Application {
 
     private Analytics mAnalytics;
+    private CrashLogger mCrashLogger;
 
     public void onCreate() {
         super.onCreate();
-        trackCrashes();
         createAnalytics();
+        createCrashLogger();
         initTextPreferences();
         enableStrictMode();
         alwaysShowOverflowButton();
         startLeakCanary();
         checkLanguages();
     }
+
 
     private static final String TAG = "TextFairyApplication";
 
@@ -100,12 +99,8 @@ public class TextFairyApplication extends Application {
         mAnalytics = AnalyticsFactory.createAnalytics(this);
     }
 
-    private void trackCrashes() {
-        if (BuildConfig.FLAVOR.contains("playstore")) {
-            final Fabric fabric = new Fabric.Builder(this).kits(new Crashlytics(), new CrashlyticsNdk()).debuggable(BuildConfig.DEBUG).build();
-            Fabric.with(fabric);
-            TessBaseAPI.initCrashlytics();
-        }
+    private void createCrashLogger() {
+        mCrashLogger = CrashlyticsLoggerFactory.INSTANCE.createCrashLyticsLogger(getApplicationContext());
     }
 
     private void enableStrictMode() {
@@ -137,8 +132,12 @@ public class TextFairyApplication extends Application {
         return mAnalytics;
     }
 
+    public CrashLogger getCrashLogger() {
+        return mCrashLogger;
+    }
 
     public static boolean isRelease() {
         return com.renard.ocr.BuildConfig.FLAVOR.contains("playstore");
     }
+
 }

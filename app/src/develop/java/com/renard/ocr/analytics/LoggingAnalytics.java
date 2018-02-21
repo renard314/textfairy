@@ -195,4 +195,5 @@ public class LoggingAnalytics implements Analytics {
     public void optionTranslateText() {
         Log.i(LOG_TAG, "optionTranslateText()");
     }
+
 }
