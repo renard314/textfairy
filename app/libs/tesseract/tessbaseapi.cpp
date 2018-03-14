@@ -27,9 +27,11 @@
 #include <fstream>
 #include <iostream>
 #include "crashlytics.h"
+#include "html_text.h"
 
 static jfieldID field_mNativeData;
 static jmethodID method_onProgressValues;
+static JavaVM* g_vm;
 
 struct native_data_t {
     tesseract::TessBaseAPI api;
@@ -41,17 +43,15 @@ struct native_data_t {
     l_int32 lastProgress;
     bool cancel_ocr;
 
-    JNIEnv *cachedEnv;
     jobject cachedObject;
 
     bool isStateValid() {
 
-        if (cancel_ocr == false && cachedEnv != NULL) {
+        if (cancel_ocr == false) {
             return true;
         } else {
             LOGI("state is cancelled");
             return false;
-
         }
     }
 
@@ -62,18 +62,36 @@ struct native_data_t {
 
     void initStateVariables(JNIEnv *env, jobject object) {
         cancel_ocr = false;
-        cachedEnv = env;
         cachedObject = env->NewGlobalRef(object);
         lastProgress = 0;
+    }
 
-        //boxSetGeometry(currentTextBox,0,0,0,0);
+    void ensureEnvAttached(std::function<void(JNIEnv*)> fun){
+        JNIEnv *env;
+        bool needDetach = false;
+        int getEnvStat = g_vm->GetEnv((void **) &env, JNI_VERSION_1_6);
+        if (getEnvStat == JNI_EDETACHED) {
+            LOGW("GetEnv: not attached");
+            needDetach = true;
+            if (g_vm->AttachCurrentThread(&env, NULL) != 0) {
+                LOGE("Failed to attach");
+                return;
+            }
+        }
+
+        fun(env);
+
+        if (needDetach) {
+            g_vm->DetachCurrentThread();
+        }
     }
 
     void resetStateVariables() {
+
         cancel_ocr = false;
-        if (cachedEnv != NULL) {
-            cachedEnv->DeleteGlobalRef(cachedObject);
-            cachedEnv = NULL;
+        if (cachedObject != NULL) {
+            ensureEnvAttached([&](JNIEnv* env){env->DeleteGlobalRef(cachedObject);});
+            cachedObject = NULL;
         }
         lastProgress = 0;
         boxSetGeometry(currentTextBox, 0, 0, 0, 0);
@@ -86,7 +104,6 @@ struct native_data_t {
         pix = NULL;
         data = NULL;
         debug = false;
-        cachedEnv = NULL;
         cachedObject = NULL;
         cancel_ocr = false;
     }
@@ -116,9 +133,9 @@ progressJavaCallback(void *progress_this, int progress, int left, int right, int
             LOGI("state changed");
             int x, y, w, h;
             boxGetGeometry(nat->currentTextBox, &x, &y, &w, &h);
-            nat->cachedEnv->CallVoidMethod(nat->cachedObject, method_onProgressValues, progress,
-                                           (jint) left, (jint) right, (jint) top, (jint) bottom,
-                                           (jint) x, (jint) (x + w), (jint) y, (jint) (y + h));
+            nat->ensureEnvAttached([&](JNIEnv* env){env->CallVoidMethod(nat->cachedObject, method_onProgressValues, progress,
+                                                                        (jint) left, (jint) right, (jint) top, (jint) bottom,
+                                                                        (jint) x, (jint) (x + w), (jint) y, (jint) (y + h));});
             nat->lastProgress = progress;
         }
     }
@@ -130,111 +147,7 @@ static inline native_data_t *get_native_data(JNIEnv *env, jobject object) {
     return (native_data_t *) (env->GetLongField(object, field_mNativeData));
 }
 
-std::string GetHTMLText(tesseract::ResultIterator *res_it, const float minConfidenceToShowColor) {
-    int lcnt = 1, bcnt = 1, pcnt = 1, wcnt = 1;
-    std::ostringstream html_str;
-    bool isItalic = false;
-    bool para_open = false;
 
-    for (; !res_it->Empty(tesseract::RIL_BLOCK); wcnt++) {
-        if (res_it->Empty(tesseract::RIL_WORD)) {
-            res_it->Next(tesseract::RIL_WORD);
-            continue;
-        }
-
-        if (res_it->IsAtBeginningOf(tesseract::RIL_PARA)) {
-            if (para_open) {
-                html_str << "</p>";
-                pcnt++;
-            }
-            html_str << "<p>";
-            para_open = true;
-        }
-
-        // Now, process the word...
-        const char *font_name;
-        bool bold, italic, underlined, monospace, serif, smallcaps;
-        int pointsize, font_id;
-        font_name = res_it->WordFontAttributes(&bold, &italic, &underlined,
-                                               &monospace, &serif, &smallcaps, &pointsize,
-                                               &font_id);
-
-        float confidence = res_it->Confidence(tesseract::RIL_WORD);
-        bool addConfidence = false;
-
-        if (italic && !isItalic) {
-            html_str << "<strong>";
-            isItalic = true;
-        } else if (!italic && isItalic) {
-            html_str << "</strong>";
-            isItalic = false;
-        }
-
-        char *word = res_it->GetUTF8Text(tesseract::RIL_WORD);
-        bool isSpace = strcmp(word, " ") == 0;
-        delete[] word;
-        if (confidence < minConfidenceToShowColor && !isSpace) {
-            addConfidence = true;
-            html_str << "<font conf='";
-            html_str << (int) confidence;
-            html_str << "' color='#DE2222'>";
-        }
-        bool isHyphen = false;
-        do {
-            const char *grapheme = res_it->GetUTF8Text(tesseract::RIL_SYMBOL);
-            if (isHyphen) {
-                html_str << "-";
-            }
-            isHyphen = strcmp(grapheme, "—") == 0 || strcmp(grapheme, "—") == 0 ||
-                       strcmp(grapheme, "-") == 0;
-            if (grapheme && grapheme[0] != 0 && !isHyphen) {
-                if (grapheme[1] == 0) {
-                    switch (grapheme[0]) {
-                        case '<':
-                            html_str << "&lt;";
-                            break;
-                        case '>':
-                            html_str << "&gt;";
-                            break;
-                        case '&':
-                            html_str << "&amp;";
-                            break;
-                        case '"':
-                            html_str << "&quot;";
-                            break;
-                        case '\'':
-                            html_str << "&#39;";
-                            break;
-                        default:
-                            html_str << grapheme;
-                            break;
-                    }
-                } else {
-                    html_str << grapheme;
-                }
-            }
-            delete[] grapheme;
-            res_it->Next(tesseract::RIL_SYMBOL);
-        } while (!res_it->Empty(tesseract::RIL_BLOCK)
-                 && !res_it->IsAtBeginningOf(tesseract::RIL_WORD));
-
-        if (addConfidence == true) {
-            html_str << "</font>";
-        }
-        if (!isHyphen) {
-            html_str << " ";
-        }
-
-    }
-    if (isItalic) {
-        html_str << "</strong>";
-    }
-    if (para_open) {
-        html_str << "</p>";
-        pcnt++;
-    }
-    return html_str.str();
-}
 
 #ifdef __cplusplus
 extern "C" {
@@ -247,7 +160,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
         LOGE("Failed to get the environment using GetEnv()");
         return -1;
     }
-
+    g_vm = vm;
     return JNI_VERSION_1_6;
 }
 

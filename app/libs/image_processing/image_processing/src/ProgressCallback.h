@@ -9,6 +9,14 @@
 #ifndef ProgressCallback_hpp
 #define ProgressCallback_hpp
 
+#include "allheaders.h"
+
+static const int MESSAGE_IMAGE_DETECTION = 0;
+static const int MESSAGE_IMAGE_DEWARP = 1;
+static const int MESSAGE_OCR = 2;
+static const int MESSAGE_ASSEMBLE_PIX = 3;
+static const int MESSAGE_ANALYSE_LAYOUT = 4;
+
 class ProgressCallback {
 public:
     virtual void sendMessage(int) = 0;

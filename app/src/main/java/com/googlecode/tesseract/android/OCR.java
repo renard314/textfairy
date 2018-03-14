@@ -270,17 +270,19 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         mExecutorService.execute((new Runnable() {
             @Override
             public void run() {
+                Pix pixOcr = null;
+                Boxa boxa = null;
                 try {
                     final String tessDir = Util.getTessDir(context);
                     long[] columnData = mNativeBinding.combinePixa(pixaText.getNativePixa(), pixaImages.getNativePixa(), selectedTexts, selectedImages);
+                    pixaText.recycle();
+                    pixaImages.recycle();
                     long pixOrgPointer = columnData[0];
                     long pixOcrPointer = columnData[1];
                     long boxaColumnsPointer = columnData[2];
 
                     sendMessage(MESSAGE_FINAL_IMAGE, pixOrgPointer);
                     sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
-                    Boxa boxa;
-                    Pix pixOcr;
                     synchronized (OCR.this) {
                         logMemory(context);
                         final String ocrLanguages = determineOcrLanguage(lang);
@@ -329,11 +331,15 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                         accuracy += mTess.meanConfidence();
                     }
                     int totalAccuracy = Math.round(accuracy / columnCount);
-                    pixOcr.recycle();
-                    boxa.recycle();
                     sendMessage(MESSAGE_HOCR_TEXT, hocrText.toString(), totalAccuracy);
                     sendMessage(MESSAGE_UTF8_TEXT, htmlText.toString(), totalAccuracy);
                 } finally {
+                    if (pixOcr != null) {
+                        pixOcr.recycle();
+                    }
+                    if (boxa != null) {
+                        boxa.recycle();
+                    }
                     if (mTess != null) {
                         mTess.end();
                     }

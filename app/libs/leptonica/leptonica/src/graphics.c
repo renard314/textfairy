@@ -436,7 +436,7 @@ PTA     *ptad, *pta;
         ptaDestroy(&pta);
     }
     if (orient == L_HORIZONTAL_LINE) {
-        n = 1 + bh / spacing;
+        n = 1 + L_MAX(bh, spacing) / spacing;
         for (i = 0; i < n; i++) {
             y = by + (i * (bh - 1)) / (n - 1);
             pta = generatePtaWideLine(bx, y, bx + bw - 1, y, width);
@@ -444,7 +444,7 @@ PTA     *ptad, *pta;
             ptaDestroy(&pta);
         }
     } else if (orient == L_VERTICAL_LINE) {
-        n = 1 + bw / spacing;
+        n = 1 + L_MAX(bw, spacing) / spacing;
         for (i = 0; i < n; i++) {
             x = bx + (i * (bw - 1)) / (n - 1);
             pta = generatePtaWideLine(x, by, x, by + bh - 1, width);

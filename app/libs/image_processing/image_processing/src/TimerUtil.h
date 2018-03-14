@@ -9,7 +9,7 @@
 #ifndef TimerUtil_h
 #define TimerUtil_h
 
-#define DEBUG_PERFORMANCE 1
+#define DEBUG_PERFORMANCE 0
 #include <string>
 
 

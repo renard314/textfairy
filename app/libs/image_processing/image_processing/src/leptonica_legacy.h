@@ -7,7 +7,7 @@
 
 #ifndef LEPTONICA_LEGACY_H_
 #define LEPTONICA_LEGACY_H_
-#include <allheaders.h>
+#include "allheaders.h"
 /*!
   *  numaGetXParameters()
 *

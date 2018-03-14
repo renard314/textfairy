@@ -15,7 +15,7 @@
  */
 
 #include <jni.h>
-#include "common.h"
+#include "image_processing.h"
 #include <cstring>
 #include "android/bitmap.h"
 #include "allheaders.h"
@@ -25,11 +25,13 @@
 #include <cmath>
 #include "pageseg.h"
 #include "PixBlurDetect.h"
-#include "PixBinarizer.h"
-#include <image_processing_util.h>
-#include "SkewCorrector.h"
+#include "pixFunc.hpp"
+#include "combine_pixa.h"
 #include "ProgressCallback.h"
 #include <fcntl.h>
+#include <sstream>
+#include <cmath>
+
 
 using namespace std;
 
@@ -97,7 +99,6 @@ extern "C" {
 
         jobject cachedObject;
 
-
         ~native_data_t(){
             JNIEnv *env;
             bool needDetach = false;
@@ -147,10 +148,6 @@ extern "C" {
 
         native_data_t *nat = new native_data_t;
 
-        if (nat == NULL) {
-            LOGE("%s: out of memory!", __FUNCTION__);
-            return;
-        }
         nat->cachedObject = env->NewGlobalRef(object);
 
         env->SetLongField(object, field_mNativeData, (jlong) nat);
@@ -160,8 +157,6 @@ extern "C" {
         native_data_t *nat = (native_data_t *) (env->GetLongField(object, field_mNativeData));
         delete nat;
     }
-
-
 
     jlongArray Java_com_googlecode_tesseract_android_NativeBinding_combineSelectedPixa(JNIEnv *env, jobject thiz, jlong nativePixaText, jlong nativePixaImage, jintArray selectedTexts, jintArray selectedImages) {
         LOGV(__FUNCTION__);
@@ -212,14 +207,13 @@ extern "C" {
 
         nat->sendMessage(MESSAGE_IMAGE_DETECTION);
 
-        PixBinarizer binarizer(false);
-        Pix* pixOrgClone = pixClone(pixOrg);
-        pixb = binarizer.binarize(pixOrgClone, nat);
-
+        pixb = pixPrepareLayoutAnalysis(pixOrg, nat);
+        
         nat->sendPix(pixb);
 
-
-        segmentComplexLayout(pixOrg, NULL, pixb, &pixaImages, &pixaTexts, nat, true);
+        segmentComplexLayout(pixOrg, NULL, pixb, &pixaImages, &pixaTexts, nat, false);
+        
+        pixDestroy(&pixb);
 
         env->CallVoidMethod(thiz, onLayoutElements, (jlong)pixaTexts, (jlong)pixaImages);
 
@@ -236,22 +230,19 @@ extern "C" {
         l_int32 w,h,x,y;
         boxGetGeometry(maxBlurLoc,&x,&y,&w,&h);
         //pixRenderBox(pixBlended,maxBlurLoc,2,L_SET_PIXELS);
-        log("pix = %p, blur=%f, box=(%i,%i - %i,%i)processing time %f\n",pixBlended, blurValue,x,y,w,h,stopTimerNested(timer));
         //create result
         jclass cls = env->FindClass("com/renard/ocr/cropimage/image_processing/BlurDetectionResult");
         jmethodID constructor = env->GetMethodID(cls, "<init>", "(JDJ)V");
         return env->NewObject(cls, constructor, (jlong)pixBlended, (jdouble)blurValue, (jlong)maxBlurLoc);
     }
 
-
-
     jlong Java_com_googlecode_tesseract_android_NativeBinding_nativeOCRBook(JNIEnv *env, jobject thiz, jlong nativePix) {
         LOGV(__FUNCTION__);
         Pix *pixOrg = (PIX *) nativePix;
-        Pix* pixText;
+
         native_data_t *nat = get_native_data(env, thiz);
 
-        bookpage(pixOrg, &pixText , nat, false);
+        Pix* pixText = pixPrepareForOcr(pixOrg, nat);
 
         return (jlong)pixText;
 

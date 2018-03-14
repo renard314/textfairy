@@ -1938,8 +1938,9 @@ PIX       *pixt, *pixd;
                 }
             }
             if (sum < 0.0) sum = -sum;  /* make it non-negative */
+            
             if (outdepth == 8)
-                SET_DATA_BYTE(lined, jd, (l_int32)(sum + 0.5));
+                SET_DATA_BYTE(lined, jd, L_MIN(255,(l_int32)(sum + 0.5)));
             else if (outdepth == 16)
                 SET_DATA_TWO_BYTES(lined, jd, (l_int32)(sum + 0.5));
             else  /* outdepth == 32 */

@@ -66,6 +66,7 @@ LOCAL_CFLAGS := \
 
 LOCAL_SRC_FILES += \
   pageiterator.cpp \
+  html_text.cpp \
   resultiterator.cpp \
   tessbaseapi.cpp
 

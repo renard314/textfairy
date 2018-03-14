@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "dewarpBuildPageModel:dewarp2.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "DEBUG_TEXTLINE_CENTERS">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "PixBinarizer::removeBigTextBox(Box*, Box*, float, float, float, float, float, float):PixBinarizer.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "afSmall">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "finetune():main.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "score1">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "PixAdaptiveBinarizer::bradleyAdaptiveThresholding(Pix*, float, int):PixAdaptiveBinarizer.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "stats.NumDataValues()">
+            </PersistentString>
+            <PersistentString
+               value = "rangeMaxArray[rangeIndex]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "PixBinarizer::pixaGetAverage(Pixa*):PixBinarizer.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "(sumave/count)/34">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

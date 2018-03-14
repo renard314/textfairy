@@ -9,7 +9,6 @@
 #include <string>
 #include "allheaders.h"
 #include "TimerUtil.h"
-#include "image_processing.h"
 
 void printTimer(L_TIMER timer, std::string message) {
     l_float32 time = stopTimerNested(timer);

@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "D6E0869E7C5AB58C7C3F41F19EF86FDD33349D1D",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "909CBEEDDECFD6596DDAD1DDB768B18C7C6F51FB" : 9223372036854775807,
+    "D6E0869E7C5AB58C7C3F41F19EF86FDD33349D1D" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "972260AA-ECC1-45C1-B126-84B5E64D894A",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "909CBEEDDECFD6596DDAD1DDB768B18C7C6F51FB" : "textfairy\/app\/libs\/image_processing\/image-processing-private\/",
+    "D6E0869E7C5AB58C7C3F41F19EF86FDD33349D1D" : "textfairy\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "ImageProcessing",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "app\/libs\/image_processing\/image_processing\/CppTestProject\/ImageProcessing\/ImageProcessing.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "gitlab.com:renard-wellnitz\/textfairy-image-processing.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "909CBEEDDECFD6596DDAD1DDB768B18C7C6F51FB"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:renard314\/textfairy.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D6E0869E7C5AB58C7C3F41F19EF86FDD33349D1D"
+    }
+  ]
+}

@@ -5,26 +5,42 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := libimage_processing
 
-# jni
-LOCAL_SRC_FILES += \
-  $(IMAGE_PROCESSING_PATH)/src/binarize.cpp \
-  $(IMAGE_PROCESSING_PATH)/src/pageseg.cpp \
-  $(IMAGE_PROCESSING_PATH)/src/RunningStats.cpp \
-  $(IMAGE_PROCESSING_PATH)/src/PixBlurDetect.cpp \
-  $(IMAGE_PROCESSING_PATH)/src/image_processing_util.cpp \
-  $(IMAGE_PROCESSING_PATH)/src/dewarp.cpp \
-  $(IMAGE_PROCESSING_PATH)/src/TimerUtil.cpp \
-  $(IMAGE_PROCESSING_PATH)/src/PixEdgeDetector.cpp \
-  $(IMAGE_PROCESSING_PATH)/src/PixAdaptiveBinarizer.cpp \
-  $(IMAGE_PROCESSING_PATH)/src/PixBinarizer.cpp \
-  $(IMAGE_PROCESSING_PATH)/src/SkewCorrector.cpp \
-  image_processing.cpp
+IMAGE_PROCESSING_SRC_FILES := \
+  $(wildcard $(IMAGE_PROCESSING_PATH)/src/binarize/*.cpp) \
+  $(wildcard $(IMAGE_PROCESSING_PATH)/src/blur_detect/*.cpp) \
+  $(wildcard $(IMAGE_PROCESSING_PATH)/src/dewarp/*.cpp) \
+  $(wildcard $(IMAGE_PROCESSING_PATH)/src/edge_detect/*.cpp) \
+  $(wildcard $(IMAGE_PROCESSING_PATH)/src/enhance/*.cpp) \
+  $(wildcard $(IMAGE_PROCESSING_PATH)/src/pageseg/*.cpp) \
+  $(wildcard $(IMAGE_PROCESSING_PATH)/src/skew/*.cpp) \
+  $(wildcard $(IMAGE_PROCESSING_PATH)/src/text_stat/*.cpp) \
+  $(wildcard $(IMAGE_PROCESSING_PATH)/src/*.cpp)
 
 
-LOCAL_C_INCLUDES += $(IMAGE_PROCESSING_PATH)/src
 
-LOCAL_LDLIBS += \
-  -llog \
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(IMAGE_PROCESSING_SRC_FILES))
+LOCAL_SRC_FILES += $(IMAGE_PROCESSING_PATH)/../image_processing.cpp
+
+LOCAL_C_INCLUDES += \
+  $(IMAGE_PROCESSING_PATH)/../ \
+  $(IMAGE_PROCESSING_PATH)/src \
+  $(IMAGE_PROCESSING_PATH)/src/binarize \
+  $(IMAGE_PROCESSING_PATH)/src/blur_detect \
+  $(IMAGE_PROCESSING_PATH)/src/dewarp \
+  $(IMAGE_PROCESSING_PATH)/src/skew \
+  $(IMAGE_PROCESSING_PATH)/src/edge_detect \
+  $(IMAGE_PROCESSING_PATH)/src/enhance \
+  $(IMAGE_PROCESSING_PATH)/src/pageseg \
+  $(IMAGE_PROCESSING_PATH)/src/text_stat
+
+ifneq ("$(wildcard $(ADAPTIVE_BINARIZER_PATH)/PixBinarizer.cpp)","")
+LOCAL_SRC_FILES += $(ADAPTIVE_BINARIZER_PATH)/PixBinarizer.cpp
+LOCAL_SRC_FILES += $(ADAPTIVE_BINARIZER_PATH)/PixAdaptiveBinarizer.cpp
+LOCAL_C_INCLUDES += $(ADAPTIVE_BINARIZER_PATH)
+LOCAL_CFLAGS := -DHAS_ADAPTIVE_BINARIZER
+endif
+
+LOCAL_LDLIBS := -llog
   
 #common
 LOCAL_SHARED_LIBRARIES:= liblept
