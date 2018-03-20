@@ -25,11 +25,21 @@
 
 #define printf(fmt,args...)  __android_log_print(ANDROID_LOG_INFO  ,"pixFunc", fmt, ##args)
 #define fprintf(file, fmt, args...)  __android_log_print(ANDROID_LOG_INFO  ,"pixFunc", fmt, ##args)
-
+#define FUNCNAME(name)              PROCNAME(name)
+#else
+#define FUNCNAME(name)              procName = name
 #endif
 
 
+
+
+
+char const *procName = NULL;
+
+
+
 Pix* convertTo8(Pix* pix) {
+    FUNCNAME("convertTo8");
     return pixConvertTo8(pix, FALSE);
 }
 
@@ -51,6 +61,7 @@ Pix* binarizeAdaptive(Pix* pix) {
 #endif
 
 Pix* binarize(Pix* pix) {
+    FUNCNAME("binarize");
     Pix *pixb;
 #ifdef HAS_ADAPTIVE_BINARIZER
     PixBinarizer binarizer(false);
@@ -62,8 +73,21 @@ Pix* binarize(Pix* pix) {
     return pixb;
 }
 
+Pix* binarize(Pix* pix, ProgressCallback* callback) {
+    FUNCNAME("binarize");
+    Pix *pixb;
+#ifdef HAS_ADAPTIVE_BINARIZER
+    PixBinarizer binarizer(false);
+    pixb = binarizer.binarize(pix, callback);
+#else
+    pixb = binarize(pix, NULL);
+#endif
+    pixCopyResolution(pixb, pix);
+    return pixb;
+}
+
 Pix* dewarpOrDeskew(Pix* pix) {
-    PROCNAME("dewarp");
+    FUNCNAME("dewarpOrDeskew");
     Pix* pixText = NULL;
     l_int32 dewarpResult = pixDewarp(pix, &pixText);
     
@@ -76,7 +100,7 @@ Pix* dewarpOrDeskew(Pix* pix) {
 }
 
 Pix* timePixFunc(Pix* pix, PIX_FUNC pixFunc) {
-    PROCNAME("timePixFunc");
+    //PROCNAME("timePixFunc");
     L_TIMER totalTimer = startTimerNested();
     Pix* result = pixFunc(pix);
     l_float32 passedTime = stopTimerNested(totalTimer);
@@ -153,7 +177,7 @@ Pix* livreAdapt(Pix* pixs){
 }
 
 void setResolutionBasedOnTextSize(Pix* pix, l_float32 textLineHeight){
-    PROCNAME("setResolutionBasedOnTextSize");
+    FUNCNAME("setResolutionBasedOnTextSize");
     l_uint32 res;
     //12pt at 300dpi is roughly 48px
     //since font size is unknown we assume 12pt font
@@ -171,6 +195,7 @@ void setResolutionBasedOnTextSize(Pix* pix, l_float32 textLineHeight){
 }
 
 Pix* findResolution(Pix* pix) {
+    FUNCNAME("findResolution");
     l_int32 lines;
     l_float32 textLineHeight = pixGetTextLineHeightGeneral(pix, &lines);
     setResolutionBasedOnTextSize(pix, textLineHeight);
@@ -178,7 +203,7 @@ Pix* findResolution(Pix* pix) {
 }
 
 Pix* pixCorrectOrientation(Pix* pix){
-    PROCNAME("pixCorrectOrientation");
+    FUNCNAME("pixCorrectOrientation");
     l_float32 upConf,leftConf;
     l_int32 orientDetectResult = pixOrientDetectDwa(pix, &upConf, &leftConf, 0, 0);
     if(!orientDetectResult){
@@ -204,13 +229,14 @@ Pix* pixCorrectOrientation(Pix* pix){
 }
 
 Pix* savGol32(Pix* pix){
+    FUNCNAME("savGol32");
     Pix* result =  pixSavGolFilter(pix, 3, 2, 2);
     pixCopyResolution(result, pix);
     return result;
 }
 
 Pix* savGol(Pix* pix) {
-    PROCNAME("savGol");
+    FUNCNAME("savGol");
     l_int32 xres, yres;
     pixGetResolution(pix, &xres, &yres);
     l_uint8 degree = 4;
@@ -219,25 +245,7 @@ Pix* savGol(Pix* pix) {
     if(window % 2 == 0){
         window--;
     }
-    //    l_float32 textLineHeight = pixGetTextLineHeightGeneral(pix, NULL);
-    //    l_uint8 window;
-    //    l_uint8 degree;
-    //    if(textLineHeight == 0){
-    //        window = 8;
-    //        degree = 4;
-    //    } else if (textLineHeight <= 20) {
-    //        window = 10;
-    //        degree = 4;
-    //    } else if (textLineHeight <= 30) {
-    //        window = 12;
-    //        degree = 4;
-    //    } else if (textLineHeight <= 60) {
-    //        window = 16;
-    //        degree = 4;
-    //    } else {
-    //        window = 9;
-    //        degree = 4;
-    //    }
+
     L_INFO("text line height = %.2f, window = %i, degree = %i\n", procName, textLineHeight, window, degree);
     Pix* result =  pixSavGolFilter(pix, window, degree, degree);
     pixCopyResolution(result, pix);
@@ -245,10 +253,12 @@ Pix* savGol(Pix* pix) {
 }
 
 Pix* reduceGray2(Pix* pix){
+    FUNCNAME("reduceGray2");
     return pixScaleSmooth(pix, 0.5, 0.5);
 }
 
 Pix* reduceGray4(Pix* pix){
+    FUNCNAME("reduceGray4");
     return pixScaleSmooth(pix, 0.25, 0.25);
 }
 
@@ -265,16 +275,19 @@ Pix* scale2Binary(Pix* pix){
 }
 
 Pix* edgeDetect(Pix* pix){
+    FUNCNAME("edgeDetect");
     PixEdgeDetector edgeDetector;
     return edgeDetector.makeEdges(pix);
 }
 
 Pix* invert(Pix* pix){
+    FUNCNAME("invert");
     pixInvert(pix,pix);
     return pixClone(pix);
 }
 
 Pix* edgeBinarize(Pix* pix){
+    FUNCNAME("edgeBinarize");
 #if HAS_ADAPTIVE_BINARIZER
     PixAdaptiveBinarizer binarizer(false);
     return binarizer.bradleyAdaptiveThresholding(pix, 0.15, 8);
@@ -290,7 +303,7 @@ Pix* deskew(Pix* pix) {
 }
 
 Pix* ensure150dpi(Pix* pix) {
-    PROCNAME("ensure150dpi");
+    FUNCNAME("ensure150dpi");
     l_int32 res = pixGetYRes(pix);
     if(res==0 || res >= 150){
         L_WARNING("resolution (%i) not set or greater than 150 already.\n", procName, res);
