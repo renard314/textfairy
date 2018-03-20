@@ -67,7 +67,7 @@ Pix* binarize(Pix* pix) {
     PixBinarizer binarizer(false);
     pixb = binarizer.binarize(pix, NULL);
 #else
-    pixb = binarize(pix, NULL);
+    pixb = binarizeTiled(pix, NULL);
 #endif
     pixCopyResolution(pixb, pix);
     return pixb;
@@ -80,7 +80,7 @@ Pix* binarize(Pix* pix, ProgressCallback* callback) {
     PixBinarizer binarizer(false);
     pixb = binarizer.binarize(pix, callback);
 #else
-    pixb = binarize(pix, NULL);
+    pixb = binarizeTiled(pix, NULL);
 #endif
     pixCopyResolution(pixb, pix);
     return pixb;
