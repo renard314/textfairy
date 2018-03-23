@@ -13,7 +13,7 @@ public class Clip {
      * @return
      */
     public static Pix clipRectangle2(Pix source, Box box){
-        int result = nativeClipRectangle2(source.getNativePix(), box.getNativeBox());
+        long result = nativeClipRectangle2(source.getNativePix(), box.getNativeBox());
         if (result!=0) {
             return new Pix(result);
         }
@@ -22,14 +22,14 @@ public class Clip {
 
 
     public static Pix clipRectangle(Pix source, Box box){
-    	int result = nativeClipRectangle(source.getNativePix(), box.getNativeBox());
+    	long result = nativeClipRectangle(source.getNativePix(), box.getNativeBox());
     	if (result!=0) {
     		return new Pix(result);
     	}
 		return null;
     }
     
-    private static native int nativeClipRectangle(long nativePix, long nativeBox);
-    private static native int nativeClipRectangle2(long nativePix, long nativeBox);
+    private static native long nativeClipRectangle(long nativePix, long nativeBox);
+    private static native long nativeClipRectangle2(long nativePix, long nativeBox);
 
 }

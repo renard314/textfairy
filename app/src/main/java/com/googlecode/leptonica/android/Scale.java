@@ -128,6 +128,6 @@ public class Scale {
     // ***************
 
     private static native long nativeScale(long nativePix, float scaleX, float scaleY);
-    private static native int nativeScaleGeneral(long nativePix, float scaleX, float scaleY, float sharpfract, int sharpwidth);
+    private static native long nativeScaleGeneral(long nativePix, float scaleX, float scaleY, float sharpfract, int sharpwidth);
 
 }

@@ -108,7 +108,7 @@ public class Pixa implements Iterable<Pix> {
      * @return a shallow copy of this Pixa
      */
     public Pixa copy() {
-        int nativePixa = nativeCopy(mNativePixa);
+        long nativePixa = nativeCopy(mNativePixa);
 
         if (nativePixa == 0) {
             throw new OutOfMemoryError();
@@ -128,7 +128,7 @@ public class Pixa implements Iterable<Pix> {
      * @return a sorted copy of this Pixa
      */
     public Pixa sort(int field, int order) {
-        int nativePixa = nativeSort(mNativePixa, field, order);
+        long nativePixa = nativeSort(mNativePixa, field, order);
 
         if (nativePixa == 0) {
             throw new OutOfMemoryError();
@@ -236,7 +236,7 @@ public class Pixa implements Iterable<Pix> {
      * @return the Pix at the specified index, or <code>null</code> on error
      */
     public Pix getPix(int index) {
-        int nativePix = nativeGetPix(mNativePixa, index);
+        long nativePix = nativeGetPix(mNativePixa, index);
 
         if (nativePix == 0) {
             return null;
@@ -417,11 +417,11 @@ public class Pixa implements Iterable<Pix> {
     // * NATIVE CODE *
     // ***************
 
-    private static native int nativeCreate(int size);
+    private static native long nativeCreate(int size);
 
-    private static native int nativeCopy(long nativePixa);
+    private static native long nativeCopy(long nativePixa);
 
-    private static native int nativeSort(long nativePixa, int field, int order);
+    private static native long nativeSort(long nativePixa, int field, int order);
 
     private static native boolean nativeJoin(long nativePixa, long otherPixa);
 
@@ -445,7 +445,7 @@ public class Pixa implements Iterable<Pix> {
 
     private static native long nativeGetBox(long nativePix, int index);
 
-    private static native int nativeGetPix(long nativePix, int index);
+    private static native long nativeGetPix(long nativePix, int index);
 
     private static native boolean nativeGetBoxGeometry(long nativePixa, int index, int[] dimensions);
 }

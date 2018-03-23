@@ -74,7 +74,7 @@ public class Rotate {
      * @param pixs The source pix.
      * @param degrees The number of degrees to rotate; clockwise is positive.
      * @param quality Whether to use high-quality rotation.
-     * @param Whether to expand the output so that no pixels are lost.
+     * @param resize Whether to expand the output so that no pixels are lost.
      *         <strong>Note:</strong> 1bpp images are always resized when
      *         quality is {@code true}.
      * @return the rotated source image
@@ -96,7 +96,7 @@ public class Rotate {
         if (pixs == null)
             throw new IllegalArgumentException("Source pix must be non-null");
 
-        int nativePix = nativeRotateOrth(pixs.mNativePix, quads);
+        long nativePix = nativeRotateOrth(pixs.mNativePix, quads);
 
         if (nativePix == 0)
             return null;
@@ -107,7 +107,7 @@ public class Rotate {
     // ***************
     // * NATIVE CODE *
     // ***************
-    private static native int nativeRotateOrth(long nativePix, int quads);
+    private static native long nativeRotateOrth(long nativePix, int quads);
 
     private static native long nativeRotate(long nativePix, float degrees, boolean quality,
     		boolean resize);
