@@ -14,11 +14,12 @@
 #include "skew.h"
 #include "savgol.hpp"
 #include <cmath>
+#include "binarize.h"
 
 #ifdef HAS_ADAPTIVE_BINARIZER
 #include "PixBinarizer.h"
 #endif
-#include "binarize.h"
+
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -28,15 +29,8 @@
 #define FUNCNAME(name)              PROCNAME(name)
 #else
 #define FUNCNAME(name)              procName = name
-#endif
-
-
-
-
-
 char const *procName = NULL;
-
-
+#endif
 
 Pix* convertTo8(Pix* pix) {
     FUNCNAME("convertTo8");
