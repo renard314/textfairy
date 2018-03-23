@@ -49,10 +49,5 @@ make sure that you have got the android sdk as well as ndk (r15c) installed
 
 * `git clone git@github.com:renard314/textfairy.git`
 * `cd textfairy`
-* `git submodule update`
-* `git submodule init`
 * set `ndk.dir` to point to your `ndk-build` in `gradle.properties`
-* `cd tess-two/tess-two`
-* `ndk-build -j4`
-* `cd ../../`
 * `./gradlew app:assembleDevelopDebug`
