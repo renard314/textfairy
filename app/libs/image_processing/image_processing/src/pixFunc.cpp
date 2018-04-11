@@ -94,7 +94,7 @@ Pix* dewarpOrDeskew(Pix* pix) {
 }
 
 Pix* timePixFunc(Pix* pix, PIX_FUNC pixFunc) {
-    //PROCNAME("timePixFunc");
+    PROCNAME("timePixFunc");
     L_TIMER totalTimer = startTimerNested();
     Pix* result = pixFunc(pix);
     l_float32 passedTime = stopTimerNested(totalTimer);
