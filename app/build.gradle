@@ -39,11 +39,6 @@ android {
     
     defaultConfig {
         applicationId "com.renard.ocr"
-
-        ndk {
-            abiFilters 'x86', 'armeabi-v7a', 'arm64-v8a'
-        }
-
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 64
