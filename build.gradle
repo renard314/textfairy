@@ -25,6 +25,7 @@ allprojects {
             url "http://oss.sonatype.org/content/repositories/snapshots"
         }
 
+        google()
     }
 
 }
