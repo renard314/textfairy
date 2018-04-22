@@ -5,8 +5,7 @@ textfairy
 
 Android OCR App
 
-available in the [play store] [p]
-[p]: https://play.google.com/store/apps/details?id=com.renard.ocr
+available in the [play store][1]
 
 
 Features
@@ -22,26 +21,11 @@ Features
 Project Structure
 -----------------
 * *app* contains the android app code
-* *hocr2pdf* contains c++ code to create pdf files
- * is used by the text fairy through a jni wrapper (textfairy/jni)
-* *image-processing* contains image processing code (binarization and page segmentation)
- * can be compiled to a command line executable main.cpp 
- * CppTestProject contains an XCode project to debug and test the image processing code
- * is used by the text fairy through a jni wrapper (textfairy/jni)
-
-The following android library projects are included as git submodules:
-* [Forked Tesseract Tools for Android by rmtheis] [1]
-
-The following projects where added to the sources directly either because they were modified or they are not available as git repos:
-* [hocr2pdf] [2]
-* [libjpeg] [3]
-* [libpng-android] [4]
-
-  [1]: https://github.com/rmtheis/tess-two
-  [2]: http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/
-  [3]: http://libjpeg.sourceforge.net/
-  [4]: https://github.com/julienr/libpng-android
-
+* *app/libs/hocr2pdf* contains c++ code to create pdf files
+* *app/libs/image_processing* contains image processing code (binarization and page segmentation)
+  * can be compiled to a command line executable main.cpp 
+  * *app/libs/image_processing/CppTestProject* contains an XCode project to debug and test the image processing code on desktop
+* *app/libs/[leptonica][2]*, *app/libs/[libjpeg][3]*, *app/libs/[libpng-android][4]* and *app/libs/[tesseract][5]* are external dependencies that where added to the sources directly either because they were modified or they are not available as git repos.
 
 Building with gradle
 --------------------------------------
@@ -51,3 +35,10 @@ make sure that you have got the android sdk as well as ndk (r15c) installed
 * `cd textfairy`
 * set `ndk.dir` to point to your `ndk-build` in `gradle.properties`
 * `./gradlew app:assembleDevelopDebug`
+
+[1]: https://play.google.com/store/apps/details?id=com.renard.ocr
+[2]: http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/
+[3]: http://libjpeg.sourceforge.net/
+[4]: https://github.com/julienr/libpng-android
+[5]: https://github.com/tesseract-ocr/tesseract
+
