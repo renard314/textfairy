@@ -25,11 +25,15 @@
 l_int32 pixDewarp(Pix* pixb, Pix** pixd) {
     L_DEWARP   *dew;
     L_DEWARPA  *dewa;
-    l_int32 vsuccess, applyResult = 1;
+    l_int32 vsuccess, hsuccess, applyResult = 1;
     
-    dewa = dewarpaCreate(0, 15, 1, 5, 0);
+    dewa = dewarpaCreate(0, 15, 1, 8, 0);
+    int maxLineCurv =(180*pixGetYRes(pixb))/200;
+    int diffLineCurv =(320*pixGetYRes(pixb))/200;
     //relax constraints on max curves as pictures taken by phone cameras can be extremely distorted
-    dewarpaSetCurvatures(dewa, -1, 0, 330, -1, -1, -1);
+    dewarpaSetCurvatures(dewa,maxLineCurv, 0, diffLineCurv, -1, -1, -1);
+    //dewarpaSetCurvatures(dewa, 250, 0, 380, -1, -1, -1);
+
     dewarpaUseBothArrays(dewa, 1);  // try to use both disparity arrays for this example
     // Initialize a Dewarp for this page (say, page 214)
     dew = dewarpCreate(pixb, 1);
@@ -37,7 +41,7 @@ l_int32 pixDewarp(Pix* pixb, Pix** pixd) {
     dewarpaInsertDewarp(dewa, dew);
     // Do the work
     dewarpBuildPageModel(dew, NULL);  // no debugging
-    dewarpaModelStatus(dewa, 1, &vsuccess, NULL);
+    dewarpaModelStatus(dewa, 1, &vsuccess, &hsuccess);
     if (vsuccess) {
         applyResult = dewarpaApplyDisparity(dewa,1, pixb, 255,0,0,pixd, NULL);
     }
