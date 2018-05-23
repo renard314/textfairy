@@ -336,16 +336,17 @@ FPIX       *fpix;
         ptaGetIPt(pta,0,&left,NULL);
         ptaGetIPt(pta,count-1,&right,NULL);
         l_float32   cc0, cc1, cc2;
-        //ptaGetCubicLSF(pta,&c3,&c2,&c1,&c0,NULL);
+        ptaGetCubicLSF(pta,&c3,&c2,&c1,&c0,NULL);
         ptaGetQuadraticLSF(pta, &cc2, &cc1, &cc0, NULL);
-        ptaGetQuarticLSF(pta, &c4, &c3, &c2, &c1, &c0, NULL);
+        //ptaGetQuarticLSF(pta, &c4, &c3, &c2, &c1, &c0, NULL);
         numaAddNumber(nacurve0, cc2);
         ptad = ptaCreate(nx);
 
         for (j = 0; j < nx; j++) {  /* uniformly sampled in x */
              x = j * sampling;
              if(x>=left && x<=right){
-                 applyQuarticFit(c4,c3,c2,c1,c0,x,&y);
+                 //applyQuarticFit(c4,c3,c2,c1,c0,x,&y);
+                 applyCubicFit(c3, c2, c1, c0, x, &y);
              } else {
                  applyQuadraticFit(cc2, cc1, cc0, x, &y);
              }
@@ -364,8 +365,8 @@ FPIX       *fpix;
             pta = ptaaGetPta(ptaa, i, L_CLONE);
             ptaGetArrays(pta, &nax, NULL);
             //ptaGetQuadraticLSF(pta, NULL, NULL, NULL, &nafit);
-            //ptaGetCubicLSF(pta,NULL,NULL,NULL,NULL,&nafit);
-            ptaGetQuarticLSF(pta,NULL,NULL,NULL,NULL,NULL,&nafit);
+            ptaGetCubicLSF(pta,NULL,NULL,NULL,NULL,&nafit);
+            //ptaGetQuarticLSF(pta,NULL,NULL,NULL,NULL,NULL,&nafit);
             ptad = ptaCreateFromNuma(nax, nafit);
             ptaaAddPta(ptaat, ptad, L_INSERT);
             ptaDestroy(&pta);
