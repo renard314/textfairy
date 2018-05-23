@@ -813,8 +813,16 @@ PTAA     *ptaa;
         /* Remove the components (e.g., embedded images) that have
          * long vertical runs (>= 50 pixels).  You can't use bounding
          * boxes because connected component b.b. of lines can be quite
-         * tall due to slope and curvature.  */
-    pix2 = pixMorphSequence(pix1, "e1.50", 0);  /* seed */
+         * tall due to slope and curvature.
+         *
+         * High reslution images can have valid lines higher than 50px.
+         * Use pix resolution to scale threshold.
+         */
+    
+    l_int32 yRes = pixGetYRes(pixs);
+    l_int32 tallComponentThreshhold = L_MAX(50, (50 * yRes)/200);
+    snprintf(buf, sizeof(buf), "e1.%d",tallComponentThreshhold);
+    pix2 = pixMorphSequence(pix1, buf, 0);  /* seed */
     pixSeedfillBinary(pix2, pix2, pix1, 8);  /* tall components */
     pixXor(pix2, pix2, pix1);  /* remove tall */
 
