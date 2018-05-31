@@ -67,7 +67,7 @@ public class OcrLanguage implements Parcelable {
     List<Uri> getDownloadUris() {
         List<Uri> result = new ArrayList<>();
         final String part2 = ".traineddata";
-        String networkDir = "https://raw.githubusercontent.com/tesseract-ocr/tessdata/master/";
+        String networkDir = "https://github.com/tesseract-ocr/tessdata/raw/3.04.00/";
         result.add(Uri.parse(networkDir + getValue() + part2));
         return result;
     }
