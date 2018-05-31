@@ -36,14 +36,15 @@ android {
         // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
         preDexLibraries = preDexEnabled && !travisBuild
     }
-    
+
     defaultConfig {
         applicationId "com.renard.ocr"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 68
+        versionCode 69
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
+
 
     }
     signingConfigs {
@@ -65,7 +66,7 @@ android {
         abi {
             enable true
             reset()
-            include 'x86','x86_64', 'armeabi-v7a', 'arm64-v8a'
+            include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
             universalApk true
         }
     }
@@ -130,6 +131,9 @@ dependencies {
     implementation 'com.github.barteksc:pdfium-android:1.5.0'
     implementation fileTree(dir: 'src/main/libs', include: '*.jar')
 
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support:support-vector-drawable:27.1.1'
     debugImplementation "com.squareup.leakcanary:leakcanary-android:${versions.leak_canary}"
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${versions.leak_canary}"
     implementation 'com.viewpagerindicator:library:2.4.1@aar'
