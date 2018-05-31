@@ -205,20 +205,24 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     @Override
     public void onActivityPaused(MonitoredActivity activity) {
         mIsActivityAttached = false;
+        mCrashLogger.logMessage("onActivityPaused " + activity);
     }
 
     @Override
     public void onActivityResumed(MonitoredActivity activity) {
         mIsActivityAttached = true;
+        mCrashLogger.logMessage("onActivityResumed " + activity);
     }
 
     @Override
     public synchronized void onActivityDestroyed(MonitoredActivity activity) {
+        mCrashLogger.logMessage("onActivityDestroyed " + activity);
         activity.removeLifeCycleListener(this);
         cancel();
         mExecutorService.execute(new Runnable() {
             @Override
             public void run() {
+                mCrashLogger.logMessage("mNativeBinding.destroy()");
                 mNativeBinding.destroy();
             }
         });
@@ -270,6 +274,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         mExecutorService.execute((new Runnable() {
             @Override
             public void run() {
+                mCrashLogger.logMessage("startOCRForComplexLayout");
                 Pix pixOcr = null;
                 Boxa boxa = null;
                 try {
@@ -344,6 +349,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                         mTess.end();
                     }
                     mCompleted = true;
+                    mCrashLogger.logMessage("startOCRForComplexLayout finished");
                     sendMessage(MESSAGE_END);
                 }
             }
@@ -356,9 +362,11 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         mTess = new TessBaseAPI(OCR.this);
         boolean result = mTess.init(tessDir, lang, ocrMode);
         if (!result) {
+            mCrashLogger.logMessage("init failed");
             sendMessage(MESSAGE_ERROR, R.string.error_tess_init);
             return false;
         }
+        mCrashLogger.logMessage("init succeeded");
         mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "ﬀﬁﬂﬃﬄﬅﬆ");
         return true;
     }
@@ -397,7 +405,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         mExecutorService.execute(new Runnable() {
             @Override
             public void run() {
+                mCrashLogger.logMessage("start analyseLayout");
                 mNativeBinding.analyseLayout(pixs);
+                mCrashLogger.logMessage("end analyseLayout");
+
             }
         });
     }
@@ -421,6 +432,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         mExecutorService.execute(new Runnable() {
             @Override
             public void run() {
+                mCrashLogger.logMessage("startOCRForSimpleLayout");
                 try {
                     logMemory(context);
                     final String tessDir = Util.getTessDir(context);
@@ -471,11 +483,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
 
                 } finally {
                     if (mTess != null) {
-                        synchronized (OCR.this) {
-                            mTess.end();
-                        }
+                        mTess.end();
                     }
                     mCompleted = true;
+                    mCrashLogger.logMessage("startOCRForSimpleLayout finished");
                     sendMessage(MESSAGE_END);
                 }
             }
@@ -504,6 +515,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     public synchronized void cancel() {
         if (mTess != null) {
             if (!mCompleted) {
+                mCrashLogger.logMessage("ocr cancelled");
                 mAnalytics.sendOcrCancelled();
             }
             mTess.stop();

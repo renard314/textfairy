@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012,2013 Renard Wellnitz.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,9 +15,10 @@
  */
 package com.renard.ocr.documents.creation.visualisation;
 
-import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
+import com.renard.ocr.analytics.Analytics;
+import com.renard.ocr.analytics.CrashLogger;
 import com.renard.ocr.main_menu.language.InstallStatus;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
@@ -52,6 +53,7 @@ public class LayoutQuestionDialog extends DialogFragment {
     private static final String SCREEN_NAME = "Layout Question Dialog";
 
     private Analytics mAnalytics;
+    private CrashLogger mCrashLogger;
 
     public static LayoutQuestionDialog newInstance() {
         return new LayoutQuestionDialog();
@@ -81,6 +83,7 @@ public class LayoutQuestionDialog extends DialogFragment {
         super.onAttach(activity);
         MonitoredActivity monitoredActivity = (MonitoredActivity) getActivity();
         mAnalytics = monitoredActivity.getAnaLytics();
+        mCrashLogger = monitoredActivity.getCrashLogger();
     }
 
 
@@ -98,6 +101,10 @@ public class LayoutQuestionDialog extends DialogFragment {
             final String defaultLanguage = context.getString(R.string.default_ocr_language);
             final String defaultLanguageDisplay = context.getString(R.string.default_ocr_display_language);
             language = Pair.create(defaultLanguage, defaultLanguageDisplay);
+            mCrashLogger.logMessage("default language is not installed falling back to " + defaultLanguage);
+            if (!OcrLanguageDataStore.isLanguageInstalled(defaultLanguage, context).isInstalled()) {
+                mCrashLogger.logMessage("default language " + defaultLanguage + " is not installed");
+            }
         }
         mLanguage = language.first;
 
