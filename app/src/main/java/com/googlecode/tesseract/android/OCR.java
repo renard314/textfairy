@@ -252,9 +252,11 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
         return !(mLanguage.startsWith("chi") || mLanguage.equalsIgnoreCase("tha")
                 || mLanguage.equalsIgnoreCase("kor")
                 || mLanguage.equalsIgnoreCase("jap")
+                || mLanguage.equalsIgnoreCase("hin")
                 || mLanguage.equalsIgnoreCase("bel")
                 || mLanguage.equalsIgnoreCase("ara")
                 || mLanguage.equalsIgnoreCase("grc")
+                || mLanguage.equalsIgnoreCase("guj")
                 || mLanguage.equalsIgnoreCase("rus")
                 || mLanguage.equalsIgnoreCase("vie"));
     }
