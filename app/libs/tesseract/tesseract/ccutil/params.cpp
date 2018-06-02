@@ -87,7 +87,7 @@ bool ParamUtils::ReadParamsFromFp(FILE *fp, inT64 end_offset,
       if (!foundit) {
         anyerr = true;         // had an error
         tprintf("read_params_file: parameter not found: %s\n", line);
-        exit(1);
+          return false;
       }
     }
   }
