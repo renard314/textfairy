@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012,2013 Renard Wellnitz.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -41,6 +41,8 @@ import android.support.v4.util.Pair;
 import android.util.Log;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -235,14 +237,15 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
 
-    private String determineOcrLanguage(String ocrLanguage) {
+    private List<String> determineOcrLanguage(String ocrLanguage) {
         final String english = "eng";
+        LinkedList<String> result = new LinkedList<>();
+        result.add(english);
         boolean isEnglishInstalled = OcrLanguageDataStore.isLanguageInstalled(english, mApplicationContext).isInstalled();
         if (!ocrLanguage.equals(english) && addEnglishData(ocrLanguage) && isEnglishInstalled) {
-            return ocrLanguage + "+" + english;
-        } else {
-            return ocrLanguage;
+            result.addFirst(ocrLanguage);
         }
+        return result;
 
     }
 
@@ -294,7 +297,7 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                     sendMessage(MESSAGE_EXPLANATION_TEXT, R.string.progress_ocr);
                     synchronized (OCR.this) {
                         logMemory(context);
-                        final String ocrLanguages = determineOcrLanguage(lang);
+                        final List<String> ocrLanguages = determineOcrLanguage(lang);
                         int ocrMode = determineOcrMode(lang);
 
                         if (!initTessApi(tessDir, ocrLanguages, ocrMode)) return;
@@ -361,18 +364,31 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     }
 
 
-    private boolean initTessApi(String tessDir, String lang, int ocrMode) {
-        logTessParams(lang, ocrMode);
+    private boolean initTessApi(String tessDir, List<String> languages, int ocrMode) {
+        String languagesString = concat(languages);
+        logTessParams(languagesString, ocrMode);
         mTess = new TessBaseAPI(OCR.this);
-        boolean result = mTess.init(tessDir, lang, ocrMode);
+        boolean result = mTess.init(tessDir, languagesString, ocrMode);
         if (!result) {
-            mCrashLogger.logMessage("init failed");
+            mCrashLogger.logMessage("init failed. deleting " + languages.get(0));
+            OcrLanguageDataStore.deleteLanguage(languages.get(0), mApplicationContext);
             sendMessage(MESSAGE_ERROR, R.string.error_tess_init);
             return false;
         }
         mCrashLogger.logMessage("init succeeded");
         mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "ﬀﬁﬂﬃﬄﬅﬆ");
         return true;
+    }
+
+    private String concat(List<String> languages) {
+        StringBuilder sb = new StringBuilder();
+        for (String lang : languages) {
+            if (sb.length() > 0) {
+                sb.append("+");
+            }
+            sb.append(lang);
+        }
+        return sb.toString();
     }
 
     private void logTessParams(String lang, int ocrMode) {
@@ -451,9 +467,11 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
                         if (mStopped) {
                             return;
                         }
-                        final String ocrLanguages = determineOcrLanguage(lang);
+                        final List<String> ocrLanguages = determineOcrLanguage(lang);
                         int ocrMode = determineOcrMode(lang);
-                        if (!initTessApi(tessDir, ocrLanguages, ocrMode)) return;
+                        if (!initTessApi(tessDir, ocrLanguages, ocrMode)) {
+                            return;
+                        }
 
                         mTess.setPageSegMode(PageSegMode.PSM_AUTO);
                         mTess.setImage(pixText);

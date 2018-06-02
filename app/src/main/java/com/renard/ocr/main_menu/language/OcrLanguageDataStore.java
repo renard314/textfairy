@@ -100,6 +100,19 @@ public class OcrLanguageDataStore {
         return pathname.getName().startsWith(ocrLang + ".") && pathname.isFile();
     }
 
+    public static boolean deleteLanguage(String language, Context context) {
+        final File[] languageFiles = getAllFilesFor(language, context);
+        if (languageFiles.length == 0) {
+            return false;
+        }
+
+        boolean success = true;
+
+        for (File file : languageFiles) {
+            success &= file.delete();
+        }
+        return success;
+    }
     public static boolean deleteLanguage(OcrLanguage language, Context context) {
         final File[] languageFiles = getAllFilesFor(language.getValue(), context);
         if (languageFiles.length == 0) {
