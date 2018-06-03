@@ -274,6 +274,8 @@ public class OCRActivity extends MonitoredActivity implements LayoutChoseListene
                 }
                 case OCR.MESSAGE_ERROR: {
                     Toast.makeText(getApplicationContext(), getText(msg.arg1), Toast.LENGTH_LONG).show();
+                    Screen.unlockOrientation(OCRActivity.this);
+                    finish();
                     break;
                 }
             }
