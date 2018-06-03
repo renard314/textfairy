@@ -41,7 +41,7 @@ android {
         applicationId "com.renard.ocr"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 69
+        versionCode 70
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
 
