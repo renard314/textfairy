@@ -240,10 +240,10 @@ public class OCR extends MonitoredActivity.LifeCycleAdapter implements OcrProgre
     private List<String> determineOcrLanguage(String ocrLanguage) {
         final String english = "eng";
         LinkedList<String> result = new LinkedList<>();
-        result.add(english);
+        result.add(ocrLanguage);
         boolean isEnglishInstalled = OcrLanguageDataStore.isLanguageInstalled(english, mApplicationContext).isInstalled();
         if (!ocrLanguage.equals(english) && addEnglishData(ocrLanguage) && isEnglishInstalled) {
-            result.addFirst(ocrLanguage);
+            result.add(english);
         }
         return result;
 
