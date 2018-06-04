@@ -20,11 +20,10 @@ allprojects {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         maven { url "http://dl.bintray.com/populov/maven" }
-        jcenter()
-        maven {
-            url "http://oss.sonatype.org/content/repositories/snapshots"
-        }
+        maven { url 'https://jitpack.io' }
 
+        jcenter()
+        maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
         google()
     }
 

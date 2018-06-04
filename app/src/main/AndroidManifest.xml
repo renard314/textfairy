@@ -7,6 +7,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
@@ -33,7 +34,6 @@
                 android:authorities="com.renard.ocr"
                 android:exported="false"/>
 
-
         <activity
                 android:name=".documents.creation.visualisation.OCRActivity"
                 android:launchMode="singleTop"/>
@@ -48,19 +48,13 @@
                     android:value=".documents.viewing.grid.DocumentGridActivity"/>
 
         </activity>
-        <activity
-                android:name=".documents.viewing.single.TextSettingsActivity"
-        />
-        <activity
-                android:name=".main_menu.TipsActivity"
-        >
+        <activity android:name=".documents.viewing.single.TextSettingsActivity"/>
+        <activity android:name=".main_menu.TipsActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".documents.viewing.grid.DocumentGridActivity"/>
         </activity>
-        <activity
-                android:name=".main_menu.language.OCRLanguageActivity"
-        >
+        <activity android:name=".main_menu.language.OCRLanguageActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".documents.viewing.grid.DocumentGridActivity"/>
@@ -80,13 +74,7 @@
         <activity
                 android:name=".documents.viewing.grid.DocumentGridActivity"
                 android:hardwareAccelerated="false"
-                android:launchMode="singleTop"
-        >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+                android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
 
@@ -97,7 +85,6 @@
                 <data android:mimeType="image/png"/>
                 <data android:mimeType="application/pdf"/>
             </intent-filter>
-
         </activity>
 
         <service android:name=".main_menu.language.OCRLanguageInstallService"/>
@@ -147,6 +134,14 @@
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".main_menu.AboutActivity"/>
+        </activity>
+
+        <activity android:name=".CameraPreviewActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <meta-data android:name="io.fabric.ApiKey"
                    android:value="ef8b77a0fd2ef3e87c78497b9595a9234fe5b711"/>

@@ -6,6 +6,7 @@ apply plugin: 'kotlin-kapt'
 
 def versions = ['appcompat_v7' : '27.1.1',
                 'butterknife'  : '8.8.1',
+                'fotoapparat'  : '2.2.0',
                 'leak_canary'  : '1.5',
                 'card_view'    : '27.1.1',
                 'design'       : '27.1.1',
@@ -134,6 +135,7 @@ dependencies {
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:support-vector-drawable:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
     debugImplementation "com.squareup.leakcanary:leakcanary-android:${versions.leak_canary}"
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${versions.leak_canary}"
     implementation 'com.viewpagerindicator:library:2.4.1@aar'
@@ -146,6 +148,8 @@ dependencies {
     implementation "com.android.support:appcompat-v7:${versions.appcompat_v7}"
     implementation 'org.apache.commons:commons-compress:1.12'
     implementation "com.android.support:cardview-v7:${versions.card_view}"
+
+    implementation "io.fotoapparat.fotoapparat:library:${versions.fotoapparat}"
     implementation "com.jakewharton:butterknife:${versions.butterknife}"
     kapt "com.jakewharton:butterknife-compiler:${versions.butterknife}"
 
@@ -181,3 +185,5 @@ crashlytics {
     enableNdk true
 }
 apply plugin: 'com.google.gms.google-services'
+
+apply plugin: 'kotlin-android-extensions'
