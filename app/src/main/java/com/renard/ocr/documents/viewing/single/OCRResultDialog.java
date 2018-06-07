@@ -101,7 +101,7 @@ public class OCRResultDialog extends TopDialogFragment implements View.OnClickLi
         switch (v.getId()) {
             case R.id.button_send_feedback:
                 getAnalytics().ocrResultSendFeedback();
-                File lastOriginalImage = OCR.getLastOriginalImageFromCache(getActivity());
+                File lastOriginalImage = OCR.Companion.getLastOriginalImageFromCache(getActivity());
                 final String language = getArguments().getString(EXTRA_LANGUAGE);
                 String body = activity.getString(R.string.document_scanned_as, language);
                 Intent intent = ContactActivity.getFeedbackIntent(getActivity(), getString(R.string.feedback_subject), lastOriginalImage, body);

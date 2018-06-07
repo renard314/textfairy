@@ -311,7 +311,7 @@ Pix* pixPrepareForOcr(Pix* pixOrg, ProgressCallback* callback) {
     auto binarizeWithCallback = [&](Pix* p){
         return binarize(p, callback);
     };
-    Pix* result = run(pixOrg, {convertTo8, findResolution, savGol, binarizeWithCallback , ensure150dpi, dewarpOrDeskew}, callback);
+    Pix* result = run(pixOrg, {convertTo8, findResolution, savGol, binarizeWithCallback , ensure150dpi, dewarpOrDeskew});
     FUNCNAME("pixPrepareForOcr");
     return result;
 }

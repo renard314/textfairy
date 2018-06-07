@@ -23,7 +23,7 @@ class SavePixTask extends AsyncTask<Void, Void, File> {
     @Override
     protected File doInBackground(Void... params) {
         try {
-            return Util.savePixToDir(mPix, OCR.ORIGINAL_PIX_NAME, mDir);
+            return Util.savePixToDir(mPix, OCR.FILE_NAME, mDir);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

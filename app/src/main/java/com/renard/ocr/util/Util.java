@@ -17,6 +17,7 @@ package com.renard.ocr.util;
 
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.WriteFile;
+import com.googlecode.tesseract.android.NativeBinding;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.viewing.grid.FastBitmapDrawable;

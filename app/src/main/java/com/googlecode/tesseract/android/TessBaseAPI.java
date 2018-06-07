@@ -150,26 +150,6 @@ public class TessBaseAPI {
         mProgressListener = listener;
     }
 
-    /**
-     * Called by the GC to clean up the native data that we set up when we
-     * construct the object.
-     *
-     * Altered from original version to avoid a crash-causing bug in OCR Test application.
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        // TODO Find out why finalize() is getting called when we change languages, even though
-        // we're still using the object. Is bypassing nativeFinalize() OK if we still call
-        // baseApi.end() in the Activity's onDestroy()?
-
-        try {
-            Log.d("TessBaseAPI.java", "finalize(): NOT calling nativeFinalize() due to premature garbage collection");
-            //nativeFinalize();
-        } finally {
-            Log.d("TessBaseAPI.java", "finalize(): calling super.finalize()");
-            super.finalize();
-        }
-    }
 
     /**
      * Initializes the Tesseract engine with a specified language model. Returns
@@ -567,7 +547,6 @@ public class TessBaseAPI {
      * @param bottom2 of total text bounding box
      */
     private void onProgressValues(final int percent, final int left, final int right, final int top, final int bottom, final int left2, final int right2, final int top2, final int bottom2) {
-        Log.i(LOG_TAG, "onProgressValues = " + percent);
 
         if (mProgressListener != null) {
             mProgressListener.onProgressValues(percent, left, right, top, bottom, left2, right2, top2, bottom2);
@@ -641,6 +620,6 @@ public class TessBaseAPI {
 
     private native void nativeReadConfigFile(String fileName);
 
-    private native int nativeStop();
+    private native void nativeStop();
 
 }

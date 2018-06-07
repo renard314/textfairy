@@ -28,20 +28,23 @@
 #include <iostream>
 #include "crashlytics.h"
 #include "html_text.h"
+#include <atomic>
 
 static jfieldID field_mNativeData;
 static jmethodID method_onProgressValues;
 static JavaVM* g_vm;
+
 
 struct native_data_t {
     tesseract::TessBaseAPI api;
     PIX *pix;
     void *data;
     bool debug;
+    std::atomic<bool> cancel_ocr;
+
 
     Box *currentTextBox = NULL;
     l_int32 lastProgress;
-    bool cancel_ocr;
 
     jobject cachedObject;
 
@@ -130,7 +133,6 @@ progressJavaCallback(void *progress_this, int progress, int left, int right, int
     native_data_t *nat = (native_data_t *) progress_this;
     if (nat->isStateValid() && nat->currentTextBox != NULL) {
         if (progress > nat->lastProgress || left != 0 || right != 0 || top != 0 || bottom != 0) {
-            LOGI("state changed");
             int x, y, w, h;
             boxGetGeometry(nat->currentTextBox, &x, &y, &w, &h);
             nat->ensureEnvAttached([&](JNIEnv* env){env->CallVoidMethod(nat->cachedObject, method_onProgressValues, progress,
@@ -334,7 +336,6 @@ void Java_com_googlecode_tesseract_android_TessBaseAPI_nativeStop(JNIEnv *env,
     native_data_t *nat = get_native_data(env, thiz);
 
     // stop by setting a flag thats used by the monitor
-    nat->resetStateVariables();
     nat->cancel_ocr = true;
 }
 
@@ -531,6 +532,7 @@ jstring Java_com_googlecode_tesseract_android_TessBaseAPI_nativeGetHOCRText(JNIE
     native_data_t *nat = get_native_data(env, thiz);
     nat->initStateVariables(env, thiz);
 
+
     ETEXT_DESC monitor;
     monitor.progress_callback = progressJavaCallback;
     monitor.cancel = cancelFunc;
@@ -542,7 +544,6 @@ jstring Java_com_googlecode_tesseract_android_TessBaseAPI_nativeGetHOCRText(JNIE
     jstring result = env->NewStringUTF(text);
 
     free(text);
-    nat->resetStateVariables();
 
     return result;
 }
