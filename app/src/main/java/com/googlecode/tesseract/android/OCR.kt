@@ -15,13 +15,13 @@
  */
 package com.googlecode.tesseract.android
 
+import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.graphics.RectF
-import android.support.annotation.MainThread
 import android.support.annotation.StringRes
 import android.support.annotation.WorkerThread
 import com.googlecode.leptonica.android.Boxa
@@ -30,6 +30,7 @@ import com.googlecode.leptonica.android.Pixa
 import com.googlecode.leptonica.android.WriteFile
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode
 import com.renard.ocr.R
+import com.renard.ocr.TextFairyApplication
 import com.renard.ocr.analytics.Analytics
 import com.renard.ocr.analytics.CrashLogger
 import com.renard.ocr.documents.creation.crop.CropImageScaler
@@ -41,7 +42,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
 sealed class OcrProgress {
-    data class PreviewPicture(val bitmap: Bitmap) : OcrProgress()
     data class Message(@StringRes val message: Int) : OcrProgress()
     data class LayoutElements(val columnBounds: List<RectF>, val imageBounds: List<RectF>, val columns: Pixa, val images: Pixa) : OcrProgress()
     data class Progress(val percent: Int, val wordBounds: RectF, val pageBounds: RectF) : OcrProgress()
@@ -49,47 +49,42 @@ sealed class OcrProgress {
     data class Error(@StringRes val message: Int) : OcrProgress()
 }
 
+data class PreviewPicture(val bitmap: Bitmap)
 
-class OCR @MainThread
-constructor(
-        context: Context,
-        private val mAnalytics: Analytics,
-        private val mCrashLogger: CrashLogger
-) {
+class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(application) {
 
-    private val mApplicationContext: Context = context.applicationContext
-
+    private val mAnalytics: Analytics = application.analytics
+    private val mCrashLogger: CrashLogger = application.crashLogger
     private var mPreviewWith: Int = 0
     private var mPreviewHeight: Int = 0
-    private var mOriginalWidth: Int = 0
-    private var mOriginalHeight: Int = 0
     private val mNativeBinding: NativeBinding = NativeBinding()
     private val mStopped = AtomicBoolean(false)
     private var mCompleted = AtomicBoolean(false)
     private var mPreviewHeightUnScaled: Int = 0
     private var mPreviewWidthUnScaled: Int = 0
     private val mExecutorService = Executors.newSingleThreadExecutor()
-    private val liveData: MutableLiveData<OcrProgress> = MutableLiveData()
+    private val ocrProgress: MutableLiveData<OcrProgress> = MutableLiveData()
+    private val previewPictures: MutableLiveData<PreviewPicture> = MutableLiveData()
 
 
     private val mTess: TessBaseAPI = TessBaseAPI(OcrProgressListener { percent, left, right, top, bottom, left2, right2, top2, bottom2 ->
 
-        val availableMegs = MemoryInfo.getFreeMemory(mApplicationContext)
+        val availableMegs = MemoryInfo.getFreeMemory(getApplication())
         mCrashLogger.logMessage("available ram = $availableMegs, percent done = $percent")
         mCrashLogger.setLong("ocr progress", percent.toLong())
 
         val newBottom = bottom2 - top2 - bottom
         val newTop = bottom2 - top2 - top
         // scale the word bounding rectangle to the preview image space
-        val xScale = 1.0f * mPreviewWith / mOriginalWidth
-        val yScale = 1.0f * mPreviewHeight / mOriginalHeight
+        val xScale = 1.0f * mPreviewWith / pix.width
+        val yScale = 1.0f * mPreviewHeight / pix.height
         val wordBounds = RectF()
         val ocrBounds = RectF()
 
         wordBounds.set((left + left2) * xScale, (newTop + top2) * yScale, (right + left2) * xScale, (newBottom + top2) * yScale)
         ocrBounds.set(left2 * xScale, top2 * yScale, right2 * xScale, bottom2 * yScale)
 
-        liveData.postValue(OcrProgress.Progress(percent, wordBounds, ocrBounds))
+        ocrProgress.postValue(OcrProgress.Progress(percent, wordBounds, ocrBounds))
     })
 
     init {
@@ -101,13 +96,13 @@ constructor(
 
             @WorkerThread
             override fun onProgressText(@StringRes message: Int) {
-                liveData.postValue(OcrProgress.Message(message))
+                ocrProgress.postValue(OcrProgress.Message(message))
             }
 
             @WorkerThread
             override fun onLayoutAnalysed(nativePixaText: Long, nativePixaImages: Long) {
-                val xScale = 1.0f * mPreviewWith / mOriginalWidth
-                val yScale = 1.0f * mPreviewHeight / mOriginalHeight
+                val xScale = 1.0f * mPreviewWith / pix.width
+                val yScale = 1.0f * mPreviewHeight / pix.height
                 val images = Pixa(nativePixaImages, 0, 0)
                 val imageBounds = images.boxRects.map {
                     it.scale(xScale, yScale)
@@ -117,7 +112,7 @@ constructor(
                     it.scale(xScale, yScale)
                 }
 
-                liveData.postValue(OcrProgress.LayoutElements(columnBounds, imageBounds, columns, images))
+                ocrProgress.postValue(OcrProgress.LayoutElements(columnBounds, imageBounds, columns, images))
             }
         })
     }
@@ -138,43 +133,38 @@ constructor(
             scale.pix.recycle()
             mPreviewHeight = previewBitmap.height
             mPreviewWith = previewBitmap.width
-            liveData.postValue(OcrProgress.PreviewPicture(previewBitmap))
+            previewPictures.postValue(PreviewPicture(previewBitmap))
         }
     }
 
     fun getOcrProgress(): LiveData<OcrProgress> {
-        return liveData
+        return ocrProgress
     }
 
-    @MainThread
-    fun destroy() {
-        mCrashLogger.logMessage("OCR#destroy")
+    fun getPreviewPictures(): LiveData<PreviewPicture> {
+        return previewPictures
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        mCrashLogger.logMessage("OCR#onCleared")
         mStopped.set(true)
         mTess.stop()
         if (!mCompleted.get()) {
             mCrashLogger.logMessage("ocr cancelled")
             mAnalytics.sendOcrCancelled()
         }
-        mCrashLogger.logMessage("mNativeBinding.destroy()")
-        mNativeBinding.destroy()
     }
 
     /**
      * native code takes care of the Pix, do not use it after calling this
      * function
-     *
-     * @param pix source pix on which to do layout analysis
-     */
-    fun startLayoutAnalysis(pix: Pix, width: Int, height: Int) {
+     **/
+    fun startLayoutAnalysis(width: Int, height: Int) {
         mPreviewHeightUnScaled = height
         mPreviewWidthUnScaled = width
-        mOriginalHeight = pix.height
-        mOriginalWidth = pix.width
-
         mExecutorService.execute {
-            mCrashLogger.logMessage("start analyseLayout")
             mNativeBinding.analyseLayout(pix)
-            mCrashLogger.logMessage("end analyseLayout")
         }
     }
 
@@ -185,73 +175,59 @@ constructor(
      * @param pixaText   must contain the binary text parts
      * @param pixaImages pixaImages must contain the image parts
      */
-    fun startOCRForComplexLayout(context: Context, lang: String, pixaText: Pixa?, pixaImages: Pixa, selectedTexts: IntArray, selectedImages: IntArray) {
-        if (pixaText == null) {
-            throw IllegalArgumentException("text pixa must be non-null")
-        }
-
+    fun startOCRForComplexLayout(context: Context, lang: String, pixaText: Pixa, pixaImages: Pixa, selectedTexts: IntArray, selectedImages: IntArray) {
         mExecutorService.execute(Runnable {
             mCrashLogger.logMessage("startOCRForComplexLayout")
             var pixOcr: Pix? = null
             var boxa: Boxa? = null
             try {
-                val tessDir = Util.getTessDir(context)
+                logMemory(context)
+
                 val columnData = mNativeBinding.combinePixa(pixaText.nativePixa, pixaImages.nativePixa, selectedTexts, selectedImages)
                 pixaText.recycle()
                 pixaImages.recycle()
                 val pixOrgPointer = columnData[0]
-                val pixOcrPointer = columnData[1]
-                val boxaColumnsPointer = columnData[2]
+                pixOcr = Pix(columnData[1])
+                boxa = Boxa(columnData[2])
 
-                liveData.postValue(OcrProgress.Message(R.string.progress_ocr))
+                sendPreview(pixOrgPointer)
+                ocrProgress.postValue(OcrProgress.Message(R.string.progress_ocr))
 
-                logMemory(context)
-                val ocrLanguages = determineOcrLanguage(lang)
-
-                if (!initTessApi(tessDir, ocrLanguages, TessBaseAPI.OEM_TESSERACT_ONLY)) {
+                if (!initTessApi(
+                                languages = determineOcrLanguage(lang),
+                                ocrMode = TessBaseAPI.OEM_TESSERACT_ONLY
+                        )
+                ) {
                     return@Runnable
                 }
-                pixOcr = Pix(pixOcrPointer)
-                sendPreview(pixOcrPointer)
+
                 mTess.setPageSegMode(PageSegMode.PSM_SINGLE_BLOCK)
                 mTess.setImage(pixOcr)
-                boxa = Boxa(boxaColumnsPointer)
-                mOriginalHeight = pixOcr.height
-                mOriginalWidth = pixOcr.width
+
                 if (mStopped.get()) {
                     return@Runnable
                 }
-                var xb: Int
-                var yb: Int
-                var wb: Int
-                var hb: Int
-                val columnCount = boxa.count
                 var accuracy = 0f
                 val geometry = IntArray(4)
                 val hocrText = StringBuilder()
                 val htmlText = StringBuilder()
-                for (i in 0 until columnCount) {
+                for (i in 0 until boxa.count) {
                     if (!boxa.getGeometry(i, geometry)) {
                         continue
                     }
-                    xb = geometry[0]
-                    yb = geometry[1]
-                    wb = geometry[2]
-                    hb = geometry[3]
-                    mTess.setRectangle(xb, yb, wb, hb)
-                    if (mStopped.get()) {
-                        return@Runnable
-                    }
+                    mTess.setRectangle(geometry[0], geometry[1], geometry[2], geometry[3])
                     hocrText.append(mTess.getHOCRText(0))
-                    if (mStopped.get()) {
-                        return@Runnable
-                    }
                     htmlText.append(mTess.htmlText)
                     accuracy += mTess.meanConfidence().toFloat()
+                    if (mStopped.get()) {
+                        return@Runnable
+                    }
                 }
-                val totalAccuracy = Math.round(accuracy / columnCount)
-                liveData.postValue(OcrProgress.Result(pixOrgPointer, htmlText.toString(), hocrText.toString(), totalAccuracy))
+                val totalAccuracy = Math.round(accuracy / boxa.count)
+                ocrProgress.postValue(OcrProgress.Result(pixOrgPointer, htmlText.toString(), hocrText.toString(), totalAccuracy))
             } finally {
+                mNativeBinding.destroy()
+                pix.recycle()
                 pixOcr?.recycle()
                 boxa?.recycle()
                 mTess.end()
@@ -267,38 +243,30 @@ constructor(
      * function
      *
      * @param context used to access the file system
-     * @param pixs    source pix to do ocr on
+     * @param pix    source pix to do ocr on
      */
-    fun startOCRForSimpleLayout(context: Context, lang: String, pixs: Pix?, width: Int, height: Int) {
-        if (pixs == null) {
-            throw IllegalArgumentException("Source pix must be non-null")
-        }
+    fun startOCRForSimpleLayout(context: Context, lang: String, width: Int, height: Int) {
         mPreviewHeightUnScaled = height
         mPreviewWidthUnScaled = width
-        mOriginalHeight = pixs.height
-        mOriginalWidth = pixs.width
 
         mExecutorService.execute(Runnable {
             mCrashLogger.logMessage("startOCRForSimpleLayout")
             try {
                 logMemory(context)
-                val tessDir = Util.getTessDir(context)
+                sendPreview(pix.nativePix)
 
-                sendPreview(pixs.nativePix)
-
-                val nativeTextPix = mNativeBinding.convertBookPage(pixs)
+                val nativeTextPix = mNativeBinding.convertBookPage(pix)
 
                 sendPreview(nativeTextPix)
 
                 val pixText = Pix(nativeTextPix)
-                mOriginalHeight = pixText.height
-                mOriginalWidth = pixText.width
-                liveData.postValue(OcrProgress.Message(R.string.progress_ocr))
+                ocrProgress.postValue(OcrProgress.Message(R.string.progress_ocr))
                 if (mStopped.get()) {
                     return@Runnable
                 }
+
                 val ocrLanguages = determineOcrLanguage(lang)
-                if (!initTessApi(tessDir, ocrLanguages, TessBaseAPI.OEM_TESSERACT_ONLY)) {
+                if (!initTessApi(ocrLanguages, TessBaseAPI.OEM_TESSERACT_ONLY)) {
                     return@Runnable
                 }
 
@@ -323,9 +291,10 @@ constructor(
                 if (accuracy == 95) {
                     accuracy = 0
                 }
-                liveData.postValue(OcrProgress.Result(nativeTextPix, htmlText.toString(), hocrText.toString(), accuracy))
+                ocrProgress.postValue(OcrProgress.Result(nativeTextPix, htmlText.toString(), hocrText.toString(), accuracy))
             } finally {
-
+                mNativeBinding.destroy()
+                pix.recycle()
                 mTess.end()
                 mCompleted.set(true)
                 mCrashLogger.logMessage("startOCRForSimpleLayout finished")
@@ -334,14 +303,15 @@ constructor(
 
     }
 
-    private fun initTessApi(tessDir: String, languages: List<String>, ocrMode: Int): Boolean {
+    private fun initTessApi(languages: List<String>, ocrMode: Int): Boolean {
+        val tessDir = Util.getTessDir(getApplication())
         val languagesString = languages.joinToString("+")
         logTessParams(languagesString, ocrMode)
         val result = mTess.init(tessDir, languagesString, ocrMode)
         if (!result) {
             mCrashLogger.logMessage("init failed. deleting " + languages[0])
-            OcrLanguageDataStore.deleteLanguage(languages[0], mApplicationContext)
-            liveData.postValue(OcrProgress.Error(R.string.error_tess_init))
+            OcrLanguageDataStore.deleteLanguage(languages[0], getApplication())
+            ocrProgress.postValue(OcrProgress.Error(R.string.error_tess_init))
             return false
         }
         mCrashLogger.logMessage("init succeeded")
@@ -375,7 +345,7 @@ constructor(
 
     private fun determineOcrLanguage(ocrLanguage: String): List<String> {
         val english = "eng"
-        val isEnglishInstalled = OcrLanguageDataStore.isLanguageInstalled(english, mApplicationContext).isInstalled
+        val isEnglishInstalled = OcrLanguageDataStore.isLanguageInstalled(english, getApplication()).isInstalled
         return if (ocrLanguage != english && addEnglishData(ocrLanguage) && isEnglishInstalled) {
             listOf(ocrLanguage, english)
         } else {
@@ -386,18 +356,19 @@ constructor(
     // when combining languages that have multi byte characters with english
     // training data the ocr text gets corrupted
     // but adding english will improve overall accuracy for the other languages
-    private fun addEnglishData(mLanguage: String): Boolean {
-        return !(mLanguage.startsWith("chi") || mLanguage.equals("tha", ignoreCase = true)
-                || mLanguage.equals("kor", ignoreCase = true)
-                || mLanguage.equals("jap", ignoreCase = true)
-                || mLanguage.equals("hin", ignoreCase = true)
-                || mLanguage.equals("bel", ignoreCase = true)
-                || mLanguage.equals("ara", ignoreCase = true)
-                || mLanguage.equals("grc", ignoreCase = true)
-                || mLanguage.equals("guj", ignoreCase = true)
-                || mLanguage.equals("rus", ignoreCase = true)
-                || mLanguage.equals("vie", ignoreCase = true))
-    }
+    private fun addEnglishData(mLanguage: String) = !(
+            mLanguage.startsWith("chi")
+                    || mLanguage.equals("tha", ignoreCase = true)
+                    || mLanguage.equals("kor", ignoreCase = true)
+                    || mLanguage.equals("jap", ignoreCase = true)
+                    || mLanguage.equals("hin", ignoreCase = true)
+                    || mLanguage.equals("bel", ignoreCase = true)
+                    || mLanguage.equals("ara", ignoreCase = true)
+                    || mLanguage.equals("grc", ignoreCase = true)
+                    || mLanguage.equals("guj", ignoreCase = true)
+                    || mLanguage.equals("rus", ignoreCase = true)
+                    || mLanguage.equals("vie", ignoreCase = true)
+            )
 
     companion object {
         const val FILE_NAME = "last_scan"

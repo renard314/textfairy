@@ -17,7 +17,9 @@ package com.renard.ocr.documents.creation.visualisation
 
 import android.Manifest
 import android.arch.lifecycle.Observer
-import android.content.ContentProviderClient
+import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
@@ -34,9 +36,11 @@ import butterknife.ButterKnife
 import com.googlecode.leptonica.android.Pix
 import com.googlecode.tesseract.android.OCR
 import com.googlecode.tesseract.android.OcrProgress
+import com.googlecode.tesseract.android.PreviewPicture
 import com.renard.ocr.MonitoredActivity
 import com.renard.ocr.PermissionGrantedEvent
 import com.renard.ocr.R
+import com.renard.ocr.TextFairyApplication
 import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutChoseListener
 import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutKind
 import com.renard.ocr.documents.viewing.DocumentContentProvider
@@ -60,19 +64,14 @@ private const val LOG_TAG = "OcrActivity"
  */
 class OCRActivity : MonitoredActivity(), LayoutChoseListener {
 
-
     @BindView(R.id.column_pick_completed)
     lateinit var mButtonStartOCR: Button
     @BindView(R.id.progress_image)
     lateinit var mImageView: OCRImageView
 
-    private var mOriginalHeight = 0
-    private var mOriginalWidth = 0
-    private var mOcrLanguage: String? = null // is set by dialog in
+    private var mOcrLanguage: String? = null
     private lateinit var mOCR: OCR
-    // if >=0 its the id of the parent document to which the current page shall be added
     private var mParentId = -1
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,28 +79,29 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
         EventBus.getDefault().register(this)
         val nativePix = intent.getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1)
         mParentId = intent.getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1)
-        if (nativePix == -1L) {
-            mCrashLogger.logException(IllegalStateException("native pix not defined"))
-            val intent = Intent(this, DocumentGridActivity::class.java)
-            startActivity(intent)
-            finish()
-            return
-        }
 
-        mOCR = OCR(this, anaLytics, crashLogger)
+        mOCR = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return OCR(Pix(nativePix), application as TextFairyApplication) as T
+            }
+
+        }).get(OCR::class.java)
+
         setContentView(R.layout.activity_ocr)
         ButterKnife.bind(this)
         initToolbar()
         ensurePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, R.string.permission_explanation)
         mOCR.getOcrProgress().observe(this, Observer<OcrProgress> {
             when (it) {
-                is OcrProgress.PreviewPicture -> previewPicture(it.bitmap)
                 is OcrProgress.Message -> setToolbarMessage(it.message)
                 is OcrProgress.LayoutElements -> onLayoutElements(it)
                 is OcrProgress.Progress -> onProgress(it)
                 is OcrProgress.Result -> onRecognisedText(it)
                 is OcrProgress.Error -> onError(it)
             }
+        })
+        mOCR.getPreviewPictures().observe(this, Observer<PreviewPicture> {
+            previewPicture(it?.bitmap)
         })
     }
 
@@ -112,7 +112,7 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
     }
 
     private fun onRecognisedText(it: OcrProgress.Result) {
-        saveDocument(Pix(it.nativePix), it.hocrText, it.utf8Text, it.accuracy)
+        saveDocument(it.nativePix, it.hocrText, it.utf8Text, it.accuracy)
     }
 
     private fun onLayoutElements(it: OcrProgress.LayoutElements) {
@@ -157,48 +157,35 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
 
     @Suppress("unused")
     fun onEventMainThread(event: PermissionGrantedEvent) {
-        val nativePix = intent.getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1)
-        if (nativePix != -1L) {
-            val pixOrg = Pix(nativePix)
-            mOriginalHeight = pixOrg.height
-            mOriginalWidth = pixOrg.width
-            askUserAboutDocumentLayout()
-        }
+        askUserAboutDocumentLayout()
     }
 
     override fun onLayoutChosen(layoutKind: LayoutKind, ocrLanguage: String) {
-        val nativePix = intent.getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1)
-        if (nativePix != -1L) {
-            val pixOrg = Pix(nativePix)
-            if (layoutKind == LayoutKind.DO_NOTHING) {
-                saveDocument(pixOrg, null, null, 0)
-            } else {
-                mOcrLanguage = ocrLanguage
+        if (layoutKind == LayoutKind.DO_NOTHING) {
+            //saveDocument(mNativePix, null, null, 0)
+            //TODO
+        } else {
+            mOcrLanguage = ocrLanguage
 
-                setToolbarMessage(R.string.progress_start)
+            setToolbarMessage(R.string.progress_start)
 
-                intent.removeExtra(DocumentGridActivity.EXTRA_NATIVE_PIX)
-                if (layoutKind == LayoutKind.SIMPLE) {
-                    mAnalytics.sendScreenView("Ocr")
-                    mOCR.startOCRForSimpleLayout(this@OCRActivity, ocrLanguage, pixOrg, mImageView.width, mImageView.height)
-                } else if (layoutKind == LayoutKind.COMPLEX) {
-                    mOCR.startLayoutAnalysis(pixOrg, mImageView.width, mImageView.height)
-                }
+            if (layoutKind == LayoutKind.SIMPLE) {
+                mAnalytics.sendScreenView("Ocr")
+                mOCR.startOCRForSimpleLayout(this@OCRActivity, ocrLanguage, mImageView.width, mImageView.height)
+            } else if (layoutKind == LayoutKind.COMPLEX) {
+                mOCR.startLayoutAnalysis(mImageView.width, mImageView.height)
             }
         }
-
     }
 
-    private var mPreviewWith: Int = 0
-    private var mPreviewHeight: Int = 0
-
-    private fun previewPicture(bitmap: Bitmap) {
-        mPreviewHeight = bitmap.height
-        mPreviewWith = bitmap.width
+    private fun previewPicture(bitmap: Bitmap?) {
+        if (bitmap == null) {
+            return
+        }
         mImageView.setImageBitmapResetBase(bitmap, true, 0)
     }
 
-    private fun saveDocument(pix: Pix, hocrString: String?, utf8String: String?, accuracy: Int) {
+    private fun saveDocument(pix: Long, hocrString: String?, utf8String: String?, accuracy: Int) {
 
         Util.startBackgroundJob(this@OCRActivity, "",
                 getText(R.string.saving_document).toString(), {
@@ -233,7 +220,6 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
                             Toast.LENGTH_LONG).show()
                 }
             } finally {
-                recycleResultPix(pix)
                 if (documentUri != null && !isFinishing) {
                     startActivity(
                             Intent(this@OCRActivity, DocumentActivity::class.java).apply {
@@ -243,7 +229,6 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
                                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                             }
                     )
-                    pix.recycle()
                     finish()
                     Screen.unlockOrientation(this@OCRActivity)
                 }
@@ -252,60 +237,43 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
 
     }
 
-    private fun recycleResultPix(pix: Pix?) {
-        pix?.recycle()
-    }
-
-
     @Throws(IOException::class)
-    private fun saveImage(p: Pix?): File {
+    private fun saveImage(p: Long): File {
         val id = DateFormat.format("ssmmhhddMMyy", Date(System.currentTimeMillis()))
-        return Util.savePixToSD(p, id.toString())
+        return Util.savePixToSD(Pix(p), id.toString())
     }
 
     @Throws(RemoteException::class)
     private fun saveDocumentToDB(imageFile: File?, hocr: String?, plainText: String?): Uri? {
-        var client: ContentProviderClient? = null
-        try {
-            val v = ContentValues()
-            if (imageFile != null) {
-                v.put(DocumentContentProvider.Columns.PHOTO_PATH,
-                        imageFile.path)
-            }
-            if (hocr != null) {
-                v.put(Columns.HOCR_TEXT, hocr)
-            }
-            if (plainText != null) {
-                v.put(Columns.OCR_TEXT, plainText)
-            }
-            v.put(Columns.OCR_LANG, mOcrLanguage)
-
-            if (mParentId > -1) {
-                v.put(Columns.PARENT_ID, mParentId)
-            }
-            client = contentResolver.acquireContentProviderClient(DocumentContentProvider.CONTENT_URI)
-            return client?.insert(DocumentContentProvider.CONTENT_URI, v)
-        } finally {
-            client?.release()
+        contentResolver.acquireContentProviderClient(DocumentContentProvider.CONTENT_URI).use {
+            return it.insert(DocumentContentProvider.CONTENT_URI, ContentValues().apply {
+                if (imageFile != null) {
+                    put(DocumentContentProvider.Columns.PHOTO_PATH, imageFile.path)
+                }
+                if (hocr != null) {
+                    put(Columns.HOCR_TEXT, hocr)
+                }
+                if (plainText != null) {
+                    put(Columns.OCR_TEXT, plainText)
+                }
+                if (mParentId > -1) {
+                    put(Columns.PARENT_ID, mParentId)
+                }
+                put(Columns.OCR_LANG, mOcrLanguage)
+            })
         }
     }
 
 
-    override fun getHintDialogId(): Int {
-        return -1
-    }
+    override fun getHintDialogId() = -1
 
     private fun askUserAboutDocumentLayout() {
-        val dialog = LayoutQuestionDialog.newInstance()
-        dialog.show(supportFragmentManager, LayoutQuestionDialog.TAG)
+        LayoutQuestionDialog.newInstance().show(supportFragmentManager, LayoutQuestionDialog.TAG)
     }
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (mOcrLanguage != null) {
-            outState.putString(OCR_LANGUAGE, mOcrLanguage)
-        }
+        outState.putString(OCR_LANGUAGE, mOcrLanguage)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -315,20 +283,16 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
         }
     }
 
-    override fun getScreenName(): String {
-        return ""
-    }
+    override fun getScreenName() = ""
 
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
-        mOCR.destroy()
         mImageView.clear()
 
     }
 
     companion object {
-
         const val EXTRA_PARENT_DOCUMENT_ID = "parent_id"
         private const val OCR_LANGUAGE = "ocr_language"
         const val EXTRA_USE_ACCESSIBILITY_MODE = "ACCESSIBILTY_MODE"
