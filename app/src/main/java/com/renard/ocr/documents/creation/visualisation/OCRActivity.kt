@@ -245,8 +245,9 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
 
     @Throws(RemoteException::class)
     private fun saveDocumentToDB(imageFile: File?, hocr: String?, plainText: String?): Uri? {
-        contentResolver.acquireContentProviderClient(DocumentContentProvider.CONTENT_URI).use {
-            return it.insert(DocumentContentProvider.CONTENT_URI, ContentValues().apply {
+        val client = contentResolver.acquireContentProviderClient(DocumentContentProvider.CONTENT_URI)
+        try {
+            return client.insert(DocumentContentProvider.CONTENT_URI, ContentValues().apply {
                 if (imageFile != null) {
                     put(DocumentContentProvider.Columns.PHOTO_PATH, imageFile.path)
                 }
@@ -261,6 +262,8 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
                 }
                 put(Columns.OCR_LANG, mOcrLanguage)
             })
+        } finally {
+            client.release()
         }
     }
 
