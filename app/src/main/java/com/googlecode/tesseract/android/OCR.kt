@@ -55,16 +55,21 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
 
     private val mAnalytics: Analytics = application.analytics
     private val mCrashLogger: CrashLogger = application.crashLogger
-    private var mPreviewWith: Int = 0
-    private var mPreviewHeight: Int = 0
     private val mNativeBinding: NativeBinding = NativeBinding()
     private val mStopped = AtomicBoolean(false)
     private var mCompleted = AtomicBoolean(false)
-    private var mPreviewHeightUnScaled: Int = 0
-    private var mPreviewWidthUnScaled: Int = 0
     private val mExecutorService = Executors.newSingleThreadExecutor()
     private val ocrProgress: MutableLiveData<OcrProgress> = MutableLiveData()
     private val previewPictures: MutableLiveData<PreviewPicture> = MutableLiveData()
+
+    private var mPreviewWith: Int = 0
+    private var mPreviewHeight: Int = 0
+    private var mPreviewHeightUnScaled: Int = 0
+    private var mPreviewWidthUnScaled: Int = 0
+    private var mOriginalWidth: Int = pix.width
+    private var mOriginalHeight: Int = pix.height
+
+
 
 
     private val mTess: TessBaseAPI = TessBaseAPI(OcrProgressListener { percent, left, right, top, bottom, left2, right2, top2, bottom2 ->
@@ -76,8 +81,8 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
         val newBottom = bottom2 - top2 - bottom
         val newTop = bottom2 - top2 - top
         // scale the word bounding rectangle to the preview image space
-        val xScale = 1.0f * mPreviewWith / pix.width
-        val yScale = 1.0f * mPreviewHeight / pix.height
+        val xScale = 1.0f * mPreviewWith / mOriginalWidth
+        val yScale = 1.0f * mPreviewHeight / mOriginalHeight
         val wordBounds = RectF()
         val ocrBounds = RectF()
 
@@ -101,8 +106,8 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
 
             @WorkerThread
             override fun onLayoutAnalysed(nativePixaText: Long, nativePixaImages: Long) {
-                val xScale = 1.0f * mPreviewWith / pix.width
-                val yScale = 1.0f * mPreviewHeight / pix.height
+                val xScale = 1.0f * mPreviewWith / mOriginalWidth
+                val yScale = 1.0f * mPreviewHeight / mOriginalHeight
                 val images = Pixa(nativePixaImages, 0, 0)
                 val imageBounds = images.boxRects.map {
                     it.scale(xScale, yScale)
@@ -203,6 +208,9 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
 
                 mTess.setPageSegMode(PageSegMode.PSM_SINGLE_BLOCK)
                 mTess.setImage(pixOcr)
+
+                mOriginalHeight = pixOcr.height
+                mOriginalWidth = pixOcr.width
 
                 if (mStopped.get()) {
                     return@Runnable
