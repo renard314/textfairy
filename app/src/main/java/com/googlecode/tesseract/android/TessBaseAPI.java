@@ -41,10 +41,6 @@ public class TessBaseAPI {
     private long mNativeData;
 
     static {
-        System.loadLibrary("pngo");
-        System.loadLibrary("lept");
-        System.loadLibrary("tess");
-
         nativeClassInit();
     }
 

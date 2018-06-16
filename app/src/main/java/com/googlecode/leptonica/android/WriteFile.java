@@ -24,10 +24,6 @@ import java.io.File;
  * @author alanv@google.com (Alan Viverette)
  */
 public class WriteFile {
-    static {
-        System.loadLibrary("pngo");
-        System.loadLibrary("lept");
-    }
 
     /* Default JPEG quality */
     public static final int DEFAULT_QUALITY = 85;
