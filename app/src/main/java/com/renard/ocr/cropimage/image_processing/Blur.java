@@ -22,12 +22,6 @@ import com.googlecode.leptonica.android.Pix;
  * @author renard
  */
 public class Blur {
-    static {
-        System.loadLibrary("pngo");
-        System.loadLibrary("lept");
-        System.loadLibrary("image_processing");
-    }
-
 
     public static BlurDetectionResult blurDetect(Pix pixs) {
         if (pixs == null) {
