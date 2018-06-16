@@ -20,10 +20,6 @@ package com.googlecode.leptonica.android;
  * @author alanv@google.com (Alan Viverette)
  */
 public class Rotate {
-    static {
-        System.loadLibrary("pngo");
-        System.loadLibrary("lept");
-    }
 
     // Rotation default
 

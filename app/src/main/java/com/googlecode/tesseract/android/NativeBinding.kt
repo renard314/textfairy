@@ -102,10 +102,6 @@ class NativeBinding {
         private val TAG = "NativeBinding"
 
         init {
-            System.loadLibrary("pngo")
-            System.loadLibrary("lept")
-            System.loadLibrary("tess")
-            System.loadLibrary("image_processing")
             nativeClassInit()
         }
 

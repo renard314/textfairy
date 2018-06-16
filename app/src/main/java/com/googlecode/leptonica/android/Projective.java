@@ -20,12 +20,6 @@ package com.googlecode.leptonica.android;
  * @author renard
  */
 public class Projective {
-    static {
-        System.loadLibrary("pngo");
-        System.loadLibrary("lept");
-    }
-
-
 
     /**
      *  pixProjectivePtaColor()

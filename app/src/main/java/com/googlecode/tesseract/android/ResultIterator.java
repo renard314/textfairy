@@ -26,10 +26,7 @@ import com.googlecode.tesseract.android.TessBaseAPI.PageIteratorLevel;
  * @author alanv@google.com (Alan Viverette)
  */
 public class ResultIterator extends PageIterator {
-    static {
-        System.loadLibrary("lept");
-        System.loadLibrary("tess");
-    }
+
 
     /** Pointer to native result iterator. */
     private final long mNativeResultIterator;

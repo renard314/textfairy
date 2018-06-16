@@ -34,10 +34,6 @@ import java.io.IOException;
  * @author alanv@google.com (Alan Viverette)
  */
 public class ReadFile {
-    static {
-        System.loadLibrary("pngo");
-        System.loadLibrary("lept");
-    }
 
     private static final String LOG_TAG = ReadFile.class.getSimpleName();
 

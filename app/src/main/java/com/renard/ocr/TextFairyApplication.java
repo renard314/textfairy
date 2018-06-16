@@ -15,6 +15,7 @@
  */
 package com.renard.ocr;
 
+import com.getkeepsafe.relinker.ReLinker;
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.analytics.AnalyticsFactory;
 import com.renard.ocr.analytics.CrashLogger;
@@ -42,6 +43,18 @@ public class TextFairyApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
+        ReLinker.recursively()
+                .log(message -> Log.d("ReLinker", message))
+                .loadLibrary(this, "tess");
+
+        ReLinker.recursively()
+                .log(message -> Log.d("ReLinker", message))
+                .loadLibrary(this, "image_processing");
+
+        ReLinker.recursively()
+                .log(message -> Log.d("ReLinker", message))
+                .loadLibrary(this, "hocr2pdf");
+
         createAnalytics();
         createCrashLogger();
         initTextPreferences();
