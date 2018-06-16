@@ -1,9 +1,9 @@
 package com.renard.ocr
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import android.support.v7.app.AppCompatActivity
 import com.googlecode.leptonica.android.ReadFile
 import com.renard.ocr.documents.creation.NewDocumentActivity.EXTRA_NATIVE_PIX
 import com.renard.ocr.documents.creation.visualisation.OCRActivity
@@ -16,16 +16,20 @@ import io.fotoapparat.parameter.ScaleType
 import io.fotoapparat.selector.*
 import kotlinx.android.synthetic.main.activity_camera_preview.*
 
-class CameraPreviewActivity : AppCompatActivity() {
-    private lateinit var fotoapparat: Fotoapparat
+class CameraPreviewActivity : MonitoredActivity() {
 
+    override fun getScreenName() = "CameraPreview"
+
+    override fun getHintDialogId() = -1
+
+    private lateinit var fotoapparat: Fotoapparat
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_take_picture -> {
                 fotoapparat.takePicture().toBitmap().whenAvailable {
-                    if(it!=null) {
-                        val pix = ReadFile.readBitmap(it?.bitmap)
+                    if (it != null) {
+                        val pix = ReadFile.readBitmap(it.bitmap)
                         val intent = Intent(this, OCRActivity::class.java)
                         intent.putExtra(EXTRA_NATIVE_PIX, pix.nativePix)
                         intent.putExtra(OCRActivity.EXTRA_USE_ACCESSIBILITY_MODE, false)
@@ -74,7 +78,6 @@ class CameraPreviewActivity : AppCompatActivity() {
                         none()
                 ),
                 jpegQuality = highestQuality()
-
         )
 
         fotoapparat = Fotoapparat(
@@ -88,10 +91,15 @@ class CameraPreviewActivity : AppCompatActivity() {
         )
     }
 
+    @Suppress("unused")
+    fun onEventMainThread(event: PermissionGrantedEvent) {
+        fotoapparat.start()
+    }
+
     override fun onStart() {
         super.onStart()
         Screen.lockOrientation(this)
-        fotoapparat.start()
+        ensurePermission(Manifest.permission.CAMERA, R.string.permission_explanation)
     }
 
     override fun onStop() {
