@@ -22,10 +22,6 @@ package com.googlecode.leptonica.android;
  * @author alanv@google.com (Alan Viverette)
  */
 public class Scale {
-    static {
-        System.loadLibrary("pngo");
-        System.loadLibrary("lept");
-    }
 
     public enum ScaleType {
         /* Scale in X and Y independently, so that src matches dst exactly. */

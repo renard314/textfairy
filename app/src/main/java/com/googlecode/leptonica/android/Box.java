@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2010 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -24,10 +24,6 @@ import android.graphics.Point;
  * @author alanv@google.com (Alan Viverette)
  */
 public class Box {
-    static {
-        System.loadLibrary("pngo");
-        System.loadLibrary("lept");
-    }
 
     /** The index of the X coordinate within the geometry array. */
     public static final int INDEX_X = 0;
@@ -73,7 +69,7 @@ public class Box {
         if (nativeBox == 0) {
             throw new OutOfMemoryError();
         }
-        
+
         mNativeBox = nativeBox;
         mRecycled = false;
     }
@@ -81,13 +77,13 @@ public class Box {
     public Point getCenter() {
         int[] g = new int[4];
         getGeometry(g);
-        return new Point(g[0]+g[2]/2,g[1]+g[3]/2);
+        return new Point(g[0] + g[2] / 2, g[1] + g[3] / 2);
     }
 
 
     /**
      * Returns the box's x-coordinate in pixels.
-     * 
+     *
      * @return The box's x-coordinate in pixels.
      */
     public int getX() {
@@ -96,7 +92,7 @@ public class Box {
 
     /**
      * Returns the box's y-coordinate in pixels.
-     * 
+     *
      * @return The box's y-coordinate in pixels.
      */
     public int getY() {
@@ -105,7 +101,7 @@ public class Box {
 
     /**
      * Returns the box's width in pixels.
-     * 
+     *
      * @return The box's width in pixels.
      */
     public int getWidth() {
@@ -114,7 +110,7 @@ public class Box {
 
     /**
      * Returns the box's height in pixels.
-     * 
+     *
      * @return The box's height in pixels.
      */
     public int getHeight() {
@@ -172,11 +168,17 @@ public class Box {
     // ***************
 
     private static native long nativeCreate(int x, int y, int w, int h);
+
     private static native int nativeGetX(long nativeBox);
+
     private static native int nativeGetY(long nativeBox);
+
     private static native int nativeGetWidth(long nativeBox);
+
     private static native int nativeGetHeight(long nativeBox);
+
     private static native void nativeDestroy(long nativeBox);
+
     private static native boolean nativeGetGeometry(long nativeBox, int[] geometry);
 
 }

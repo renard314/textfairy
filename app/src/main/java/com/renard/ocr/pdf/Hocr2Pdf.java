@@ -19,11 +19,6 @@ package com.renard.ocr.pdf;
 import java.io.UnsupportedEncodingException;
 
 public class Hocr2Pdf {
-    static {
-        System.loadLibrary("pngo");
-        System.loadLibrary("jpeg");
-        System.loadLibrary("hocr2pdf");
-    }
 
     private PDFProgressListener mListener;
 
