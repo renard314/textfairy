@@ -196,7 +196,7 @@ extern "C" {
 
 
 
-    jint Java_com_googlecode_tesseract_android_NativeBinding_nativeAnalyseLayout(JNIEnv *env, jobject thiz, jlong nativePix) {
+    void Java_com_googlecode_tesseract_android_NativeBinding_nativeAnalyseLayout(JNIEnv *env, jobject thiz, jlong nativePix) {
         LOGV(__FUNCTION__);
         Pix *pixOrg = (PIX *) nativePix;
         Pix* pixTextlines = NULL;
@@ -217,7 +217,6 @@ extern "C" {
 
         env->CallVoidMethod(thiz, onLayoutElements, (jlong)pixaTexts, (jlong)pixaImages);
 
-        return (jint) 0;
     }
 
     jobject Java_com_renard_ocr_cropimage_image_1processing_Blur_nativeBlurDetect(JNIEnv *env, jobject thiz, jlong nativePix) {

@@ -107,7 +107,7 @@ public class GetOpinionDialog extends TopDialogFragment implements DialogInterfa
 
             @Override
             public void onClick(View v) {
-                File lastOriginalImage = OCR.getLastOriginalImageFromCache(getActivity());
+                File lastOriginalImage = OCR.Companion.getLastOriginalImageFromCache(getActivity());
                 Intent intent = ContactActivity.getFeedbackIntent(getActivity(), getString(R.string.feedback_subject), lastOriginalImage, body);
                 startActivity(intent);
                 dismiss();

@@ -312,7 +312,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
                         throw new IllegalStateException();
                     }
                     Intent result = new Intent();
-                    OCR.savePixToCacheDir(CropImageActivity.this, bilinear.copy());
+                    OCR.Companion.savePixToCacheDir(CropImageActivity.this, bilinear.copy());
                     result.putExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, bilinear.getNativePix());
                     setResult(RESULT_OK, result);
                 } catch (IllegalStateException e) {

@@ -32,6 +32,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * is used to show preview images and progress during ocr process
@@ -52,8 +53,8 @@ public class OCRImageView extends ImageViewTouchBase {
     private final Paint mTextRectPaint = new Paint();
     private final Paint mTouchedImageRectPaint = new Paint();
     private final Paint mTouchedTextRectPaint = new Paint();
-    private ArrayList<RectF> mImageRects;
-    private ArrayList<RectF> mTextRects;
+    private List<RectF> mImageRects;
+    private List<RectF> mTextRects;
 
     private ArrayList<RectF> mTouchedImageRects = new ArrayList<>();
     private ArrayList<RectF> mTouchedTextRects = new ArrayList<>();
@@ -93,12 +94,12 @@ public class OCRImageView extends ImageViewTouchBase {
         return result;
     }
 
-    public void setImageRects(ArrayList<RectF> boxes) {
+    public void setImageRects(List<RectF> boxes) {
         mImageRects = boxes;
         this.invalidate();
     }
 
-    public void setTextRects(ArrayList<RectF> boxes) {
+    public void setTextRects(List<RectF> boxes) {
         mTextRects = boxes;
         this.invalidate();
     }
@@ -171,7 +172,7 @@ public class OCRImageView extends ImageViewTouchBase {
         mProgress = -1;
     }
 
-    private void updateTouchedBoxesByPoint(float x, float y, ArrayList<RectF> boxes, ArrayList<RectF> touchedBoxes) {
+    private void updateTouchedBoxesByPoint(float x, float y, List<RectF> boxes, List<RectF> touchedBoxes) {
         if (boxes != null) {
             for (RectF r : boxes) {
                 if (r.contains(x, y)) {
@@ -255,7 +256,7 @@ public class OCRImageView extends ImageViewTouchBase {
         }
     }
 
-    private void drawRects(Canvas canvas, ArrayList<RectF> rects, Paint paint) {
+    private void drawRects(Canvas canvas, List<RectF> rects, Paint paint) {
         if (rects != null) {
             RectF mappedRect = new RectF();
             for (RectF r : rects) {
