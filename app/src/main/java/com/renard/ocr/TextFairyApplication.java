@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012,2013 Renard Wellnitz.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,6 +15,10 @@
  */
 package com.renard.ocr;
 
+import android.app.Application;
+import android.os.StrictMode;
+import android.util.Log;
+import android.view.ViewConfiguration;
 import com.getkeepsafe.relinker.ReLinker;
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.analytics.AnalyticsFactory;
@@ -25,11 +29,6 @@ import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
 import com.renard.ocr.util.PreferencesUtils;
 import com.renard.ocr.util.ResourceUtils;
 import com.squareup.leakcanary.LeakCanary;
-
-import android.app.Application;
-import android.os.StrictMode;
-import android.util.Log;
-import android.view.ViewConfiguration;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
@@ -43,18 +42,7 @@ public class TextFairyApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
-        ReLinker.recursively()
-                .log(message -> Log.d("ReLinker", message))
-                .loadLibrary(this, "tess");
-
-        ReLinker.recursively()
-                .log(message -> Log.d("ReLinker", message))
-                .loadLibrary(this, "image_processing");
-
-        ReLinker.recursively()
-                .log(message -> Log.d("ReLinker", message))
-                .loadLibrary(this, "hocr2pdf");
-
+        loadLibaries();
         createAnalytics();
         createCrashLogger();
         initTextPreferences();
@@ -62,6 +50,29 @@ public class TextFairyApplication extends Application {
         alwaysShowOverflowButton();
         startLeakCanary();
         checkLanguages();
+    }
+
+    private void loadLibaries() {
+        ReLinker.log(message -> Log.d("ReLinker", message))
+                .loadLibrary(this, "c++_shared");
+
+        ReLinker.log(message -> Log.d("ReLinker", message))
+                .loadLibrary(this, "pngo");
+
+        ReLinker.log(message -> Log.d("ReLinker", message))
+                .loadLibrary(this, "jpeg");
+
+        ReLinker.log(message -> Log.d("ReLinker", message))
+                .loadLibrary(this, "lept");
+
+        ReLinker.log(message -> Log.d("ReLinker", message))
+                .loadLibrary(this, "tess");
+
+        ReLinker.log(message -> Log.d("ReLinker", message))
+                .loadLibrary(this, "image_processing");
+
+        ReLinker.log(message -> Log.d("ReLinker", message))
+                .loadLibrary(this, "hocr2pdf");
     }
 
 
