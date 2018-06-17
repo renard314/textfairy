@@ -11,7 +11,7 @@ def versions = ['appcompat_v7' : '27.1.1',
                 'design'       : '27.1.1',
                 'lifecycle'    : '1.1.1',
                 'photoview'    : '1.2.4',
-                'play_services': '10.2.4']
+                'play_services': '10.2.4',
                 'relinker'     : '1.2.3']
 
 
@@ -175,6 +175,7 @@ dependencies {
 
     implementation "android.arch.lifecycle:extensions:${versions.lifecycle}"
     implementation "android.arch.lifecycle:common-java8:${versions.lifecycle}"
+    implementation "com.getkeepsafe.relinker:relinker:${versions.relinker}"
 
 }
 afterEvaluate {
