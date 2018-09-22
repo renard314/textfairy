@@ -99,7 +99,7 @@ android {
 
     lintOptions {
         //I'm too lazy to translate everything
-        abortOnError false
+        abortOnError true
     }
     externalNativeBuild {
         ndkBuild {
