@@ -98,7 +98,7 @@
     <string name="progress_assemble_pix">Setze die ausgewählten Bereiche zu einem neuen Bild
         zusammen.
     </string>
-    <string name="progress_choose_columns">Auswahl Bild- &amp; Textbereiche.</string>
+    <string name="progress_choose_columns">Auswahl Bild- und Textbereiche.</string>
     <string name="no_sd_card">Die Textfee kann nicht von der Speicherkarte lesen. Ist das Telefon
         vielleicht mit deinem PC verbunden? Wenn ja, dann entferne das Kabel und versuche es erneut.
     </string>
