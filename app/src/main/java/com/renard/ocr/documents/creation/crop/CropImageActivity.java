@@ -17,8 +17,6 @@
 
 package com.renard.ocr.documents.creation.crop;
 
-import com.google.common.base.Optional;
-
 import com.googlecode.leptonica.android.Box;
 import com.googlecode.leptonica.android.Clip;
 import com.googlecode.leptonica.android.Convert;
@@ -54,6 +52,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import javax.annotation.Nullable;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -86,8 +86,10 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
 
 
     private CropHighlightView mCrop;
-    private Optional<CropData> mCropData = Optional.absent();
-    private Optional<PreparePixForCropTask> mPrepareTask = Optional.absent();
+    @Nullable
+    private CropData mCropData = null;
+    @Nullable
+    private PreparePixForCropTask mPrepareTask = null;
 
     @Override
     public String getScreenName() {
@@ -142,14 +144,14 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
     }
 
     private void onRotateClicked(int delta) {
-        if (mCropData.isPresent()) {
+        if (mCropData != null) {
             if (delta < 0) {
                 delta = -delta * 3;
             }
             mRotation += delta;
             mRotation = mRotation % 4;
-            mImageView.setImageBitmapResetBase(mCropData.get().getBitmap(), false, mRotation * 90);
-            showDefaultCroppingRectangle(mCropData.get().getBitmap());
+            mImageView.setImageBitmapResetBase(mCropData.getBitmap(), false, mRotation * 90);
+            showDefaultCroppingRectangle(mCropData.getBitmap());
         }
     }
 
@@ -165,8 +167,8 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
                 final int height = (int) (mViewSwitcher.getHeight() - 2 * margin);
                 mPix = new Pix(nativePix);
                 mRotation = 0;
-                mPrepareTask = Optional.of(new PreparePixForCropTask(mPix, width, height));
-                mPrepareTask.get().execute();
+                mPrepareTask = new PreparePixForCropTask(mPix, width, height);
+                mPrepareTask.execute();
                 mImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
             }
 
@@ -200,7 +202,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
         }
         mAnalytics.sendBlurResult(cropData.getBlurriness());
 
-        mCropData = Optional.of(cropData);
+        mCropData = cropData;
         adjustOptionsMenu();
         mViewSwitcher.setDisplayedChild(1);
 
@@ -252,7 +254,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
 
 
     private void adjustOptionsMenu() {
-        if (mCropData.isPresent()) {
+        if (mCropData != null) {
             mRotateLeft.setVisibility(View.VISIBLE);
             mRotateRight.setVisibility(View.VISIBLE);
             mSave.setVisibility(View.VISIBLE);
@@ -265,7 +267,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
 
     @OnClick(R.id.item_save)
     void onSaveClicked() {
-        if (!mCropData.isPresent() || mSaving || (mCrop == null)) {
+        if (mCropData == null || mSaving || (mCrop == null)) {
             return;
         }
         mSaving = true;
@@ -273,7 +275,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
         Util.startBackgroundJob(this, null, getText(R.string.cropping_image).toString(), new Runnable() {
             public void run() {
                 try {
-                    float scale = 1f / mCropData.get().getScaleResult().getScaleFactor();
+                    float scale = 1f / mCropData.getScaleResult().getScaleFactor();
                     Matrix scaleMatrix = new Matrix();
                     scaleMatrix.setScale(scale, scale);
 
@@ -338,13 +340,13 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
         EventBus.getDefault().unregister(this);
         unbindDrawables(findViewById(android.R.id.content));
         mImageView.clear();
-        if (mPrepareTask.isPresent()) {
-            mPrepareTask.get().cancel(true);
-            mPrepareTask = Optional.absent();
+        if (mPrepareTask != null) {
+            mPrepareTask.cancel(true);
+            mPrepareTask = null;
         }
-        if (mCropData.isPresent()) {
-            mCropData.get().recylce();
-            mCropData = Optional.absent();
+        if (mCropData != null) {
+            mCropData.recylce();
+            mCropData = null;
         }
 
     }
@@ -413,9 +415,9 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
 
     @Override
     public void onContinueClicked() {
-        if (mCropData.isPresent()) {
+        if (mCropData != null) {
             mAnalytics.sendScreenView(SCREEN_NAME);
-            showDefaultCroppingRectangle(mCropData.get().getBitmap());
+            showDefaultCroppingRectangle(mCropData.getBitmap());
             setToolbarMessage(R.string.crop_title);
             mImageView.zoomTo(1, 500);
         }

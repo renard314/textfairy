@@ -17,8 +17,6 @@
 
 package com.renard.ocr;
 
-import com.google.common.base.Optional;
-
 import com.renard.ocr.analytics.Analytics;
 import com.renard.ocr.analytics.CrashLogger;
 import com.renard.ocr.documents.creation.crop.BaseActivityInterface;
@@ -268,9 +266,9 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
         // start fairy animation at random intervals
         if (mAppIcon.getDrawable() instanceof AnimationDrawable) {
             final AnimationDrawable animation = (AnimationDrawable) mAppIcon.getDrawable();
-            Optional<IconAnimationRunnable> runnable = Optional.of(new IconAnimationRunnable(animation, mHandler));
+            IconAnimationRunnable runnable = new IconAnimationRunnable(animation, mHandler);
             mHandler.removeCallbacksAndMessages(null);
-            mHandler.post(runnable.get());
+            mHandler.post(runnable);
         }
         if (mDialogId != -1) {
             // show hint dialog when user clicks on the app icon

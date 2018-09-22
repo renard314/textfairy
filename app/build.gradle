@@ -144,7 +144,6 @@ dependencies {
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${versions.leak_canary}"
     implementation 'com.viewpagerindicator:library:2.4.1@aar'
     implementation "com.commit451:PhotoView:${versions.photoview}"
-    implementation 'com.google.guava:guava:18.0'
     implementation 'com.google.code.findbugs:jsr305:3.0.1'
     implementation 'de.greenrobot:eventbus:2.4.0'
     implementation 'com.nineoldandroids:library:2.4.0'

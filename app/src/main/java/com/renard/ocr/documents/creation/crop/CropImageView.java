@@ -15,7 +15,6 @@
  */
 package com.renard.ocr.documents.creation.crop;
 
-import com.google.common.base.Optional;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,11 +23,15 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import javax.annotation.Nullable;
+
 /**
  * Created by renard on 13/11/14.
  */
 public class CropImageView extends ImageViewTouchBase {
-    private Optional<HighLightView> mCropHighlightView = Optional.absent();
+
+    @Nullable
+    private HighLightView mCropHighlightView = null;
     private boolean mIsMoving = false;
     private float mLastX, mLastY;
     private int mMotionEdge;
@@ -37,10 +40,9 @@ public class CropImageView extends ImageViewTouchBase {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        if (mBitmapDisplayed.getBitmap() != null && mCropHighlightView.isPresent()) {
-            final HighLightView highlightView = mCropHighlightView.get();
-            highlightView.getMatrix().set(getImageMatrix());
-            centerBasedOnHighlightView(highlightView);
+        if (mBitmapDisplayed.getBitmap() != null && mCropHighlightView != null) {
+            mCropHighlightView.getMatrix().set(getImageMatrix());
+            centerBasedOnHighlightView(mCropHighlightView);
         }
     }
 
@@ -52,32 +54,32 @@ public class CropImageView extends ImageViewTouchBase {
     @Override
     protected void zoomTo(float scale, float centerX, float centerY) {
         super.zoomTo(scale, centerX, centerY);
-        if (mCropHighlightView.isPresent()) {
-            mCropHighlightView.get().getMatrix().set(getImageMatrix());
+        if (mCropHighlightView != null) {
+            mCropHighlightView.getMatrix().set(getImageMatrix());
         }
     }
 
     @Override
     protected void zoomIn() {
         super.zoomIn();
-        if (mCropHighlightView.isPresent()) {
-            mCropHighlightView.get().getMatrix().set(getImageMatrix());
+        if (mCropHighlightView != null) {
+            mCropHighlightView.getMatrix().set(getImageMatrix());
         }
     }
 
     @Override
     protected void zoomOut() {
         super.zoomOut();
-        if (mCropHighlightView.isPresent()) {
-            mCropHighlightView.get().getMatrix().set(getImageMatrix());
+        if (mCropHighlightView != null) {
+            mCropHighlightView.getMatrix().set(getImageMatrix());
         }
     }
 
     @Override
     protected void postTranslate(float deltaX, float deltaY) {
         super.postTranslate(deltaX, deltaY);
-        if (mCropHighlightView.isPresent()) {
-            mCropHighlightView.get().getMatrix().postTranslate(deltaX, deltaY);
+        if (mCropHighlightView != null) {
+            mCropHighlightView.getMatrix().postTranslate(deltaX, deltaY);
         }
     }
 
@@ -98,11 +100,11 @@ public class CropImageView extends ImageViewTouchBase {
         if (cropImage.mSaving) {
             return false;
         }
-        if (!mCropHighlightView.isPresent()) {
+        if (mCropHighlightView == null) {
             return false;
         }
 
-        final HighLightView highlightView = mCropHighlightView.get();
+        final HighLightView highlightView = mCropHighlightView;
         float[] mappedPoint = mapPointToImageSpace(event.getX(), event.getY());
 
 
@@ -146,8 +148,8 @@ public class CropImageView extends ImageViewTouchBase {
 
     @Override
     public void onZoomFinished() {
-        if(mCropHighlightView.isPresent()){
-            ensureVisible(mCropHighlightView.get());
+        if (mCropHighlightView != null) {
+            ensureVisible(mCropHighlightView);
         }
     }
 
@@ -198,14 +200,14 @@ public class CropImageView extends ImageViewTouchBase {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (!isInEditMode() && mCropHighlightView.isPresent()) {
-            mCropHighlightView.get().draw(canvas);
+        if (!isInEditMode() && mCropHighlightView != null) {
+            mCropHighlightView.draw(canvas);
         }
     }
 
 
     public void add(HighLightView hv) {
-        mCropHighlightView = Optional.of(hv);
+        mCropHighlightView = hv;
         invalidate();
     }
 
