@@ -165,8 +165,8 @@ dependencies {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
     playstoreImplementation "com.google.android.gms:play-services-analytics:${versions.play_services}"
-    playstoreImplementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
-        transitive = true;
+    playstoreImplementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
+        transitive = true
     }
     playstoreImplementation('com.crashlytics.sdk.android:crashlytics-ndk:2.0.0@aar') {
         transitive = true
