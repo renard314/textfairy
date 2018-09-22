@@ -11,7 +11,7 @@ def versions = ['appcompat_v7' : '27.1.1',
                 'design'       : '27.1.1',
                 'lifecycle'    : '1.1.1',
                 'photoview'    : '1.2.4',
-                'play_services': '10.2.4',
+                'play_services': '16.0.3',
                 'relinker'     : '1.2.3']
 
 
@@ -168,7 +168,7 @@ dependencies {
     playstoreImplementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true
     }
-    playstoreImplementation('com.crashlytics.sdk.android:crashlytics-ndk:2.0.0@aar') {
+    playstoreImplementation('com.crashlytics.sdk.android:crashlytics-ndk:2.0.5@aar') {
         transitive = true
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
