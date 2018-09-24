@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012,2013 Renard Wellnitz.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -48,12 +48,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.text.Html;
@@ -187,25 +187,19 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // Create an image file name
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
-            String imageFileName = "JPEG_" + timeStamp + "_";
+            String imageFileName = "JPEG_" + timeStamp + ".jpg";
 
-            File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File image;
-            try {
-                if (!storageDir.exists()) {
-                    storageDir.mkdirs();
-                }
-                image = new File(storageDir, imageFileName + ".jpg");
-                if (image.exists()) {
-                    image.createNewFile();
-                }
-                cameraPicUri = Uri.fromFile(image);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
-                startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
-            } catch (IOException e) {
-                showFileError(PixLoadStatus.IO_ERROR);
-            }
-
+            File dir = new File(getCacheDir(), getString(R.string.config_share_file_dir));
+            dir.mkdirs();
+            File image = new File(dir, imageFileName);
+            cameraPicUri = FileProvider.getUriForFile(
+                    getApplicationContext(),
+                    getString(R.string.config_share_file_auth),
+                    image
+            );
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
         } catch (ActivityNotFoundException e) {
             showFileError(PixLoadStatus.CAMERA_APP_NOT_FOUND);
         }
