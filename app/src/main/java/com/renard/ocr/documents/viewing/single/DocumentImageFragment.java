@@ -36,7 +36,7 @@ public class DocumentImageFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Picasso.with(getActivity()).cancelRequest(mImageView);
+        Picasso.get().cancelRequest(mImageView);
     }
 
     @Override
@@ -51,16 +51,17 @@ public class DocumentImageFragment extends Fragment {
         mImageView = (ImageView) view.findViewById(R.id.imageView);
         mProgressBar = (ProgressBar) view.findViewById(R.id.progress);
         final File file = new File(imagePath);
-        Picasso.with(getActivity()).load(file).fit().centerInside().into(mImageView, new Callback() {
+        Picasso.get().load(file).fit().centerInside().into(mImageView, new Callback() {
             @Override
             public void onSuccess() {
                 mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
-            public void onError() {
+            public void onError(Exception e) {
                 mProgressBar.setVisibility(View.GONE);
                 showError();
+
             }
         });
         return view;

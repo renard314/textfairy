@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
     <string name="config_share_file_dir" translatable="false">original_images/</string>
+    <string name="config_pdf_file_dir" translatable="false">textfee/pdfs/</string>
     <string name="config_share_file_auth" translatable="false">com.renard.ocr.fileprovider</string>
 </resources>

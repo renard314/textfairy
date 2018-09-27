@@ -17,7 +17,6 @@ package com.renard.ocr.util;
 
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.WriteFile;
-import com.googlecode.tesseract.android.NativeBinding;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.viewing.grid.FastBitmapDrawable;
@@ -58,7 +57,6 @@ public class Util {
     public final static String EXTERNAL_APP_DIRECTORY = "textfee";
     private final static String CACHE_DIRECTORY = EXTERNAL_APP_DIRECTORY + "/thumbnails";
     private final static String IMAGE_DIRECTORY = EXTERNAL_APP_DIRECTORY + "/pictures";
-    private final static String PDF_DIRECTORY = EXTERNAL_APP_DIRECTORY + "/pdfs";
     private final static String OCR_DATA_DIRECTORY = "tessdata";
 
     private final static String THUMBNAIL_SUFFIX = "png";
@@ -323,11 +321,12 @@ public class Util {
         }
     }
 
-    public static File getPDFDir() {
-        File dir = new File(Environment.getExternalStorageDirectory(), PDF_DIRECTORY);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
+    public static File getPDFDir(Context context) {
+        File dir = new File(
+                Environment.getExternalStorageDirectory(),
+                context.getString(R.string.config_pdf_file_dir)
+        );
+        dir.mkdirs();
         return dir;
     }
 
@@ -366,18 +365,18 @@ public class Util {
     }
 
 
-	/*
+    /*
      * Compute the sample size as a function of minSideLength and
-	 * maxNumOfPixels. minSideLength is used to specify that minimal width or
-	 * height of a bitmap. maxNumOfPixels is used to specify the maximal size in
-	 * pixels that are tolerable in terms of memory usage.
-	 * 
-	 * The function returns a sample size based on the constraints. Both size
-	 * and minSideLength can be passed in as IImage.UNCONSTRAINED, which
-	 * indicates no care of the corresponding constraint. The functions prefers
-	 * returning a sample size that generates a smaller bitmap, unless
-	 * minSideLength = IImage.UNCONSTRAINED.
-	 */
+     * maxNumOfPixels. minSideLength is used to specify that minimal width or
+     * height of a bitmap. maxNumOfPixels is used to specify the maximal size in
+     * pixels that are tolerable in terms of memory usage.
+     *
+     * The function returns a sample size based on the constraints. Both size
+     * and minSideLength can be passed in as IImage.UNCONSTRAINED, which
+     * indicates no care of the corresponding constraint. The functions prefers
+     * returning a sample size that generates a smaller bitmap, unless
+     * minSideLength = IImage.UNCONSTRAINED.
+     */
 
     private static Bitmap transform(Matrix scaler, Bitmap source, int targetWidth, int targetHeight, boolean scaleUp) {
         int deltaX = source.getWidth() - targetWidth;
@@ -385,10 +384,10 @@ public class Util {
         if (!scaleUp && (deltaX < 0 || deltaY < 0)) {
             /*
              * In this case the bitmap is smaller, at least in one dimension,
-			 * than the target. Transform it by placing as much of the image as
-			 * possible into the target and leaving the top/bottom or left/right
-			 * (or both) black.
-			 */
+             * than the target. Transform it by placing as much of the image as
+             * possible into the target and leaving the top/bottom or left/right
+             * (or both) black.
+             */
             Bitmap b2 = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(b2);
 

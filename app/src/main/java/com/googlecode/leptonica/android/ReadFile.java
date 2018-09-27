@@ -139,12 +139,12 @@ public class ReadFile {
             return null;
         }
 
-        return loadWithPicasso(context, file);
+        return loadWithPicasso(file);
     }
 
-    public static Pix loadWithPicasso(Context context, File file) {
+    public static Pix loadWithPicasso(File file) {
         try {
-            final Bitmap bmp = Picasso.with(context).load(file).memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE).get();
+            final Bitmap bmp = Picasso.get().load(file).memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE).get();
             if (bmp != null) {
                 final Pix pix = readBitmap(bmp);
                 bmp.recycle();
@@ -155,9 +155,9 @@ public class ReadFile {
         return null;
     }
 
-    public static Pix loadWithPicasso(Context context, Uri uri) {
+    public static Pix loadWithPicasso(Uri uri) {
         try {
-            final Bitmap bmp = Picasso.with(context).load(uri).memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE).get();
+            final Bitmap bmp = Picasso.get().load(uri).memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE).get();
             if (bmp != null) {
                 final Pix pix = readBitmap(bmp);
                 bmp.recycle();

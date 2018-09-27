@@ -116,7 +116,10 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     private static final String IMAGE_SOURCE = "image_source";
     private static Date dateCameraIntentStarted = null;
     private static final String CAMERA_PIC_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
+    private static final String CAMERA_PIC_LOCAL_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_LOCAL_URI_STATE";
+
     private static Uri cameraPicUri = null;
+    private static Uri localCameraPicUri = null;
     private boolean mReceiverRegistered = false;
     private ImageSource mImageSource = ImageSource.CAMERA;
 
@@ -192,11 +195,8 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             File dir = new File(getCacheDir(), getString(R.string.config_share_file_dir));
             dir.mkdirs();
             File image = new File(dir, imageFileName);
-            cameraPicUri = FileProvider.getUriForFile(
-                    getApplicationContext(),
-                    getString(R.string.config_share_file_auth),
-                    image
-            );
+            cameraPicUri = toUri(image);
+            localCameraPicUri = Uri.fromFile(image);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
@@ -218,6 +218,9 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         }
         if (cameraPicUri != null) {
             savedInstanceState.putString(CAMERA_PIC_URI_STATE, cameraPicUri.toString());
+        }
+        if (localCameraPicUri != null) {
+            savedInstanceState.putString(CAMERA_PIC_LOCAL_URI_STATE, localCameraPicUri.toString());
         }
         savedInstanceState.putInt(IMAGE_SOURCE, mImageSource.ordinal());
     }
@@ -244,6 +247,10 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         if (savedInstanceState.containsKey(CAMERA_PIC_URI_STATE)) {
             cameraPicUri = Uri.parse(savedInstanceState.getString(CAMERA_PIC_URI_STATE));
         }
+        if (savedInstanceState.containsKey(CAMERA_PIC_LOCAL_URI_STATE)) {
+            localCameraPicUri = Uri.parse(savedInstanceState.getString(CAMERA_PIC_LOCAL_URI_STATE));
+        }
+
         if (savedInstanceState.getBoolean(STATE_RECEIVER_REGISTERED)) {
             registerImageLoaderReceiver();
         }
@@ -278,11 +285,11 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                 Date dateOfPicture;
                 //check if there is a file at the uri we specified
                 if (cameraPicUri != null) {
-                    File f = new File(cameraPicUri.getPath());
+                    File f = new File(localCameraPicUri.getPath());
                     if (f.isFile() && f.exists() && f.canRead()) {
                         //all is well
                         Log.i(LOG_TAG, "onTakePhotoActivityResult");
-                        loadBitmapFromContentUri(cameraPicUri, ImageSource.CAMERA);
+                        loadBitmapFromContentUri(localCameraPicUri, ImageSource.CAMERA);
                         return;
                     }
 
@@ -727,7 +734,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                     Intent target = new Intent(Intent.ACTION_VIEW);
                     target.setDataAndType(files.first.get(0), "application/pdf");
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-
+                    target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     Intent intent = Intent.createChooser(target, "Open File");
                     try {
                         startActivity(intent);
@@ -748,6 +755,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getText(R.string.share_subject));
             CharSequence seq = Html.fromHtml(mOCRText.toString());
             shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, seq);
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             shareIntent.setType("application/pdf");
             ArrayList<Uri> allFiles = new ArrayList<Uri>();
             allFiles.addAll(files.first);
@@ -813,30 +821,38 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
         @Override
         protected Pair<ArrayList<Uri>, ArrayList<Uri>> doInBackground(Void... params) {
-            File dir = Util.getPDFDir();
+            File dir = Util.getPDFDir(getApplicationContext());
             if (!dir.exists()) {
                 if (!dir.mkdir()) {
                     return null;
                 }
             }
 
-            ArrayList<Uri> pdfFiles = new ArrayList<Uri>();
-            ArrayList<Uri> txtFiles = new ArrayList<Uri>();
+            ArrayList<Uri> pdfFiles = new ArrayList<>();
+            ArrayList<Uri> txtFiles = new ArrayList<>();
             mCurrentDocumentIndex = 0;
             for (long id : mIds) {
                 final Pair<File, File> pair = createPDF(dir, id);
                 final File pdf = pair.first;
                 final File text = pair.second;
                 if (pdf != null) {
-                    pdfFiles.add(Uri.fromFile(pdf));
+                    pdfFiles.add(toUri(pdf));
                 }
                 if (text != null) {
-                    txtFiles.add(Uri.fromFile(text));
+                    txtFiles.add(toUri(text));
                 }
                 mCurrentDocumentIndex++;
             }
             return Pair.create(pdfFiles, txtFiles);
         }
+    }
+
+    private Uri toUri(File file) {
+        return FileProvider.getUriForFile(
+                getApplicationContext(),
+                getString(R.string.config_share_file_auth),
+                file
+        );
     }
 
     protected class DeleteDocumentTask extends AsyncTask<Void, Void, Integer> {

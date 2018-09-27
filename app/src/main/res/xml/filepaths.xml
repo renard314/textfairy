@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <cache-path name="original_images" cache-path="@string/config_share_file_dir"/>
+    <external-path name="pdfs"/>
 </paths>
