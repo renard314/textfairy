@@ -8,6 +8,7 @@ def versions = ['appcompat_v7' : '27.1.1',
                 'butterknife'  : '8.8.1',
                 'leak_canary'  : '1.5',
                 'card_view'    : '27.1.1',
+                'glide'        : '4.8.0',
                 'design'       : '27.1.1',
                 'lifecycle'    : '1.1.1',
                 'photoview'    : '1.2.4',
@@ -152,8 +153,8 @@ dependencies {
     implementation 'org.apache.commons:commons-compress:1.12'
     implementation "com.android.support:cardview-v7:${versions.card_view}"
     implementation "com.jakewharton:butterknife:${versions.butterknife}"
-    kapt "com.jakewharton:butterknife-compiler:${versions.butterknife}"
-    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    implementation "com.github.bumptech.glide:glide:${versions.glide}"
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
     androidTestImplementation 'org.mockito:mockito-core:2.11.0'
@@ -171,11 +172,12 @@ dependencies {
         transitive = true
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
     implementation "android.arch.lifecycle:extensions:${versions.lifecycle}"
     implementation "android.arch.lifecycle:common-java8:${versions.lifecycle}"
     implementation "com.getkeepsafe.relinker:relinker:${versions.relinker}"
 
+    annotationProcessor "com.github.bumptech.glide:compiler:${versions.glide}"
+    kapt "com.jakewharton:butterknife-compiler:${versions.butterknife}"
 }
 afterEvaluate {
     android.applicationVariants.all { variant ->

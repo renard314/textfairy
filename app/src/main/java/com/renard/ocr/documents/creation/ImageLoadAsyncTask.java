@@ -8,7 +8,6 @@ import com.renard.ocr.analytics.CrashLogger;
 import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.PdfiumCore;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -99,7 +98,7 @@ class ImageLoadAsyncTask extends AsyncTask<Void, Void, ImageLoadAsyncTask.LoadRe
                 return new LoadResult(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED);
             }
         } else {
-            p = ReadFile.loadWithPicasso(cameraPicUri);
+            p = ReadFile.load(context, cameraPicUri);
             if (p == null) {
                 mCrashLogger.setString("image uri", cameraPicUri.toString());
                 mCrashLogger.logException(new IOException("could not load image."));
