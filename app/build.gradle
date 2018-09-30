@@ -45,7 +45,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 77
-        versionName="3.1.5"
+        versionName = "3.1.5"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
 
