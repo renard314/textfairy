@@ -131,6 +131,7 @@ public class DocumentActivity extends NewDocumentActivity implements LoaderManag
 
     private void initBottomSheet() {
         BottomSheetBehavior behavior = BottomSheetBehavior.from(mBottomSheet);
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
