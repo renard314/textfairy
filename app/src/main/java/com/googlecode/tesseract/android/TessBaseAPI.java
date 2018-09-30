@@ -326,21 +326,6 @@ public class TessBaseAPI {
     }
 
     /**
-     * Provides an image for Tesseract to recognize.
-     *
-     * @param file absolute path to the image file
-     */
-    public void setImage(File file) {
-        Pix image = ReadFile.readFile(file);
-
-        if (image == null) {
-            throw new RuntimeException("Failed to read image file");
-        }
-
-        nativeSetImagePix(image.getNativePix());
-    }
-
-    /**
      * Provides an image for Tesseract to recognize. Does not copy the image
      * buffer. The source image must persist until after Recognize or
      * GetUTF8Chars is called.
