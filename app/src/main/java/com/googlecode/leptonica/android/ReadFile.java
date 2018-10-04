@@ -17,6 +17,7 @@
 package com.googlecode.leptonica.android;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
 import android.content.Context;
@@ -145,15 +146,17 @@ public class ReadFile {
             final Bitmap bmp = Glide.with(context)
                     .asBitmap()
                     .load(file)
-                    .apply(RequestOptions.skipMemoryCacheOf(true))
+                    .apply(RequestOptions
+                            .skipMemoryCacheOf(true)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE))
                     .submit().get();
             if (bmp != null) {
                 final Pix pix = readBitmap(bmp);
                 bmp.recycle();
                 return pix;
             }
-        } catch (InterruptedException e) {
-        } catch (ExecutionException e) {
+        } catch (InterruptedException ignored) {
+        } catch (ExecutionException ignored) {
         }
         return null;
     }
