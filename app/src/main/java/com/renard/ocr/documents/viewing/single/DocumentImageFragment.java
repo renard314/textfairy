@@ -1,17 +1,12 @@
 package com.renard.ocr.documents.viewing.single;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.renard.ocr.R;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +34,12 @@ public class DocumentImageFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Picasso.get().cancelRequest(mImageView);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final String imagePath = getArguments().getString(EXTRA_IMAGE_PATH);
         View view = inflater.inflate(R.layout.fragment_document_image, container, false);
@@ -47,26 +48,22 @@ public class DocumentImageFragment extends Fragment {
             return view;
         }
 
-        mImageView = view.findViewById(R.id.imageView);
-        mProgressBar = view.findViewById(R.id.progress);
-        Glide.with(mImageView)
-                .load(new File(imagePath))
-                .apply(RequestOptions.centerInsideTransform())
-                .addListener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        mProgressBar.setVisibility(View.GONE);
-                        showError();
-                        return false;
-                    }
+        mImageView = (ImageView) view.findViewById(R.id.imageView);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progress);
+        final File file = new File(imagePath);
+        Picasso.get().load(file).fit().centerInside().into(mImageView, new Callback() {
+            @Override
+            public void onSuccess() {
+                mProgressBar.setVisibility(View.GONE);
+            }
 
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        mProgressBar.setVisibility(View.GONE);
-                        return false;
-                    }
-                })
-                .into(mImageView);
+            @Override
+            public void onError(Exception e) {
+                mProgressBar.setVisibility(View.GONE);
+                showError();
+
+            }
+        });
         return view;
 
     }
