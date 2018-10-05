@@ -15,8 +15,10 @@
  */
 package com.renard.ocr.main_menu.language;
 
+import android.app.AlarmManager;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -53,8 +55,8 @@ public class DownloadBroadCastReceiver extends BroadcastReceiver {
                     Intent serviceIntent = new Intent(context, OCRLanguageInstallService.class);
                     serviceIntent.putExtra(DownloadManager.EXTRA_DOWNLOAD_ID, downloadId);
                     serviceIntent.putExtra(OCRLanguageInstallService.EXTRA_FILE_NAME, name);
-                    context.startService(serviceIntent);
-
+                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() , PendingIntent.getService(context, 0, serviceIntent,0));
                 } else if (DownloadManager.STATUS_FAILED == status) {
                     Log.i(LOG_TAG, "Download failed");
                     Intent resultIntent = new Intent(OCRLanguageInstallService.ACTION_INSTALL_FAILED);
