@@ -55,7 +55,7 @@ public class OCRLanguageInstallService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent==null || !intent.hasExtra(DownloadManager.EXTRA_DOWNLOAD_ID)) {
+        if (intent == null || !intent.hasExtra(DownloadManager.EXTRA_DOWNLOAD_ID)) {
             return;
         }
         final long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
@@ -84,9 +84,9 @@ public class OCRLanguageInstallService extends IntentService {
                     Log.i(LOG_TAG, "Failed to install " + fileName);
                     notifyError(langName);
                 }
-
+            } catch (SecurityException e) {
+                notifyError(langName);
             } catch (IOException e) {
-                e.printStackTrace();
                 notifyError(langName);
             } finally {
                 dm.remove(downloadId);
