@@ -18,11 +18,12 @@ package com.renard.ocr.main_menu.language;
 import com.renard.ocr.util.Util;
 
 import android.app.DownloadManager;
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -32,7 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class OCRLanguageInstallService extends IntentService {
+public class OCRLanguageInstallService extends JobIntentService {
 
     static final String ACTION_INSTALL_COMPLETED = "com.renard.ocr.ACTION_OCR_LANGUAGE_INSTALLED";
     static final String ACTION_INSTALL_FAILED = "com.renard.ocr.ACTION_INSTALL_FAILED";
@@ -43,19 +44,15 @@ public class OCRLanguageInstallService extends IntentService {
     public static final String EXTRA_FILE_NAME = "file_name";
     public static final String LOG_TAG = OCRLanguageInstallService.class.getSimpleName();
 
-    @SuppressWarnings("unused")
-    public OCRLanguageInstallService() {
-        super(LOG_TAG);
-    }
 
-    @SuppressWarnings("unused")
-    public OCRLanguageInstallService(String name) {
-        super(name);
+    public static void enqueueWork(Context context, Intent intent) {
+        enqueueWork(context, OCRLanguageInstallService.class, 314, intent);
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-        if (intent == null || !intent.hasExtra(DownloadManager.EXTRA_DOWNLOAD_ID)) {
+    protected void onHandleWork(@NonNull Intent intent) {
+        Log.i(LOG_TAG, "onHandleIntent " + intent);
+        if (!intent.hasExtra(DownloadManager.EXTRA_DOWNLOAD_ID)) {
             return;
         }
         final long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);

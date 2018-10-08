@@ -52,11 +52,10 @@ public class DownloadBroadCastReceiver extends BroadcastReceiver {
                 if (DownloadManager.STATUS_SUCCESSFUL == status) {
                     Log.i(LOG_TAG, "Download successful");
                     //start service to extract language file
-                    Intent serviceIntent = new Intent(context, OCRLanguageInstallService.class);
+                    Intent serviceIntent = new Intent();
                     serviceIntent.putExtra(DownloadManager.EXTRA_DOWNLOAD_ID, downloadId);
                     serviceIntent.putExtra(OCRLanguageInstallService.EXTRA_FILE_NAME, name);
-                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() , PendingIntent.getService(context, 0, serviceIntent,0));
+                    OCRLanguageInstallService.enqueueWork(context, serviceIntent);
                 } else if (DownloadManager.STATUS_FAILED == status) {
                     Log.i(LOG_TAG, "Download failed");
                     Intent resultIntent = new Intent(OCRLanguageInstallService.ACTION_INSTALL_FAILED);

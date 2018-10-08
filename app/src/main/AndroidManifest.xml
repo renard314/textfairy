@@ -99,7 +99,8 @@
 
         </activity>
 
-        <service android:name=".main_menu.language.OCRLanguageInstallService"/>
+        <service android:name=".main_menu.language.OCRLanguageInstallService"
+                 android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <receiver android:name=".main_menu.language.DownloadBroadCastReceiver">
             <intent-filter>
