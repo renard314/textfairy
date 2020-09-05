@@ -5,8 +5,8 @@ import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.support.v7.widget.SwitchCompat;
+import androidx.core.app.NavUtils;
+import androidx.appcompat.widget.SwitchCompat;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.TextView;

@@ -16,10 +16,10 @@
 package com.renard.ocr.documents.creation.visualisation
 
 import android.Manifest
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
@@ -53,6 +53,7 @@ import de.greenrobot.event.EventBus
 import java.io.File
 import java.io.IOException
 import java.util.*
+import kotlin.jvm.Throws
 
 private const val LOG_TAG = "OcrActivity"
 
@@ -208,7 +209,7 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
 
                 documentUri = saveDocumentToDB(imageFile, hocrString, utf8String)
                 if (imageFile != null) {
-                    Util.createThumbnail(this@OCRActivity, imageFile, Integer.valueOf(documentUri!!.lastPathSegment))
+                    Util.createThumbnail(this@OCRActivity, imageFile, Integer.valueOf(documentUri!!.lastPathSegment!!))
                 }
             } catch (e: RemoteException) {
                 e.printStackTrace()
@@ -247,7 +248,7 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
     private fun saveDocumentToDB(imageFile: File?, hocr: String?, plainText: String?): Uri? {
         val client = contentResolver.acquireContentProviderClient(DocumentContentProvider.CONTENT_URI)
         try {
-            return client.insert(DocumentContentProvider.CONTENT_URI, ContentValues().apply {
+            return client?.insert(DocumentContentProvider.CONTENT_URI, ContentValues().apply {
                 if (imageFile != null) {
                     put(DocumentContentProvider.Columns.PHOTO_PATH, imageFile.path)
                 }
@@ -263,7 +264,7 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
                 put(Columns.OCR_LANG, mOcrLanguage)
             })
         } finally {
-            client.release()
+            client?.release()
         }
     }
 

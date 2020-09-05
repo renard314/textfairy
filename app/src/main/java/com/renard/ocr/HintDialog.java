@@ -17,13 +17,11 @@ package com.renard.ocr;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.support.annotation.AnyRes;
-import android.support.annotation.RawRes;
+import androidx.annotation.AnyRes;
+import androidx.annotation.RawRes;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
-
-import com.renard.ocr.R;
 
 public class HintDialog{
 

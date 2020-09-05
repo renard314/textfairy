@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 apply plugin: 'checkstyle'
 apply plugin: 'kotlin-kapt'
 
 def versions = ['appcompat_v7' : '27.1.1',
-                'butterknife'  : '8.8.1',
+                'butterknife'  : '10.2.3',
                 'leak_canary'  : '1.5',
                 'card_view'    : '27.1.1',
                 'glide'        : '4.8.0',
@@ -28,8 +29,8 @@ task checkstyle(type: Checkstyle) {
 
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
 
     lintOptions {
         disable 'MissingTranslation'
@@ -42,8 +43,8 @@ android {
 
     defaultConfig {
         applicationId "com.renard.ocr"
-        minSdkVersion 15
-        targetSdkVersion 27
+        minSdkVersion 16
+        targetSdkVersion 29
         versionCode 80
         versionName = "3.1.8"
         vectorDrawables.useSupportLibrary = true
@@ -138,9 +139,9 @@ if (propFile.canRead()) {
 dependencies {
     implementation 'com.github.barteksc:pdfium-android:1.5.0'
     implementation fileTree(include: '*.jar', dir: 'src/main/libs')
-    implementation "com.android.support:design:${versions.appcompat_v7}"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation 'com.android.support:support-vector-drawable:27.1.1'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.vectordrawable:vectordrawable:1.0.0'
     debugImplementation "com.squareup.leakcanary:leakcanary-android:${versions.leak_canary}"
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${versions.leak_canary}"
     implementation 'com.viewpagerindicator:library:2.4.1@aar'
@@ -148,10 +149,10 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.1'
     implementation 'de.greenrobot:eventbus:2.4.0'
     implementation 'com.nineoldandroids:library:2.4.0'
-    implementation "com.android.support:design:${versions.design}"
-    implementation "com.android.support:appcompat-v7:${versions.appcompat_v7}"
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'org.apache.commons:commons-compress:1.12'
-    implementation "com.android.support:cardview-v7:${versions.card_view}"
+    implementation 'androidx.cardview:cardview:1.0.0'
     implementation "com.jakewharton:butterknife:${versions.butterknife}"
     implementation 'com.squareup.picasso:picasso:2.71828'
 
@@ -173,11 +174,11 @@ dependencies {
         transitive = true
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "android.arch.lifecycle:extensions:${versions.lifecycle}"
-    implementation "android.arch.lifecycle:common-java8:${versions.lifecycle}"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.0.0'
     implementation "com.getkeepsafe.relinker:relinker:${versions.relinker}"
 
-    annotationProcessor "com.github.bumptech.glide:compiler:${versions.glide}"
+    kapt "com.github.bumptech.glide:compiler:${versions.glide}"
     kapt "com.jakewharton:butterknife-compiler:${versions.butterknife}"
 }
 afterEvaluate {

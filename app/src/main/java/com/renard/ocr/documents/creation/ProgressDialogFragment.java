@@ -3,7 +3,7 @@ package com.renard.ocr.documents.creation;
 import com.renard.ocr.R;
 
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import androidx.fragment.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

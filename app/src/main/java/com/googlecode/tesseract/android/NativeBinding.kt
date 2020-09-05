@@ -1,6 +1,6 @@
 package com.googlecode.tesseract.android
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import android.util.Log
 import com.googlecode.leptonica.android.Pix
 import com.renard.ocr.R

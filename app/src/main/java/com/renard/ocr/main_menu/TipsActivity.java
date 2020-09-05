@@ -22,7 +22,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 
-import android.support.v4.app.NavUtils;
+import androidx.core.app.NavUtils;
 import android.view.MenuItem;
 
 public class TipsActivity extends MonitoredActivity implements YouTubePlayer.OnInitializedListener {

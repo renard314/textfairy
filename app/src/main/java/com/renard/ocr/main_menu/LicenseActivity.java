@@ -19,7 +19,7 @@ import com.renard.ocr.R;
 import com.renard.ocr.MonitoredActivity;
 
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import androidx.core.app.NavUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.widget.TextView;

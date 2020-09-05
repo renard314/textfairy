@@ -15,15 +15,15 @@
  */
 package com.googlecode.tesseract.android
 
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.graphics.RectF
-import android.support.annotation.StringRes
-import android.support.annotation.WorkerThread
+import androidx.annotation.StringRes
+import androidx.annotation.WorkerThread
 import com.googlecode.leptonica.android.Boxa
 import com.googlecode.leptonica.android.Pix
 import com.googlecode.leptonica.android.Pixa

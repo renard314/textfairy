@@ -31,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/activity_horizontal_margin"
                     android:layout_below="@+id/webview"/>
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                     android:layout_below="@id/webview"
                     android:layout_alignParentRight="true"
                     android:textColor="@color/primary"
