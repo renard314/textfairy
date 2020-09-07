@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'io.fabric'
 apply plugin: 'checkstyle'
 apply plugin: 'kotlin-kapt'
 
@@ -91,9 +90,11 @@ android {
 
         playstore {
             dimension "mode"
+            ext.useProprietaryLibraries = true
         }
         develop {
             dimension "mode"
+            ext.useProprietaryLibraries = false
         }
     }
 
@@ -180,12 +181,19 @@ dependencies {
     annotationProcessor "com.github.bumptech.glide:compiler:${versions.glide}"
     kapt "com.jakewharton:butterknife-compiler:${versions.butterknife}"
 }
+
+android.productFlavors.each { flavor ->
+    if (getGradle().getStartParameter().getTaskRequests().toString().toLowerCase().contains(flavor.name) && flavor.ext.useProprietaryLibraries) {
+        apply plugin: 'com.google.gms.google-services'
+        apply plugin: 'io.fabric'
+        crashlytics {
+            enableNdk true
+        }
+    }
+}
+
 afterEvaluate {
     android.applicationVariants.all { variant ->
         variant.resValue 'string', 'application_id', variant.applicationId
     }
 }
-crashlytics {
-    enableNdk true
-}
-apply plugin: 'com.google.gms.google-services'
