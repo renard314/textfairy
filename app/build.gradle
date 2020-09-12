@@ -138,7 +138,7 @@ if (propFile.canRead()) {
 
 dependencies {
     implementation 'com.github.barteksc:pdfium-android:1.5.0'
-    implementation fileTree(include: '*.jar', dir: 'src/main/libs')
+    playstoreImplementation fileTree(include: '*.jar', dir: 'src/main/libs')
     implementation "com.android.support:design:${versions.appcompat_v7}"
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:support-vector-drawable:27.1.1'
