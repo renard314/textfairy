@@ -324,12 +324,12 @@ Pix* pixPrepareLayoutAnalysis(Pix* pixOrg, ProgressCallback* callback) {
     return run(pixOrg, {convertTo8, findResolution, savGol, binarizeWithCallback}, callback);
 }
 
-Pix* run(Pix* pix, std::list<PIX_FUNC> funcs, ProgressCallback* callback) {
+Pix* run(Pix* pix, const std::list<PIX_FUNC>& funcs, ProgressCallback* callback) {
     Pix* pixConverted = pixClone(pix);
     for (auto &func : funcs) {
         Pix* newPix = timePixFunc(pixConverted, func);
         //Pix* newPix = (*it)(pixConverted);
-        if(callback!=NULL){
+        if(callback!=nullptr){
             callback->sendPix(newPix);
         }
         pixDestroy(&pixConverted);
@@ -339,7 +339,7 @@ Pix* run(Pix* pix, std::list<PIX_FUNC> funcs, ProgressCallback* callback) {
 }
 
 
-Pix* run(Pix* pix, std::list<PIX_FUNC> funcs) {
+Pix* run(Pix* pix, const std::list<PIX_FUNC>& funcs) {
     Pix* pixConverted = pixClone(pix);
     for (auto &func : funcs) {
         Pix* newPix = timePixFunc(pixConverted, func);

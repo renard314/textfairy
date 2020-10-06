@@ -12,7 +12,7 @@
 #include "allheaders.h"
 #include <string>
 
-int ocr(Pix* pix, std::string lang);
+std::string ocr(Pix* pix, std::string lang, int* pConf);
 std::string detectLanguage(Pix* pix, l_float32* pConf);
 Boxa* analyseLayout(Pix* pix, std::string lang);
 

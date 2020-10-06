@@ -21,7 +21,7 @@
 #include "pixFunc.hpp"
 #include "pageseg.h"
 #include "combine_pixa.h"
-#include "binarizewolfjolion.hpp"
+//#include "binarizewolfjolion.hpp"
 #include "canny.h"
 
 using namespace std;
@@ -97,7 +97,18 @@ void ocrPixa(Pixa* pixa, string fileName){
         }
     }
     Pix* page = pixaGetPix(pixa, n-1, L_CLONE);
-    int conf = ocr(page, lang);
+    
+    int conf;
+    std::string result = ocr(page, lang, &conf);
+    ostringstream outFileName;
+    std::string base_filename = fileName.substr(fileName.find_last_of("/\\") + 1);
+    std::string::size_type const p(base_filename.find_last_of('.'));
+    std::string file_without_extension = base_filename.substr(0, p);
+    outFileName << file_without_extension << ".txt";
+    std::ofstream out(outFileName.str());
+    out << result;
+
+
 //    Boxa* layout = analyseLayout(page, lang);
 //    renderTransformedBoxa(page,layout, 43);
 //    boxaDestroy(&layout);
@@ -157,7 +168,7 @@ Pix* comparePerformance(Pix* pix, PIX_FUNC func1, PIX_FUNC func2){
 void runTests(string testName, string folder, std::list<PIX_FUNC> pixFuncs ){
     confs = numaCreate(0);
     applyToFolder(folder.c_str(), pixFuncs, ocrPixa);
-    string fileName = "/Users/renard/devel/textfairy/tests/" + testName;
+    string fileName = "/Users/renardw/dev/textfairy/tests/" + testName;
     numaWrite(fileName.c_str(), confs);
     numaDestroy(&confs);
 }
@@ -179,7 +190,8 @@ Pix* searchThresh(Pix* pix){
         ostringstream name;
         name<<"threshtest "<< thresh<<".png";
         pixWrite(name.str().c_str(), result, IFF_PNG);
-        int meanConf = ocr(result, "eng");
+        int meanConf;
+        std::string ocr_result = ocr(result, "eng", &meanConf);
         if(meanConf>bestConf){
             bestConf =  meanConf;
             bestThresh = thresh;
@@ -280,7 +292,7 @@ int main(int argc, const char * argv[]) {
     //applyToFolder("/Users/renard/devel/textfairy/test-images/dewarp", {prepareForOcr}, ocrPixa);
     
 
-    applyToFile("/Users/renard/devel/textfairy/test-images/binarize/0000.png", {prepareForOcr, pageSegTextFairy}, writeLastPix);
+    //applyToFile("/Users/renard/devel/textfairy/test-images/binarize/0000.png", {prepareForOcr, pageSegTextFairy}, writeLastPix);
 
     //applyToFile("/Users/renard/devel/textfairy/test-images/dewarp/0014.jpg", {convertTo8, reduceGray4, savGol32, edgeDetect, invert, edgeBinarize, findResolution}, writeLastPix);
     
@@ -292,10 +304,11 @@ int main(int argc, const char * argv[]) {
     
     //comparePipelines("/Users/renard/devel/textfairy/test-images/dewarp/0011.jpg", {convertTo8, savGol}, {convertTo8, savGolNew});
     
-    //applyToFile("/Users/renard/devel/textfairy/test-images/dewarp/0007.jpg", {convertTo8, savGol, setResolution, binarize, dewarp}, ocrPixa);
+    //applyToFile("/Users/renardw/dev/textfairy/test-images/binarize/0206.png", {prepareForOcr}, writeLastPix);
     //runTests("dewarpEnsure150Dpi","/Users/renard/devel/textfairy/test-images/dewarp", {prepareForOcr});
     //runTests("dewarpSavGol","/Users/renard/devel/textfairy/test-images/dewarp", {prepareForOcr});
-  //  runTests("binarizePageseg","/Users/renard/devel/textfairy/test-images/binarize", {prepareForOcr});
+    runTests("tess4","/Users/renardw/dev/textfairy/test-images/dewarp", {prepareForOcr});
+    
     
     //runTests("dewarp","/Users/renard/devel/textfairy/test-images/dewarp", {convertTo8, binarize, dewarpOrDeskew});
     //compareWithBaseLine("/Users/renard/devel/textfairy/tests/dewarp", "/Users/renard/devel/textfairy/tests/dewarpSavGol");

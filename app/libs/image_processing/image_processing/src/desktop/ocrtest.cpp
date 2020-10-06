@@ -7,10 +7,9 @@
 //
 
 
-#include "baseapi.h"
-#include "osdetect.h"
-#include "ocrclass.h"
-#include "ccstruct.h"
+#include <tesseract/baseapi.h>
+#include <tesseract/osdetect.h>
+#include <tesseract/ocrclass.h>
 #include "ocrtest.h"
 #include "pixFunc.hpp"
 #include <math.h>
@@ -30,7 +29,7 @@ bool cancelFunc(void* cancel_this, int words) {
  * callback for tesseracts monitor
  */
 bool progressJavaCallback(void* progress_this,int progress, int left, int right, int top, int bottom) {
-    //printf("progress = %i\n", progress);
+    printf("progress = %i\n", progress);
     return true;
 }
 
@@ -54,18 +53,18 @@ std::string detectLanguage(Pix* pix, l_float32* pConf){
     return string(script_name);
 }
 
-int ocr(Pix* pix, std::string lang){
+std::string ocr(Pix* pix, std::string lang, int* pConf){
     tesseract::TessBaseAPI api;
-    api.Init("/Users/renard/devel/textfairy/tessdata", lang.c_str(), tesseract::OcrEngineMode::OEM_DEFAULT);
+    api.Init("/Users/renardw/dev/textfairy/tessdata4", lang.c_str(), tesseract::OcrEngineMode::OEM_DEFAULT);
     api.SetPageSegMode(tesseract::PageSegMode::PSM_AUTO);
     api.SetImage(pix);
     
     ETEXT_DESC monitor;
-    monitor.progress_callback = progressJavaCallback;
+    //monitor.progress_callback = progressJavaCallback;
     monitor.cancel = cancelFunc;
-    //char* result = api.GetHOCRText(&monitor,0);
+//    result = api.GetHOCRText(&monitor,0);
     char* utf8Result = api.GetUTF8Text();
-    
+    std::string result = utf8Result;
     int meanConf = api.MeanTextConf();
     
     api.End();
@@ -75,7 +74,8 @@ int ocr(Pix* pix, std::string lang){
     if(meanConf==95){
         meanConf = 0;
     }
-    return meanConf;
+    *pConf = meanConf;
+    return result;
 }
 
 Boxa* analyseLayout(Pix* pix, std::string lang){

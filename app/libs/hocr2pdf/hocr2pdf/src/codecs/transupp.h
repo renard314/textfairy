@@ -148,8 +148,13 @@ typedef struct {
 } jpeg_transform_info;
 
 
+
 #if TRANSFORMS_SUPPORTED
 
+EXTERN(long) jdiv_round_up JPP((long a, long b));
+
+EXTERN(void) jcopy_block_row JPP((JBLOCKROW input_row, JBLOCKROW output_row,
+                  JDIMENSION num_blocks));
 /* Parse a crop specification (written in X11 geometry style) */
 EXTERN(boolean) jtransform_parse_crop_spec
 	JPP((jpeg_transform_info *info, const char *spec));

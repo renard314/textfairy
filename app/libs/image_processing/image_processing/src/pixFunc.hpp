@@ -18,8 +18,8 @@
 //typedef Pix* (*PIX_FUNC)(Pix* pix);
 typedef std::function<Pix*(Pix* pix)> PIX_FUNC;
 
-Pix* run(Pix* pix, std::list<PIX_FUNC> funcs);
-Pix* run(Pix* pix, std::list<PIX_FUNC> funcs, ProgressCallback* callback);
+Pix* run(Pix* pix, const std::list<PIX_FUNC>& funcs);
+Pix* run(Pix* pix, const std::list<PIX_FUNC>& funcs, ProgressCallback* callback);
 
 Pix* pixPrepareForOcr(Pix* pix, ProgressCallback* callback);
 Pix* pixPrepareLayoutAnalysis(Pix* pix, ProgressCallback* callback);
