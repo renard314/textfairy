@@ -539,8 +539,6 @@ public class TessBaseAPI {
     // * Native methods *
     // ******************
 
-    public static native void initCrashlytics();
-
     /**
      * Initializes static native data. Must be called on object load.
      */

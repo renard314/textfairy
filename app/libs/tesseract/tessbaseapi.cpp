@@ -187,13 +187,6 @@ void Java_com_googlecode_tesseract_android_TessBaseAPI_nativeConstruct(JNIEnv *e
     env->SetLongField(object, field_mNativeData, (jlong) nat);
 }
 
-void Java_com_googlecode_tesseract_android_TessBaseAPI_initCrashlytics(JNIEnv *env,
-                                                                       jclass clazz) {
-
-    crashlytics_context_t *context = crashlytics_init();
-    ERRCODE::setCrashLyticsContext(context);
-}
-
 
 jboolean Java_com_googlecode_tesseract_android_TessBaseAPI_nativeInit(JNIEnv *env,
                                                                       jobject thiz,

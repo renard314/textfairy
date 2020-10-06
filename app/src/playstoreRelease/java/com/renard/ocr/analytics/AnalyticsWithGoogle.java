@@ -1,20 +1,15 @@
 package com.renard.ocr.analytics;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
-import com.renard.ocr.BuildConfig;
-import com.renard.ocr.R;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.renard.ocr.cropimage.image_processing.BlurDetectionResult;
 import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog;
 import com.renard.ocr.main_menu.language.OcrLanguage;
-
-import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 /**
  * @author renard
@@ -39,50 +34,30 @@ class AnalyticsWithGoogle implements Analytics {
     private static final String CATEGORY_INSTALL = "Install";
     public static final String CATEGORY_SCAN_ACCURACY = "Scan accuracy";
     private final Context mApplicationContext;
-    private Tracker mTracker;
+    private final FirebaseAnalytics firebaseAnalytics;
 
 
     public AnalyticsWithGoogle(Context applicationContext) {
         mApplicationContext = applicationContext;
-        mTracker = getDefaultTracker();
-        GoogleAnalytics.getInstance(mApplicationContext).setDryRun(BuildConfig.DEBUG);
-        GoogleAnalytics.getInstance(mApplicationContext).enableAdvertisingIdCollection(false);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext);
         listenForGoogleAnalyticsOptOut();
     }
 
     private void listenForGoogleAnalyticsOptOut() {
         SharedPreferences userPrefs = PreferenceManager.getDefaultSharedPreferences(mApplicationContext);
-        userPrefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals(TRACKING_PREF_KEY)) {
-                    final boolean optOut = sharedPreferences.getBoolean(key, false);
-                    Log.i(LOG_TAG, "tracking preference was changed. setting app opt out to: " + optOut);
-                    GoogleAnalytics.getInstance(mApplicationContext).setAppOptOut(optOut);
-                }
+        userPrefs.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
+            if (key.equals(TRACKING_PREF_KEY)) {
+                final boolean optOut = sharedPreferences.getBoolean(key, false);
+                Log.i(LOG_TAG, "tracking preference was changed. setting app opt out to: " + optOut);
+                firebaseAnalytics.setAnalyticsCollectionEnabled(optOut);
             }
         });
     }
 
-
-    /**
-     * Gets the default {@link Tracker} for this {@link Application}.
-     *
-     * @return tracker
-     */
-    synchronized private Tracker getDefaultTracker() {
-        if (mTracker == null) {
-            GoogleAnalytics analytics = GoogleAnalytics.getInstance(mApplicationContext);
-            mTracker = analytics.newTracker(R.xml.global_tracker);
-        }
-        return mTracker;
-    }
-
-
     @Override
     public boolean getAppOptOut() {
-        return GoogleAnalytics.getInstance(mApplicationContext).getAppOptOut();
+        SharedPreferences userPrefs = PreferenceManager.getDefaultSharedPreferences(mApplicationContext);
+        return userPrefs.getBoolean(TRACKING_PREF_KEY, false);
     }
 
     @Override
@@ -95,8 +70,8 @@ class AnalyticsWithGoogle implements Analytics {
     @Override
     public void sendScreenView(String screenName) {
         Log.i(LOG_TAG, "Setting screen name: " + screenName);
-        mTracker.setScreenName(screenName);
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName);
     }
 
 
@@ -141,7 +116,7 @@ class AnalyticsWithGoogle implements Analytics {
 
     @Override
     public void optionTranslateText() {
-        sendEvent(CATEGORY_DOCUMENT_OPTIONS,"Translate started","", 1);
+        sendEvent(CATEGORY_DOCUMENT_OPTIONS, "Translate started", "", 1);
     }
 
 
@@ -267,12 +242,12 @@ class AnalyticsWithGoogle implements Analytics {
 
     private void sendEvent(String category, String action, String label, int value) {
         Log.i(LOG_TAG, "sendEvent(" + category + ", " + action + ", " + label + ", " + value + ")");
-        mTracker.send(new HitBuilders.EventBuilder()
-                .setCategory(category)
-                .setAction(action)
-                .setLabel(label)
-                .setValue(value)
-                .build());
+        Bundle params = new Bundle();
+        params.putString("category", category);
+        params.putString("action", action);
+        params.putString("label", label);
+        params.putInt("value", value);
+        firebaseAnalytics.logEvent(category, params);
     }
 
     @Override
@@ -282,14 +257,13 @@ class AnalyticsWithGoogle implements Analytics {
 
     @Override
     public void sendIgnoreMemoryWarning(long availableMegs) {
-        sendEvent(CATEGORY_OCR,"Memory Warning","ignored", (int) availableMegs);
+        sendEvent(CATEGORY_OCR, "Memory Warning", "ignored", (int) availableMegs);
     }
 
     @Override
     public void sendHeedMemoryWarning(long availableMegs) {
-        sendEvent(CATEGORY_OCR,"Memory Warning","heeded", (int) availableMegs);
+        sendEvent(CATEGORY_OCR, "Memory Warning", "heeded", (int) availableMegs);
     }
-
 
 
 }

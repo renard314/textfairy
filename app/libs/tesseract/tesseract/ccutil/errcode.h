@@ -78,9 +78,6 @@ class TESS_API ERRCODE {           // error handler class
   ERRCODE(const char *string) {
     message = string;
   }                            // initialize with string
-    static void setCrashLyticsContext(crashlytics_context_t*);
-private:
-    static crashlytics_context_t* context;
 
 };
 
