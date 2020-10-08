@@ -484,7 +484,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
             if (holder.updateThumbnail) {
                 final int documentId = holder.documentId;
                 CrossFadeDrawable d = holder.transition;
-                FastBitmapDrawable thumb = Util.getDocumentThumbnail(documentId);
+                FastBitmapDrawable thumb = Util.getDocumentThumbnail(this, documentId);
                 if (thumb.getBitmap() != null) {
                     d.setEnd(thumb.getBitmap());
                     holder.gridElement.setImage(d);

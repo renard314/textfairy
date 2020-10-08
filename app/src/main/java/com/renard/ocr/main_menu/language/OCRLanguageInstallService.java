@@ -15,7 +15,7 @@
  */
 package com.renard.ocr.main_menu.language;
 
-import com.renard.ocr.util.Util;
+import com.renard.ocr.util.AppStorage;
 
 import android.app.DownloadManager;
 import android.content.Context;
@@ -66,7 +66,7 @@ public class OCRLanguageInstallService extends JobIntentService {
                 String fileName = intent.getStringExtra(EXTRA_FILE_NAME);
                 final Uri fileUri = Uri.parse(fileName);
                 langName = extractLanguageNameFromUri(fileUri);
-                File tessDir = Util.getTrainingDataDir(this);
+                File tessDir = AppStorage.getTrainingDataDir(this);
                 if (tessDir.mkdirs() || tessDir.isDirectory() && langName != null) {
 
                     file = dm.openDownloadedFile(downloadId);

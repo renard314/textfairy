@@ -35,8 +35,8 @@ import com.renard.ocr.analytics.Analytics
 import com.renard.ocr.analytics.CrashLogger
 import com.renard.ocr.documents.creation.crop.CropImageScaler
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore
+import com.renard.ocr.util.AppStorage
 import com.renard.ocr.util.MemoryInfo
-import com.renard.ocr.util.Util
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -312,7 +312,7 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
     }
 
     private fun initTessApi(languages: List<String>, ocrMode: Int): Boolean {
-        val tessDir = Util.getTessDir(getApplication())
+        val tessDir = AppStorage.getTessDir(getApplication())
         val languagesString = languages.joinToString("+")
         logTessParams(languagesString, ocrMode)
         val result = mTess.init(tessDir, languagesString, ocrMode)

@@ -1,11 +1,10 @@
 package com.renard.ocr.main_menu.language;
 
+import android.app.DownloadManager;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author renard
@@ -25,6 +24,13 @@ public class OcrLanguage implements Parcelable {
 
     }
 
+    public void installLanguage(Context context) {
+        final DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = OcrLanguageDataStore.getDownloadUri(getValue());
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setTitle(getDisplayText());
+        dm.enqueue(request);
+    }
 
     boolean isInstalled() {
         return mInstallStatus.isInstalled;
@@ -58,20 +64,10 @@ public class OcrLanguage implements Parcelable {
         mDownloading = downloading;
     }
 
-
     @Override
     public String toString() {
         return getDisplayText();
     }
-
-    List<Uri> getDownloadUris() {
-        List<Uri> result = new ArrayList<>();
-        final String part2 = ".traineddata";
-        String networkDir = "https://github.com/tesseract-ocr/tessdata/raw/3.04.00/";
-        result.add(Uri.parse(networkDir + getValue() + part2));
-        return result;
-    }
-
 
     protected OcrLanguage(Parcel in) {
         mDownloading = in.readByte() != 0x00;

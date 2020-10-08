@@ -17,8 +17,9 @@
 package com.renard.ocr.install;
 
 import com.renard.ocr.install.InstallResult.Result;
-import com.renard.ocr.util.Util;
+import com.renard.ocr.util.AppStorage;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -32,7 +33,7 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-class InstallTask extends AsyncTask<Void, Integer, InstallResult> {
+class InstallTask extends AsyncTask<Context, Integer, InstallResult> {
 
     private static final String DEBUG_TAG = InstallTask.class.getSimpleName();
     private static final int PROGRESS_STEP = 100; // when to give feedback to the parent progress dialog
@@ -54,16 +55,17 @@ class InstallTask extends AsyncTask<Void, Integer, InstallResult> {
     }
 
     @Override
-    protected InstallResult doInBackground(Void... unused) {
+    protected InstallResult doInBackground(Context... contexts) {
+        final Context context = contexts[0];
         Log.i(DEBUG_TAG, "start installation");
-        long freeSpace = Util.GetFreeSpaceB();
+        long freeSpace = AppStorage.getFreeSpaceInBytes(context);
         mBytesToInstallTotal = getTotalUnzippedSize();
         if (freeSpace < mBytesToInstallTotal) {
             return new InstallResult(Result.NOT_ENOUGH_DISK_SPACE, mBytesToInstallTotal, freeSpace);
         }
 
         publishProgress(0);
-        InstallResult ret = unzipLanguageAssets(mAssetManager);
+        InstallResult ret = unzipLanguageAssets(context, mAssetManager);
         Log.i(DEBUG_TAG, "InstallLanguageAssets : " + ret);
         return ret;
     }
@@ -72,6 +74,7 @@ class InstallTask extends AsyncTask<Void, Integer, InstallResult> {
      * @return the total size of the language-assets in the zip file
      */
     private long getTotalUnzippedSize() {
+        //TODO fix
         return 51402414;
     }
 
@@ -120,9 +123,10 @@ class InstallTask extends AsyncTask<Void, Integer, InstallResult> {
     /**
      * unzips all language-assets from the package
      */
-    private InstallResult unzipLanguageAssets(AssetManager manager) {
+    private InstallResult unzipLanguageAssets(Context context, AssetManager manager) {
         ZipInputStream zipStream = null;
-        File externalStorageDir = new File(Environment.getExternalStorageDirectory(), Util.EXTERNAL_APP_DIRECTORY);
+
+        File externalStorageDir = AppStorage.getTrainingDataDir(context);
         if (!externalStorageDir.exists()) {
             externalStorageDir.mkdirs();
         }

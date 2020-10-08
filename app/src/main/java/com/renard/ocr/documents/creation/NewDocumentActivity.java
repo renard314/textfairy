@@ -26,6 +26,7 @@ import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
 import com.renard.ocr.pdf.Hocr2Pdf;
 import com.renard.ocr.pdf.Hocr2Pdf.PDFProgressListener;
+import com.renard.ocr.util.AppStorage;
 import com.renard.ocr.util.MemoryInfo;
 import com.renard.ocr.util.Util;
 
@@ -821,7 +822,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
         @Override
         protected Pair<ArrayList<Uri>, ArrayList<Uri>> doInBackground(Void... params) {
-            File dir = Util.getPDFDir(getApplicationContext());
+            File dir = AppStorage.getPDFDir(getApplicationContext());
             if (!dir.exists()) {
                 if (!dir.mkdir()) {
                     return null;

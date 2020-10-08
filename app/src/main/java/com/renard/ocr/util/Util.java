@@ -15,12 +15,6 @@
  */
 package com.renard.ocr.util;
 
-import com.googlecode.leptonica.android.Pix;
-import com.googlecode.leptonica.android.WriteFile;
-import com.renard.ocr.MonitoredActivity;
-import com.renard.ocr.R;
-import com.renard.ocr.documents.viewing.grid.FastBitmapDrawable;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -38,11 +32,17 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.StatFs;
 import android.provider.MediaStore;
-import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
+
+import com.googlecode.leptonica.android.Pix;
+import com.googlecode.leptonica.android.WriteFile;
+import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
+import com.renard.ocr.documents.viewing.grid.FastBitmapDrawable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,11 +53,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Util {
-
-    public final static String EXTERNAL_APP_DIRECTORY = "textfee";
-    private final static String CACHE_DIRECTORY = EXTERNAL_APP_DIRECTORY + "/thumbnails";
-    private final static String IMAGE_DIRECTORY = EXTERNAL_APP_DIRECTORY + "/pictures";
-    private final static String OCR_DATA_DIRECTORY = "tessdata";
 
     private final static String THUMBNAIL_SUFFIX = "png";
     public final static int MAX_THUMB_WIDTH = 512;
@@ -122,10 +117,9 @@ public class Util {
 
     private static ThumbnailCache mCache = new ThumbnailCache();
 
-    private static Bitmap loadDocumentThumbnail(int documentId) {
+    private static Bitmap loadDocumentThumbnail(Context context ,int documentId) {
         Log.i("cache", "loadDocumentThumbnail " + documentId);
-
-        File thumbDir = new File(Environment.getExternalStorageDirectory(), CACHE_DIRECTORY);
+        File thumbDir = AppStorage.getCacheDirectory(context);
         File thumbFile = new File(thumbDir, String.valueOf(documentId) + "." + THUMBNAIL_SUFFIX);
         if (thumbFile.exists()) {
             InputStream stream = null;
@@ -148,13 +142,13 @@ public class Util {
         return null;
     }
 
-    public static FastBitmapDrawable getDocumentThumbnail(int documentId) {
+    public static FastBitmapDrawable getDocumentThumbnail(Context context, int documentId) {
         FastBitmapDrawable drawable;
 
         drawable = mCache.get(documentId);
 
         if (drawable == null) {
-            final Bitmap bitmap = loadDocumentThumbnail(documentId);
+            final Bitmap bitmap = loadDocumentThumbnail(context, documentId);
             if (bitmap != null) {
                 drawable = new FastBitmapDrawable(bitmap);
             } else {
@@ -288,8 +282,8 @@ public class Util {
         return image;
     }
 
-    public static File savePixToSD(final Pix pix, final String name) throws IOException {
-        File picDir = new File(Environment.getExternalStorageDirectory(), IMAGE_DIRECTORY);
+    public static File savePixToSD(final Context context, final Pix pix, final String name) throws IOException {
+        File picDir = AppStorage.getImageDirectory(context);
         return savePixToDir(pix, name, picDir);
     }
 
@@ -301,34 +295,6 @@ public class Util {
         }
     }
 
-    public static File getTrainingDataDir(Context appContext) {
-        String tessDir = PreferencesUtils.getTessDir(appContext);
-        if (tessDir == null) {
-            File parent = new File(Environment.getExternalStorageDirectory(), EXTERNAL_APP_DIRECTORY);
-            return new File(parent, Util.OCR_DATA_DIRECTORY);
-        } else {
-            return new File(tessDir, Util.OCR_DATA_DIRECTORY);
-        }
-    }
-
-
-    public static String getTessDir(final Context appContext) {
-        String tessDir = PreferencesUtils.getTessDir(appContext);
-        if (tessDir == null) {
-            return new File(Environment.getExternalStorageDirectory(), EXTERNAL_APP_DIRECTORY).getPath() + "/";
-        } else {
-            return tessDir;
-        }
-    }
-
-    public static File getPDFDir(Context context) {
-        File dir = new File(
-                Environment.getExternalStorageDirectory(),
-                context.getString(R.string.config_pdf_file_dir)
-        );
-        dir.mkdirs();
-        return dir;
-    }
 
     /**
      * creates a thumbnail file and puts it into the in memory cache
@@ -343,22 +309,19 @@ public class Util {
             int thumbnailWidth = PreferencesUtils.getThumbnailWidth(context);
             Bitmap thumb = Util.adjustBitmapSize(thumbnailWidth, thumbnailHeight, source);
 
-            if (thumb != null) {
+            FastBitmapDrawable drawable = new FastBitmapDrawable(thumb);
+            mCache.put(documentId, drawable);
 
-                FastBitmapDrawable drawable = new FastBitmapDrawable(thumb);
-                mCache.put(documentId, drawable);
-                File thumbDir = new File(Environment.getExternalStorageDirectory(), CACHE_DIRECTORY);
-                if (!thumbDir.exists()) {
-                    thumbDir.mkdirs();
-                    createNoMediaFile(thumbDir);
-                }
-                File thumbFile = new File(thumbDir, String.valueOf(documentId) + "." + THUMBNAIL_SUFFIX);
-                FileOutputStream out;
-                try {
-                    out = new FileOutputStream(thumbFile);
-                    thumb.compress(Bitmap.CompressFormat.PNG, 85, out);
-                } catch (FileNotFoundException ignore) {
-                }
+            File thumbDir = AppStorage.getCacheDirectory(context);
+            if (!thumbDir.exists()) {
+                createNoMediaFile(thumbDir);
+            }
+            File thumbFile = new File(thumbDir, String.valueOf(documentId) + "." + THUMBNAIL_SUFFIX);
+            FileOutputStream out;
+            try {
+                out = new FileOutputStream(thumbFile);
+                thumb.compress(Bitmap.CompressFormat.PNG, 85, out);
+            } catch (FileNotFoundException ignore) {
             }
         }
 
@@ -494,20 +457,6 @@ public class Util {
             if (mDialog != null) {
                 mDialog.show();
             }
-        }
-    }
-
-    /**
-     * @return the free space on sdcard in bytes
-     */
-    public static long GetFreeSpaceB() {
-        try {
-            String storageDirectory = Environment.getExternalStorageDirectory().toString();
-            StatFs stat = new StatFs(storageDirectory);
-            long availableBlocks = stat.getAvailableBlocks();
-            return availableBlocks * stat.getBlockSize();
-        } catch (Exception ex) {
-            return -1;
         }
     }
 

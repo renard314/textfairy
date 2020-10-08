@@ -2,6 +2,7 @@ package com.renard.ocr.install;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -58,7 +59,7 @@ public class TaskFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (mTask.getStatus() == AsyncTask.Status.PENDING) {
-            mTask.execute();
+            mTask.execute(requireContext());
         }
     }
 

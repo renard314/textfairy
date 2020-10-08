@@ -32,7 +32,6 @@ public class PreferencesUtils {
     public final static String PREFERENCES_DESIGN_KEY = "text_design";
     public final static String PREFERENCES_ALIGNMENT_KEY = "text_alignment";
     public final static String PREFERENCES_TEXT_SIZE_KEY = "text_size";
-    private final static String PREFERENCES_TRAINING_DATA_DIR = "training_data_dir";
 
     // actual language
     public final static String PREFERENCES_OCR_LANG = "ocr_language";
@@ -104,13 +103,6 @@ public class PreferencesUtils {
         return new Pair<>(value, display);
     }
 
-    public static void saveTessDir(Context appContext, final String value) {
-        SharedPreferences prefs = getPreferences(appContext);
-        Editor edit = prefs.edit();
-        edit.putString(PREFERENCES_TRAINING_DATA_DIR, value);
-        edit.apply();
-    }
-
     public static void setNumberOfSuccessfulScans(Context appContext, final int value) {
         SharedPreferences prefs = getPreferences(appContext);
         Editor edit = prefs.edit();
@@ -122,13 +114,6 @@ public class PreferencesUtils {
         SharedPreferences prefs = getPreferences(appContext);
         return prefs.getInt(PREFERENCES_HAS_ASKED_FOR_FEEDBACK, 0);
     }
-
-
-    public static String getTessDir(Context appContext) {
-        SharedPreferences prefs = getPreferences(appContext);
-        return prefs.getString(PREFERENCES_TRAINING_DATA_DIR, null);
-    }
-
 
     public static void saveTextSize(Context appContext, float size) {
         SharedPreferences prefs = getPreferences(appContext);

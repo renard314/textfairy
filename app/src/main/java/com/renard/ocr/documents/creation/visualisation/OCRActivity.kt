@@ -241,7 +241,7 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
     @Throws(IOException::class)
     private fun saveImage(p: Long): File {
         val id = DateFormat.format("ssmmhhddMMyy", Date(System.currentTimeMillis()))
-        return Util.savePixToSD(Pix(p), id.toString())
+        return Util.savePixToSD(this, Pix(p), id.toString())
     }
 
     @Throws(RemoteException::class)

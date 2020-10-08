@@ -22,7 +22,6 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
-import android.app.DownloadManager.Request;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,7 +29,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import androidx.core.app.NavUtils;
 import android.view.MenuItem;
@@ -71,7 +69,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
                     OcrLanguage language = (OcrLanguage) mAdapter.getItem(position);
                     if (!language.isInstalled()) {
                         if (mDownloadManagerResolver.resolve(OCRLanguageActivity.this)) {
-                            startDownload(language);
+                            startDownload(getApplicationContext(),language);
                         }
 
                     } else {
@@ -83,17 +81,9 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
         }
 
-        private void startDownload(OcrLanguage language) {
+        private void startDownload(Context context, OcrLanguage language) {
             mAnalytics.sendStartDownload(language);
-
-            final DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-            List<Uri> uris = language.getDownloadUris();
-            for (Uri uri : uris) {
-                Request request = new Request(uri);
-                request.setTitle(language.getDisplayText());
-                dm.enqueue(request);
-            }
-
+            language.installLanguage(context);
             language.setDownloading(true);
             mAdapter.notifyDataSetChanged();
         }

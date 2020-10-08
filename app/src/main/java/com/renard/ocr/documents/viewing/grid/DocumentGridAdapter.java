@@ -123,7 +123,7 @@ public class DocumentGridAdapter extends CursorAdapter implements OnCheckedChang
 				holder.gridElement.setImage(Util.sDefaultDocumentThumbnail);
 				holder.updateThumbnail = true;
 			} else {
-				final Drawable d = Util.getDocumentThumbnail(documentId);
+				final Drawable d = Util.getDocumentThumbnail(context, documentId);
 				holder.gridElement.setImage(d);
 				holder.updateThumbnail = false;
 			}

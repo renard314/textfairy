@@ -15,10 +15,8 @@
  */
 package com.renard.ocr.main_menu.language;
 
-import android.app.AlarmManager;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
