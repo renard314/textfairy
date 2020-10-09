@@ -74,10 +74,8 @@ class InstallTask extends AsyncTask<Context, Integer, InstallResult> {
      * @return the total size of the language-assets in the zip file
      */
     private long getTotalUnzippedSize() {
-        //TODO fix
-        return 51402414;
+        return 28697279;
     }
-
 
     @Override
     protected void onProgressUpdate(Integer... progress) {
