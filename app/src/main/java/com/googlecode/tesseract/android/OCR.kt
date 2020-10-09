@@ -71,26 +71,22 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
 
 
 
+private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
 
-    private val mTess: TessBaseAPI = TessBaseAPI(OcrProgressListener { percent, left, right, top, bottom, left2, right2, top2, bottom2 ->
+//    private val mTess: TessBaseAPI = TessBaseAPI(OcrProgressListener { percent, left, right, top, bottom, left2, right2, top2, bottom2 ->
 
-        val availableMegs = MemoryInfo.getFreeMemory(getApplication())
-        mCrashLogger.logMessage("available ram = $availableMegs, percent done = $percent")
-        mCrashLogger.setLong("ocr progress", percent.toLong())
+    val availableMegs = MemoryInfo.getFreeMemory(getApplication())
+    mCrashLogger.logMessage("available ram = $availableMegs, percent done = ${progressValues.percent}")
+    mCrashLogger.setLong("ocr progress", progressValues.percent.toLong())
 
-        val newBottom = bottom2 - top2 - bottom
-        val newTop = bottom2 - top2 - top
-        // scale the word bounding rectangle to the preview image space
-        val xScale = 1.0f * mPreviewWith / mOriginalWidth
-        val yScale = 1.0f * mPreviewHeight / mOriginalHeight
-        val wordBounds = RectF()
-        val ocrBounds = RectF()
+    // scale the word bounding rectangle to the preview image space
+    val xScale = 1.0f * mPreviewWith / mOriginalWidth
+    val yScale = 1.0f * mPreviewHeight / mOriginalHeight
+    val wordBounds = progressValues.currentWordRect.scale(xScale, yScale)
+    val ocrBounds = progressValues.currentRect.scale(xScale, yScale)
 
-        wordBounds.set((left + left2) * xScale, (newTop + top2) * yScale, (right + left2) * xScale, (newBottom + top2) * yScale)
-        ocrBounds.set(left2 * xScale, top2 * yScale, right2 * xScale, bottom2 * yScale)
-
-        ocrProgress.postValue(OcrProgress.Progress(percent, wordBounds, ocrBounds))
-    })
+    ocrProgress.postValue(OcrProgress.Progress(progressValues.percent, wordBounds, ocrBounds))
+}
 
     init {
         mNativeBinding.setProgressCallBack(object : NativeBinding.ProgressCallBack {
@@ -274,11 +270,11 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
                 }
 
                 val ocrLanguages = determineOcrLanguage(lang)
-                if (!initTessApi(ocrLanguages, TessBaseAPI.OEM_TESSERACT_ONLY)) {
+                if (!initTessApi(ocrLanguages, TessBaseAPI.OEM_LSTM_ONLY)) {
                     return@Runnable
                 }
 
-                mTess.setPageSegMode(PageSegMode.PSM_AUTO)
+                mTess.pageSegMode = PageSegMode.PSM_AUTO
                 mTess.setImage(pixText)
                 var hocrText = mTess.getHOCRText(0)
                 var accuracy = mTess.meanConfidence()
@@ -311,7 +307,7 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
 
     }
 
-    private fun initTessApi(languages: List<String>, ocrMode: Int): Boolean {
+    private fun initTessApi(languages: List<String>,@TessBaseAPI.OcrEngineMode ocrMode: Int): Boolean {
         val tessDir = AppStorage.getTessDir(getApplication())
         val languagesString = languages.joinToString("+")
         logTessParams(languagesString, ocrMode)
@@ -327,19 +323,19 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
         return true
     }
 
-    private fun Int.name(): String =
-            when (this) {
+    private fun name(@TessBaseAPI.OcrEngineMode i:  Int): String =
+            when (i) {
                 TessBaseAPI.OEM_TESSERACT_ONLY -> "OEM_TESSERACT_ONLY"
-                TessBaseAPI.OEM_TESSERACT_CUBE_COMBINED -> "OEM_TESSERACT_CUBE_COMBINED"
+                TessBaseAPI.OEM_LSTM_ONLY -> "OEM_LSTM_ONLY"
                 TessBaseAPI.OEM_DEFAULT -> "OEM_DEFAULT"
                 else -> "undefined"
             }
 
-    private fun logTessParams(lang: String, ocrMode: Int) {
+    private fun logTessParams(lang: String,@TessBaseAPI.OcrEngineMode ocrMode: Int) {
         with(mCrashLogger) {
             setString(
                     tag = "page seg mode",
-                    value = ocrMode.name()
+                    value = name(ocrMode)
             )
             setString("ocr language", lang)
         }

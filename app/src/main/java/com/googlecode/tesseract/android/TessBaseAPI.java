@@ -17,23 +17,28 @@
 
 package com.googlecode.tesseract.android;
 
+import android.graphics.Bitmap;
+import android.graphics.Rect;
+import androidx.annotation.IntDef;
+import androidx.annotation.WorkerThread;
+
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.ReadFile;
 
-import android.graphics.Bitmap;
-import android.graphics.Rect;
-import android.util.Log;
-
 import java.io.File;
+import java.lang.annotation.Retention;
+
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * Java interface for the Tesseract OCR engine. Does not implement all available
  * JNI methods, but does implement enough to be useful. Comments are adapted
  * from original Tesseract source.
- *
+ * 
  * @author alanv@google.com (Alan Viverette)
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class TessBaseAPI {
     /**
      * Used by the native implementation of the class.
@@ -41,12 +46,20 @@ public class TessBaseAPI {
     private long mNativeData;
 
     static {
+        System.loadLibrary("lept");
+        System.loadLibrary("tess");
+
         nativeClassInit();
     }
 
-    private OcrProgressListener mProgressListener;
-
+    /** Page segmentation mode. */
     public static final class PageSegMode {
+        @Retention(SOURCE)
+        @IntDef({PSM_OSD_ONLY, PSM_AUTO_OSD, PSM_AUTO_ONLY, PSM_AUTO, PSM_SINGLE_COLUMN,
+                PSM_SINGLE_BLOCK_VERT_TEXT, PSM_SINGLE_BLOCK, PSM_SINGLE_LINE, PSM_SINGLE_WORD,
+        PSM_CIRCLE_WORD, PSM_SINGLE_CHAR, PSM_SPARSE_TEXT, PSM_SPARSE_TEXT_OSD, PSM_RAW_LINE})
+        public @interface Mode {}
+
         /** Orientation and script detection only. */
         public static final int PSM_OSD_ONLY = 0;
 
@@ -86,8 +99,8 @@ public class TessBaseAPI {
         /** Sparse text with orientation and script detection. */
         public static final int PSM_SPARSE_TEXT_OSD = 12;
 
-        /** Number of enum entries. */
-        public static final int PSM_COUNT = 13;
+        /** Treat the image as a single text line, bypassing hacks that are Tesseract-specific. */
+        public static final int PSM_RAW_LINE = 13;
     }
 
     /** Whitelist of characters to recognize. */
@@ -96,20 +109,33 @@ public class TessBaseAPI {
     /** Blacklist of characters to not recognize. */
     public static final String VAR_CHAR_BLACKLIST = "tessedit_char_blacklist";
 
+    /** Save blob choices allowing us to get alternative results. */
+    public static final String VAR_SAVE_BLOB_CHOICES = "save_blob_choices";
+
+    /** String value used to assign a boolean variable to true. */
+    public static final String VAR_TRUE = "T";
+
+    /** String value used to assign a boolean variable to false. */
+    public static final String VAR_FALSE = "F";
+
+    @Retention(SOURCE)
+    @IntDef({OEM_TESSERACT_ONLY, OEM_LSTM_ONLY, OEM_TESSERACT_LSTM_COMBINED, OEM_DEFAULT})
+    public @interface OcrEngineMode {}
+
+
     /** Run Tesseract only - fastest */
+    @Deprecated
     public static final int OEM_TESSERACT_ONLY = 0;
 
-    /** Run Cube only - better accuracy, but slower */
-    public static final int OEM_CUBE_ONLY = 1;
+    /** Run just the LSTM line recognizer. */
+    public static final int OEM_LSTM_ONLY = 1;
 
-    /** Run both and combine results - best accuracy */
-    public static final int OEM_TESSERACT_CUBE_COMBINED = 2;
+    /** // Run the LSTM recognizer, but allow fallback */
+    @Deprecated
+    public static final int OEM_TESSERACT_LSTM_COMBINED = 2;
 
     /** Default OCR engine mode. */
     public static final int OEM_DEFAULT = 3;
-
-    private static final String LOG_TAG = TessBaseAPI.class.getSimpleName();
-
 
     /**
      * Elements of the page hierarchy, used in {@link ResultIterator} to provide
@@ -120,6 +146,10 @@ public class TessBaseAPI {
      * as there is no paragraph internally yet.
      */
     public static final class PageIteratorLevel {
+        @Retention(SOURCE)
+        @IntDef({RIL_BLOCK, RIL_PARA, RIL_TEXTLINE, RIL_WORD, RIL_SYMBOL})
+        public @interface Level {}
+
         /** Block of text/image/separator line. */
         public static final int RIL_BLOCK = 0;
 
@@ -136,16 +166,96 @@ public class TessBaseAPI {
         public static final int RIL_SYMBOL = 4;
     }
 
-    ;
+    private ProgressNotifier progressNotifier;
+
+    private boolean mRecycled;
+
+    /**
+     * Interface that may be implemented by calling object in order to receive 
+     * progress callbacks during OCR.
+     *
+     * Progress callbacks are available when {@link #getHOCRText(int)} is used.
+     */
+    public interface ProgressNotifier {
+        void onProgressValues(ProgressValues progressValues);
+    }
+
+    /**
+     * Represents values indicating recognition progress and status.
+     */
+    public static class ProgressValues {
+        private final int percent;
+        private final Rect wordRect;
+        private final Rect textRect;
+
+        public ProgressValues(int percent, Rect wordRect, Rect textRect) {
+            this.percent = percent;
+            this.wordRect = wordRect;
+            this.textRect = textRect;
+        }
+
+        /**
+         * Return word recognition progress.
+         * 
+         * @return a value between 0 and 100
+         */
+        public int getPercent() {
+            return percent;
+        }
+
+        /**
+         * Return the bounds of the word currently being recognized.
+         * 
+         * The returned bounding box is in the Android coordinate system,
+         * which has the origin in the top left.
+         * 
+         * @return an {@link Rect} bounding box
+         */
+        public Rect getCurrentWordRect() {
+            return wordRect;
+        }
+
+        /**
+         * Return the bounds of the current recognition region. May match the 
+         * bounds of the entire image or a sub-rectangle of the entire image.
+         * 
+         * The returned bounding box is in the Android coordinate system,
+         * which has the origin in the top left.
+         * 
+         * @return an {@link Rect} bounding box
+         */
+        public Rect getCurrentRect() {
+            return textRect;
+        }
+    }
 
     /**
      * Constructs an instance of TessBaseAPI.
+     * <p>
+     * When the instance of TessBaseAPI is no longer needed, its {@link #end}
+     * method must be invoked to dispose of it.
      */
-    public TessBaseAPI(OcrProgressListener listener) {
-        nativeConstruct();
-        mProgressListener = listener;
+    public TessBaseAPI() {
+        mNativeData = nativeConstruct();
+        if (mNativeData == 0) {
+            throw new RuntimeException("Can't create TessBaseApi object");
+        }
+        mRecycled = false;
     }
 
+    /**
+     * Constructs an instance of TessBaseAPI with a callback method for
+     * receiving progress updates during OCR.
+     * <p>
+     * When the instance of TessBaseAPI is no longer needed, its {@link #end}
+     * method must be invoked to dispose of it.
+     * 
+     * @param progressNotifier Callback to receive progress notifications
+     */
+    public TessBaseAPI(ProgressNotifier progressNotifier) {
+        this();
+        this.progressNotifier = progressNotifier;
+    }
 
     /**
      * Initializes the Tesseract engine with a specified language model. Returns
@@ -164,7 +274,7 @@ public class TessBaseAPI {
      * multiple times on the same instance to change language, or just to reset
      * the classifier.
      * <p>
-     * The language may be a string of the form [~]<lang>[+[~]<lang>]* indicating
+     * The language may be a string of the form {@code [~]<lang>[+[~]<lang>]*} indicating
      * that multiple languages are to be loaded. Eg hin+eng will load Hindi and
      * English. Languages may specify internally that they want to be loaded
      * with one or more other languages, so the ~ sign is available to override
@@ -184,60 +294,62 @@ public class TessBaseAPI {
      * are very few uses that require any parameters to be set before Init.
      *
      * @param datapath the parent directory of tessdata ending in a forward
-     *                 slash
-     * @param language (optional) an ISO 639-3 string representing the language(s)
+     *            slash
+     * @param language an ISO 639-3 string representing the language(s)
      * @return <code>true</code> on success
      */
     public boolean init(String datapath, String language) {
-        if (datapath == null)
-            throw new IllegalArgumentException("Data path must not be null!");
-        if (!datapath.endsWith(File.separator))
-            datapath += File.separator;
-
-        File tessdata = new File(datapath + "tessdata");
-        if (!tessdata.exists() || !tessdata.isDirectory()) {
-            Log.e(LOG_TAG, "Data path must contain subfolder tessdata!");
-            return false;
-        }
-
-        return nativeInit(datapath, language);
+        return init(datapath, language, OEM_DEFAULT);
     }
 
     /**
      * Initializes the Tesseract engine with the specified language model(s). Returns
      * <code>true</code> on success.
      *
-     * @param datapath      the parent directory of tessdata ending in a forward
-     *                      slash
-     * @param language      (optional) an ISO 639-3 string representing the language(s)
+     * @see #init(String, String)
+     *
+     * @param datapath the parent directory of tessdata ending in a forward
+     *            slash
+     * @param language an ISO 639-3 string representing the language(s)
      * @param ocrEngineMode the OCR engine mode to be set
      * @return <code>true</code> on success
      */
-    public boolean init(String datapath, String language, int ocrEngineMode) {
+    public boolean init(String datapath, String language, @OcrEngineMode int ocrEngineMode) {
         if (datapath == null)
             throw new IllegalArgumentException("Data path must not be null!");
         if (!datapath.endsWith(File.separator))
             datapath += File.separator;
 
+        File datapathFile = new File(datapath);
+        if (!datapathFile.exists())
+            throw new IllegalArgumentException("Data path does not exist!");
+
         File tessdata = new File(datapath + "tessdata");
         if (!tessdata.exists() || !tessdata.isDirectory())
             throw new IllegalArgumentException("Data path must contain subfolder tessdata!");
 
-        return nativeInitOem(datapath, language, ocrEngineMode);
-    }
+        boolean success = nativeInitOem(mNativeData, datapath, language, ocrEngineMode);
 
+        if (success) {
+            mRecycled = false;
+        }
+
+        return success;
+    }
 
     /**
      * Returns the languages string used in the last valid initialization.
      * If the last initialization specified "deu+hin" then that will be
      * returned. If hin loaded eng automatically as well, then that will
-     * not be included in this list. To find the languages actually
-     * loaded use GetLoadedLanguagesAsVector.
-     *
+     * not be included in this list.
+     * 
      * @return the last-used language code
      */
     public String getInitLanguagesAsString() {
-        return nativeGetInitLanguagesAsString();
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return nativeGetInitLanguagesAsString(mNativeData);
     }
 
     /**
@@ -247,7 +359,10 @@ public class TessBaseAPI {
      * Recognize or Get* operation.
      */
     public void clear() {
-        nativeClear();
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        nativeClear(mNativeData);
     }
 
     /**
@@ -258,36 +373,70 @@ public class TessBaseAPI {
      * other than Init and anything declared above it in the class definition.
      */
     public void end() {
-        nativeEnd();
+        if (!mRecycled) {
+            nativeEnd(mNativeData);
+
+            mRecycled = true;
+        }
     }
 
     /**
-     * Set the value of an internal "variable" (of either old or new types).
-     * Supply the name of the variable and the value as a string, just as you
-     * would in a config file.
+     * Set the value of an internal "parameter."
      * <p>
-     * Example: <code>setVariable(VAR_TESSEDIT_CHAR_BLACKLIST, "xyz"); to ignore x, y and z. *
-     * setVariable(VAR_BLN_NUMERICMODE, "1"); to set numeric-only mode. * </code>
+     * Supply the name of the parameter and the value as a string, just as
+     * you would in a config file.
      * <p>
-     * setVariable() may be used before open(), but settings will revert to
-     * defaults on close().
-     *
-     * @param var   name of the variable
+     * Returns false if the name lookup failed.
+     * <p>
+     * Eg <code>setVariable("tessedit_char_blacklist", "xyz");</code> to 
+     * ignore x, y and z.
+     * 
+     * Or <code>setVariable("classify_bln_numeric_mode", "1");</code> to set
+     * numeric-only mode.
+     * <p>
+     * setVariable may be used before init, but settings will revert to
+     * defaults on end().
+     * <p>
+     * Note: Must be called after init(). Only works for non-init variables.
+     * 
+     * @param var name of the variable
      * @param value value to set
      * @return false if the name lookup failed
      */
     public boolean setVariable(String var, String value) {
-        return nativeSetVariable(var, value);
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return nativeSetVariable(mNativeData, var, value);
     }
 
     /**
-     * Sets the page segmentation mode. This controls how much processing the
-     * OCR engine will perform before recognizing text.
+     * Return the current page segmentation mode.
      *
-     * @param mode the page segmentation mode to set
+     * @return value of the current page segmentation mode
      */
-    public void setPageSegMode(int mode) {
-        nativeSetPageSegMode(mode);
+    public @PageSegMode.Mode int getPageSegMode() {
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return nativeGetPageSegMode(mNativeData);
+    }
+
+    /**
+     * Sets the page segmentation mode. Defaults to 
+     * {@link PageSegMode#PSM_SINGLE_BLOCK}. This controls how much processing
+     * the OCR engine will perform before recognizing text.
+     * <p>
+     * The mode can also be modified by readConfigFile or 
+     * setVariable("tessedit_pageseg_mode", mode as string).
+     *
+     * @param mode the {@link PageSegMode} to set
+     */
+    public void setPageSegMode(@PageSegMode.Mode int mode) {
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        nativeSetPageSegMode(mNativeData, mode);
     }
 
     /**
@@ -297,49 +446,66 @@ public class TessBaseAPI {
      * @param enabled <code>true</code> to enable debugging mode
      */
     public void setDebug(boolean enabled) {
-        nativeSetDebug(enabled);
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        nativeSetDebug(mNativeData, enabled);
     }
 
     /**
      * Restricts recognition to a sub-rectangle of the image. Call after
-     * SetImage. Each SetRectangle clears the recogntion results so multiple
+     * SetImage. Each SetRectangle clears the recognition results so multiple
      * rectangles can be recognized with the same image.
      *
      * @param rect the bounding rectangle
      */
     public void setRectangle(Rect rect) {
+        if (mRecycled)
+            throw new IllegalStateException();
+
         setRectangle(rect.left, rect.top, rect.width(), rect.height());
     }
 
     /**
      * Restricts recognition to a sub-rectangle of the image. Call after
-     * SetImage. Each SetRectangle clears the recogntion results so multiple
+     * SetImage. Each SetRectangle clears the recognition results so multiple
      * rectangles can be recognized with the same image.
      *
-     * @param left   the left bound
-     * @param top    the right bound
-     * @param width  the width of the bounding box
+     * @param left the left bound
+     * @param top the right bound
+     * @param width the width of the bounding box
      * @param height the height of the bounding box
      */
     public void setRectangle(int left, int top, int width, int height) {
-        nativeSetRectangle(left, top, width, height);
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        nativeSetRectangle(mNativeData, left, top, width, height);
     }
 
     /**
-     * Provides an image for Tesseract to recognize. Does not copy the image
-     * buffer. The source image must persist until after Recognize or
-     * GetUTF8Chars is called.
+     * Provides an image for Tesseract to recognize. Copies the image buffer.
+     * The source image may be destroyed immediately after SetImage is called.
+     * SetImage clears all recognition results, and sets the rectangle to the
+     * full image, so it may be followed immediately by a GetUTF8Text, and it
+     * will automatically perform recognition.
      *
      * @param bmp bitmap representation of the image
      */
+    @WorkerThread
     public void setImage(Bitmap bmp) {
+        if (mRecycled)
+            throw new IllegalStateException();
+
         Pix image = ReadFile.readBitmap(bmp);
 
         if (image == null) {
             throw new RuntimeException("Failed to read bitmap");
         }
 
-        nativeSetImagePix(image.getNativePix());
+        nativeSetImagePix(mNativeData, image.getNativePix());
+        
+        image.recycle();
     }
 
     /**
@@ -349,49 +515,79 @@ public class TessBaseAPI {
      *
      * @param image Leptonica pix representation of the image
      */
+    @WorkerThread
     public void setImage(Pix image) {
-        nativeSetImagePix(image.getNativePix());
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        nativeSetImagePix(mNativeData, image.getNativePix());
+    }
+
+    /**
+     * Provides an image for Tesseract to recognize. Copies the image buffer.
+     * The source image may be destroyed immediately after SetImage is called.
+     * SetImage clears all recognition results, and sets the rectangle to the
+     * full image, so it may be followed immediately by a GetUTF8Text, and it
+     * will automatically perform recognition.
+     *
+     * @param imagedata byte representation of the image
+     * @param width image width
+     * @param height image height
+     * @param bpp bytes per pixel
+     * @param bpl bytes per line
+     */
+    @WorkerThread
+    public void setImage(byte[] imagedata, int width, int height, int bpp, int bpl) {
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        nativeSetImageBytes(mNativeData, imagedata, width, height, bpp, bpl);
     }
 
     /**
      * The recognized text is returned as a String which is coded as UTF8.
+     * This is a blocking operation that will not work with {@link #stop()}.
+     * Call {@link #getHOCRText(int)} before calling this function to
+     * interrupt a recognition task with {@link #stop()}
      *
      * @return the recognized text
      */
+    @WorkerThread
     public String getUTF8Text() {
+        if (mRecycled)
+            throw new IllegalStateException();
+
         // Trim because the text will have extra line breaks at the end
-        String text = nativeGetUTF8Text();
-        return text.trim();
+        String text = nativeGetUTF8Text(mNativeData);
+
+        return text != null ? text.trim() : null;
     }
 
     /**
-     * return a html representation of the recognized text that can be used by {@link
-     * android.text.Html.fromHtml()}
-     */
-    public String getHtmlText() {
-        return nativeGetHtmlText();
-    }
-
-
-    /**
-     * Returns the mean confidence of text recognition.
+     * Returns the (average) confidence value between 0 and 100.
      *
-     * @return the mean confidence
+     * @return confidence value
      */
     public int meanConfidence() {
-        return nativeMeanConfidence();
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return nativeMeanConfidence(mNativeData);
     }
 
     /**
-     * Returns all word confidences (between 0 and 100) in an array. The number
-     * of confidences should correspond to the number of space-delimited words
-     * in GetUTF8Text().
+     * Returns all word confidences (between 0 and 100) in an array.
+     * <p>
+     * The number of confidences should correspond to the number of 
+     * space-delimited words in GetUTF8Text().
      *
-     * @return an array of word confidences (between 0 and 100) for each
-     * space-delimited word returned by GetUTF8Text()
+     * @return an array of word confidences
      */
     public int[] wordConfidences() {
-        int[] conf = nativeWordConfidences();
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        int[] conf = nativeWordConfidences(mNativeData);
 
         // We shouldn't return null confidences
         if (conf == null)
@@ -401,57 +597,106 @@ public class TessBaseAPI {
     }
 
     /**
-     * Return a copy of the internal thresholded image from Tesseract.
-     * Only available after setImage.
-     *
+     * Get a copy of the internal thresholded image from Tesseract.
+     * <p>
+     * Caller takes ownership of the Pix and must recycle() it.
+     * May be called any time after setImage.
+     * 
      * @return Pix containing the thresholded image
      */
     public Pix getThresholdedImage() {
-        return new Pix(nativeGetThresholdedImage());
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return new Pix(nativeGetThresholdedImage(mNativeData));
     }
 
     /**
      * Returns the result of page layout analysis as a Pixa, in reading order.
-     *
+     * <p>
+     * Can be called before or after Recognize.
+     * 
      * @return Pixa contaning page layout bounding boxes
      */
     public Pixa getRegions() {
-        return new Pixa(nativeGetRegions(), 0, 0);
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return new Pixa(nativeGetRegions(mNativeData), 0, 0);
     }
 
     /**
-     * Returns the textlines as a Pixa.
-     *
-     * Block IDs are not returned.
-     *
+     * Returns the textlines as a Pixa. Textlines are extracted from the 
+     * thresholded image.
+     * <p>
+     * Can be called before or after Recognize. Block IDs are not returned.
+     * Paragraph IDs are not returned.
+     * 
      * @return Pixa containing textlines
      */
     public Pixa getTextlines() {
-        return new Pixa(nativeGetTextlines(), 0, 0);
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return new Pixa(nativeGetTextlines(mNativeData), 0, 0);
     }
 
     /**
-     * Returns the strips as a Pixa.
-     *
-     * Block IDs are not returned.
-     *
+     * Get textlines and strips of image regions as a Pixa, in reading order.
+     * <p>
+     * Enables downstream handling of non-rectangular regions. Can be called
+     * before or after Recognize. Block IDs are not returned.
+     * 
      * @return Pixa containing strips
      */
     public Pixa getStrips() {
-        return new Pixa(nativeGetStrips(), 0, 0);
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return new Pixa(nativeGetStrips(mNativeData), 0, 0);
+    }    
+
+    /**
+     * Get the words as a Pixa, in reading order.
+     * <p>
+     * Can be called before or after Recognize.
+     * 
+     * @return Pixa containing word bounding boxes 
+     */
+    public Pixa getWords() {
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return new Pixa(nativeGetWords(mNativeData), 0, 0);
     }
 
     /**
-     * Returns the word bounding boxes as a Pixa, in reading order.
-     *
-     * @return Pixa containing word bounding boxes
+     * Gets the individual connected (text) components (created after pages 
+     * segmentation step, but before recognition) as a Pixa, in reading order.
+     * <p>
+     * Can be called before or after Recognize. Note: the caller is 
+     * responsible for calling recycle() on the returned Pixa.
+     * 
+     * @return Pixa containing connected components bounding boxes 
      */
-    public Pixa getWords() {
-        return new Pixa(nativeGetWords(), 0, 0);
+    public Pixa getConnectedComponents() {
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return new Pixa(nativeGetConnectedComponents(mNativeData), 0, 0);
     }
 
+    /**
+     * Get a reading-order iterator to the results of LayoutAnalysis and/or
+     * Recognize. The returned iterator must be deleted after use.
+     * 
+     * @return iterator to the results of LayoutAnalysis and/or Recognize
+     */
     public ResultIterator getResultIterator() {
-        long nativeResultIterator = nativeGetResultIterator();
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        long nativeResultIterator = nativeGetResultIterator(mNativeData);
 
         if (nativeResultIterator == 0) {
             return null;
@@ -462,77 +707,181 @@ public class TessBaseAPI {
 
     /**
      * Make a HTML-formatted string with hOCR markup from the internal data
-     * structures.
-     *
-     * @param page is 0-based but will appear in the output as 1-based.
+     * structures. Interruptible by {@link #stop()}.
+     * 
+     * @param page is 0-based but will appear in the output as 1-based. 
      * @return HTML-formatted string with hOCR markup
      */
-    public String getHOCRText(int page) {
-        return nativeGetHOCRText(page);
+    @WorkerThread
+    public String getHOCRText(int page){
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        return nativeGetHOCRText(mNativeData, page);
     }
 
     /**
-     * Set the name of the input file. Needed only for training and
-     * reading a UNLV zone file.
-     *
+     * Set the name of the input file. Needed for training and reading a UNLV
+     * zone file.
+     * 
      * @param name input file name
      */
-    public void setInputName(String name) {
-        nativeSetInputName(name);
-    }
+    public void setInputName(String name){
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        nativeSetInputName(mNativeData, name);
+    } 
 
     /**
-     * Set the name of the output files.
-     * Needed only for debugging.
-     *
+     * Set the name of the bonus output files. Needed only for debugging.
+     * 
      * @param name output file name
      */
-    public void setOutputName(String name) {
-        nativeSetOutputName(name);
-    }
+    public void setOutputName(String name){
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        nativeSetOutputName(mNativeData, name);
+    } 
 
     /**
      * Read a "config" file containing a set of variable, value pairs.
+     * <p>
      * Searches the standard places: <i>tessdata/configs, tessdata/tessconfigs</i>.
-     *
-     * @param filename the configuration filename, without path
+     * Note: only non-init params will be set.
+     * 
+     * @param filename the configuration filename, without the path
      */
-    public void ReadConfigFile(String filename) {
-        nativeReadConfigFile(filename);
+    public void readConfigFile(String filename) {
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        nativeReadConfigFile(mNativeData, filename);
     }
 
     /**
-     * The recognized text is returned as coded in the same format as a UTF8
+     * The recognized text is returned as coded in the same format as a UTF8 
      * box file used in training.
-     *
-     * @param page is a 0-based page index that will appear in the box file.
+     * <p>
+     * Constructs coordinates in the original image - not just the rectangle.
+     * 
+     * @param page a 0-based page index that will appear in the box file.
+     * @return the recognized text
      */
-    public String getBoxText(int page) {
-        return nativeGetBoxText(page);
-    }
+    public String getBoxText(int page){
+        if (mRecycled)
+            throw new IllegalStateException();
 
-    public void stop() {
-        nativeStop();
+        return nativeGetBoxText(mNativeData, page);
     }
 
     /**
-     * called from native code
+     * Returns the version identifier as a string.
      *
-     * @param left    of current word box
-     * @param right   of current word box
-     * @param top     of current word box
-     * @param bottom  of current word box
-     * @param left2   of total text bounding box
-     * @param right2  of total text bounding box
-     * @param top2    of total text bounding box
-     * @param bottom2 of total text bounding box
+     * @return the version identifier
      */
-    private void onProgressValues(final int percent, final int left, final int right, final int top, final int bottom, final int left2, final int right2, final int top2, final int bottom2) {
+    public String getVersion() {
+        return nativeGetVersion(mNativeData);
+    }
 
-        if (mProgressListener != null) {
-            mProgressListener.onProgressValues(percent, left, right, top, bottom, left2, right2, top2, bottom2);
+    /**
+     * Cancel recognition started by {@link #getHOCRText(int)}.
+     */
+    public void stop() {
+        if (mRecycled)
+            throw new IllegalStateException();
+
+        nativeStop(mNativeData);
+    }
+
+    /**
+     * Called from native code to update progress of ongoing recognition passes.
+     *
+     * @param percent Percent complete
+     * @param left Left bound of word bounding box
+     * @param right Right bound of word bounding box
+     * @param top Top bound of word bounding box
+     * @param bottom Bottom bound of word bounding box
+     * @param textLeft Left bound of text bounding box
+     * @param textRight Right bound of text bounding box
+     * @param textTop Top bound of text bounding box
+     * @param textBottom Bottom bound of text bounding box
+     */
+    protected void onProgressValues(final int percent, final int left,
+            final int right, final int top, final int bottom,
+            final int textLeft, final int textRight, final int textTop, final int textBottom) {
+
+        if (progressNotifier != null) {
+            Rect wordRect = new Rect(left, textTop - top, right, textTop - bottom);
+            Rect textRect = new Rect(textLeft, textBottom, textRight, textTop);
+
+            ProgressValues pv = new ProgressValues(percent, wordRect, textRect);
+            progressNotifier.onProgressValues(pv);
         }
+    }
 
+    /**
+     * Starts a new document. This clears the contents of the output data.
+     * 
+     * Caller is responsible for escaping the provided title.
+     *
+     * @param tessPdfRenderer the renderer instance to use
+     * @param title a title to be used in the document metadata
+     * @return {@code true} on success. {@code false} on failure
+     */
+    public boolean beginDocument(TessPdfRenderer tessPdfRenderer, String title) {
+        return nativeBeginDocument(tessPdfRenderer.getNativePdfRenderer(),
+                title);
+    }
+
+    /**
+     * Starts a new document with no title.
+     * 
+     * @param tessPdfRenderer the renderer instance to use
+     * @return {@code true} on success. {@code false} on failure
+     * @see #beginDocument(TessPdfRenderer, String)
+     */
+    public boolean beginDocument(TessPdfRenderer tessPdfRenderer) {
+        return nativeBeginDocument(tessPdfRenderer.getNativePdfRenderer(), "");
+    }
+
+    /**
+     * Finishes the document and finalizes the output data.
+     * Invalid if beginDocument not yet called.
+     *
+     * @param tessPdfRenderer the renderer instance to use
+     * @return {@code true} on success. {@code false} on failure
+     */
+    public boolean endDocument(TessPdfRenderer tessPdfRenderer) {
+        return nativeEndDocument(tessPdfRenderer.getNativePdfRenderer());
+    }
+
+    /**
+     * Adds the given data to the opened document (if any).
+     * 
+     * @param imageToProcess image to be used for OCR
+     * @param imageToWrite path to image to be written into resulting document
+     * @param tessPdfRenderer the renderer instance to use
+     *
+     * @return {@code true} on success. {@code false} on failure
+     */
+    public boolean addPageToDocument(Pix imageToProcess, String imageToWrite,
+            TessPdfRenderer tessPdfRenderer) {
+        return nativeAddPageToDocument(mNativeData, imageToProcess.getNativePix(),
+                imageToWrite, tessPdfRenderer.getNativePdfRenderer());
+    }
+    /**
+     *
+     * return a html representation of the recognized text that can be used by {@link
+     * android.text.Html.fromHtml()}
+     */
+    public String getHtmlText() {
+        return nativeGetHtmlText(mNativeData);
+    }
+
+    /*package*/ long getNativeData() {
+        return mNativeData;
     }
 
     // ******************
@@ -547,58 +896,77 @@ public class TessBaseAPI {
     /**
      * Initializes native data. Must be called on object construction.
      */
-    private native void nativeConstruct();
+    private native long nativeConstruct();
 
-    private native boolean nativeInit(String datapath, String language);
+    /**
+     * Calls End() and finalizes native data. Must be called on object 
+     * destruction.
+     */
+    private native void nativeEnd(long mNativeData);
 
-    private native boolean nativeInitOem(String datapath, String language, int mode);
+    private native boolean nativeInit(long mNativeData, String datapath, String language);
 
-    private native String nativeGetInitLanguagesAsString();
+    private native boolean nativeInitOem(long mNativeData, String datapath, String language, int mode);
 
-    private native void nativeClear();
+    private native String nativeGetInitLanguagesAsString(long mNativeData);
 
-    private native void nativeEnd();
+    private native void nativeClear(long mNativeData);
 
-    private native void nativeSetImagePix(long nativePix);
+    private native void nativeSetImageBytes(
+            long mNativeData,   byte[] imagedata, int width, int height, int bpp, int bpl);
 
-    private native void nativeSetRectangle(int left, int top, int width, int height);
+    private native void nativeSetImagePix(long mNativeData, long nativePix);
 
-    private native String nativeGetUTF8Text();
+    private native void nativeSetRectangle(long mNativeData, int left, int top, int width, int height);
 
-    private native String nativeGetHtmlText();
+    private native String nativeGetUTF8Text(long mNativeData);
 
-    private native int nativeMeanConfidence();
+    private native int nativeMeanConfidence(long mNativeData);
 
-    private native int[] nativeWordConfidences();
+    private native int[] nativeWordConfidences(long mNativeData);
 
-    private native boolean nativeSetVariable(String var, String value);
+    private native boolean nativeSetVariable(long mNativeData, String var, String value);
 
-    private native void nativeSetDebug(boolean debug);
+    private native void nativeSetDebug(long mNativeData, boolean debug);
 
-    private native void nativeSetPageSegMode(int mode);
+    @PageSegMode.Mode
+    private native int nativeGetPageSegMode(long mNativeData);
 
-    private native long nativeGetThresholdedImage();
+    private native void nativeSetPageSegMode(long mNativeData, int mode);
 
-    private native long nativeGetRegions();
+    private native long nativeGetThresholdedImage(long mNativeData);
 
-    private native long nativeGetTextlines();
+    private native long nativeGetRegions(long mNativeData);
 
-    private native long nativeGetStrips();
+    private native long nativeGetTextlines(long mNativeData);
 
-    private native long nativeGetWords();
+    private native long nativeGetStrips(long mNativeData);
 
-    private native long nativeGetResultIterator();
+    private native long nativeGetWords(long mNativeData);
 
-    private native String nativeGetBoxText(int page_number);
+    private native long nativeGetConnectedComponents(long mNativeData);
 
-    private native String nativeGetHOCRText(int page_number);
+    private native long nativeGetResultIterator(long mNativeData);
 
-    private native void nativeSetInputName(String name);
+    private native String nativeGetBoxText(long mNativeData, int page_number);
 
-    private native void nativeSetOutputName(String name);
+    private native String nativeGetHOCRText(long mNativeData, int page_number);
 
-    private native void nativeReadConfigFile(String fileName);
+    private native void nativeSetInputName(long mNativeData, String name);
 
-    private native void nativeStop();
+    private native void nativeSetOutputName(long mNativeData, String name);
 
+    private native void nativeReadConfigFile(long mNativeData, String fileName);
+
+    private native String nativeGetVersion(long mNativeData);
+
+    private native void nativeStop(long mNativeData);
+
+    private native boolean nativeBeginDocument(long rendererPointer, String title);
+
+    private native boolean nativeEndDocument(long rendererPointer);
+
+    private native boolean nativeAddPageToDocument(long mNativeData, long nativePix, String imagePath, long rendererPointer);
+
+    private native String nativeGetHtmlText(long mNativeData);
 }
