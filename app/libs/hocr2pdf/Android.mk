@@ -34,7 +34,7 @@ LOCAL_LDLIBS := \
   -lz
 
 #common
-LOCAL_SHARED_LIBRARIES:= libjpeg libpngo
+LOCAL_SHARED_LIBRARIES:=libpngo libjpeg
 LOCAL_DISABLE_FORMAT_STRING_CHECKS:=true
 
 include $(BUILD_SHARED_LIBRARY)

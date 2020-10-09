@@ -4,7 +4,6 @@ include $(CLEAR_VARS)
 LOCAL_CFLAGS :=
 
 LOCAL_MODULE    := libpngo
-
 LOCAL_SRC_FILES :=\
 	png.c \
 	pngerror.c \
@@ -26,8 +25,8 @@ LOCAL_SRC_FILES :=\
 	arm/filter_neon.S \
 	arm/filter_neon_intrinsics.c
 
-LOCAL_LDLIBS := -lz
+LOCAL_LDLIBS :=-lz
+LOCAL_EXPORT_LDLIBS := -lz
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/.
 
 include $(BUILD_SHARED_LIBRARY)
-
