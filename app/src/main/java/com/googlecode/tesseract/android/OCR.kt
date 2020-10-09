@@ -196,7 +196,7 @@ private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
 
                 if (!initTessApi(
                                 languages = determineOcrLanguage(lang),
-                                ocrMode = TessBaseAPI.OEM_TESSERACT_ONLY
+                                ocrMode = TessBaseAPI.OEM_LSTM_ONLY
                         )
                 ) {
                     return@Runnable
