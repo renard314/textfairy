@@ -31,7 +31,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"/>
 
-            <fragment
+            <androidx.fragment.app.FragmentContainerView
 
                     android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
                     android:id="@+id/youtube_fragment"
