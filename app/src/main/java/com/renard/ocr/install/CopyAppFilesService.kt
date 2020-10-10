@@ -9,7 +9,7 @@ import com.renard.ocr.util.AppStorage.getCacheDirectory
 import com.renard.ocr.util.AppStorage.getImageDirectory
 import com.renard.ocr.util.AppStorage.getOldTextFairyCacheDirectory
 import com.renard.ocr.util.AppStorage.getOldTextFairyImageDirectory
-import com.renard.ocr.util.AppStorage.getOldTextFairyTessdataDirectory
+import com.renard.ocr.util.AppStorage.getOldTrainingDataDir
 import java.io.File
 import java.io.IOException
 import kotlin.io.OnErrorAction.SKIP
@@ -24,7 +24,7 @@ class CopyAppFilesService : JobIntentService() {
 
         val installedOCRLanguages = OcrLanguageDataStore.getOldInstalledOCRLanguages(this)
         Log.d(LOG_TAG, "Installed languages: $installedOCRLanguages")
-        getOldTextFairyTessdataDirectory().deleteRecursively()
+        getOldTrainingDataDir().deleteRecursively()
         installedOCRLanguages.forEach { it.installLanguage(this) }
     }
 

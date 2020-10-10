@@ -16,7 +16,6 @@ object AppStorage {
     private fun getOldTextFairyAppDirectory() = getExternalStorageDirectory().requireDirectory(EXTERNAL_APP_DIRECTORY)
     fun getOldTextFairyCacheDirectory() = getOldTextFairyAppDirectory().requireDirectory(CACHE_DIRECTORY)
     fun getOldTextFairyImageDirectory() = getOldTextFairyAppDirectory().requireDirectory(IMAGE_DIRECTORY)
-    fun getOldTextFairyTessdataDirectory() = File(getOldTextFairyAppDirectory(), EXTERNAL_APP_DIRECTORY)
     @JvmStatic
     fun getOldTrainingDataDir() = getOldTextFairyAppDirectory().requireDirectory(OCR_DATA_DIRECTORY)
 
@@ -29,8 +28,6 @@ object AppStorage {
 
     @JvmStatic
     fun getTrainingDataDir(context: Context) = getAppDirectory(context).requireDirectory(OCR_DATA_DIRECTORY)
-
-    fun getTessDir(context: Context) = getAppDirectory(context).requireDirectory(EXTERNAL_APP_DIRECTORY).path + "/"
 
     @JvmStatic
     fun getPDFDir(context: Context) = getAppDirectory(context).requireDirectory(context.getString(R.string.config_pdf_file_dir))
