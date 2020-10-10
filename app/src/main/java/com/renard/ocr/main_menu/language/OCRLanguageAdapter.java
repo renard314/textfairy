@@ -33,13 +33,22 @@ import java.util.List;
 
 public class OCRLanguageAdapter extends BaseAdapter implements ListAdapter {
 
-    private static Comparator<OcrLanguage> mLanguageComparator = new Comparator<OcrLanguage>() {
+    private static Comparator<OcrLanguage> mLanguageComparator =
+            new Comparator<OcrLanguage>() {
 
-        @Override
-        public int compare(OcrLanguage lhs, OcrLanguage rhs) {
-            return lhs.getDisplayText().compareTo(rhs.getDisplayText());
-        }
-    };
+                @Override
+                public int compare(OcrLanguage lhs, OcrLanguage rhs) {
+                    if (lhs.isInstalled() && rhs.isInstalled()) {
+                        return lhs.getDisplayText().compareTo(rhs.getDisplayText());
+                    } else if(lhs.isInstalled() && !rhs.isInstalled()){
+                        return -1;
+                    }else if(!lhs.isInstalled() && rhs.isInstalled()){
+                        return 1;
+                    } else {
+                        return lhs.getDisplayText().compareTo(rhs.getDisplayText());
+                    }
+                }
+            };
 
     @Override
     public boolean areAllItemsEnabled() {
