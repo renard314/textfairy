@@ -1,6 +1,5 @@
 package com.renard.ocr.main_menu.language;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 
@@ -17,6 +16,7 @@ import java.util.List;
 public class OcrLanguageDataStore {
 
 
+    public static final String LATIN_SCRIPT = "Latin";
     private static final File[] EMPTY_FILE_ARRAY = new File[0];
 
     public static List<OcrLanguage> getOldInstalledOCRLanguages(Context appContext) {
@@ -66,14 +66,14 @@ public class OcrLanguageDataStore {
             languageValues[i] = languageValues[i].substring(0, firstSpace);
         }
         for (int i = 0; i < languageValues.length; i++) {
-            final InstallStatus installStatus = isLanguageInstalled(languageValues[i], context);
+            final InstallStatus installStatus = getInstallStatusFor(languageValues[i], context);
             OcrLanguage language = new OcrLanguage(languageValues[i], languageDisplayValues[i], installStatus.isInstalled(), installStatus.getInstalledSize());
             languages.add(language);
         }
         return languages;
     }
 
-    public static InstallStatus isLanguageInstalled(final String ocrLang, Context context) {
+    public static InstallStatus getInstallStatusFor(final String ocrLang, Context context) {
         final File[] languageFiles = getAllFilesFor(ocrLang, context);
         if (languageFiles.length == 0) {
             return new InstallStatus(false, 0);

@@ -6,6 +6,9 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
+
 /**
  * @author renard
  */
@@ -64,6 +67,7 @@ public class OcrLanguage implements Parcelable {
         mDownloading = downloading;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return getDisplayText();

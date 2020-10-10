@@ -19,6 +19,7 @@ package com.googlecode.tesseract.android;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.WorkerThread;
 
@@ -46,9 +47,6 @@ public class TessBaseAPI {
     private long mNativeData;
 
     static {
-        System.loadLibrary("lept");
-        System.loadLibrary("tess");
-
         nativeClassInit();
     }
 
@@ -324,9 +322,6 @@ public class TessBaseAPI {
         if (!datapathFile.exists())
             throw new IllegalArgumentException("Data path does not exist!");
 
-        File tessdata = new File(datapath + "tessdata");
-        if (!tessdata.exists() || !tessdata.isDirectory())
-            throw new IllegalArgumentException("Data path must contain subfolder tessdata!");
 
         boolean success = nativeInitOem(mNativeData, datapath, language, ocrEngineMode);
 
@@ -789,10 +784,9 @@ public class TessBaseAPI {
      * Cancel recognition started by {@link #getHOCRText(int)}.
      */
     public void stop() {
-        if (mRecycled)
-            throw new IllegalStateException();
-
-        nativeStop(mNativeData);
+        if (!mRecycled) {
+            nativeStop(mNativeData);
+        }
     }
 
     /**

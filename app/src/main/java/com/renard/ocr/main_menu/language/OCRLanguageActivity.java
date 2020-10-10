@@ -146,17 +146,17 @@ public class OCRLanguageActivity extends MonitoredActivity {
     private OCRLanguageAdapter initLanguageList() {
         OCRLanguageAdapter adapter = new OCRLanguageAdapter(getApplicationContext(), false);
         List<OcrLanguage> languages = OcrLanguageDataStore.getAvailableOcrLanguages(this);
-        hideArabicDownload(languages);
+        hideLatinScriptDownload(languages);
         adapter.addAll(languages);
         updateLanguageListWithDownloadManagerStatus(adapter);
         return adapter;
     }
 
-    private void hideArabicDownload(List<OcrLanguage> languages) {
+    private void hideLatinScriptDownload(List<OcrLanguage> languages) {
         Iterator<OcrLanguage> it = languages.iterator();
         while (it.hasNext()) {
             final OcrLanguage lang = it.next();
-            if (lang.getValue().equalsIgnoreCase("ara")) {
+            if (lang.getValue().equalsIgnoreCase("Latin")) {
                 it.remove();
                 return;
             }
@@ -242,7 +242,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
     private void updateLanguage(final OcrLanguage language, int status) {
         if (status == DownloadManager.STATUS_SUCCESSFUL) {
-            final InstallStatus installStatus = OcrLanguageDataStore.isLanguageInstalled(language.getValue(), OCRLanguageActivity.this);
+            final InstallStatus installStatus = OcrLanguageDataStore.getInstallStatusFor(language.getValue(), OCRLanguageActivity.this);
             language.setInstallStatus(installStatus);
             if (installStatus.isInstalled()) {
                 language.setDownloading(false);

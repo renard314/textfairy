@@ -50,10 +50,6 @@ public class PreferencesUtils {
         setIfEmpty(edit, prefs, PREFERENCES_ALIGNMENT_KEY, R.id.align_left);
         // setIfEmpty(edit, prefs, PREFERENCES_DESIGN_KEY, R.id.design_day);
         setIfEmpty(edit, prefs, PREFERENCES_SPACING_KEY, R.id.spacing_1_5);
-        final String defaultLanguage = appContext.getString(R.string.default_ocr_language);
-        final String defaultLanguageDisplay = appContext.getString(R.string.default_ocr_display_language);
-        setIfEmpty(edit, prefs, PREFERENCES_OCR_LANG, defaultLanguage);
-        setIfEmpty(edit, prefs, PREFERENCES_OCR_LANG_DISPLAY, defaultLanguageDisplay);
         edit.apply();
     }
 

@@ -195,7 +195,7 @@ private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
                 ocrProgress.postValue(OcrProgress.Message(R.string.progress_ocr))
 
                 if (!initTessApi(
-                                languages = determineOcrLanguage(lang),
+                                languages = listOf(lang),
                                 ocrMode = TessBaseAPI.OEM_LSTM_ONLY
                         )
                 ) {
@@ -269,8 +269,7 @@ private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
                     return@Runnable
                 }
 
-                val ocrLanguages = determineOcrLanguage(lang)
-                if (!initTessApi(ocrLanguages, TessBaseAPI.OEM_LSTM_ONLY)) {
+                if (!initTessApi(listOf(lang), TessBaseAPI.OEM_LSTM_ONLY)) {
                     return@Runnable
                 }
 
@@ -308,13 +307,13 @@ private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
     }
 
     private fun initTessApi(languages: List<String>,@TessBaseAPI.OcrEngineMode ocrMode: Int): Boolean {
-        val tessDir = AppStorage.getTessDir(getApplication())
+        val tessDir = AppStorage.getTrainingDataDir(getApplication()).path
         val languagesString = languages.joinToString("+")
         logTessParams(languagesString, ocrMode)
         val result = mTess.init(tessDir, languagesString, ocrMode)
         if (!result) {
             mCrashLogger.logMessage("init failed. deleting " + languages[0])
-            OcrLanguageDataStore.deleteLanguage(languages[0], getApplication())
+            //OcrLanguageDataStore.deleteLanguage(languages[0], getApplication())
             ocrProgress.postValue(OcrProgress.Error(R.string.error_tess_init))
             return false
         }
@@ -346,33 +345,6 @@ private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
         mCrashLogger.setLong("Memory", freeMemory)
     }
 
-
-    private fun determineOcrLanguage(ocrLanguage: String): List<String> {
-        val english = "eng"
-        val isEnglishInstalled = OcrLanguageDataStore.isLanguageInstalled(english, getApplication()).isInstalled
-        return if (ocrLanguage != english && addEnglishData(ocrLanguage) && isEnglishInstalled) {
-            listOf(ocrLanguage, english)
-        } else {
-            listOf(ocrLanguage)
-        }
-    }
-
-    // when combining languages that have multi byte characters with english
-    // training data the ocr text gets corrupted
-    // but adding english will improve overall accuracy for the other languages
-    private fun addEnglishData(mLanguage: String) = !(
-            mLanguage.startsWith("chi")
-                    || mLanguage.equals("tha", ignoreCase = true)
-                    || mLanguage.equals("kor", ignoreCase = true)
-                    || mLanguage.equals("jap", ignoreCase = true)
-                    || mLanguage.equals("hin", ignoreCase = true)
-                    || mLanguage.equals("bel", ignoreCase = true)
-                    || mLanguage.equals("ara", ignoreCase = true)
-                    || mLanguage.equals("grc", ignoreCase = true)
-                    || mLanguage.equals("guj", ignoreCase = true)
-                    || mLanguage.equals("rus", ignoreCase = true)
-                    || mLanguage.equals("vie", ignoreCase = true)
-            )
 
     companion object {
         const val FILE_NAME = "last_scan"

@@ -4,6 +4,7 @@
 
 
     <string-array name="ocr_languages"  translatable="false">
+        <item>Latin -</item>
         <item>eng English</item>
         <item>ukr Ukrainian</item>
         <item>tur Turkish</item>
