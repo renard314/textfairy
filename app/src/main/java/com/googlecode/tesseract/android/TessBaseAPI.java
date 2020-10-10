@@ -813,8 +813,15 @@ public class TessBaseAPI {
             final int textLeft, final int textRight, final int textTop, final int textBottom) {
 
         if (progressNotifier != null) {
-            Rect wordRect = new Rect(left, textTop - top, right, textTop - bottom);
-            Rect textRect = new Rect(textLeft, textBottom, textRight, textTop);
+
+            Rect wordRect =
+                    new Rect(
+                            left + textLeft,
+                            textBottom - top,
+                            right + textLeft,
+                            textBottom - bottom);
+
+            Rect textRect = new Rect(textLeft, textTop, textRight, textBottom);
 
             ProgressValues pv = new ProgressValues(percent, wordRect, textRect);
             progressNotifier.onProgressValues(pv);
