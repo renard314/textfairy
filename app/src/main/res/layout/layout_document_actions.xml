@@ -7,7 +7,7 @@
         android:minHeight="@dimen/document_bottom_sheet_peek_height"
         app:behavior_peekHeight="@dimen/document_bottom_sheet_peek_height"
         tools:showIn="@layout/activity_document"
-        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        app:layout_behavior="@string/bottom_sheet_behavior"
         app:theme="@style/ThemeOverlay.AppCompat.Light"
         android:background="@color/primary"
         android:layout_height="wrap_content"
