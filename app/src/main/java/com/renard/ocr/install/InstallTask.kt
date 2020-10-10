@@ -23,6 +23,7 @@ import com.renard.ocr.install.InstallResult.Result
 import com.renard.ocr.install.InstallResult.Result.NOT_ENOUGH_DISK_SPACE
 import com.renard.ocr.install.InstallResult.Result.OK
 import com.renard.ocr.install.TaskFragment.TaskCallbacks
+import com.renard.ocr.main_menu.language.OcrLanguageDataStore.getUserLocaleOcrLanguage
 import com.renard.ocr.util.AppStorage.getFreeSpaceInBytes
 import com.renard.ocr.util.AppStorage.getTrainingDataDir
 import java.io.File
@@ -45,6 +46,7 @@ internal class InstallTask(
 
     override fun doInBackground(vararg contexts: Context): InstallResult {
         val context = contexts[0]
+        maybeDownloadUserLocaleOcrLanguage(context)
         Log.i(DEBUG_TAG, "start installation")
         val freeSpace = getFreeSpaceInBytes(context)
         mBytesToInstallTotal = totalUnzippedSize
@@ -55,6 +57,13 @@ internal class InstallTask(
         val ret = copyLanguageAssets(context, mAssetManager)
         Log.i(DEBUG_TAG, "InstallLanguageAssets : $ret")
         return ret
+    }
+
+    private fun maybeDownloadUserLocaleOcrLanguage(context: Context) {
+        val userLocaleOcrLanguage = getUserLocaleOcrLanguage(context)
+        if (userLocaleOcrLanguage?.isInstalled == false) {
+            userLocaleOcrLanguage.installLanguage(context)
+        }
     }
 
     /**

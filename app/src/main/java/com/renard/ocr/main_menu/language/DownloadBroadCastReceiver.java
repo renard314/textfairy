@@ -21,17 +21,24 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
 
 public class DownloadBroadCastReceiver extends BroadcastReceiver {
     private static final String LOG_TAG = DownloadBroadCastReceiver.class.getSimpleName();
+    static final String ACTION_INSTALL_COMPLETED = "com.renard.ocr.ACTION_OCR_LANGUAGE_INSTALLED";
+    static final String ACTION_INSTALL_FAILED = "com.renard.ocr.ACTION_INSTALL_FAILED";
+    static final String EXTRA_OCR_LANGUAGE = "ocr_language";
+    static final String EXTRA_OCR_LANGUAGE_DISPLAY = "ocr_language_display";
+    public static final String EXTRA_STATUS = "status";
 
     @Override
     public void onReceive(final Context context, Intent intent) {
         String action = intent.getAction();
         if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
             long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-            DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+            DownloadManager dm =
+                    (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             Query query = new Query();
             query.setFilterById(downloadId);
             Cursor c = dm.query(query);
@@ -45,26 +52,38 @@ public class DownloadBroadCastReceiver extends BroadcastReceiver {
                 String title = c.getString(columnIndex);
                 columnIndex = c.getColumnIndex(DownloadManager.COLUMN_URI);
                 String name = c.getString(columnIndex);
-
+                final Uri fileUri = Uri.parse(name);
+                final String lang = extractLanguageNameFromUri(fileUri);
 
                 if (DownloadManager.STATUS_SUCCESSFUL == status) {
                     Log.i(LOG_TAG, "Download successful");
-                    //start service to extract language file
-                    Intent serviceIntent = new Intent();
-                    serviceIntent.putExtra(DownloadManager.EXTRA_DOWNLOAD_ID, downloadId);
-                    serviceIntent.putExtra(OCRLanguageInstallService.EXTRA_FILE_NAME, name);
-                    OCRLanguageInstallService.enqueueWork(context, serviceIntent);
+                    notifySuccess(context, lang);
                 } else if (DownloadManager.STATUS_FAILED == status) {
                     Log.i(LOG_TAG, "Download failed");
-                    Intent resultIntent = new Intent(OCRLanguageInstallService.ACTION_INSTALL_FAILED);
-                    resultIntent.putExtra(OCRLanguageInstallService.EXTRA_STATUS, status);
-                    resultIntent.putExtra(OCRLanguageInstallService.EXTRA_OCR_LANGUAGE_DISPLAY, title);
-                    context.sendBroadcast(resultIntent);
+                    notifyError(context, status, title);
                 }
             }
             c.close();
-
         }
     }
 
+    private void notifyError(Context context, int status, String title) {
+        Intent resultIntent = new Intent(ACTION_INSTALL_FAILED);
+        resultIntent.putExtra(EXTRA_STATUS, status);
+        resultIntent.putExtra(EXTRA_OCR_LANGUAGE_DISPLAY, title);
+        context.sendBroadcast(resultIntent);
+    }
+
+    private void notifySuccess(Context context, String lang) {
+        Intent resultIntent = new Intent(ACTION_INSTALL_COMPLETED);
+        resultIntent.putExtra(EXTRA_OCR_LANGUAGE, lang);
+        resultIntent.putExtra(EXTRA_STATUS, DownloadManager.STATUS_SUCCESSFUL);
+        context.sendBroadcast(resultIntent);
+    }
+
+    private String extractLanguageNameFromUri(final Uri fileName) {
+        final String lastPathSegment = fileName.getLastPathSegment();
+        int index = lastPathSegment.indexOf(".traineddata");
+        return lastPathSegment.substring(0, index);
+    }
 }

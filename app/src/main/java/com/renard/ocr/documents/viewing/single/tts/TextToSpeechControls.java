@@ -1,16 +1,10 @@
 package com.renard.ocr.documents.viewing.single.tts;
 
-import com.renard.ocr.R;
-import com.renard.ocr.analytics.Analytics;
-import com.renard.ocr.util.ResourceUtils;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +13,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+
+import com.renard.ocr.R;
+import com.renard.ocr.analytics.Analytics;
+
 import java.util.Collection;
 import java.util.Locale;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,35 +31,33 @@ public class TextToSpeechControls extends RelativeLayout {
 
     @BindView(R.id.view_flipper_buttons)
     protected ViewFlipper mViewFlipper;
+
     @BindView(R.id.button_language)
     protected TextView mButtonLanguage;
 
     private FragmentManager mChildFragmentManager;
     private Analytics mAnalytics;
     private CharSequence mCurrentText;
-    private Map<String, String> hashMapResource;
     private Locale mDocumentLocale;
-    @Nullable
-    private String mPageNo;
+    @Nullable private String mPageNo;
     private TextSpeaker mTextSpeaker;
 
-
-    public void onCreateView(FragmentManager childFragmentManager, Analytics analytics, TextSpeaker textSpeaker) {
+    public void onCreateView(
+            FragmentManager childFragmentManager, Analytics analytics, TextSpeaker textSpeaker) {
         mTextSpeaker = textSpeaker;
         mChildFragmentManager = childFragmentManager;
         mAnalytics = analytics;
-        hashMapResource = ResourceUtils.getHashMapResource(getContext(), R.xml.iso_639_mapping);
         EventBus.getDefault().register(this);
-
     }
 
-    public Locale mapTesseractLanguageToLocale(String ocrLanguage) {
-        final String s = hashMapResource.get(ocrLanguage);
-        if (s != null) {
-            return new Locale(s);
-        } else {
-            return Locale.getDefault();
+    /** Gets a Locale based on the 3 letter iso 639-2 code */
+    private Locale mapTesseractLanguageToLocale(String ocrLanguage) {
+        for (Locale loc : Locale.getAvailableLocales()) {
+            if (loc.getISO3Language().equals(ocrLanguage)) {
+                return loc;
+            }
         }
+        return Locale.getDefault();
     }
 
     @SuppressWarnings("unused")
@@ -77,7 +74,6 @@ public class TextToSpeechControls extends RelativeLayout {
             showPlayButton();
         }
     }
-
 
     @SuppressWarnings("unused")
     public void onEventMainThread(final OnUtteranceDone event) {
@@ -112,13 +108,16 @@ public class TextToSpeechControls extends RelativeLayout {
 
     @SuppressWarnings("unused")
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public TextToSpeechControls(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public TextToSpeechControls(
+            Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
 
     private void init() {
-        View view = LayoutInflater.from(this.getContext()).inflate(R.layout.view_text_to_speech_controls, this);
+        View view =
+                LayoutInflater.from(this.getContext())
+                        .inflate(R.layout.view_text_to_speech_controls, this);
         ButterKnife.bind(view, this);
         showPlayButton();
         mButtonLanguage.setEnabled(false);
@@ -130,22 +129,23 @@ public class TextToSpeechControls extends RelativeLayout {
             askForLocale();
         } else {
             showProgressSpinner();
-            mTextSpeaker.createTts(getContext(), new TtsInitListener() {
-                @Override
-                public void onInitError() {
-                    showPlayButton();
-                    Toast.makeText(getContext(), R.string.tts_init_error, Toast.LENGTH_LONG).show();
-                }
+            mTextSpeaker.createTts(
+                    getContext(),
+                    new TtsInitListener() {
+                        @Override
+                        public void onInitError() {
+                            showPlayButton();
+                            Toast.makeText(getContext(), R.string.tts_init_error, Toast.LENGTH_LONG)
+                                    .show();
+                        }
 
-                @Override
-                public void onInitSuccess() {
-                    showPlayButton();
-                    askForLocale();
-
-                }
-            });
+                        @Override
+                        public void onInitSuccess() {
+                            showPlayButton();
+                            askForLocale();
+                        }
+                    });
         }
-
     }
 
     @OnClick(R.id.button_stop_speaking)
@@ -157,7 +157,8 @@ public class TextToSpeechControls extends RelativeLayout {
     @OnClick(R.id.button_speak_text)
     public void onClickStartSpeaking() {
 
-        AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+        AudioManager audioManager =
+                (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         final float streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         if (streamVolume == 0) {
             Toast.makeText(getContext(), R.string.volume_is_off, Toast.LENGTH_SHORT).show();
@@ -167,21 +168,22 @@ public class TextToSpeechControls extends RelativeLayout {
         if (mTextSpeaker.isInitialized()) {
             startSpeaking();
         } else {
-            mTextSpeaker.createTts(getContext(), new TtsInitListener() {
-                @Override
-                public void onInitError() {
-                    showPlayButton();
-                    Toast.makeText(getContext(), R.string.tts_init_error, Toast.LENGTH_LONG).show();
-                }
+            mTextSpeaker.createTts(
+                    getContext(),
+                    new TtsInitListener() {
+                        @Override
+                        public void onInitError() {
+                            showPlayButton();
+                            Toast.makeText(getContext(), R.string.tts_init_error, Toast.LENGTH_LONG)
+                                    .show();
+                        }
 
-                @Override
-                public void onInitSuccess() {
-                    startSpeaking();
-
-                }
-            });
+                        @Override
+                        public void onInitSuccess() {
+                            startSpeaking();
+                        }
+                    });
         }
-
     }
 
     private void startSpeaking() {
@@ -198,9 +200,7 @@ public class TextToSpeechControls extends RelativeLayout {
         } else if (Build.VERSION.SDK_INT < 15) {
             showStopButton();
         }
-
     }
-
 
     private void showProgressSpinner() {
         mViewFlipper.setDisplayedChild(1);
@@ -217,13 +217,16 @@ public class TextToSpeechControls extends RelativeLayout {
     private void askForLocale() {
         final Collection<Locale> availableLanguages = mTextSpeaker.getAvailableLanguages();
         if (availableLanguages.isEmpty()) {
-            TtsLanguageInstallDialog.newInstance().show(mChildFragmentManager, TtsLanguageInstallDialog.TAG);
+            TtsLanguageInstallDialog.newInstance()
+                    .show(mChildFragmentManager, TtsLanguageInstallDialog.TAG);
         } else {
-            PickTtsLanguageDialog.newInstance(mTextSpeaker.getAvailableLanguages()).show(mChildFragmentManager, PickTtsLanguageDialog.TAG);
+            PickTtsLanguageDialog.newInstance(mTextSpeaker.getAvailableLanguages())
+                    .show(mChildFragmentManager, PickTtsLanguageDialog.TAG);
         }
     }
 
-    public void setCurrentText(CharSequence currentText, String langOfCurrentlyShownDocument, int pageNo) {
+    public void setCurrentText(
+            CharSequence currentText, String langOfCurrentlyShownDocument, int pageNo) {
         mCurrentText = currentText;
         if (mDocumentLocale == null) {
             mDocumentLocale = mapTesseractLanguageToLocale(langOfCurrentlyShownDocument);
@@ -231,6 +234,5 @@ public class TextToSpeechControls extends RelativeLayout {
         }
         mPageNo = String.valueOf(pageNo);
         mButtonLanguage.setEnabled(true);
-
     }
 }

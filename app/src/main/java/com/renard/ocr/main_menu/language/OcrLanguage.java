@@ -8,6 +8,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.renard.ocr.util.AppStorage;
+
 
 /**
  * @author renard
@@ -31,11 +33,12 @@ public class OcrLanguage implements Parcelable {
         final DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri uri = OcrLanguageDataStore.getDownloadUri(getValue());
         DownloadManager.Request request = new DownloadManager.Request(uri);
+        AppStorage.setTrainedDataDestinationForDownload(context, request, uri.getLastPathSegment());
         request.setTitle(getDisplayText());
         dm.enqueue(request);
     }
 
-    boolean isInstalled() {
+    public boolean isInstalled() {
         return mInstallStatus.isInstalled;
     }
 

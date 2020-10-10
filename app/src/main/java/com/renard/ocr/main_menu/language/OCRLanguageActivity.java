@@ -42,6 +42,12 @@ import android.widget.ViewSwitcher;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.renard.ocr.main_menu.language.DownloadBroadCastReceiver.ACTION_INSTALL_COMPLETED;
+import static com.renard.ocr.main_menu.language.DownloadBroadCastReceiver.ACTION_INSTALL_FAILED;
+import static com.renard.ocr.main_menu.language.DownloadBroadCastReceiver.EXTRA_OCR_LANGUAGE;
+import static com.renard.ocr.main_menu.language.DownloadBroadCastReceiver.EXTRA_OCR_LANGUAGE_DISPLAY;
+import static com.renard.ocr.main_menu.language.DownloadBroadCastReceiver.EXTRA_STATUS;
+
 public class OCRLanguageActivity extends MonitoredActivity {
 
     private BroadcastReceiver mDownloadReceiver;
@@ -200,8 +206,8 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                String lang = intent.getStringExtra(OCRLanguageInstallService.EXTRA_OCR_LANGUAGE);
-                int status = intent.getIntExtra(OCRLanguageInstallService.EXTRA_STATUS, -1);
+                String lang = intent.getStringExtra(EXTRA_OCR_LANGUAGE);
+                int status = intent.getIntExtra(EXTRA_STATUS, -1);
                 updateLanguageList(lang, status);
             }
 
@@ -210,13 +216,13 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                String lang = intent.getStringExtra(OCRLanguageInstallService.EXTRA_OCR_LANGUAGE_DISPLAY);
-                int status = intent.getIntExtra(OCRLanguageInstallService.EXTRA_STATUS, -1);
+                String lang = intent.getStringExtra(EXTRA_OCR_LANGUAGE_DISPLAY);
+                int status = intent.getIntExtra(EXTRA_STATUS, -1);
                 updateLanguageListByDisplayValue(lang, status);
             }
         };
-        registerReceiver(mFailedReceiver, new IntentFilter(OCRLanguageInstallService.ACTION_INSTALL_FAILED));
-        registerReceiver(mDownloadReceiver, new IntentFilter(OCRLanguageInstallService.ACTION_INSTALL_COMPLETED));
+        registerReceiver(mFailedReceiver, new IntentFilter(ACTION_INSTALL_FAILED));
+        registerReceiver(mDownloadReceiver, new IntentFilter(ACTION_INSTALL_COMPLETED));
         mReceiverRegistered = true;
     }
 

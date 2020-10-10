@@ -1,5 +1,6 @@
 package com.renard.ocr.util
 
+import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment.getExternalStorageDirectory
 import android.os.StatFs
@@ -32,8 +33,12 @@ object AppStorage {
     @JvmStatic
     fun getPDFDir(context: Context) = getAppDirectory(context).requireDirectory(context.getString(R.string.config_pdf_file_dir))
 
-    private fun getAppDirectory(context: Context) = context.getExternalFilesDir(null)!!.requireDirectory(EXTERNAL_APP_DIRECTORY)
+    private fun getAppDirectory(context: Context) = context.getExternalFilesDir(EXTERNAL_APP_DIRECTORY)!!.also { it.mkdirs() }
 
+    @JvmStatic
+    fun setTrainedDataDestinationForDownload(context: Context, request: DownloadManager.Request, trainedDataFileName: String) {
+        request.setDestinationInExternalFilesDir(context,EXTERNAL_APP_DIRECTORY, "$OCR_DATA_DIRECTORY/$trainedDataFileName")
+    }
 
     private fun File.requireDirectory(dir: String) =
             File(this, dir).also { it.mkdirs() }
@@ -51,4 +56,5 @@ object AppStorage {
             -1
         }
     }
+
 }

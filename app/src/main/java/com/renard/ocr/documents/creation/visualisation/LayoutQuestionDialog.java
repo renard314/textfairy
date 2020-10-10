@@ -36,23 +36,20 @@ import android.widget.ViewSwitcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.os.ConfigurationCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.analytics.Analytics;
-import com.renard.ocr.analytics.CrashLogger;
-import com.renard.ocr.main_menu.language.InstallStatus;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
 import com.renard.ocr.util.PreferencesUtils;
 
 import java.util.List;
-import java.util.MissingResourceException;
 
 import static com.renard.ocr.main_menu.language.OcrLanguageDataStore.getInstallStatusFor;
 import static com.renard.ocr.main_menu.language.OcrLanguageDataStore.getInstalledOCRLanguages;
+import static com.renard.ocr.main_menu.language.OcrLanguageDataStore.getUserLocaleOcrLanguage;
 
 public class LayoutQuestionDialog extends DialogFragment {
 
@@ -60,7 +57,6 @@ public class LayoutQuestionDialog extends DialogFragment {
     private static final String SCREEN_NAME = "Layout Question Dialog";
 
     private Analytics mAnalytics;
-    private CrashLogger mCrashLogger;
 
     public static LayoutQuestionDialog newInstance() {
         return new LayoutQuestionDialog();
@@ -92,7 +88,6 @@ public class LayoutQuestionDialog extends DialogFragment {
         super.onAttach(activity);
         MonitoredActivity monitoredActivity = (MonitoredActivity) getActivity();
         mAnalytics = monitoredActivity.getAnaLytics();
-        mCrashLogger = monitoredActivity.getCrashLogger();
     }
 
     @NonNull
@@ -102,7 +97,7 @@ public class LayoutQuestionDialog extends DialogFragment {
         final Context context = getContext();
         mLayout = null;
         mLanguage = getOcrLanguage(context);
-        if(mLanguage == null){
+        if (mLanguage == null) {
             throw new IllegalStateException("No OCR Language Available.");
         }
 
@@ -235,11 +230,11 @@ public class LayoutQuestionDialog extends DialogFragment {
 
     @Nullable
     private String getOcrLanguageFromSdCard(Context context) {
-        if (getInstallStatusFor(OcrLanguageDataStore.LATIN_SCRIPT, context).isInstalled()){
+        if (getInstallStatusFor(OcrLanguageDataStore.LATIN_SCRIPT, context).isInstalled()) {
             return OcrLanguageDataStore.LATIN_SCRIPT;
         } else {
             final List<OcrLanguage> installedOCRLanguages = getInstalledOCRLanguages(context);
-            if(!installedOCRLanguages.isEmpty()){
+            if (!installedOCRLanguages.isEmpty()) {
                 return installedOCRLanguages.get(0).getValue();
             } else {
                 return null;
@@ -262,16 +257,9 @@ public class LayoutQuestionDialog extends DialogFragment {
 
     @Nullable
     private String getOrcLanguageFromUserLocale(Context context) {
-        try {
-            final String iso3Language =
-                    ConfigurationCompat.getLocales(getResources().getConfiguration())
-                            .get(0)
-                            .getISO3Language();
-            if (getInstallStatusFor(iso3Language, context).isInstalled()) {
-                return iso3Language;
-            }
-        } catch (MissingResourceException e) {
-            return null;
+        @Nullable final OcrLanguage userLocaleOcrLanguage = getUserLocaleOcrLanguage(context);
+        if (userLocaleOcrLanguage != null && userLocaleOcrLanguage.isInstalled()) {
+            return userLocaleOcrLanguage.getValue();
         }
         return null;
     }
