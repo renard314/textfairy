@@ -173,7 +173,7 @@ dependencies {
     //playstoreImplementation "com.google.android.gms:play-services-analytics:${versions.play_services}"
 
     playstoreImplementation 'com.google.firebase:firebase-crashlytics:17.2.2'
-    playstoreImplementation 'com.google.firebase:firebase-analytics:17.5.0'
+    playstoreImplementation 'com.google.firebase:firebase-analytics:17.6.0'
     playstoreImplementation 'com.google.firebase:firebase-crashlytics-ndk:17.2.2'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
