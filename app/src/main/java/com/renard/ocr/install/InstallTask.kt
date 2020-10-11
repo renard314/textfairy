@@ -46,7 +46,6 @@ internal class InstallTask(
 
     override fun doInBackground(vararg contexts: Context): InstallResult {
         val context = contexts[0]
-        maybeDownloadUserLocaleOcrLanguage(context)
         Log.i(DEBUG_TAG, "start installation")
         val freeSpace = getFreeSpaceInBytes(context)
         mBytesToInstallTotal = totalUnzippedSize
@@ -56,6 +55,7 @@ internal class InstallTask(
         publishProgress(0)
         val ret = copyLanguageAssets(context, mAssetManager)
         Log.i(DEBUG_TAG, "InstallLanguageAssets : $ret")
+        maybeDownloadUserLocaleOcrLanguage(context)
         return ret
     }
 
