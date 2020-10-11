@@ -14,27 +14,22 @@ import java.io.File
 import java.io.IOException
 import kotlin.io.OnErrorAction.SKIP
 
-val LOG_TAG = CopyAppFilesService::class.simpleName!!
+private val LOG_TAG = CopyAppFilesService::class.simpleName!!
 
 class CopyAppFilesService : JobIntentService() {
 
     override fun onHandleWork(intent: Intent) {
         getOldTextFairyCacheDirectory().moveRecursively(to = getCacheDirectory(this))
         getOldTextFairyImageDirectory().moveRecursively(to = getImageDirectory(this))
-
-        val installedOCRLanguages = OcrLanguageDataStore.getOldInstalledOCRLanguages(this)
-        Log.d(LOG_TAG, "Installed languages: $installedOCRLanguages")
-        getOldTrainingDataDir().deleteRecursively()
-        installedOCRLanguages.forEach { it.installLanguage(this) }
     }
 
     private fun File.moveRecursively(to: File) {
-        Log.d(LOG_TAG, "$this contains ${this.list()?.size} files.")
-        Log.d(LOG_TAG, "$to contains ${this.list()?.size} files.")
+        Log.d(LOG_TAG, "source: $this contains ${this.list()}.")
+        Log.d(LOG_TAG, "target: $to contains ${this.list()}.")
         Log.d(LOG_TAG, "start copying")
         copyRecursively(to, false, skip())
         Log.d(LOG_TAG, "finished copying")
-        Log.d(LOG_TAG, "$to contains ${this.list()?.size} files now.")
+        Log.d(LOG_TAG, "target $to contains ${this.list()} now.")
         deleteRecursively()
     }
 

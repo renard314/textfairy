@@ -100,8 +100,8 @@
 
         </activity>
 
-        <service android:name=".main_menu.language.OCRLanguageInstallService"
-                 android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service android:name=".install.CopyAppFilesService"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <receiver android:name=".install.AppUpdatedBroadCastReceiver">
             <intent-filter>

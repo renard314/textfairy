@@ -3,7 +3,6 @@ package com.renard.ocr.main_menu.language
 import android.content.Context
 import android.net.Uri
 import androidx.core.os.ConfigurationCompat
-import androidx.core.os.LocaleListCompat
 import com.renard.ocr.R
 import com.renard.ocr.util.AppStorage.getOldTrainingDataDir
 import com.renard.ocr.util.AppStorage.getTrainingDataDir
@@ -17,27 +16,23 @@ object OcrLanguageDataStore {
     const val LATIN_SCRIPT = "Latin"
     private val EMPTY_FILE_ARRAY = arrayOf<File>()
 
+    @JvmStatic
     fun getOldInstalledOCRLanguages(appContext: Context): List<OcrLanguage> {
-        val ocrLanguages: MutableList<OcrLanguage> = ArrayList()
-        val languageValues = appContext.resources.getStringArray(R.array.ocr_languages)
-        val oldTrainingDataDir = getOldTrainingDataDir()
-        for (languageValue in languageValues) {
-            val files = oldTrainingDataDir.listFiles { pathname: File -> isLanguageFileFor(pathname, languageValue) }
-            if (files != null && files.isNotEmpty()) {
-                val installStatus = InstallStatus(true, sumFileSizes(files))
-                if (installStatus.isInstalled) {
-                    ocrLanguages.add(
-                            OcrLanguage(
-                                    languageValue,
-                                    languageValue,
-                                    installStatus.isInstalled(),
-                                    installStatus.getInstalledSize()
-                            )
-                    )
+        val knownLanguages = appContext.resources.getStringArray(R.array.ocr_languages)
+                .map { it.split(' ', limit = 2).run { first() to last() } }
+                .toMap()
+
+        return (getOldTrainingDataDir().listFiles()
+                ?: emptyArray())
+                .filter { it.name.endsWith("traineddata") }
+                .filter { knownLanguages.contains(it.nameWithoutExtension) }
+                .map {
+                    OcrLanguage(
+                            it.nameWithoutExtension,
+                            knownLanguages[it.nameWithoutExtension],
+                            true,
+                            sumFileSizes(it))
                 }
-            }
-        }
-        return ocrLanguages
     }
 
     @JvmStatic
@@ -70,7 +65,7 @@ object OcrLanguageDataStore {
         val languageFiles = getAllFilesFor(ocrLang, context)
         return if (languageFiles.isEmpty()) {
             InstallStatus(false, 0)
-        } else InstallStatus(true, sumFileSizes(languageFiles))
+        } else InstallStatus(true, sumFileSizes(*languageFiles))
     }
 
     private fun getAllFilesFor(ocrLang: String, context: Context): Array<File> {
@@ -82,7 +77,7 @@ object OcrLanguageDataStore {
         return files ?: EMPTY_FILE_ARRAY
     }
 
-    private fun sumFileSizes(languageFiles: Array<File>) =
+    private fun sumFileSizes(vararg languageFiles: File) =
             languageFiles.fold(0L, { acc, file -> acc + file.length() })
 
     private fun isLanguageFileFor(pathname: File, ocrLang: String) =
