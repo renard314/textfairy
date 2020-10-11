@@ -229,6 +229,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
     private void handleBlurResult(CropData cropData) {
         switch (cropData.getBlurriness().getBlurriness()) {
             case NOT_BLURRED:
+            case MEDIUM_BLUR:
                 mAnalytics.sendScreenView(SCREEN_NAME);
                 showDefaultCroppingRectangle(cropData.getBitmap());
                 break;
