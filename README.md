@@ -29,7 +29,7 @@ Project Structure
 
 Building with gradle
 --------------------------------------
-make sure that you have got the android sdk as well as ndk (r15c) installed
+make sure that you have got the android sdk as well as ndk installed
 
 * `git clone git@github.com:renard314/textfairy.git`
 * `cd textfairy`
