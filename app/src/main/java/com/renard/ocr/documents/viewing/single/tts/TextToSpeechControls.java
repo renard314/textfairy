@@ -193,7 +193,15 @@ public class TextToSpeechControls extends RelativeLayout {
         } else {
             mAnalytics.ttsStart("no language");
         }
-        mTextSpeaker.setTtsLocale(mDocumentLocale);
+        if (mTextSpeaker.isLocaleSupported(mDocumentLocale)) {
+            mTextSpeaker.setTtsLocale(mDocumentLocale);
+        } else {
+            TtsLanguageInstallDialog.newInstance()
+                    .show(mChildFragmentManager, TtsLanguageInstallDialog.TAG);
+            showPlayButton();
+            return;
+        }
+        
         final int result = mTextSpeaker.startSpeaking(mCurrentText, mPageNo);
         if (result != TextToSpeech.SUCCESS) {
             Toast.makeText(getContext(), R.string.tts_init_error, Toast.LENGTH_LONG).show();
