@@ -51,8 +51,7 @@ android {
         versionName = "4.0.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
-
-
+        multiDexEnabled true
     }
     signingConfigs {
         release
@@ -141,6 +140,7 @@ if (propFile.canRead()) {
 
 
 dependencies {
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.github.barteksc:pdfium-android:1.5.0'
     implementation fileTree(include: '*.jar', dir: 'src/main/libs')
     implementation 'com.google.android.material:material:1.2.1'

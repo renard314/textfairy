@@ -15,10 +15,11 @@
  */
 package com.renard.ocr;
 
-import android.app.Application;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.ViewConfiguration;
+
+import androidx.multidex.MultiDexApplication;
 
 import com.getkeepsafe.relinker.ReLinker;
 import com.renard.ocr.analytics.Analytics;
@@ -30,7 +31,7 @@ import com.squareup.leakcanary.LeakCanary;
 
 import java.lang.reflect.Field;
 
-public class TextFairyApplication extends Application {
+public class TextFairyApplication extends MultiDexApplication {
 
     private Analytics mAnalytics;
     private CrashLogger mCrashLogger;
