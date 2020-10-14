@@ -15,7 +15,9 @@ private class CrashlyticsLogger(val context: Context) : CrashLogger {
         FirebaseCrashlytics.getInstance().recordException(exception)
     }
 
-    override fun logMessage(message: String)
+    override fun logMessage(message: String) {
+        FirebaseCrashlytics.getInstance().log(message)
+    }
 
 
     override fun setString(tag: String, value: String) {
