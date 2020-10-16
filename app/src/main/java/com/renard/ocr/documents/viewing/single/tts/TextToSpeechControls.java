@@ -21,6 +21,7 @@ import com.renard.ocr.analytics.Analytics;
 
 import java.util.Collection;
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,10 +53,14 @@ public class TextToSpeechControls extends RelativeLayout {
 
     /** Gets a Locale based on the 3 letter iso 639-2 code */
     private Locale mapTesseractLanguageToLocale(String ocrLanguage) {
-        for (Locale loc : Locale.getAvailableLocales()) {
-            if (loc.getISO3Language().equals(ocrLanguage)) {
-                return loc;
+        try {
+            for (Locale loc : Locale.getAvailableLocales()) {
+                if (loc.getISO3Language().equals(ocrLanguage)) {
+                    return loc;
+                }
             }
+        } catch (MissingResourceException e){
+            return Locale.getDefault();
         }
         return Locale.getDefault();
     }
