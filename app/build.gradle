@@ -45,7 +45,7 @@ android {
 
     defaultConfig {
         applicationId "com.renard.ocr"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 28
         versionCode 81
         versionName = "4.0.0"
@@ -142,7 +142,6 @@ if (propFile.canRead()) {
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.github.barteksc:pdfium-android:1.5.0'
-    implementation fileTree(include: '*.jar', dir: 'src/main/libs')
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
@@ -159,6 +158,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation "com.jakewharton:butterknife:${versions.butterknife}"
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
 
     implementation "com.github.bumptech.glide:glide:${versions.glide}"
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'

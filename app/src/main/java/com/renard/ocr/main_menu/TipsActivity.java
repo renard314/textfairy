@@ -15,17 +15,14 @@
  */
 package com.renard.ocr.main_menu;
 
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import android.view.MenuItem;
+
+import androidx.core.app.NavUtils;
 
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 
-import androidx.core.app.NavUtils;
-import android.view.MenuItem;
-
-public class TipsActivity extends MonitoredActivity implements YouTubePlayer.OnInitializedListener {
+public class TipsActivity extends MonitoredActivity {
 
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
@@ -34,9 +31,7 @@ public class TipsActivity extends MonitoredActivity implements YouTubePlayer.OnI
         initToolbar();
         setToolbarMessage(R.string.tips);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        YouTubePlayerSupportFragment youTubePlayerFragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
-        youTubePlayerFragment.initialize("AIzaSyBDZn3rmXgEP64ID0Rp32OwSScns6ZdaF8", this);
-
+        getLifecycle().addObserver(findViewById(R.id.youtube_player));
     }
 
     @Override
@@ -58,21 +53,10 @@ public class TipsActivity extends MonitoredActivity implements YouTubePlayer.OnI
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-        youTubePlayer.cueVideo(getString(R.string.crop_image_tutorial));
-    }
-
-    @Override
-    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
-
     }
 }
