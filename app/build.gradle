@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'checkstyle'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 def versions = ['appcompat_v7' : '27.1.1',
                 'butterknife'  : '10.2.3',
@@ -65,9 +65,6 @@ android {
             proguardFile file('android.pro')
             proguardFile getDefaultProguardFile('proguard-android.txt')
             signingConfig signingConfigs.release
-            firebaseCrashlytics {
-                nativeSymbolUploadEnabled true
-            }
         }
     }
 
@@ -95,9 +92,15 @@ android {
     productFlavors {
         playstore {
             dimension "mode"
+            ext.useProprietaryLibraries = true
+            firebaseCrashlytics {
+                nativeSymbolUploadEnabled true
+            }
+
         }
         develop {
             dimension "mode"
+            ext.useProprietaryLibraries = false
         }
     }
 
@@ -190,4 +193,9 @@ afterEvaluate {
         variant.resValue 'string', 'application_id', variant.applicationId
     }
 }
-
+android.productFlavors.each { flavor ->
+    if (getGradle().getStartParameter().getTaskRequests().toString().toLowerCase().contains(flavor.name) && flavor.ext.useProprietaryLibraries) {
+        apply plugin: 'com.google.gms.google-services'
+        apply plugin: 'com.google.firebase.crashlytics'
+    }
+}
