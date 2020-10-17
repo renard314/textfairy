@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3714A2F6253A1EB000162ED0 /* textdetect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3714A2F5253A1EB000162ED0 /* textdetect.cpp */; };
+		3714A2FC253A1FA900162ED0 /* libopencv_imgproc.4.4.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3714A2FB253A1FA900162ED0 /* libopencv_imgproc.4.4.0.dylib */; };
+		3714A2FF253A1FC000162ED0 /* libopencv_highgui.4.4.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3714A2FE253A1FC000162ED0 /* libopencv_highgui.4.4.0.dylib */; };
+		3714A302253A1FD000162ED0 /* libopencv_dnn.4.4.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3714A301253A1FD000162ED0 /* libopencv_dnn.4.4.0.dylib */; };
+		3714A308253A201F00162ED0 /* libopencv_core.4.4.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3714A307253A201F00162ED0 /* libopencv_core.4.4.0.dylib */; };
+		3714A30B253A203B00162ED0 /* libopencv_videoio.4.4.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3714A30A253A203B00162ED0 /* libopencv_videoio.4.4.0.dylib */; };
+		3714A317253A265800162ED0 /* info.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3714A315253A25C300162ED0 /* info.plist */; };
+		3714A31A253A2BBE00162ED0 /* libopencv_imgcodecs.4.4.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3714A319253A2BBE00162ED0 /* libopencv_imgcodecs.4.4.0.dylib */; };
 		376F95222528A90200E03DA6 /* libtesseract.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 376F95212528A90200E03DA6 /* libtesseract.4.dylib */; };
 		B2220581203A6E5A0032C7BA /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2220580203A6E5A0032C7BA /* libjpeg.a */; };
 		B222FFB92037EAF50032C7BA /* libtiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B222FFB82037EAF50032C7BA /* libtiff.a */; };
@@ -231,16 +239,26 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		B29EF1121BBFAEFA00888B3D /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1;
-			dstSubfolderSpec = 0;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 16;
 			files = (
+				3714A317253A265800162ED0 /* info.plist in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3714A2F5253A1EB000162ED0 /* textdetect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = textdetect.cpp; sourceTree = "<group>"; };
+		3714A2FB253A1FA900162ED0 /* libopencv_imgproc.4.4.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_imgproc.4.4.0.dylib; path = ../../../../../../../../../../usr/local/Cellar/opencv/4.4.0_2/lib/libopencv_imgproc.4.4.0.dylib; sourceTree = "<group>"; };
+		3714A2FE253A1FC000162ED0 /* libopencv_highgui.4.4.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_highgui.4.4.0.dylib; path = ../../../../../../../../../../usr/local/Cellar/opencv/4.4.0_2/lib/libopencv_highgui.4.4.0.dylib; sourceTree = "<group>"; };
+		3714A301253A1FD000162ED0 /* libopencv_dnn.4.4.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_dnn.4.4.0.dylib; path = ../../../../../../../../../../usr/local/Cellar/opencv/4.4.0_2/lib/libopencv_dnn.4.4.0.dylib; sourceTree = "<group>"; };
+		3714A307253A201F00162ED0 /* libopencv_core.4.4.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_core.4.4.0.dylib; path = ../../../../../../../../../../usr/local/Cellar/opencv/4.4.0_2/lib/libopencv_core.4.4.0.dylib; sourceTree = "<group>"; };
+		3714A30A253A203B00162ED0 /* libopencv_videoio.4.4.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_videoio.4.4.0.dylib; path = ../../../../../../../../../../usr/local/Cellar/opencv/4.4.0_2/lib/libopencv_videoio.4.4.0.dylib; sourceTree = "<group>"; };
+		3714A30D253A209900162ED0 /* textdetect.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = textdetect.hpp; sourceTree = "<group>"; };
+		3714A315253A25C300162ED0 /* info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = info.plist; sourceTree = "<group>"; };
+		3714A319253A2BBE00162ED0 /* libopencv_imgcodecs.4.4.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_imgcodecs.4.4.0.dylib; path = ../../../../../../../../../../usr/local/Cellar/opencv/4.4.0_2/lib/libopencv_imgcodecs.4.4.0.dylib; sourceTree = "<group>"; };
 		376F95212528A90200E03DA6 /* libtesseract.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtesseract.4.dylib; path = ../../../../../../../../../../usr/local/Cellar/tesseract/4.1.1/lib/libtesseract.4.dylib; sourceTree = "<group>"; };
 		B2220580203A6E5A0032C7BA /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = ../../../../../../../../../../usr/local/Cellar/jpeg/9b/lib/libjpeg.a; sourceTree = "<group>"; };
 		B222FFB62037EADE0032C7BA /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = ../../../../../../../../../../usr/local/Cellar/libpng/1.6.17/lib/libpng16.a; sourceTree = "<group>"; };
@@ -555,8 +573,14 @@
 			files = (
 				B2220581203A6E5A0032C7BA /* libjpeg.a in Frameworks */,
 				B222FFD52038845B0032C7BA /* libpng16.a in Frameworks */,
+				3714A308253A201F00162ED0 /* libopencv_core.4.4.0.dylib in Frameworks */,
+				3714A2FF253A1FC000162ED0 /* libopencv_highgui.4.4.0.dylib in Frameworks */,
 				B222FFD42038832F0032C7BA /* libz.a in Frameworks */,
+				3714A31A253A2BBE00162ED0 /* libopencv_imgcodecs.4.4.0.dylib in Frameworks */,
+				3714A2FC253A1FA900162ED0 /* libopencv_imgproc.4.4.0.dylib in Frameworks */,
 				B222FFB92037EAF50032C7BA /* libtiff.a in Frameworks */,
+				3714A30B253A203B00162ED0 /* libopencv_videoio.4.4.0.dylib in Frameworks */,
+				3714A302253A1FD000162ED0 /* libopencv_dnn.4.4.0.dylib in Frameworks */,
 				376F95222528A90200E03DA6 /* libtesseract.4.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -564,6 +588,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3714A2F4253A1E6800162ED0 /* opencv */ = {
+			isa = PBXGroup;
+			children = (
+				3714A2F5253A1EB000162ED0 /* textdetect.cpp */,
+				3714A30D253A209900162ED0 /* textdetect.hpp */,
+			);
+			path = opencv;
+			sourceTree = "<group>";
+		};
 		376F95202528744A00E03DA6 /* tesseract4 */ = {
 			isa = PBXGroup;
 			children = (
@@ -579,6 +612,12 @@
 				B222FFB82037EAF50032C7BA /* libtiff.a */,
 				B222FFB62037EADE0032C7BA /* libpng16.a */,
 				376F95212528A90200E03DA6 /* libtesseract.4.dylib */,
+				3714A2FB253A1FA900162ED0 /* libopencv_imgproc.4.4.0.dylib */,
+				3714A2FE253A1FC000162ED0 /* libopencv_highgui.4.4.0.dylib */,
+				3714A301253A1FD000162ED0 /* libopencv_dnn.4.4.0.dylib */,
+				3714A307253A201F00162ED0 /* libopencv_core.4.4.0.dylib */,
+				3714A30A253A203B00162ED0 /* libopencv_videoio.4.4.0.dylib */,
+				3714A319253A2BBE00162ED0 /* libopencv_imgcodecs.4.4.0.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1030,6 +1069,7 @@
 		B29EF10B1BBFAEFA00888B3D = {
 			isa = PBXGroup;
 			children = (
+				3714A2F4253A1E6800162ED0 /* opencv */,
 				376F95202528744A00E03DA6 /* tesseract4 */,
 				B24381BB20502F1E008EB0DA /* crashlytics.h */,
 				B2437C9920502CEC008EB0DA /* image_processing */,
@@ -1037,6 +1077,7 @@
 				B243803120502DF1008EB0DA /* hocr2pdf */,
 				B2640460204EE44800AA2F4F /* main.cpp */,
 				B29EF1151BBFAEFA00888B3D /* Products */,
+				3714A315253A25C300162ED0 /* info.plist */,
 				B222FFB52037EADE0032C7BA /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -1259,6 +1300,7 @@
 				B243811220502E1F008EB0DA /* bilateral.c in Sources */,
 				B243811420502E1F008EB0DA /* binarize.c in Sources */,
 				B243815020502E1F008EB0DA /* grayquant.c in Sources */,
+				3714A2F6253A1EB000162ED0 /* textdetect.cpp in Sources */,
 				B24381AE20502E20008EB0DA /* utils1.c in Sources */,
 				B243812C20502E1F008EB0DA /* colorquant2.c in Sources */,
 				B243813B20502E1F008EB0DA /* dwacomb.2.c in Sources */,
@@ -1460,6 +1502,7 @@
 		B29EF11C1BBFAEFA00888B3D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_STD_NAMESPACE=1",
 					"HAVE_OFF_T=1",
@@ -1471,7 +1514,9 @@
 					"values>",
 					/usr/local/Cellar/libpng/1.6.17/include,
 					/usr/local/include,
+					"/usr/local/Cellar/opencv/4.4.0_2/include/**",
 				);
+				"INFOPLIST_FILE[sdk=*]" = info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/libpng/1.6.17/lib,
@@ -1481,6 +1526,7 @@
 					/usr/local/Cellar/opencv/4.4.0_2/lib,
 					"/usr/local/Cellar/opencv@2/2.4.13.7_11/lib",
 					/usr/local/Cellar/tesseract/4.1.1/lib,
+					/usr/local/Cellar/opencv/4.4.0_2/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				OTHER_CFLAGS = "-DHAS_ADAPTIVE_BINARIZER";
@@ -1498,6 +1544,7 @@
 		B29EF11D1BBFAEFA00888B3D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_STD_NAMESPACE=1",
 					"HAVE_OFF_T=1",
@@ -1509,7 +1556,9 @@
 					"values>",
 					/usr/local/Cellar/libpng/1.6.17/include,
 					/usr/local/include,
+					"/usr/local/Cellar/opencv/4.4.0_2/include/**",
 				);
+				INFOPLIST_FILE = info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/libpng/1.6.17/lib,
@@ -1519,6 +1568,7 @@
 					/usr/local/Cellar/opencv/4.4.0_2/lib,
 					"/usr/local/Cellar/opencv@2/2.4.13.7_11/lib",
 					/usr/local/Cellar/tesseract/4.1.1/lib,
+					/usr/local/Cellar/opencv/4.4.0_2/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				OTHER_CFLAGS = "-DHAS_ADAPTIVE_BINARIZER";

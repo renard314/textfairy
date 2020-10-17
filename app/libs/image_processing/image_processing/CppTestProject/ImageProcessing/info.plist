@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.mycorp.myapp</string>
+    <key>CFBundleName</key>
+    <string>My App</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>record from the microphone</string>
+    <key>NSCameraUsageDescription</key>
+    <string>record from the camera</string>
+</dict>
+</plist>

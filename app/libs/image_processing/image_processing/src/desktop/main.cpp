@@ -23,6 +23,7 @@
 #include "combine_pixa.h"
 //#include "binarizewolfjolion.hpp"
 #include "canny.h"
+#include "textdetect.hpp"
 
 using namespace std;
 
@@ -69,6 +70,16 @@ void applyToFolder(const char* images, const std::list<PIX_FUNC> &funcList, PIXA
     }
 }
 
+typedef std::function<void(std::string fileName)> FILE_FUNC;
+
+void applyToFolder(const char* folder, FILE_FUNC fileFunc) {
+    SARRAY* sa = getSortedPathnamesInDirectory(folder, NULL, 0, 0);
+    l_int32 count = sarrayGetCount(sa);
+    for (int i = 1; i < count; i++) {
+        char *fileName = sarrayGetString(sa, i, L_NOCOPY);
+        fileFunc(fileName);
+    }
+}
 
 l_float32 measurePerformance(Pix* pix, const std::list<PIX_FUNC> &funcList, l_int32 count){
     l_float32 time = 0;
@@ -289,7 +300,8 @@ int main(int argc, const char * argv[]) {
     //cout << "Source dir: " << argv[1] << endl;
     delete[] dir;
     
-    //applyToFolder("/Users/renard/devel/textfairy/test-images/dewarp", {prepareForOcr}, ocrPixa);
+    
+    
     
 
     //applyToFile("/Users/renard/devel/textfairy/test-images/binarize/0000.png", {prepareForOcr, pageSegTextFairy}, writeLastPix);
@@ -307,8 +319,9 @@ int main(int argc, const char * argv[]) {
     //applyToFile("/Users/renardw/dev/textfairy/test-images/binarize/0206.png", {prepareForOcr}, writeLastPix);
     //runTests("dewarpEnsure150Dpi","/Users/renard/devel/textfairy/test-images/dewarp", {prepareForOcr});
     //runTests("dewarpSavGol","/Users/renard/devel/textfairy/test-images/dewarp", {prepareForOcr});
-    runTests("tess4","/Users/renardw/dev/textfairy/test-images/dewarp", {prepareForOcr});
+    //runTests("tess4","/Users/renardw/dev/textfairy/test-images/dewarp", {prepareForOcr});
     
+    applyToFolder("/Users/renardw/dev/textfairy/test-images/dewarp", {runTextDetect});
     
     //runTests("dewarp","/Users/renard/devel/textfairy/test-images/dewarp", {convertTo8, binarize, dewarpOrDeskew});
     //compareWithBaseLine("/Users/renard/devel/textfairy/tests/dewarp", "/Users/renard/devel/textfairy/tests/dewarpSavGol");
