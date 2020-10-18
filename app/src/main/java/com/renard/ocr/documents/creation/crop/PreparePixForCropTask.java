@@ -1,13 +1,13 @@
 package com.renard.ocr.documents.creation.crop;
 
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.util.Log;
+
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.WriteFile;
 import com.renard.ocr.cropimage.image_processing.Blur;
 import com.renard.ocr.cropimage.image_processing.BlurDetectionResult;
-
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.util.Log;
 
 class CropData {
     private final Bitmap mBitmap;
@@ -67,7 +67,9 @@ public class PreparePixForCropTask extends AsyncTask<Void, Void, CropData> {
     @Override
     protected void onPostExecute(CropData cropData) {
         super.onPostExecute(cropData);
-        de.greenrobot.event.EventBus.getDefault().post(cropData);
+        if (!isCancelled()) {
+            de.greenrobot.event.EventBus.getDefault().post(cropData);
+        }
     }
 
     @Override
