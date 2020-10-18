@@ -879,7 +879,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             if (result == RESULT_REMOTE_EXCEPTION) {
                 Toast.makeText(getApplicationContext(), getText(R.string.delete_error), Toast.LENGTH_LONG).show();
             }
-            dismissDialog(DELETE_PROGRESS_DIALOG_ID);
+            removeDialog(DELETE_PROGRESS_DIALOG_ID);
             super.onPostExecute(result);
             if (mFinishActivity) {
                 finish();
