@@ -15,15 +15,15 @@
  */
 package com.googlecode.tesseract.android
 
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.graphics.RectF
 import androidx.annotation.StringRes
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.googlecode.leptonica.android.Boxa
 import com.googlecode.leptonica.android.Pix
 import com.googlecode.leptonica.android.Pixa
@@ -34,7 +34,7 @@ import com.renard.ocr.TextFairyApplication
 import com.renard.ocr.analytics.Analytics
 import com.renard.ocr.analytics.CrashLogger
 import com.renard.ocr.documents.creation.crop.CropImageScaler
-import com.renard.ocr.main_menu.language.OcrLanguageDataStore
+import com.renard.ocr.main_menu.language.OcrLanguage
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore.deleteLanguage
 import com.renard.ocr.util.AppStorage
 import com.renard.ocr.util.MemoryInfo
@@ -71,23 +71,22 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
     private var mOriginalHeight: Int = pix.height
 
 
-
-private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
+    private val mTess: TessBaseAPI = TessBaseAPI { progressValues ->
 
 //    private val mTess: TessBaseAPI = TessBaseAPI(OcrProgressListener { percent, left, right, top, bottom, left2, right2, top2, bottom2 ->
 
-    val availableMegs = MemoryInfo.getFreeMemory(getApplication())
-    mCrashLogger.logMessage("available ram = $availableMegs, percent done = ${progressValues.percent}")
-    mCrashLogger.setLong("ocr progress", progressValues.percent.toLong())
+        val availableMegs = MemoryInfo.getFreeMemory(getApplication())
+        mCrashLogger.logMessage("available ram = $availableMegs, percent done = ${progressValues.percent}")
+        mCrashLogger.setLong("ocr progress", progressValues.percent.toLong())
 
-    // scale the word bounding rectangle to the preview image space
-    val xScale = 1.0f * mPreviewWith / mOriginalWidth
-    val yScale = 1.0f * mPreviewHeight / mOriginalHeight
-    val wordBounds = progressValues.currentWordRect.scale(xScale, yScale)
-    val ocrBounds = progressValues.currentRect.scale(xScale, yScale)
+        // scale the word bounding rectangle to the preview image space
+        val xScale = 1.0f * mPreviewWith / mOriginalWidth
+        val yScale = 1.0f * mPreviewHeight / mOriginalHeight
+        val wordBounds = progressValues.currentWordRect.scale(xScale, yScale)
+        val ocrBounds = progressValues.currentRect.scale(xScale, yScale)
 
-    ocrProgress.postValue(OcrProgress.Progress(progressValues.percent, wordBounds, ocrBounds))
-}
+        ocrProgress.postValue(OcrProgress.Progress(progressValues.percent, wordBounds, ocrBounds))
+    }
 
     init {
         mNativeBinding.setProgressCallBack(object : NativeBinding.ProgressCallBack {
@@ -201,6 +200,7 @@ private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
                         )
                 ) {
                     deleteLanguage(lang, context)
+                    OcrLanguage(lang, "", false, 0).installLanguage(context)
                     return@Runnable
                 }
 
@@ -308,7 +308,7 @@ private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
 
     }
 
-    private fun initTessApi(languages: List<String>,@TessBaseAPI.OcrEngineMode ocrMode: Int): Boolean {
+    private fun initTessApi(languages: List<String>, @TessBaseAPI.OcrEngineMode ocrMode: Int): Boolean {
         val tessDir = AppStorage.getTrainingDataDir(getApplication()).path
         val languagesString = languages.joinToString("+")
         logTessParams(languagesString, ocrMode)
@@ -324,7 +324,7 @@ private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
         return true
     }
 
-    private fun name(@TessBaseAPI.OcrEngineMode i:  Int): String =
+    private fun name(@TessBaseAPI.OcrEngineMode i: Int): String =
             when (i) {
                 TessBaseAPI.OEM_TESSERACT_ONLY -> "OEM_TESSERACT_ONLY"
                 TessBaseAPI.OEM_LSTM_ONLY -> "OEM_LSTM_ONLY"
@@ -332,7 +332,7 @@ private val mTess : TessBaseAPI = TessBaseAPI { progressValues ->
                 else -> "undefined"
             }
 
-    private fun logTessParams(lang: String,@TessBaseAPI.OcrEngineMode ocrMode: Int) {
+    private fun logTessParams(lang: String, @TessBaseAPI.OcrEngineMode ocrMode: Int) {
         with(mCrashLogger) {
             setString(
                     tag = "page seg mode",
