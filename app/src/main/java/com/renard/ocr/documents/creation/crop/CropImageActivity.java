@@ -27,6 +27,7 @@ import com.googlecode.tesseract.android.OCR;
 import com.renard.ocr.HintDialog;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
+import com.renard.ocr.TextFairyApplication;
 import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.util.PreferencesUtils;
 import com.renard.ocr.util.Util;
@@ -160,8 +161,11 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
 
             @Override
             public void onGlobalLayout() {
-                Bundle extras = getIntent().getExtras();
-                final long nativePix = extras.getLong(DocumentGridActivity.EXTRA_NATIVE_PIX);
+                final Long nativePix = ((TextFairyApplication)getApplication()).getNativePix();
+                if(nativePix==null){
+                    finish();
+                    return;
+                }
                 final float margin = getResources().getDimension(R.dimen.crop_margin);
                 final int width = (int) (mViewSwitcher.getWidth() - 2 * margin);
                 final int height = (int) (mViewSwitcher.getHeight() - 2 * margin);
@@ -315,7 +319,7 @@ public class CropImageActivity extends MonitoredActivity implements BlurWarningD
                     }
                     Intent result = new Intent();
                     OCR.Companion.savePixToCacheDir(CropImageActivity.this, bilinear.copy());
-                    result.putExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, bilinear.getNativePix());
+                    ((TextFairyApplication)getApplication()).setNativePix(bilinear.getNativePix());
                     setResult(RESULT_OK, result);
                 } catch (IllegalStateException e) {
                     setResult(RESULT_CANCELED);

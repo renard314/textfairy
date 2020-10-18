@@ -18,6 +18,7 @@ package com.renard.ocr.documents.creation;
 
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
+import com.renard.ocr.TextFairyApplication;
 import com.renard.ocr.documents.creation.crop.CropImageActivity;
 import com.renard.ocr.documents.creation.visualisation.OCRActivity;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
@@ -91,7 +92,6 @@ import java.util.Set;
 public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private final static String LOG_TAG = NewDocumentActivity.class.getSimpleName();
-    public final static String EXTRA_NATIVE_PIX = "pix_pointer";
     private final static String IMAGE_LOAD_PROGRESS_TAG = "image_load_progress";
 
 
@@ -375,12 +375,11 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        super.onActivityResult(requestCode, resultCode, data);
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case REQUEST_CODE_CROP_PHOTO: {
-                    long nativePix = data.getLongExtra(EXTRA_NATIVE_PIX, 0);
-                    startOcrActivity(nativePix, false);
+                    startOcrActivity(false);
                     break;
                 }
                 case REQUEST_CODE_MAKE_PHOTO:
@@ -405,9 +404,8 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         }
     }
 
-    void startOcrActivity(long nativePix, boolean accessibilityMode) {
+    void startOcrActivity(boolean accessibilityMode) {
         Intent intent = new Intent(this, OCRActivity.class);
-        intent.putExtra(EXTRA_NATIVE_PIX, nativePix);
         intent.putExtra(OCRActivity.EXTRA_USE_ACCESSIBILITY_MODE, accessibilityMode);
         intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
         startActivityForResult(intent, REQUEST_CODE_OCR);
@@ -447,13 +445,13 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop) {
         dismissLoadingImageProgressDialog();
+        ((TextFairyApplication)getApplication()).setNativePix(nativePix);
 
         if (pixLoadStatus == PixLoadStatus.SUCCESS) {
             if (skipCrop) {
-                startOcrActivity(nativePix, true);
+                startOcrActivity(true);
             } else {
                 Intent actionIntent = new Intent(this, CropImageActivity.class);
-                actionIntent.putExtra(NewDocumentActivity.EXTRA_NATIVE_PIX, nativePix);
                 startActivityForResult(actionIntent, NewDocumentActivity.REQUEST_CODE_CROP_PHOTO);
             }
         } else {

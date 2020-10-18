@@ -16,10 +16,7 @@
 package com.renard.ocr.documents.creation.visualisation
 
 import android.Manifest
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
@@ -31,6 +28,10 @@ import android.text.format.DateFormat
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.googlecode.leptonica.android.Pix
@@ -45,7 +46,6 @@ import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.Layo
 import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutKind
 import com.renard.ocr.documents.viewing.DocumentContentProvider
 import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns
-import com.renard.ocr.documents.viewing.grid.DocumentGridActivity
 import com.renard.ocr.documents.viewing.single.DocumentActivity
 import com.renard.ocr.util.Screen
 import com.renard.ocr.util.Util
@@ -67,6 +67,7 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
 
     @BindView(R.id.column_pick_completed)
     lateinit var mButtonStartOCR: Button
+
     @BindView(R.id.progress_image)
     lateinit var mImageView: OCRImageView
 
@@ -78,7 +79,12 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
         super.onCreate(savedInstanceState)
         Screen.lockOrientation(this)
         EventBus.getDefault().register(this)
-        val nativePix = intent.getLongExtra(DocumentGridActivity.EXTRA_NATIVE_PIX, -1)
+        val nativePix = (application as TextFairyApplication).nativePix
+        if (nativePix == null) {
+            setResult(Activity.RESULT_CANCELED)
+            finish()
+            return
+        }
         mParentId = intent.getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1)
 
         mOCR = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
