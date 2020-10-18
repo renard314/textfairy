@@ -94,7 +94,7 @@ public class FeedbackActivity extends MonitoredActivity implements View.OnClickL
                 intent = new Intent(Intent.ACTION_VIEW);
                 Uri url = Uri.parse(MARKET_URL);
                 intent.setData(url);
-                startActivity(intent);
+                startActivity(Intent.createChooser(intent, getString(R.string.chose_market)));
                 break;
         }
 
