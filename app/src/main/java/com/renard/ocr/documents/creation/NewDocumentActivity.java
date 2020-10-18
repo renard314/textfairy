@@ -721,7 +721,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
         @Override
         protected void onPostExecute(Pair<ArrayList<Uri>, ArrayList<Uri>> files) {
-            dismissDialog(PDF_PROGRESS_DIALOG_ID);
+            removeDialog(PDF_PROGRESS_DIALOG_ID);
             if (files != null && files.first.size() > 0) {
                 if (files.first.size() > 1) {
                     //we have more than one pdf file
