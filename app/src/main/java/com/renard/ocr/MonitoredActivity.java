@@ -17,23 +17,10 @@
 
 package com.renard.ocr;
 
-import com.renard.ocr.analytics.Analytics;
-import com.renard.ocr.analytics.CrashLogger;
-import com.renard.ocr.documents.creation.crop.BaseActivityInterface;
-
 import android.app.Activity;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -43,25 +30,29 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.renard.ocr.analytics.Analytics;
+import com.renard.ocr.analytics.CrashLogger;
+import com.renard.ocr.documents.creation.crop.BaseActivityInterface;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-
-import de.greenrobot.event.EventBus;
 
 
 public abstract class MonitoredActivity extends AppCompatActivity implements BaseActivityInterface, OnGlobalLayoutListener {
 
     private static final String LOG_TAG = MonitoredActivity.class.getSimpleName();
-    static final int MY_PERMISSIONS_REQUEST = 232;
 
     private final ArrayList<LifeCycleListener> mListeners = new ArrayList<>();
     private int mDialogId = -1;
     private final Handler mHandler = new Handler();
     private ImageView mAppIcon = null;
     private TextView mToolbarMessage;
-    private AlertDialog mPermissionDialog;
     protected Analytics mAnalytics;
-    protected  CrashLogger mCrashLogger;
+    protected CrashLogger mCrashLogger;
 
     public interface LifeCycleListener {
         void onActivityCreated(MonitoredActivity activity);
@@ -183,9 +174,6 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     protected synchronized void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacksAndMessages(null);
-        if (mPermissionDialog != null) {
-            mPermissionDialog.cancel();
-        }
         final ArrayList<LifeCycleListener> lifeCycleListeners = copyListeners();
         for (LifeCycleListener listener : lifeCycleListeners) {
             listener.onActivityDestroyed(this);
@@ -202,7 +190,7 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     }
 
     @Override
-    protected synchronized  void onStop() {
+    protected synchronized void onStop() {
         super.onStop();
         final ArrayList<LifeCycleListener> lifeCycleListeners = copyListeners();
         for (LifeCycleListener listener : lifeCycleListeners) {
@@ -296,53 +284,4 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     public void setDialogId(int dialogId) {
         mDialogId = dialogId;
     }
-
-    public void ensurePermission(String permission, @StringRes int explanation) {
-        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                explainPermission(permission, explanation);
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{permission}, MY_PERMISSIONS_REQUEST);
-
-            }
-        } else {
-            EventBus.getDefault().post(new PermissionGrantedEvent(permission));
-        }
-    }
-
-
-    private void explainPermission(final String permission, int explanation) {
-        //PermissionExplanationDialog.newInstance(R.string.permission_explanation_title, explanation, permission);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(explanation);
-        builder.setTitle(R.string.permission_explanation_title);
-        builder.setNegativeButton(R.string.close_app, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
-        });
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ActivityCompat.requestPermissions(MonitoredActivity.this, new String[]{permission}, MY_PERMISSIONS_REQUEST);
-
-            }
-        });
-        mPermissionDialog = builder.show();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    EventBus.getDefault().post(new PermissionGrantedEvent(permissions[0]));
-                } else {
-                    finish();
-                }
-            }
-        }
-    }
-
 }

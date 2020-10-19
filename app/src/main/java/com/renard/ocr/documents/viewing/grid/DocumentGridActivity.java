@@ -15,7 +15,6 @@
  */
 package com.renard.ocr.documents.viewing.grid;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -30,7 +29,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -54,7 +52,6 @@ import androidx.loader.content.Loader;
 
 import com.google.android.material.navigation.NavigationView;
 import com.renard.ocr.HintDialog;
-import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.ImageSource;
 import com.renard.ocr.documents.creation.NewDocumentActivity;
@@ -78,8 +75,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.greenrobot.event.EventBus;
-
 /**
  * main activity of the app
  *
@@ -102,7 +97,6 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
     private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
     private final Handler mScrollHandler = new ScrollHandler();
     private boolean mPendingThumbnailUpdate = false;
-    private boolean mBusIsRegistered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +106,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
         initNavigationDrawer();
         initGridView();
         setupAddLanguageButton();
+        initThumbnailSize();
         if (savedInstanceState == null) {
             checkForImageIntent(getIntent());
         }
@@ -119,22 +114,11 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
 
     @Override
     protected void onResume() {
-        // ViewServer.get(this).setFocusedWindow(this);
         super.onResume();
-        if (!mBusIsRegistered) {
-            EventBus.getDefault().register(this);
-            mBusIsRegistered = true;
-        }
-        ensurePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, R.string.permission_explanation);
-    }
-
-
-    @SuppressWarnings("unused")
-    public void onEventMainThread(final PermissionGrantedEvent event) {
-        Log.i(LOG_TAG, "Permission Granted");
         startInstallActivityIfNeeded();
-        initThumbnailSize();
     }
+
+
 
 
     @Override
@@ -558,13 +542,6 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
             mActionMode = null;
 
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-        mBusIsRegistered = false;
     }
 
     @Override

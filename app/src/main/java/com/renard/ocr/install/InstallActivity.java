@@ -1,12 +1,12 @@
 /*
  * Copyright (C) 2012,2013 Renard Wellnitz.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,28 +16,25 @@
 
 package com.renard.ocr.install;
 
-import com.renard.ocr.MonitoredActivity;
-import com.renard.ocr.PermissionGrantedEvent;
-import com.renard.ocr.R;
-
-import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
+
+import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
 
 /**
  * wrapper activity for the AssetsManager
@@ -69,7 +66,6 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
     @BindView(R.id.promo)
     protected View mYoutube;
 
-    private TaskFragment mTaskFragment;
     private AnimationDrawable mFairyAnimation;
 
     @Override
@@ -80,19 +76,19 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
     @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
         setContentView(R.layout.activity_install);
         ButterKnife.bind(this);
 
         mFairyAnimation = (AnimationDrawable) mImageViewFairy.getDrawable();
         FragmentManager fm = getSupportFragmentManager();
-        mTaskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
+        TaskFragment mTaskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
 
         // If the Fragment is non-null, then it is currently being
         // retained across a configuration change.
         if (mTaskFragment == null) {
-            Log.i(LOG_TAG, "ensuring permission for: " + this);
-            ensurePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, R.string.permission_explanation_install);
+            mTaskFragment = new TaskFragment();
+            final FragmentManager supportFragmentManager = getSupportFragmentManager();
+            supportFragmentManager.beginTransaction().add(mTaskFragment, TAG_TASK_FRAGMENT).commitAllowingStateLoss();
         } else {
             InstallResult result = mTaskFragment.getInstallResult();
             if (result != null) {
@@ -103,16 +99,6 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
         }
 
     }
-
-    @SuppressWarnings("unused")
-    public void onEventMainThread(final PermissionGrantedEvent event) {
-        Log.i(LOG_TAG, "PermissionGrantedEvent : " + this);
-        EventBus.getDefault().unregister(this);
-        mTaskFragment = new TaskFragment();
-        final FragmentManager supportFragmentManager = getSupportFragmentManager();
-        supportFragmentManager.beginTransaction().add(mTaskFragment, TAG_TASK_FRAGMENT).commitAllowingStateLoss();
-    }
-
 
     @OnClick(R.id.promo)
     public void clickOnYoutubeLink() {
@@ -145,12 +131,6 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
         set.start();
         mFairyAnimation.start();
 
-    }
-
-    @Override
-    protected synchronized void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 
     private void markAsDone(InstallResult result) {

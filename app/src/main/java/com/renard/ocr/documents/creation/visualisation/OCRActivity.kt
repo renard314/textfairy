@@ -39,7 +39,6 @@ import com.googlecode.tesseract.android.OCR
 import com.googlecode.tesseract.android.OcrProgress
 import com.googlecode.tesseract.android.PreviewPicture
 import com.renard.ocr.MonitoredActivity
-import com.renard.ocr.PermissionGrantedEvent
 import com.renard.ocr.R
 import com.renard.ocr.TextFairyApplication
 import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutChoseListener
@@ -97,7 +96,6 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
         setContentView(R.layout.activity_ocr)
         ButterKnife.bind(this)
         initToolbar()
-        ensurePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, R.string.permission_explanation)
         mOCR.getOcrProgress().observe(this, Observer<OcrProgress> {
             when (it) {
                 is OcrProgress.Message -> setToolbarMessage(it.message)
@@ -110,6 +108,8 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
         mOCR.getPreviewPictures().observe(this, Observer<PreviewPicture> {
             previewPicture(it?.bitmap)
         })
+        askUserAboutDocumentLayout()
+
     }
 
     private fun onError(it: OcrProgress.Error) {
@@ -159,12 +159,6 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
 
     private fun onProgress(it: OcrProgress.Progress) {
         mImageView.setProgress(it.percent, it.wordBounds, it.pageBounds)
-    }
-
-
-    @Suppress("unused")
-    fun onEventMainThread(event: PermissionGrantedEvent) {
-        askUserAboutDocumentLayout()
     }
 
     override fun onLayoutChosen(layoutKind: LayoutKind, ocrLanguage: String) {
