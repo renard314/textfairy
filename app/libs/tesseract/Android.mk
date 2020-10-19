@@ -76,7 +76,7 @@ LOCAL_CFLAGS := \
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
-LOCAL_STATIC_LIBRARIES += liblept_static # to inherit C_INCLUDE and CFLAGS
+LOCAL_SHARED_LIBRARIES += liblept_shared # to inherit C_INCLUDE and CFLAGS
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -106,6 +106,6 @@ LOCAL_SRC_FILES := \
   $(filter-out $(BLACKLIST_SRC_FILES),$(subst $(LOCAL_PATH)/,,$(TESSERACT_SRC_FILES)))
 
 LOCAL_STATIC_LIBRARIES := libtess_core_static
-LOCAL_STATIC_LIBRARIES += liblept_static # to inherit C_INCLUDE
+LOCAL_SHARED_LIBRARIES += liblept_shared # to inherit C_INCLUDE
 
 include $(BUILD_STATIC_LIBRARY)

@@ -43,6 +43,6 @@ endif
 LOCAL_LDLIBS := -llog
   
 #common
-LOCAL_STATIC_LIBRARIES:= liblept_static
+LOCAL_SHARED_LIBRARIES:= liblept_shared
 LOCAL_DISABLE_FORMAT_STRING_CHECKS:=true
 include $(BUILD_SHARED_LIBRARY)

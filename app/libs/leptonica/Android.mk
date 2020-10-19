@@ -29,13 +29,12 @@ LOCAL_LDLIBS += \
   -ljnigraphics \
   -llog
 
-LOCAL_STATIC_LIBRARIES:= liblept_static
+LOCAL_SHARED_LIBRARIES:= liblept_shared
 
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := liblept_static
-LOCAL_THIN_ARCHIVE := true
+LOCAL_MODULE := liblept_shared
 
 LOCAL_EXPORT_CFLAGS := \
   -DHAVE_CONFIG_H
@@ -70,4 +69,4 @@ LOCAL_C_INCLUDES += \
   $(LIBPNG_PATH)
 
 LOCAL_SHARED_LIBRARIES:= libpngo
-include $(BUILD_STATIC_LIBRARY)
+include $(BUILD_SHARED_LIBRARY)
