@@ -30,7 +30,6 @@
         <!-- visible when language can be downloaded -->
 
         <TextView
-            android:id="@+id/download_language"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableRight="@drawable/ic_download"
@@ -42,7 +41,6 @@
         <!-- visible when language is being downloaded -->
 
         <ProgressBar
-            android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +50,6 @@
         <!-- visible when language is installed -->
 
         <TextView
-            android:id="@+id/delete_language"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableRight="@drawable/ic_delete"

@@ -113,16 +113,11 @@
     <string name="toc_help_title">"Ở đây bạn sẽ thấy một danh sách tất cả các trang trong tài liệu"</string>
     <string name="crop_help_title">"Bạn có thể cắt và xoay hình ảnh của bạn bây giờ"</string>
     <string name="continue_ocr">"Tiếp tục"</string>
-    <string name="default_ocr_language">"anh"</string>
-    <string name="default_ocr_display_language">"Anh"</string>
     <string name="start_speaking">"Đọc văn bản"</string>
     <string name="ocr_result_is_bad">"Rất tiếc. Một cái gì đó có vẻ không đúng."</string>
     <string name="ocr_result_is_ok">"Tôi nghĩ tôi có hầu hết các văn bản. "</string>
     <string name="ocr_result_is_good">"Nó diễn ra tốt đẹp. "</string>
-    <string name="play">"Phát"</string>
-    <string name="stop">"Dừng lại"</string>
     <string name="tts_init_error">"Văn bản để  phát biểu không thể tải."</string>
-    <string name="cannot_speak_language">"Điện thoại của bạn không thể  phát biểu được %s . Chọn một ngôn ngữ khác."</string>
     <string name="choose_language">"Chọn một ngôn ngữ cho văn bản để phát biểu."</string>
     <string name="share_text">"Chia sẻ văn bản"</string>
     <string name="help_to_improve">"Phản hồi"</string>
@@ -148,7 +143,6 @@
     <string name="image_not_32_bit">"Hình ảnh cần phải có 32 bit."</string>
     <string name="image_format_unsupported">"Định dạng ảnh không được nhận diện. Chỉ các tập tin png hoặc jpeg hiện đang được hỗ trợ.
     "</string>
-    <string name="tts_not_available">"Đọc văn bản là không có sẵn trên điện thoại của bạn."</string>
     <string name="empty_document">"Tài liệu không chứa văn bản."</string>
     <string name="join_beta_test_community">"Tham gia vào cộng đồng thử nghiệm beta."</string>
     <string name="join_beta_program">"Trở thành một người thử nghiệm beta"</string>
@@ -210,10 +204,8 @@
     <string name="delete_document_message">"Tất cả các trang sẽ bị xóa."</string>
     <string name="permission_explanation">"Tôi cần sự cho phép đọc và ghi vào thẻ SD của bạn. Tôi sẽ truy cập vào thư mục texfee chứa tập tin cấu hình của tôi và tài liệu được quét.
     "</string>
-    <string name="close_app">"Đóng ứng dụng"</string>
     <string name="permission_explanation_install">"Tôi cần sự cho phép để ghi tập tin cấu hình của tôi vào thẻ SD của bạn. Tôi sẽ chỉ truy cập textfee thư mục đó cũng sẽ chứa các tài liệu quét của bạn sau này.
     "</string>
-    <string name="permission_explanation_title">"Giấy phép bị lỗi"</string>
     <string name="no_gallery_found">"Không tìm thấy ứng dụng thư viện ảnh trên điện thoại này."</string>
     <string name="install_tip_1">"Văn bản sắc nét và rõ ràng sẽ giúp bạn có được kết quả tốt nhất.
     "</string>

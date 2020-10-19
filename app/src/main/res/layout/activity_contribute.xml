@@ -24,8 +24,7 @@
                 tools:context=".ContributeActivity">
 
             <TextView
-                    android:id="@+id/textView_text"
-                    android:layout_width="wrap_content"
+                android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/contribute_text"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>

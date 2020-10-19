@@ -127,16 +127,11 @@
     <string name="toc_help_title">Here you see a list of all pages in the document</string>
     <string name="crop_help_title">You can crop and rotate your photo now</string>
     <string name="continue_ocr">Continue</string>
-    <string name="default_ocr_language">eng</string>
-    <string name="default_ocr_display_language">English</string>
     <string name="start_speaking">Speak text</string>
     <string name="ocr_result_is_bad">Oops. Something doesn\'t seem right.</string>
     <string name="ocr_result_is_ok">I think i got most of the text.</string>
     <string name="ocr_result_is_good">That went well.</string>
-    <string name="play">Play</string>
-    <string name="stop">Stop</string>
     <string name="tts_init_error">Text to speech could not load.</string>
-    <string name="cannot_speak_language">Your phone cannot speak %s. Pick another language.</string>
     <string name="choose_language">Pick a language for text to speech.</string>
     <string name="share_text">Share</string>
     <string name="help_to_improve">Feedback</string>
@@ -164,7 +159,6 @@
     <string name="image_format_unsupported">Image format not recognized. Only png or jpeg files are
         currently supported.
     </string>
-    <string name="tts_not_available">Text to Speech is not available on your phone.</string>
     <string name="empty_document">Document contains no text.</string>
     <string name="join_beta_test_community">Join the beta testers community.</string>
     <string name="join_beta_program">Become a beta tester</string>
@@ -236,13 +230,11 @@
         will access the folder texfee which contains my configuration file and your scanned
         documents.
     </string>
-    <string name="close_app">close app</string>
     <string name="permission_explanation_install">I need permission to write my configuration files
         to your SD
         card. I will only access the folder textfee which will also contain your scanned documents
         later.
     </string>
-    <string name="permission_explanation_title">Permission missing</string>
     <string name="no_gallery_found">No gallery app found on this phone.</string>
     <string name="install_tip_1">Sharp and clear text will get you the best results.
     </string>

@@ -14,7 +14,6 @@
         android:paddingTop="@dimen/dropshadow_padding_top">
 
         <TextView
-            android:id="@+id/title"
             style="@style/DocumentCaptionText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

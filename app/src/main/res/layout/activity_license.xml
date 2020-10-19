@@ -31,8 +31,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             <TextView
-                    android:id="@+id/textView_tesseract_description"
-                    android:layout_width="wrap_content"
+                android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tesseract_ocr_summary"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
@@ -54,8 +53,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             <TextView
-                    android:id="@+id/textView_leptonica_description"
-                    android:layout_width="wrap_content"
+                android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/leptonica_summary"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
@@ -77,8 +75,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             <TextView
-                    android:id="@+id/textView_hocr2pdf_description"
-                    android:layout_width="wrap_content"
+                android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/hocr2pdf_summary"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>

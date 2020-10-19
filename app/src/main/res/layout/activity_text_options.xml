@@ -29,8 +29,7 @@
                 android:background="@color/dark_grey"/>
 
         <ScrollView
-                android:id="@+id/pref_container"
-                android:layout_width="fill_parent"
+            android:layout_width="fill_parent"
                 android:layout_height="match_parent"
         >
 

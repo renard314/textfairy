@@ -93,16 +93,11 @@
     <string name="toc_help_title">Aquí hay una lista de todas las páginas en el documento</string>
     <string name="crop_help_title">Ahora puedes cortar y rotar la foto</string>
     <string name="continue_ocr">Continuar</string>
-    <string name="default_ocr_language">eng</string>
-    <string name="default_ocr_display_language">Inglés</string>
     <string name="start_speaking">Lee el texto</string>
     <string name="ocr_result_is_bad">Oops. Algo salió mal.</string>
     <string name="ocr_result_is_ok">Creo haber reconocido la mayor parte del texto.</string>
     <string name="ocr_result_is_good">Eso estuvo bien.</string>
-    <string name="play">Reproducir</string>
-    <string name="stop">Detener</string>
     <string name="tts_init_error">La lectura del texto no se pudo cargar.</string>
-    <string name="cannot_speak_language">Tu teléfono no puede hablar %s. Elige otro idioma.</string>
     <string name="choose_language">Elige un idioma para el texto para hablar.</string>
     <string name="share_text">Compartir</string>
     <string name="help_to_improve">Feedback</string>
@@ -128,7 +123,6 @@
     <string name="app_version">Versión %s</string>
     <string name="image_not_32_bit">La imagen necesita ser de 32 bit.</string>
     <string name="image_format_unsupported">Formato de imagen no reconocido. Solo archivos png o jpeg son actualmente soportados.</string>
-    <string name="tts_not_available">El reconocimiento de texto mediante voz no está disponible en tu celular.</string>
     <string name="empty_document">El documento no contiene texto.</string>
     <string name="join_beta_test_community">Únete a la comundidad de beta testers.</string>
     <string name="join_beta_program">Conviértete en un beta tester</string>
@@ -177,12 +171,10 @@
     <string name="document_scanned_as">idioma del documento se establece en %s.</string>
     <string name="delete_document_message">Se eliminarán todas las páginas.</string>
     <string name="delete_whole_document">Borrar documento?</string>
-    <string name="close_app">abortar</string>
     <string name="permission_explanation">Necesito el permiso para leer y escribir en la tarjeta SD
         . Voy a tener acceso a la carpeta que contiene texfee mi archivo de configuración y los
         documentos escaneados .
     </string>
-    <string name="permission_explanation_title">El permiso faltante</string>
     <string name="permission_explanation_install">Necesito permiso para escribir mis archivos de
         configuración en la tarjeta SD . Sólo voy a tener acceso a la carpeta texfee que también
         contendrá los documentos escaneados más tarde.

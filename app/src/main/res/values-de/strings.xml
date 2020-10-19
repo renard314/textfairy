@@ -105,12 +105,10 @@
     <string name="content_description_fairy">Die hilfreiche Textfee</string>
     <string name="crop_title">Wähle einen Bildauschnitt</string>
     <string name="text_options_title">Ändere Deine Texteinstellungen</string>
-    <string name="default_ocr_language">deu</string>
     <string name="edit_title_hint">Titel eingeben</string>
     <string name="option_gallery_title">Wähle ein Bild aus deiner Galerie</string>
     <string name="option_camera_title">Mache eine neues Photo</string>
     <string name="show_tips">Zeige Tipps.</string>
-    <string name="default_ocr_display_language">Englisch</string>
     <string name="document_help_title">Hier kannst du auf die Seiten deines Dokumentes zugreifen und
         sie verwalten.
     </string>
@@ -135,12 +133,7 @@
     </string>
     <string name="ocr_result_is_ok">Ich denke ich konnte das meiste lesen.</string>
     <string name="ocr_result_is_good">Das lief ganz gut!</string>
-    <string name="play">Play</string>
-    <string name="stop">stop</string>
     <string name="tts_init_error">Sprachmodul konnte nicht geladen werden.</string>
-    <string name="cannot_speak_language">Dein Telefon kann leider kein %s. Wähle eine andere
-        Sprache.
-    </string>
     <string name="choose_language">Wähle die Sprache zum Vorlesen.</string>
     <string name="share_text">Teilen</string>
     <string name="help_to_improve">Feedback</string>
@@ -174,7 +167,6 @@
     <string name="image_format_unsupported">Das Bildformat wurde nicht erkannt. Bitte wähle ein Bild
         im Png oder Jpeg-Format.
     </string>
-    <string name="tts_not_available">Text zu Sprache ist nicht verfügbar.</string>
     <string name="empty_document">Das Dokument enthält keinen Text.</string>
     <string name="join_beta_test_community">Werde Mitglied der Gruppe der Betatester.</string>
     <string name="join_beta_program">Werde Betatester.</string>
@@ -255,12 +247,10 @@
         zuzugreifen. Im Ordner Textfee liegen meine Konfigurationsdateien die Bilder die du gescannt
         hast.
     </string>
-    <string name="close_app">App beenden</string>
     <string name="permission_explanation_install">Ich brauche deine Erlaubnis um meine
         Konfigurationsdateien im Ordner Textfee zu speichern. Dort kannst du auch später die Bilder
         finden, die du gescannt hast.
     </string>
-    <string name="permission_explanation_title">Berechtigung fehlt</string>
     <string name="no_gallery_found">Keine Galerie gefunden.</string>
     <string name="install_tip_2">Ich kann keine Handschrift lesen.</string>
     <string name="install_tip_1">Ist der Text klar und scharf ist, erzielst du das beste Ergebnis.
