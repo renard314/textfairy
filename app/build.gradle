@@ -31,7 +31,7 @@ task checkstyle(type: Checkstyle) {
 
 android {
     ndkVersion "21.3.6528147"
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     lintOptions {
@@ -46,7 +46,7 @@ android {
     defaultConfig {
         applicationId "com.renard.ocr"
         minSdkVersion 17
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 81
         versionName = "4.0.0"
         vectorDrawables.useSupportLibrary = true
