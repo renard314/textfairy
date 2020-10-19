@@ -16,21 +16,6 @@
 
 package com.renard.ocr.documents.creation;
 
-import com.renard.ocr.MonitoredActivity;
-import com.renard.ocr.R;
-import com.renard.ocr.TextFairyApplication;
-import com.renard.ocr.documents.creation.crop.CropImageActivity;
-import com.renard.ocr.documents.creation.visualisation.OCRActivity;
-import com.renard.ocr.documents.viewing.DocumentContentProvider;
-import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
-import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
-import com.renard.ocr.documents.viewing.single.DocumentActivity;
-import com.renard.ocr.pdf.Hocr2Pdf;
-import com.renard.ocr.pdf.Hocr2Pdf.PDFProgressListener;
-import com.renard.ocr.util.AppStorage;
-import com.renard.ocr.util.MemoryInfo;
-import com.renard.ocr.util.Util;
-
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -52,12 +37,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.MediaStore;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.FileProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -70,6 +49,30 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
+import androidx.core.view.accessibility.AccessibilityManagerCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.renard.ocr.MonitoredActivity;
+import com.renard.ocr.R;
+import com.renard.ocr.TextFairyApplication;
+import com.renard.ocr.documents.creation.crop.CropImageActivity;
+import com.renard.ocr.documents.creation.visualisation.OCRActivity;
+import com.renard.ocr.documents.viewing.DocumentContentProvider;
+import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
+import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
+import com.renard.ocr.documents.viewing.single.DocumentActivity;
+import com.renard.ocr.main_menu.language.OCRLanguageActivity;
+import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
+import com.renard.ocr.pdf.Hocr2Pdf;
+import com.renard.ocr.pdf.Hocr2Pdf.PDFProgressListener;
+import com.renard.ocr.util.AppStorage;
+import com.renard.ocr.util.MemoryInfo;
+import com.renard.ocr.util.Util;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -161,50 +164,74 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     }
 
     protected void startGallery() {
-        mAnalytics.startGallery();
-        cameraPicUri = null;
-        Intent i;
-        if (Build.VERSION.SDK_INT >= 19) {
-            i = new Intent(Intent.ACTION_GET_CONTENT, null);
-            i.addCategory(Intent.CATEGORY_OPENABLE);
-            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            i.setType("image/*");
-            i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/png", "image/jpg", "image/jpeg", "application/pdf"});
-        } else {
-            i = new Intent(Intent.ACTION_GET_CONTENT, null);
-            i.setType("image/png,image/jpg, image/jpeg");
-        }
+        ensureLanguageInstalled(() -> {
+            mAnalytics.startGallery();
+            cameraPicUri = null;
+            Intent i;
+            if (Build.VERSION.SDK_INT >= 19) {
+                i = new Intent(Intent.ACTION_GET_CONTENT, null);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                i.setType("image/*");
+                i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/png", "image/jpg", "image/jpeg", "application/pdf"});
+            } else {
+                i = new Intent(Intent.ACTION_GET_CONTENT, null);
+                i.setType("image/png,image/jpg, image/jpeg");
+            }
 
-        Intent chooser = Intent.createChooser(i, getString(R.string.image_source));
-        try {
-            startActivityForResult(chooser, REQUEST_CODE_PICK_PHOTO);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, R.string.no_gallery_found, Toast.LENGTH_LONG).show();
-        }
+            Intent chooser = Intent.createChooser(i, getString(R.string.image_source));
+            try {
+                startActivityForResult(chooser, REQUEST_CODE_PICK_PHOTO);
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(this, R.string.no_gallery_found, Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     protected void startCamera() {
-        mAnalytics.startCamera();
-        try {
-            cameraPicUri = null;
-            dateCameraIntentStarted = new Date();
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            // Create an image file name
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
-            String imageFileName = "JPEG_" + timeStamp + ".jpg";
+        ensureLanguageInstalled(() -> {
+            mAnalytics.startCamera();
+            try {
+                cameraPicUri = null;
+                dateCameraIntentStarted = new Date();
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Create an image file name
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+                String imageFileName = "JPEG_" + timeStamp + ".jpg";
 
-            File dir = new File(getCacheDir(), getString(R.string.config_share_file_dir));
-            dir.mkdirs();
-            File image = new File(dir, imageFileName);
-            cameraPicUri = toUri(image);
-            localCameraPicUri = Uri.fromFile(image);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
-        } catch (ActivityNotFoundException e) {
-            showFileError(PixLoadStatus.CAMERA_APP_NOT_FOUND);
+                File dir = new File(getCacheDir(), getString(R.string.config_share_file_dir));
+                dir.mkdirs();
+                File image = new File(dir, imageFileName);
+                cameraPicUri = toUri(image);
+                localCameraPicUri = Uri.fromFile(image);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraPicUri);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
+            } catch (ActivityNotFoundException e) {
+                showFileError(PixLoadStatus.CAMERA_APP_NOT_FOUND);
+            }
+        });
+
+    }
+
+    private void ensureLanguageInstalled(Runnable block) {
+        if (OcrLanguageDataStore.getInstalledOCRLanguages(getApplicationContext()).isEmpty()) {
+            mAnalytics.noLanguageInstalled();
+            getInstallLanguageDialog(this).show();
+        } else {
+            block.run();
         }
     }
+
+    private androidx.appcompat.app.AlertDialog getInstallLanguageDialog(Context context) {
+        return new androidx.appcompat.app.AlertDialog.Builder(context)
+                .setTitle(R.string.install_language)
+                .setPositiveButton(R.string.install, (dialogInterface, i) -> startActivity(new Intent(context, OCRLanguageActivity.class)))
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss())
+                .create();
+    }
+
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
@@ -445,7 +472,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop) {
         dismissLoadingImageProgressDialog();
-        ((TextFairyApplication)getApplication()).setNativePix(nativePix);
+        ((TextFairyApplication) getApplication()).setNativePix(nativePix);
 
         if (pixLoadStatus == PixLoadStatus.SUCCESS) {
             if (skipCrop) {

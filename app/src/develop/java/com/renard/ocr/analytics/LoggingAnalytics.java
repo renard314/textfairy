@@ -196,4 +196,9 @@ public class LoggingAnalytics implements Analytics {
         Log.i(LOG_TAG, "optionTranslateText()");
     }
 
+    @Override
+    public void noLanguageInstalled() {
+        Log.i(LOG_TAG, "noLanguageInstalled()");
+    }
+
 }

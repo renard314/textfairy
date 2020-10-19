@@ -78,4 +78,8 @@ public interface Analytics {
     void sendHeedMemoryWarning(long availableMegs);
 
     void optionTranslateText();
+
+    void noLanguageInstalled();
+
+
 }

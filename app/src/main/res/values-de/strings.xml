@@ -292,5 +292,7 @@
     <string name="volume_is_off">Lautsprecher ist stumm.</string>
     <string name="install_tts_prompt">Sie müssen zuerst die Text-zu-Sprache-Daten installieren.</string>
     <string name="chose_market">Wähle App Marktplatz</string>
+    <string name="install_language">Bitte installieren Sie eine Text-Sprache.</string>
+    <string name="install">installieren</string>
 
 </resources>

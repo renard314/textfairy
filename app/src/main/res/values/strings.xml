@@ -274,4 +274,6 @@
     <string name="volume_is_off">Volume is off</string>
     <string name="install_tts_prompt">You need to install text to speech first.</string>
     <string name="chose_market">Chose Market</string>
+    <string name="install_language">Please install a language first</string>
+    <string name="install">install</string>
 </resources>
