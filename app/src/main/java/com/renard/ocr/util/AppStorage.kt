@@ -2,7 +2,6 @@ package com.renard.ocr.util
 
 import android.app.DownloadManager
 import android.content.Context
-import android.os.Environment.getExternalStorageDirectory
 import android.os.StatFs
 import com.renard.ocr.R
 import java.io.File
@@ -12,14 +11,6 @@ object AppStorage {
     private const val IMAGE_DIRECTORY = "pictures"
     private const val CACHE_DIRECTORY = "thumbnails"
     private const val OCR_DATA_DIRECTORY = "tessdata"
-
-
-    private fun getOldTextFairyAppDirectory() = getExternalStorageDirectory().requireDirectory(EXTERNAL_APP_DIRECTORY)
-    fun getOldTextFairyCacheDirectory() = getOldTextFairyAppDirectory().requireDirectory(CACHE_DIRECTORY)
-    fun getOldTextFairyImageDirectory() = getOldTextFairyAppDirectory().requireDirectory(IMAGE_DIRECTORY)
-    @JvmStatic
-    fun getOldTrainingDataDir() = getOldTextFairyAppDirectory().requireDirectory(OCR_DATA_DIRECTORY)
-
 
     @JvmStatic
     fun getImageDirectory(context: Context) = getAppDirectory(context).requireDirectory(IMAGE_DIRECTORY)
@@ -37,7 +28,7 @@ object AppStorage {
 
     @JvmStatic
     fun setTrainedDataDestinationForDownload(context: Context, request: DownloadManager.Request, trainedDataFileName: String) {
-        request.setDestinationInExternalFilesDir(context,EXTERNAL_APP_DIRECTORY, "$OCR_DATA_DIRECTORY/$trainedDataFileName")
+        request.setDestinationInExternalFilesDir(context, EXTERNAL_APP_DIRECTORY, "$OCR_DATA_DIRECTORY/$trainedDataFileName")
     }
 
     private fun File.requireDirectory(dir: String) =

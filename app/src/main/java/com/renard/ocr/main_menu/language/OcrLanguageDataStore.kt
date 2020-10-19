@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.os.ConfigurationCompat
 import com.renard.ocr.R
-import com.renard.ocr.util.AppStorage.getOldTrainingDataDir
 import com.renard.ocr.util.AppStorage.getTrainingDataDir
 import java.io.File
 import java.util.*
@@ -17,12 +16,12 @@ object OcrLanguageDataStore {
     private val EMPTY_FILE_ARRAY = arrayOf<File>()
 
     @JvmStatic
-    fun getOldInstalledOCRLanguages(appContext: Context): List<OcrLanguage> {
+    fun getInstalledOCRLanguages(appContext: Context): List<OcrLanguage> {
         val knownLanguages = appContext.resources.getStringArray(R.array.ocr_languages)
                 .map { it.split(' ', limit = 2).run { first() to last() } }
                 .toMap()
 
-        return (getOldTrainingDataDir().listFiles()
+        return (getTrainingDataDir(appContext).listFiles()
                 ?: emptyArray())
                 .filter { it.name.endsWith("traineddata") }
                 .filter { knownLanguages.contains(it.nameWithoutExtension) }
@@ -36,11 +35,7 @@ object OcrLanguageDataStore {
     }
 
     @JvmStatic
-    fun getInstalledOCRLanguages(appContext: Context) =
-            getAvailableOcrLanguages(appContext).filter { it.isInstalled }
-
-    @JvmStatic
-    fun getAvailableOcrLanguages(context: Context): List<OcrLanguage> {
+    fun getAllOcrLanguages(context: Context): List<OcrLanguage> {
         val languages: MutableList<OcrLanguage> = ArrayList()
         // actual values uses by tesseract
         val languageValues = context.resources.getStringArray(R.array.ocr_languages)
@@ -115,7 +110,7 @@ object OcrLanguageDataStore {
         return try {
             val iso3Language = ConfigurationCompat.getLocales(context.resources.configuration)[0]
                     .isO3Language
-            getAvailableOcrLanguages(context).firstOrNull { it.value == iso3Language }
+            getAllOcrLanguages(context).firstOrNull { it.value == iso3Language }
         } catch (e: MissingResourceException) {
             null
         }

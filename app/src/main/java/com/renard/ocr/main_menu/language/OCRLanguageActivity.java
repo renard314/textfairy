@@ -151,7 +151,7 @@ public class OCRLanguageActivity extends MonitoredActivity {
 
     private OCRLanguageAdapter initLanguageList() {
         OCRLanguageAdapter adapter = new OCRLanguageAdapter(getApplicationContext(), false);
-        List<OcrLanguage> languages = OcrLanguageDataStore.getAvailableOcrLanguages(this);
+        List<OcrLanguage> languages = OcrLanguageDataStore.getAllOcrLanguages(this);
         hideLatinScriptDownload(languages);
         adapter.addAll(languages);
         updateLanguageListWithDownloadManagerStatus(adapter);
