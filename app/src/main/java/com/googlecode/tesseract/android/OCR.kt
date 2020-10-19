@@ -35,6 +35,7 @@ import com.renard.ocr.analytics.Analytics
 import com.renard.ocr.analytics.CrashLogger
 import com.renard.ocr.documents.creation.crop.CropImageScaler
 import com.renard.ocr.main_menu.language.OcrLanguage
+import com.renard.ocr.main_menu.language.OcrLanguageDataStore
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore.deleteLanguage
 import com.renard.ocr.util.AppStorage
 import com.renard.ocr.util.MemoryInfo
@@ -200,7 +201,7 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
                         )
                 ) {
                     deleteLanguage(lang, context)
-                    OcrLanguage(lang, "", false, 0).installLanguage(context)
+                    OcrLanguage(lang).installLanguage(context)
                     return@Runnable
                 }
 

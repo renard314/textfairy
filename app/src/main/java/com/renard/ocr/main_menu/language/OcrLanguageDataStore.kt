@@ -3,7 +3,6 @@ package com.renard.ocr.main_menu.language
 import android.content.Context
 import android.net.Uri
 import androidx.core.os.ConfigurationCompat
-import com.renard.ocr.R
 import com.renard.ocr.util.AppStorage.getTrainingDataDir
 import java.io.File
 import java.util.*
@@ -15,44 +14,12 @@ object OcrLanguageDataStore {
     private val EMPTY_FILE_ARRAY = arrayOf<File>()
 
     @JvmStatic
-    fun getInstalledOCRLanguages(appContext: Context): List<OcrLanguage> {
-        val knownLanguages = appContext.resources.getStringArray(R.array.ocr_languages)
-                .map { it.split(' ', limit = 2).run { first() to last() } }
-                .toMap()
-
-        return (getTrainingDataDir(appContext).listFiles()
-                ?: emptyArray())
-                .filter { it.name.endsWith("traineddata") }
-                .filter { knownLanguages.contains(it.nameWithoutExtension) }
-                .map {
-                    OcrLanguage(
-                            it.nameWithoutExtension,
-                            knownLanguages[it.nameWithoutExtension],
-                            true,
-                            sumFileSizes(it))
-                }
-    }
+    fun getInstalledOCRLanguages(appContext: Context) =
+            getAllOcrLanguages(appContext).filter { it.isInstalled }
 
     @JvmStatic
-    fun getAllOcrLanguages(context: Context): List<OcrLanguage> {
-        val languages: MutableList<OcrLanguage> = ArrayList()
-        // actual values uses by tesseract
-        val languageValues = context.resources.getStringArray(R.array.ocr_languages)
-        // values shown to the user
-        val languageDisplayValues = arrayOfNulls<String>(languageValues.size)
-        for (i in languageValues.indices) {
-            val `val` = languageValues[i]
-            val firstSpace = `val`.indexOf(' ')
-            languageDisplayValues[i] = languageValues[i].substring(firstSpace + 1)
-            languageValues[i] = languageValues[i].substring(0, firstSpace)
-        }
-        for (i in languageValues.indices) {
-            val installStatus = getInstallStatusFor(languageValues[i], context)
-            val language = OcrLanguage(languageValues[i], languageDisplayValues[i], installStatus.isInstalled(), installStatus.getInstalledSize())
-            languages.add(language)
-        }
-        return languages
-    }
+    fun getAllOcrLanguages(context: Context) =
+            OCR_LANGUAGES.keys.map { OcrLanguage(it, getInstallStatusFor(it, context)) }
 
     @JvmStatic
     fun getInstallStatusFor(ocrLang: String, context: Context): InstallStatus {
@@ -115,3 +82,118 @@ object OcrLanguageDataStore {
         }
     }
 }
+
+val OCR_LANGUAGES = mapOf(
+        "afr" to "Afrikaans",
+        "amh" to "Amharic",
+        "ara" to "Arabic",
+        "asm" to "Assamese",
+        "aze" to "Azerbaijani",
+        "aze_cyrl" to "Azerbaijani, - Cyrillic",
+        "bel" to "Belarusian",
+        "ben" to "Bengali",
+        "bod" to "Tibetan",
+        "bos" to "Bosnian",
+        "bul" to "Bulgarian",
+        "cat" to "Catalan; Valencian",
+        "ceb" to "Cebuano",
+        "ces" to "Czech",
+        "chi_sim" to "Chinese - Simplified",
+        "chi_tra" to "Chinese - Traditional",
+        "chi_sim_vert" to "Chinese - Simplified - Vertical",
+        "chi_tra_vert" to "Chinese - Traditional - Vertical",
+        "chr" to "Cherokee",
+        "cos" to "Corsican",
+        "cym" to "Welsh",
+        "dan" to "Danish",
+        "deu" to "German",
+        "div" to "Divehi; Dhivehi; Maldivian",
+        "dzo" to "Dzongkha",
+        "ell" to "Greek, Modern (1453-)",
+        "eng" to "English",
+        "enm" to "English, Middle (1100-1500)",
+        "epo" to "Esperanto",
+        "est" to "Estonian",
+        "eus" to "Basque",
+        "equ" to "Math/Equation",
+        "fas" to "Persian",
+        "fin" to "Finnish",
+        "fra" to "French",
+        "frk" to "German Fraktur",
+        "frm" to "French, Middle (ca. 1400-1600)",
+        "gle" to "Irish",
+        "glg" to "Galician",
+        "grc" to "Greek, Ancient (-1453)",
+        "guj" to "Gujarati",
+        "hat" to "Haitian; Haitian Creole",
+        "heb" to "Hebrew",
+        "hin" to "Hindi",
+        "hrv" to "Croatian",
+        "hun" to "Hungarian",
+        "iku" to "Inuktitut",
+        "ind" to "Indonesian",
+        "isl" to "Icelandic",
+        "ita" to "Italian",
+        "ita_old" to "Italian - Old",
+        "jav" to "Javanese",
+        "jpn" to "Japanese",
+        "jpn_vert" to "Japanese - vertical",
+        "kan" to "Kannada",
+        "kat" to "Georgian",
+        "kat_old" to "Georgian - Old",
+        "kaz" to "Kazakh",
+        "khm" to "Central Khmer",
+        "kir" to "Kirghiz; Kyrgyz",
+        "kor" to "Korean",
+        "kor_vert" to "Korean - vertical",
+        "kur" to "Kurdish",
+        "kmr" to "Kurdish - Northern",
+        "lao" to "Lao",
+        "lat" to "Latin",
+        "lav" to "Latvian",
+        "lit" to "Lithuanian",
+        "mal" to "Malayalam",
+        "mar" to "Marathi",
+        "mkd" to "Macedonian",
+        "mlt" to "Maltese",
+        "msa" to "Malay",
+        "mya" to "Burmese",
+        "nep" to "Nepali",
+        "nld" to "Dutch; Flemish",
+        "nor" to "Norwegian",
+        "oci" to "Occitan (post 1500)",
+        "ori" to "Oriya",
+        "pan" to "Panjabi; Punjabi",
+        "pol" to "Polish",
+        "por" to "Portuguese",
+        "pus" to "Pushto; Pashto",
+        "ron" to "Romanian; Moldavian; Moldovan",
+        "rus" to "Russian",
+        "san" to "Sanskrit",
+        "sin" to "Sinhala; Sinhalese",
+        "slk" to "Slovak",
+        "slv" to "Slovenian",
+        "spa" to "Spanish; Castilian",
+        "spa_old" to "Spanish; Castilian - Old",
+        "sqi" to "Albanian",
+        "srp" to "Serbian",
+        "srp_latn" to "Serbian - Latin",
+        "sun" to "Sundanese",
+        "swa" to "Swahili",
+        "swe" to "Swedish",
+        "syr" to "Syriac",
+        "tam" to "Tamil",
+        "tel" to "Telugu",
+        "tgk" to "Tajik",
+        "tgl" to "Tagalog",
+        "tha" to "Thai",
+        "tir" to "Tigrinya",
+        "tur" to "Turkish",
+        "uig" to "Uighur; Uyghur",
+        "ukr" to "Ukrainian",
+        "urd" to "Urdu",
+        "uzb" to "Uzbek",
+        "uzb_cyrl" to "Uzbek - Cyrillic",
+        "vie" to "Vietnamese",
+        "yid" to "Yiddish",
+)
