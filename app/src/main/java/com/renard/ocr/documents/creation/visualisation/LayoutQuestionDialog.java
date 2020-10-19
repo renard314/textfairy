@@ -182,7 +182,8 @@ public class LayoutQuestionDialog extends DialogFragment {
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> parent) {}
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
                 });
 
         builder.setPositiveButton(
@@ -230,15 +231,11 @@ public class LayoutQuestionDialog extends DialogFragment {
 
     @Nullable
     private String getOcrLanguageFromSdCard(Context context) {
-        if (getInstallStatusFor(OcrLanguageDataStore.LATIN_SCRIPT, context).isInstalled()) {
-            return OcrLanguageDataStore.LATIN_SCRIPT;
+        final List<OcrLanguage> installedOCRLanguages = getInstalledOCRLanguages(context);
+        if (!installedOCRLanguages.isEmpty()) {
+            return installedOCRLanguages.get(0).getValue();
         } else {
-            final List<OcrLanguage> installedOCRLanguages = getInstalledOCRLanguages(context);
-            if (!installedOCRLanguages.isEmpty()) {
-                return installedOCRLanguages.get(0).getValue();
-            } else {
-                return null;
-            }
+            return null;
         }
     }
 

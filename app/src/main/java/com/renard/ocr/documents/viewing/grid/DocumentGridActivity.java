@@ -15,6 +15,44 @@
  */
 package com.renard.ocr.documents.viewing.grid;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.GridView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.view.ActionMode;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
+
+import com.google.android.material.navigation.NavigationView;
 import com.renard.ocr.HintDialog;
 import com.renard.ocr.PermissionGrantedEvent;
 import com.renard.ocr.R;
@@ -33,50 +71,12 @@ import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
 import com.renard.ocr.util.PreferencesUtils;
 import com.renard.ocr.util.Util;
 
-import android.Manifest;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import com.google.android.material.navigation.NavigationView;
-import androidx.fragment.app.FragmentManager;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.view.ActionMode;
-import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.GridView;
-import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import de.greenrobot.event.EventBus;
 
@@ -196,7 +196,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
         final String state = Environment.getExternalStorageState();
 
         if (state.equals(Environment.MEDIA_MOUNTED)) {
-            if (!containsLatinScript(installedOCRLanguages)) {
+            if (installedOCRLanguages.isEmpty()) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setClassName(this, com.renard.ocr.install.InstallActivity.class.getName());
                 startActivityForResult(intent, REQUEST_CODE_INSTALL);
@@ -213,15 +213,6 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
             });
             alert.show();
         }
-    }
-
-    private boolean containsLatinScript(List<OcrLanguage> installedOCRLanguages) {
-        for(OcrLanguage language: installedOCRLanguages){
-            if(language.getValue().equals(OcrLanguageDataStore.LATIN_SCRIPT)){
-                return true;
-            }
-        }
-        return false;
     }
 
     private void initNavigationDrawer() {
@@ -685,7 +676,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
             StringBuilder builder = new StringBuilder();
             builder.append(" in (");
             for (@SuppressWarnings("unused")
-            Integer id : ids) {
+                    Integer id : ids) {
                 builder.append("?");
                 if (count < length - 1) {
                     builder.append(",");

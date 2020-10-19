@@ -24,6 +24,8 @@ import com.renard.ocr.analytics.Analytics
 import com.renard.ocr.analytics.AnalyticsFactory
 import com.renard.ocr.analytics.CrashLogger
 import com.renard.ocr.analytics.CrashLoggerFactory.createCrashLogger
+import com.renard.ocr.main_menu.language.OcrLanguageDataStore
+import com.renard.ocr.main_menu.language.OcrLanguageDataStore.deleteLanguage
 import com.renard.ocr.util.PreferencesUtils
 import com.squareup.leakcanary.LeakCanary
 
@@ -44,6 +46,7 @@ class TextFairyApplication : MultiDexApplication() {
         enableStrictMode()
         alwaysShowOverflowButton()
         startLeakCanary()
+        deleteLanguage("Latin", this)
     }
 
     private fun loadLibaries() {

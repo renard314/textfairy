@@ -70,7 +70,7 @@ internal class InstallTask(
      * @return the total size of the language-assets in the zip file
      */
     private val totalUnzippedSize: Long
-        get() = 105844151
+        get() = 31109429
 
     override fun onProgressUpdate(vararg values: Int?) {
         mCallbacks?.onProgressUpdate(values[0] ?: 0)
@@ -128,9 +128,7 @@ internal class InstallTask(
         while (bytes >= 0) {
             outputStream.write(buffer, 0, bytes)
             mBytesInstalled += bytes
-            if (mBytesInstalled % (1024 * 1024) == 0L) {
-                publishProgress(getInstallStatus())
-            }
+            publishProgress(getInstallStatus())
             bytes = inputStream.read(buffer)
         }
         outputStream.close()

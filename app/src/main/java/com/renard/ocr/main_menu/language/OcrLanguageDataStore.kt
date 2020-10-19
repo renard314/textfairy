@@ -12,7 +12,6 @@ import java.util.*
  * @author renard
  */
 object OcrLanguageDataStore {
-    const val LATIN_SCRIPT = "Latin"
     private val EMPTY_FILE_ARRAY = arrayOf<File>()
 
     @JvmStatic
