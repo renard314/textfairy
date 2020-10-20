@@ -77,7 +77,6 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Screen.lockOrientation(this)
-        EventBus.getDefault().register(this)
         val nativePix = (application as TextFairyApplication).nativePix
         if (nativePix == null) {
             setResult(Activity.RESULT_CANCELED)
