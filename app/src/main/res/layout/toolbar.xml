@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/toolbar"
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:layout_gravity="top"
+    android:background="@drawable/toolbar_background"
+    android:theme="@style/ToolbarTheme"
+    tools:showIn="@layout/activity_document_grid">
+
+    <RelativeLayout
+        android:id="@+id/toolbar_content"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_gravity="top"
-        android:theme="@style/ToolbarTheme"
-        android:background="@drawable/toolbar_background"
-        tools:showIn="@layout/activity_document_grid">
+        android:layout_height="match_parent">
 
-    <RelativeLayout android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/app_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="1dp"
+            android:contentDescription="@string/content_description_fairy"
+            android:src="@drawable/textfairy_title" />
 
-
-        <ImageView android:layout_width="wrap_content"
-                   android:id="@+id/app_icon"
-                   android:layout_alignParentBottom="true"
-                   android:layout_height="wrap_content"
-                   android:layout_marginBottom="1dp"
-                   android:src="@drawable/textfairy_title"
-                   android:contentDescription="@string/content_description_fairy"
-        />
-        <TextView android:layout_width="wrap_content"
-                  android:layout_height="match_parent"
-                  android:visibility="gone"
-                  tools:visibility="visible"
-                  tools:text="Text Fairy"
-                  android:paddingBottom="12dp"
-                  android:gravity="bottom|start"
-                  style="@android:style/TextAppearance.Medium"
-                  android:layout_toRightOf="@+id/app_icon"
-                  android:id="@+id/toolbar_text"
-                  android:textColor="@android:color/white"
-        />
+        <TextView
+            android:id="@+id/toolbar_text"
+            style="@android:style/TextAppearance.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/app_icon"
+            android:gravity="bottom|start"
+            android:paddingBottom="12dp"
+            android:textColor="@android:color/white"
+            android:visibility="gone"
+            tools:text="Text Fairy"
+            tools:visibility="visible" />
     </RelativeLayout>
 
 </androidx.appcompat.widget.Toolbar>

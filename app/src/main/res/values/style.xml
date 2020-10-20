@@ -109,6 +109,8 @@
     </style>
 
     <style name="ToolbarTheme" parent="AppTheme">
+        <item name="android:textColorHint">@color/accent</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="android:actionModeStyle">@style/ActionMode</item>
         <item name="actionModeStyle">@style/ActionMode</item>

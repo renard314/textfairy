@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations.map
+import androidx.lifecycle.Transformations.switchMap
 import androidx.lifecycle.viewModelScope
 import com.renard.ocr.R
 import com.renard.ocr.TextFairyApplication
@@ -43,14 +45,27 @@ class LanguageListViewModel(application: Application) : AndroidViewModel(applica
     val loading: LiveData<LoadingState>
         get() = _loading
 
+    private val _query = MutableLiveData<String>()
     private val _data = MutableLiveData<List<OcrLanguage>>()
     val data: LiveData<List<OcrLanguage>>
-        get() = _data
+        get() = switchMap(_query) { query ->
+            if (query.isNullOrBlank()) {
+                _data
+            } else {
+                map(_data) {
+                    it.filter { lang ->
+                        lang.displayText.contains(query, ignoreCase = true)
+                    }
+                }
+            }
+        }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             _loading.postValue(LoadingState.LOADING)
-            _data.postValue(OcrLanguageDataStore.getAllOcrLanguages(getApplication()))
+            val allOcrLanguages = OcrLanguageDataStore.getAllOcrLanguages(getApplication())
+            _data.postValue(allOcrLanguages)
+            _query.postValue("")
             _loading.postValue(LoadingState.LOADED)
         }
         application.registerReceiver(mFailedReceiver, IntentFilter(DownloadBroadCastReceiver.ACTION_INSTALL_FAILED))
@@ -110,8 +125,12 @@ class LanguageListViewModel(application: Application) : AndroidViewModel(applica
         if (find != -1) {
             val mutableList = _data.value as MutableList
             mutableList[find] = update(mutableList[find])
-            _data.value = mutableList
+            _data.value = _data.value
+            _query.value = _query.value
         }
     }
 
+    fun filter(query: String) {
+        _query.value = query
+    }
 }

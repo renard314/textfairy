@@ -285,5 +285,7 @@
     <string name="install_language">Bitte installieren Sie eine Text-Sprache.</string>
     <string name="install">installieren</string>
     <string name="no_download_manager">Kein DownloadManager gefunden.</string>
+    <string name="action_search">Suche</string>
+    <string name="action_search_languages">Suche Sprache</string>
 
 </resources>
