@@ -46,8 +46,8 @@ android {
         applicationId "com.renard.ocr"
         minSdkVersion 17
         targetSdkVersion 30
-        versionCode 81
-        versionName = "4.0.0"
+        versionCode 82
+        versionName = "4.1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         multiDexEnabled true
