@@ -66,8 +66,8 @@ import com.renard.ocr.documents.viewing.DocumentContentProvider;
 import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
 import com.renard.ocr.documents.viewing.single.DocumentActivity;
-import com.renard.ocr.main_menu.language.OCRLanguageActivity;
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
+import com.renard.ocr.main_menu.language.OcrLanguageListActivity;
 import com.renard.ocr.pdf.Hocr2Pdf;
 import com.renard.ocr.pdf.Hocr2Pdf.PDFProgressListener;
 import com.renard.ocr.util.AppStorage;
@@ -227,7 +227,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     private androidx.appcompat.app.AlertDialog getInstallLanguageDialog(Context context) {
         return new androidx.appcompat.app.AlertDialog.Builder(context)
                 .setTitle(R.string.install_language)
-                .setPositiveButton(R.string.install, (dialogInterface, i) -> startActivity(new Intent(context, OCRLanguageActivity.class)))
+                .setPositiveButton(R.string.install, (dialogInterface, i) -> startActivity(new Intent(context, OcrLanguageListActivity.class)))
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss())
                 .create();
     }

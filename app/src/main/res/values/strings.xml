@@ -268,4 +268,5 @@
     <string name="chose_market">Chose Market</string>
     <string name="install_language">Please install a language first</string>
     <string name="install">install</string>
+    <string name="no_download_manager">No DownloadManager found.</string>
 </resources>

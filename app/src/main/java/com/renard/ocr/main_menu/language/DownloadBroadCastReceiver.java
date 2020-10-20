@@ -48,8 +48,6 @@ public class DownloadBroadCastReceiver extends BroadcastReceiver {
             if (c.moveToFirst()) {
                 int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
                 int status = c.getInt(columnIndex);
-                columnIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE);
-                String title = c.getString(columnIndex);
                 columnIndex = c.getColumnIndex(DownloadManager.COLUMN_URI);
                 String name = c.getString(columnIndex);
                 final Uri fileUri = Uri.parse(name);
@@ -60,17 +58,17 @@ public class DownloadBroadCastReceiver extends BroadcastReceiver {
                     notifySuccess(context, lang);
                 } else if (DownloadManager.STATUS_FAILED == status) {
                     Log.i(LOG_TAG, "Download failed");
-                    notifyError(context, status, title);
+                    notifyError(context, status, lang);
                 }
             }
             c.close();
         }
     }
 
-    private void notifyError(Context context, int status, String title) {
+    private void notifyError(Context context, int status, String lang) {
         Intent resultIntent = new Intent(ACTION_INSTALL_FAILED);
         resultIntent.putExtra(EXTRA_STATUS, status);
-        resultIntent.putExtra(EXTRA_OCR_LANGUAGE_DISPLAY, title);
+        resultIntent.putExtra(EXTRA_OCR_LANGUAGE, lang);
         context.sendBroadcast(resultIntent);
     }
 

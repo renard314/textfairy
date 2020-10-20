@@ -62,9 +62,9 @@ import com.renard.ocr.main_menu.AboutActivity;
 import com.renard.ocr.main_menu.FeedbackActivity;
 import com.renard.ocr.main_menu.ReleaseNoteDialog;
 import com.renard.ocr.main_menu.TipsActivity;
-import com.renard.ocr.main_menu.language.OCRLanguageActivity;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
+import com.renard.ocr.main_menu.language.OcrLanguageListActivity;
 import com.renard.ocr.util.PreferencesUtils;
 import com.renard.ocr.util.Util;
 
@@ -119,8 +119,6 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
     }
 
 
-
-
     @Override
     protected int getHintDialogId() {
         return HINT_DIALOG_ID;
@@ -137,7 +135,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
         viewById.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(DocumentGridActivity.this, OCRLanguageActivity.class);
+                Intent i = new Intent(DocumentGridActivity.this, OcrLanguageListActivity.class);
                 startActivity(i);
             }
         });
@@ -247,7 +245,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
                         new ReleaseNoteDialog().show(supportFragmentManager, ReleaseNoteDialog.TAG);
                         break;
                     case R.id.add_language:
-                        Intent i = new Intent(DocumentGridActivity.this, OCRLanguageActivity.class);
+                        Intent i = new Intent(DocumentGridActivity.this, OcrLanguageListActivity.class);
                         startActivity(i);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;

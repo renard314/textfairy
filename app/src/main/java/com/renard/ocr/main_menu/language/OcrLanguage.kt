@@ -11,22 +11,23 @@ import java.util.Locale.getAvailableLocales
 /**
  * @author renard
  */
-class OcrLanguage(
+data class OcrLanguage(
         val value: String,
-        installStatus: InstallStatus = InstallStatus(false, 0)
+        val installStatus: InstallStatus = InstallStatus(false),
+        val isDownloading: Boolean = false
 ) {
 
-    var isDownloading = false;
+    data class InstallStatus(val isInstalled: Boolean, val installedSize: Long = 0)
+
     val isInstalled: Boolean
-        get() = mInstallStatus.isInstalled
+        get() = installStatus.isInstalled
     val size: Long
-        get() = mInstallStatus.installedSize
+        get() = installStatus.installedSize
 
     val displayText: String = LOCALIZED_DISPLAY_LANGUAGES[value]
             ?: OCR_LANGUAGES[value]
             ?: value
 
-    private var mInstallStatus = installStatus
 
     fun installLanguage(context: Context) {
         val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
@@ -37,19 +38,7 @@ class OcrLanguage(
         dm.enqueue(request)
     }
 
-
-    fun setUninstalled() {
-        mInstallStatus = InstallStatus(false, 0)
-    }
-
-    fun setInstallStatus(installStatus: InstallStatus) {
-        mInstallStatus = installStatus
-    }
-
-    override fun toString(): String {
-        return displayText
-    }
-
+    override fun toString() = displayText
 }
 
 private val LOCALIZED_DISPLAY_LANGUAGES: Map<String, String> by lazy {

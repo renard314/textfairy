@@ -1,113 +1,114 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id="@+id/content_view"
-                android:orientation="vertical">
-
-    <TextView android:layout_alignParentTop="true"
-              android:layout_margin="@dimen/activity_horizontal_margin"
-              android:drawableLeft="@drawable/check"
-              android:id="@+id/tip3"
-              android:textSize="18sp"
-              android:drawablePadding="16dp"
-              android:gravity="center_vertical"
-              android:text="@string/install_tip_3"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"/>
+    android:id="@+id/content_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
     <TextView
-            android:layout_below="@+id/tip3"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:drawableLeft="@drawable/check"
-            android:id="@+id/tip1"
-            android:textSize="18sp"
-            android:drawablePadding="16dp"
-            android:gravity="center_vertical"
-            android:text="@string/install_tip_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        android:id="@+id/tip3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:drawableLeft="@drawable/check"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:text="@string/install_tip_3"
+        android:textSize="18sp" />
 
     <TextView
-            android:layout_below="@+id/tip1"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:drawableLeft="@drawable/cross"
-            android:id="@+id/tip2"
-            android:textSize="18sp"
-            android:drawablePadding="16dp"
-            android:gravity="center_vertical"
-            android:text="@string/install_tip_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        android:id="@+id/tip1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tip3"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:drawableLeft="@drawable/check"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:text="@string/install_tip_1"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tip2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tip1"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:drawableLeft="@drawable/cross"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:text="@string/install_tip_2"
+        android:textSize="18sp" />
 
 
     <TextView
-            android:textSize="18sp"
-            android:layout_below="@+id/tip2"
-            android:clickable="true"
-            android:background="@drawable/btn_start_activity2"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:drawableLeft="@drawable/youtube_play"
-            android:id="@+id/promo"
-            android:drawablePadding="16dp"
-            android:gravity="center_vertical"
-            android:text="@string/promo_video_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        android:id="@+id/promo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tip2"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:background="@drawable/btn_start_activity2"
+        android:clickable="true"
+        android:drawableLeft="@drawable/youtube_play"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:text="@string/promo_video_title"
+        android:textSize="18sp" />
 
 
     <RelativeLayout
-            android:id="@+id/fairy_container"
-            android:layout_width="wrap_content"
-            android:layout_above="@+id/button_start_app"
-            android:layout_height="wrap_content">
+        android:id="@+id/fairy_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_start_app">
 
         <ImageView
-                android:id="@+id/imageView_fairy"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_alignParentLeft="true"
-                android:contentDescription="@string/empty"
-                android:scaleType="fitCenter"
-                android:src="@drawable/textfairy_walking"/>
+            android:id="@+id/imageView_fairy"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_alignParentLeft="true"
+            android:contentDescription="@string/empty"
+            android:scaleType="fitCenter"
+            android:src="@drawable/textfairy_walking" />
 
         <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/fairy_text_bubble"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="75dp"
-                android:layout_alignTop="@+id/imageView_fairy"
-                android:layout_alignLeft="@+id/imageView_fairy"
-                android:background="@drawable/speech_bubble"
-                android:paddingBottom="10dip"
-                android:paddingLeft="12dip"
-                android:paddingRight="20dip"
-                android:paddingTop="10dip">
+            android:id="@+id/fairy_text_bubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/imageView_fairy"
+            android:layout_alignTop="@+id/imageView_fairy"
+            android:layout_marginLeft="75dp"
+            android:background="@drawable/speech_bubble"
+            android:paddingLeft="12dip"
+            android:paddingTop="10dip"
+            android:paddingRight="20dip"
+            android:paddingBottom="10dip"
+            android:visibility="gone">
 
             <TextView
-                    android:id="@+id/fairy_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/start_app"
-                    android:textAppearance="@style/FairySpeechbubble"/>
+                android:id="@+id/fairy_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/start_app"
+                android:textAppearance="@style/FairySpeechbubble" />
         </LinearLayout>
     </RelativeLayout>
 
     <Button
-            android:visibility="invisible"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:theme="@style/ColoredButton"
-            android:layout_gravity="center"
-            android:id="@+id/button_start_app"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:text="@android:string/ok"
-            android:gravity="center"
-            android:textColor="@android:color/white"/>
+        android:id="@+id/button_start_app"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:gravity="center"
+        android:text="@android:string/ok"
+        android:textColor="@android:color/white"
+        android:theme="@style/ColoredButton"
+        android:visibility="invisible" />
 
 </RelativeLayout>

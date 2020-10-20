@@ -22,11 +22,11 @@ object OcrLanguageDataStore {
             OCR_LANGUAGES.keys.map { OcrLanguage(it, getInstallStatusFor(it, context)) }
 
     @JvmStatic
-    fun getInstallStatusFor(ocrLang: String, context: Context): InstallStatus {
+    fun getInstallStatusFor(ocrLang: String, context: Context): OcrLanguage.InstallStatus {
         val languageFiles = getAllFilesFor(ocrLang, context)
         return if (languageFiles.isEmpty()) {
-            InstallStatus(false, 0)
-        } else InstallStatus(true, sumFileSizes(*languageFiles))
+            OcrLanguage.InstallStatus(false)
+        } else OcrLanguage.InstallStatus(true, sumFileSizes(*languageFiles))
     }
 
     private fun getAllFilesFor(ocrLang: String, context: Context): Array<File> {
@@ -53,17 +53,9 @@ object OcrLanguageDataStore {
     }
 
     @JvmStatic
-    fun deleteLanguage(language: OcrLanguage, context: Context): Boolean {
-        val languageFiles = getAllFilesFor(language.value, context)
-        if (languageFiles.isEmpty()) {
-            language.setUninstalled()
-            return false
-        }
-        val deletedList = languageFiles.map { it.delete() }
-        if (deletedList.any { it }) {
-            language.setUninstalled()
-        }
-        return deletedList.all { it }
+    fun deleteLanguage(language: OcrLanguage, context: Context): OcrLanguage {
+        getAllFilesFor(language.value, context).forEach { it.delete() }
+        return language.copy(installStatus = OcrLanguage.InstallStatus(false))
     }
 
     @JvmStatic

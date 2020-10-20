@@ -19,12 +19,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
-        <ListView
-                android:layoutAnimation="@anim/layout_animation"
+        <androidx.recyclerview.widget.RecyclerView
+                android:scrollbars="vertical"
                 android:id="@+id/list_ocr_languages"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-        </ListView>
+        </androidx.recyclerview.widget.RecyclerView>
 
     </ViewSwitcher>
 </RelativeLayout>

@@ -18,7 +18,6 @@ def versions = ['appcompat_v7' : '27.1.1',
                 'relinker'     : '1.4.1']
 
 
-
 task checkstyle(type: Checkstyle) {
     configFile file("${project.rootDir}/checkstyle/checkstyle.xml")
     configProperties.checkstyleSuppressionsPath = file("${project.rootDir}/config/quality/checkstyle/suppressions.xml").absolutePath
@@ -34,9 +33,9 @@ android {
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
-    lintOptions {
-        disable 'MissingTranslation'
-    }
+    kotlinOptions { jvmTarget = "1.8" }
+    buildFeatures {viewBinding true}
+    lintOptions {disable 'MissingTranslation'}
 
     dexOptions {
         // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
@@ -141,13 +140,14 @@ if (propFile.canRead()) {
 }
 
 
-
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.github.barteksc:pdfium-android:1.5.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation "androidx.activity:activity-ktx:1.1.0"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:${versions.leak_canary}"
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${versions.leak_canary}"
     implementation 'com.viewpagerindicator:library:2.4.1@aar'

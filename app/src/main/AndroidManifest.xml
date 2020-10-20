@@ -57,12 +57,13 @@
                     android:value=".documents.viewing.grid.DocumentGridActivity"/>
         </activity>
         <activity
-                android:name=".main_menu.language.OCRLanguageActivity"
-        >
+            android:name=".main_menu.language.OcrLanguageListActivity"
+            >
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".documents.viewing.grid.DocumentGridActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".documents.viewing.grid.DocumentGridActivity"/>
         </activity>
+
         <activity
                 android:name=".documents.viewing.single.TableOfContentsActivity">
             <meta-data
