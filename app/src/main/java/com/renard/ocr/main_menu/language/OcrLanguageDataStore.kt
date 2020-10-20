@@ -1,7 +1,6 @@
 package com.renard.ocr.main_menu.language
 
 import android.content.Context
-import android.net.Uri
 import androidx.core.os.ConfigurationCompat
 import com.renard.ocr.util.AppStorage.getTrainingDataDir
 import java.io.File
@@ -56,11 +55,6 @@ object OcrLanguageDataStore {
     fun deleteLanguage(language: OcrLanguage, context: Context): OcrLanguage {
         getAllFilesFor(language.value, context).forEach { it.delete() }
         return language.copy(installStatus = OcrLanguage.InstallStatus(false))
-    }
-
-    @JvmStatic
-    fun getDownloadUri(language: String): Uri {
-        return Uri.parse("https://github.com/tesseract-ocr/tessdata_fast/raw/4.0.0/$language.traineddata")
     }
 
     @JvmStatic
@@ -165,6 +159,7 @@ val OCR_LANGUAGES = mapOf(
         "sin" to "Sinhala; Sinhalese",
         "slk" to "Slovak",
         "slv" to "Slovenian",
+        "sat" to "Satali",
         "spa" to "Spanish; Castilian",
         "spa_old" to "Spanish; Castilian - Old",
         "sqi" to "Albanian",

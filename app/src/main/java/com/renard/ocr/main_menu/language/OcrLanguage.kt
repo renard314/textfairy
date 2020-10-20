@@ -2,7 +2,7 @@ package com.renard.ocr.main_menu.language
 
 import android.app.DownloadManager
 import android.content.Context
-import com.renard.ocr.main_menu.language.OcrLanguageDataStore.getDownloadUri
+import android.net.Uri
 import com.renard.ocr.util.AppStorage.setTrainedDataDestinationForDownload
 import java.util.*
 import java.util.Locale.getAvailableLocales
@@ -31,7 +31,11 @@ data class OcrLanguage(
 
     fun installLanguage(context: Context) {
         val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val uri = getDownloadUri(value)
+        val uri = if (value == "sat") {
+            Uri.parse("https://github.com/indic-ocr/tessdata/raw/master/sat/sat.traineddata")
+        } else {
+            Uri.parse("https://github.com/tesseract-ocr/tessdata_fast/raw/4.0.0/$value.traineddata")
+        }
         val request = DownloadManager.Request(uri)
         setTrainedDataDestinationForDownload(context, request, uri.lastPathSegment!!)
         request.setTitle(displayText)
