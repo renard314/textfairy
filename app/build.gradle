@@ -186,8 +186,8 @@ dependencies {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
 
-    //playstoreImplementation "com.google.android.gms:play-services-analytics:${versions.play_services}"
-
+    playstoreImplementation platform('com.google.firebase:firebase-bom:25.12.0')
+    playstoreImplementation 'com.google.firebase:firebase-analytics-ktx'
     playstoreImplementation 'com.google.firebase:firebase-crashlytics:17.2.2'
     playstoreImplementation 'com.google.firebase:firebase-analytics:17.6.0'
     playstoreImplementation 'com.google.firebase:firebase-crashlytics-ndk:17.2.2'
