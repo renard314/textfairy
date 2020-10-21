@@ -35,6 +35,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.text.Html;
@@ -215,13 +216,24 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     }
 
-    private void ensureLanguageInstalled(Runnable block) {
-        if (OcrLanguageDataStore.getInstalledOCRLanguages(getApplicationContext()).isEmpty()) {
-            mAnalytics.noLanguageInstalled();
-            getInstallLanguageDialog(this).show();
-        } else {
+    protected void ensureMediaMounted(Runnable block) {
+        final String state = Environment.getExternalStorageState();
+        if (state.equals(Environment.MEDIA_MOUNTED)) {
             block.run();
+        } else {
+            getNoSdCardDialog(this).show();
         }
+    }
+
+    private void ensureLanguageInstalled(Runnable block) {
+        ensureMediaMounted(() -> {
+            if (OcrLanguageDataStore.getInstalledOCRLanguages(getApplicationContext()).isEmpty()) {
+                mAnalytics.noLanguageInstalled();
+                getInstallLanguageDialog(this).show();
+            } else {
+                block.run();
+            }
+        });
     }
 
     private androidx.appcompat.app.AlertDialog getInstallLanguageDialog(Context context) {
@@ -229,6 +241,13 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                 .setTitle(R.string.install_language)
                 .setPositiveButton(R.string.install, (dialogInterface, i) -> startActivity(new Intent(context, OcrLanguageListActivity.class)))
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss())
+                .create();
+    }
+
+    private androidx.appcompat.app.AlertDialog getNoSdCardDialog(Context context) {
+        return new androidx.appcompat.app.AlertDialog.Builder(context)
+                .setTitle(R.string.no_sd_card)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> finish())
                 .create();
     }
 
@@ -848,6 +867,9 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         @Override
         protected Pair<ArrayList<Uri>, ArrayList<Uri>> doInBackground(Void... params) {
             File dir = AppStorage.getPDFDir(getApplicationContext());
+            if (dir == null) {
+                return null;
+            }
             if (!dir.exists()) {
                 if (!dir.mkdir()) {
                     return null;

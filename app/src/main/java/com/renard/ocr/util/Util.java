@@ -30,7 +30,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
@@ -117,9 +116,12 @@ public class Util {
 
     private static ThumbnailCache mCache = new ThumbnailCache();
 
-    private static Bitmap loadDocumentThumbnail(Context context ,int documentId) {
+    private static Bitmap loadDocumentThumbnail(Context context, int documentId) {
         Log.i("cache", "loadDocumentThumbnail " + documentId);
         File thumbDir = AppStorage.getCacheDirectory(context);
+        if (thumbDir == null) {
+            return null;
+        }
         File thumbFile = new File(thumbDir, String.valueOf(documentId) + "." + THUMBNAIL_SUFFIX);
         if (thumbFile.exists()) {
             InputStream stream = null;
@@ -313,6 +315,9 @@ public class Util {
             mCache.put(documentId, drawable);
 
             File thumbDir = AppStorage.getCacheDirectory(context);
+            if (thumbDir == null) {
+                return;
+            }
             if (!thumbDir.exists()) {
                 createNoMediaFile(thumbDir);
             }

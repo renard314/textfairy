@@ -174,27 +174,14 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
      * Start the InstallActivity if possible and needed.
      */
     private void startInstallActivityIfNeeded() {
-        final List<OcrLanguage> installedOCRLanguages = OcrLanguageDataStore.getInstalledOCRLanguages(this);
-        final String state = Environment.getExternalStorageState();
-
-        if (state.equals(Environment.MEDIA_MOUNTED)) {
+        ensureMediaMounted(() -> {
+            final List<OcrLanguage> installedOCRLanguages = OcrLanguageDataStore.getInstalledOCRLanguages(this);
             if (installedOCRLanguages.isEmpty()) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setClassName(this, com.renard.ocr.install.InstallActivity.class.getName());
                 startActivityForResult(intent, REQUEST_CODE_INSTALL);
             }
-        } else {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setMessage(getString(R.string.no_sd_card));
-            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                }
-            });
-            alert.show();
-        }
+        });
     }
 
     private void initNavigationDrawer() {

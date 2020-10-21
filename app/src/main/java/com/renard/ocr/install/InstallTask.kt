@@ -20,8 +20,7 @@ import android.content.res.AssetManager
 import android.os.AsyncTask
 import android.util.Log
 import com.renard.ocr.install.InstallResult.Result
-import com.renard.ocr.install.InstallResult.Result.NOT_ENOUGH_DISK_SPACE
-import com.renard.ocr.install.InstallResult.Result.OK
+import com.renard.ocr.install.InstallResult.Result.*
 import com.renard.ocr.install.TaskFragment.TaskCallbacks
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore.getUserLocaleOcrLanguage
 import com.renard.ocr.util.AppStorage.getFreeSpaceInBytes
@@ -104,7 +103,7 @@ internal class InstallTask(
      * unzips all language-assets from the package
      */
     private fun copyLanguageAssets(context: Context, manager: AssetManager): InstallResult {
-        val trainedDataDir = getTrainingDataDir(context)
+        val trainedDataDir = getTrainingDataDir(context) ?: return InstallResult(MEDIA_NOT_MOUNTED)
         try {
             manager.list("tessdata")?.forEach { trainedData ->
                 manager.open("tessdata/$trainedData").use { inputStream ->

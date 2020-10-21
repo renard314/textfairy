@@ -30,7 +30,7 @@ object OcrLanguageDataStore {
 
     private fun getAllFilesFor(ocrLang: String, context: Context): Array<File> {
         val tessDir = getTrainingDataDir(context)
-        if (!tessDir.exists()) {
+        if (tessDir == null || !tessDir.exists()) {
             return EMPTY_FILE_ARRAY
         }
         val files = tessDir.listFiles { pathname: File -> isLanguageFileFor(pathname, ocrLang) }

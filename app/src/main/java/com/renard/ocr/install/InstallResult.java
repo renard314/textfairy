@@ -5,7 +5,7 @@ package com.renard.ocr.install;
  */
 class InstallResult {
     public enum Result {
-        NOT_ENOUGH_DISK_SPACE, OK, UNSPECIFIED_ERROR
+        NOT_ENOUGH_DISK_SPACE, OK, UNSPECIFIED_ERROR, MEDIA_NOT_MOUNTED
     }
 
     private long mNeededSpace;

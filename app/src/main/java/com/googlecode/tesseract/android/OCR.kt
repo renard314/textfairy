@@ -195,12 +195,10 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
                 ocrProgress.postValue(OcrProgress.Message(R.string.progress_ocr))
 
                 if (!initTessApi(
-                                languages = listOf(lang),
+                                lang = lang,
                                 ocrMode = TessBaseAPI.OEM_LSTM_ONLY
                         )
                 ) {
-                    deleteLanguage(lang, context)
-                    OcrLanguage(lang).installLanguage(context)
                     return@Runnable
                 }
 
@@ -271,7 +269,7 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
                     return@Runnable
                 }
 
-                if (!initTessApi(listOf(lang), TessBaseAPI.OEM_LSTM_ONLY)) {
+                if (!initTessApi(lang, TessBaseAPI.OEM_LSTM_ONLY)) {
                     return@Runnable
                 }
 
@@ -308,14 +306,14 @@ class OCR(val pix: Pix, application: TextFairyApplication) : AndroidViewModel(ap
 
     }
 
-    private fun initTessApi(languages: List<String>, @TessBaseAPI.OcrEngineMode ocrMode: Int): Boolean {
-        val tessDir = AppStorage.getTrainingDataDir(getApplication()).path
-        val languagesString = languages.joinToString("+")
-        logTessParams(languagesString, ocrMode)
-        val result = mTess.init(tessDir, languagesString, ocrMode)
+    private fun initTessApi(lang: String, @TessBaseAPI.OcrEngineMode ocrMode: Int): Boolean {
+        val tessDir = AppStorage.getTrainingDataDir(getApplication())?.path?:return false
+        logTessParams(lang, ocrMode)
+        val result = mTess.init(tessDir, lang, ocrMode)
         if (!result) {
-            mCrashLogger.logMessage("init failed. deleting " + languages[0])
-            //OcrLanguageDataStore.deleteLanguage(languages[0], getApplication())
+            mCrashLogger.logMessage("init failed. deleting $lang")
+            deleteLanguage(lang, getApplication())
+            OcrLanguage(lang).installLanguage(getApplication())
             ocrProgress.postValue(OcrProgress.Error(R.string.error_tess_init))
             return false
         }

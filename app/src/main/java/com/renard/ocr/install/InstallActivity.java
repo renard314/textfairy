@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentManager;
 
 import com.renard.ocr.MonitoredActivity;
@@ -164,18 +165,21 @@ public class InstallActivity extends MonitoredActivity implements TaskFragment.T
                     }
                 });
                 break;
+            case MEDIA_NOT_MOUNTED:
+                showError(R.string.no_sd_card);
+                break;
             case UNSPECIFIED_ERROR:
-                errorMsg = getString(R.string.install_error);
-                mFairyText.setText(errorMsg);
-                mButtonStartApp.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        setResult(RESULT_CANCELED);
-                        finish();
-                    }
-                });
+                showError(R.string.install_error);
                 break;
         }
+    }
+
+    private void showError(@StringRes int message) {
+        mFairyText.setText(getString(message));
+        mButtonStartApp.setOnClickListener(v -> {
+            setResult(RESULT_CANCELED);
+            finish();
+        });
     }
 
     private void fadeInStartButton() {
