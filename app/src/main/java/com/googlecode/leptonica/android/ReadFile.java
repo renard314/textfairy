@@ -174,8 +174,8 @@ public class ReadFile {
                 bmp.recycle();
                 return pix;
             }
-        } catch (InterruptedException e) {
-        } catch (ExecutionException e) {
+        } catch (InterruptedException ignored) {
+        } catch (ExecutionException ignored) {
         }
         return null;
     }

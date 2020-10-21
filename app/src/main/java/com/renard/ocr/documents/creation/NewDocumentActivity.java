@@ -16,20 +16,17 @@
 
 package com.renard.ocr.documents.creation;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -56,11 +53,12 @@ import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.TextFairyApplication;
+import com.renard.ocr.documents.creation.NewDocumentActivityViewModel.Status;
 import com.renard.ocr.documents.creation.crop.CropImageActivity;
 import com.renard.ocr.documents.creation.visualisation.OCRActivity;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
@@ -117,7 +115,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     protected final static int REQUEST_CODE_OCR = 3;
 
     private static final String DATE_CAMERA_INTENT_STARTED_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.dateCameraIntentStarted";
-    private static final String STATE_RECEIVER_REGISTERED = "state_receiver_registered";
     private static final String IMAGE_SOURCE = "image_source";
     private static Date dateCameraIntentStarted = null;
     private static final String CAMERA_PIC_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
@@ -125,7 +122,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private static Uri cameraPicUri = null;
     private static Uri localCameraPicUri = null;
-    private boolean mReceiverRegistered = false;
     private ImageSource mImageSource = ImageSource.CAMERA;
 
 
@@ -147,9 +143,40 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private ProgressDialog pdfProgressDialog;
     private ProgressDialog deleteProgressDialog;
-    private AsyncTask<Void, Void, ImageLoadAsyncTask.LoadResult> mBitmapLoadTask;
     private CameraResult mCameraResult;
+    private NewDocumentActivityViewModel model;
 
+
+    @Override
+    protected synchronized void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        model = new ViewModelProvider(this).get(NewDocumentActivityViewModel.class);
+        model.getContent().observe(this, status -> {
+            Log.i(LOG_TAG, "content changed " + status);
+            if (status instanceof Status.Success) {
+                Status.Success success = (Status.Success) status;
+                dismissLoadingImageProgressDialog();
+                ((TextFairyApplication) getApplication()).setNativePix(success.getPix().getNativePix());
+
+                AccessibilityManager am = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
+                boolean isAccessibilityEnabled = am.isEnabled();
+                boolean isExploreByTouchEnabled = AccessibilityManagerCompat.isTouchExplorationEnabled(am);
+                final boolean skipCrop = isExploreByTouchEnabled && isAccessibilityEnabled;
+
+                if (skipCrop) {
+                    startOcrActivity(true);
+                } else {
+                    Intent actionIntent = new Intent(NewDocumentActivity.this, CropImageActivity.class);
+                    startActivityForResult(actionIntent, NewDocumentActivity.REQUEST_CODE_CROP_PHOTO);
+                }
+            } else if (status instanceof Status.Loading) {
+                showLoadingImageProgressDialog();
+            } else if (status instanceof Status.Error) {
+                showFileError(((Status.Error) status).getPixLoadStatus());
+            }
+
+        });
+    }
 
     private void checkRam(MemoryWarningDialog.DoAfter doAfter) {
 
@@ -255,10 +282,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         Log.i(LOG_TAG, "onSaveInstanceState" + this);
-        //remember to register the receiver again in #onRestoreInstanceState
-        savedInstanceState.putBoolean(STATE_RECEIVER_REGISTERED, mReceiverRegistered);
-        unRegisterImageLoadedReceiver();
-        //unregister receiver before onSaveInstanceState is called!
         super.onSaveInstanceState(savedInstanceState);
         if (dateCameraIntentStarted != null) {
             savedInstanceState.putLong(DATE_CAMERA_INTENT_STARTED_STATE, dateCameraIntentStarted.getTime());
@@ -270,17 +293,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             savedInstanceState.putString(CAMERA_PIC_LOCAL_URI_STATE, localCameraPicUri.toString());
         }
         savedInstanceState.putInt(IMAGE_SOURCE, mImageSource.ordinal());
-    }
-
-    @TargetApi(11)
-    @Override
-    protected synchronized void onDestroy() {
-        super.onDestroy();
-        unRegisterImageLoadedReceiver();
-        //cancel loading of image if the activity is destroyed for good
-        if (android.os.Build.VERSION.SDK_INT >= 11 && !isChangingConfigurations() && mBitmapLoadTask != null) {
-            mBitmapLoadTask.cancel(false);
-        }
     }
 
     @Override
@@ -298,9 +310,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             localCameraPicUri = Uri.parse(savedInstanceState.getString(CAMERA_PIC_LOCAL_URI_STATE));
         }
 
-        if (savedInstanceState.getBoolean(STATE_RECEIVER_REGISTERED)) {
-            registerImageLoaderReceiver();
-        }
         final int index = savedInstanceState.getInt(IMAGE_SOURCE);
         mImageSource = ImageSource.values()[index];
     }
@@ -386,36 +395,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     protected void loadBitmapFromContentUri(final Uri cameraPicUri, ImageSource source) {
         mCrashLogger.logMessage("Loading " + cameraPicUri.toString() + " from " + source.name());
         mImageSource = source;
-        if (mBitmapLoadTask != null) {
-            mBitmapLoadTask.cancel(true);
-        }
-        AccessibilityManager am = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
-        boolean isAccessibilityEnabled = am.isEnabled();
-        boolean isExploreByTouchEnabled = AccessibilityManagerCompat.isTouchExplorationEnabled(am);
-        final boolean skipCrop = isExploreByTouchEnabled && isAccessibilityEnabled;
-
-        registerImageLoaderReceiver();
-        mBitmapLoadTask = new ImageLoadAsyncTask(this, skipCrop, cameraPicUri).execute();
-
-    }
-
-    private synchronized void unRegisterImageLoadedReceiver() {
-        if (mReceiverRegistered) {
-            Log.i(LOG_TAG, "unRegisterImageLoadedReceiver " + mMessageReceiver);
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-            mReceiverRegistered = false;
-        }
-    }
-
-
-    private synchronized void registerImageLoaderReceiver() {
-        if (!mReceiverRegistered) {
-            Log.i(LOG_TAG, "registerImageLoaderReceiver " + mMessageReceiver);
-            final IntentFilter intentFilter = new IntentFilter(ImageLoadAsyncTask.ACTION_IMAGE_LOADED);
-            intentFilter.addAction(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START);
-            LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, intentFilter);
-            mReceiverRegistered = true;
-        }
+        model.loadContent(cameraPicUri);
     }
 
 
@@ -463,45 +443,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         if (mCameraResult != null) {
             onTakePhotoActivityResult(mCameraResult);
             mCameraResult = null;
-        }
-    }
-
-    // handler for received Intents for the image loaded event
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //I get quite a number of crash reports here saying that I cannot show a dialog after onSaveInstanceState.
-            //However the broadcastReceiver gets unregistered in onSaveInstanceState before i call super().
-            //As a workaround I check for the flag if the receiver is registered
-            //Additionally i use commitAllowStateLoss as its not terribly important to preserve the state of the loading dialog
-            if (mReceiverRegistered) {
-                Log.i(LOG_TAG, "onReceive " + NewDocumentActivity.this);
-                if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADED)) {
-                    unRegisterImageLoadedReceiver();
-                    final long nativePix = intent.getLongExtra(ImageLoadAsyncTask.EXTRA_PIX, 0);
-                    final int statusNumber = intent.getIntExtra(ImageLoadAsyncTask.EXTRA_STATUS, PixLoadStatus.SUCCESS.ordinal());
-                    final boolean skipCrop = intent.getBooleanExtra(ImageLoadAsyncTask.EXTRA_SKIP_CROP, false);
-                    handleLoadedImage(nativePix, PixLoadStatus.values()[statusNumber], skipCrop);
-                } else if (intent.getAction().equalsIgnoreCase(ImageLoadAsyncTask.ACTION_IMAGE_LOADING_START)) {
-                    showLoadingImageProgressDialog();
-                }
-            }
-        }
-    };
-
-    private void handleLoadedImage(long nativePix, PixLoadStatus pixLoadStatus, boolean skipCrop) {
-        dismissLoadingImageProgressDialog();
-        ((TextFairyApplication) getApplication()).setNativePix(nativePix);
-
-        if (pixLoadStatus == PixLoadStatus.SUCCESS) {
-            if (skipCrop) {
-                startOcrActivity(true);
-            } else {
-                Intent actionIntent = new Intent(this, CropImageActivity.class);
-                startActivityForResult(actionIntent, NewDocumentActivity.REQUEST_CODE_CROP_PHOTO);
-            }
-        } else {
-            showFileError(pixLoadStatus);
         }
     }
 
