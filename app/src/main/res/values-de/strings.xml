@@ -284,5 +284,6 @@
     <string name="no_download_manager">Kein DownloadManager gefunden.</string>
     <string name="action_search">Suche</string>
     <string name="action_search_languages">Suche Sprache</string>
+    <string name="could_not_load_pdf">PDF konnte nicht geladen werden</string>
 
 </resources>

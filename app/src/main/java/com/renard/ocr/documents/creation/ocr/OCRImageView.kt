@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.renard.ocr.documents.creation.visualisation
+package com.renard.ocr.documents.creation.ocr
 
 import android.content.Context
 import android.graphics.*
@@ -57,13 +57,13 @@ class OCRImageView : ImageViewTouchBase {
         mTouchedImageRects.clear()
         mTouchedTextRects.clear()
         mImageRects.clear()
-        mTextRects!!.clear()
+        mTextRects.clear()
     }
 
     fun getSelectedImageIndexes(): IntArray {
         val result = IntArray(mTouchedImageRects.size)
         for (i in mTouchedImageRects.indices) {
-            val j = mImageRects!!.indexOf(mTouchedImageRects[i])
+            val j = mImageRects.indexOf(mTouchedImageRects[i])
             result[i] = j
         }
         return result
@@ -72,7 +72,7 @@ class OCRImageView : ImageViewTouchBase {
     fun getSelectedTextIndexes(): IntArray {
         val result = IntArray(mTouchedTextRects.size)
         for (i in mTouchedTextRects.indices) {
-            val j = mTextRects!!.indexOf(mTouchedTextRects[i])
+            val j = mTextRects.indexOf(mTouchedTextRects[i])
             result[i] = j
         }
         return result

@@ -271,4 +271,5 @@
     <string name="no_download_manager">No DownloadManager found.</string>
     <string name="action_search">Search</string>
     <string name="action_search_languages">search languages</string>
+    <string name="could_not_load_pdf">Could not load PDF.</string>
 </resources>

@@ -33,8 +33,12 @@
 
 
         <activity
-                android:name=".documents.creation.visualisation.OCRActivity"
+                android:name=".documents.creation.ocr.OCRActivity"
                 android:launchMode="singleTop"/>
+        <activity
+                android:name=".documents.creation.ocr.OcrPdfActivity"
+                android:launchMode="singleTop"/>
+
         <activity
                 android:name=".documents.viewing.single.DocumentActivity"
                 android:configChanges="keyboardHidden|keyboard"
@@ -98,7 +102,7 @@
             </intent-filter>
 
         </activity>
-        
+
         <receiver android:name=".main_menu.language.DownloadBroadCastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>

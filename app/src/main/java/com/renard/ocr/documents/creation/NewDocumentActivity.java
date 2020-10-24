@@ -48,14 +48,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.googlecode.tesseract.android.OCR;
-import com.googlecode.tesseract.android.OcrProgress;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
 import com.renard.ocr.documents.creation.crop.CropImageActivity;
-import com.renard.ocr.documents.creation.visualisation.OCRActivity;
+import com.renard.ocr.documents.creation.ocr.OCRActivity;
+import com.renard.ocr.documents.creation.ocr.OcrPdfActivity;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
 import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns;
 import com.renard.ocr.documents.viewing.grid.DocumentGridActivity;
@@ -78,8 +76,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import kotlin.Unit;
 
 import static com.renard.ocr.documents.viewing.single.DocumentActivity.EXTRA_ACCURACY;
 import static com.renard.ocr.documents.viewing.single.DocumentActivity.EXTRA_LANGUAGE;
@@ -353,12 +349,21 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     protected void loadBitmapFromContentUri(final Uri cameraPicUri, ImageSource source) {
         mCrashLogger.logMessage("Loading " + cameraPicUri.toString() + " from " + source.name());
-        Intent intent = new Intent(this, OCRActivity.class);
-        intent.putExtra(EXTRA_IMAGE_SOURCE, source.name());
-        intent.setData(cameraPicUri);
-        intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
-        startActivityForResult(intent, REQUEST_CODE_OCR);
+        final String type = getContentResolver().getType(cameraPicUri);
+        if ((cameraPicUri.getPath().endsWith(".pdf")) || "application/pdf".equalsIgnoreCase(type)) {
 
+            Intent intent = new Intent(this, OcrPdfActivity.class);
+            intent.setData(cameraPicUri);
+            intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
+            startActivityForResult(intent, REQUEST_CODE_OCR);
+
+        } else {
+            Intent intent = new Intent(this, OCRActivity.class);
+            intent.putExtra(EXTRA_IMAGE_SOURCE, source.name());
+            intent.setData(cameraPicUri);
+            intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
+            startActivityForResult(intent, REQUEST_CODE_OCR);
+        }
     }
 
     @Override

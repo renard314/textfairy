@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.renard.ocr.documents.creation.visualisation
+package com.renard.ocr.documents.creation.ocr
 
 import android.content.Intent
 import android.net.Uri
@@ -36,15 +36,14 @@ import com.renard.ocr.databinding.ActivityOcrBinding
 import com.renard.ocr.documents.creation.DocumentStore.saveDocument
 import com.renard.ocr.documents.creation.NewDocumentActivity
 import com.renard.ocr.documents.creation.NewDocumentActivity.EXTRA_IMAGE_SOURCE
-import com.renard.ocr.documents.creation.NewDocumentActivityViewModel
-import com.renard.ocr.documents.creation.NewDocumentActivityViewModel.Status.*
+import com.renard.ocr.documents.creation.ocr.ImageLoadingViewModel.Status.*
 import com.renard.ocr.documents.creation.ProgressDialogFragment
 import com.renard.ocr.documents.creation.crop.CropImageActivity
 import com.renard.ocr.documents.creation.crop.CropImageActivity.RESULT_NEW_IMAGE
-import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutChoseListener
-import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutKind
-import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutKind.COMPLEX
-import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutKind.SIMPLE
+import com.renard.ocr.documents.creation.ocr.LayoutQuestionDialog.LayoutChoseListener
+import com.renard.ocr.documents.creation.ocr.LayoutQuestionDialog.LayoutKind
+import com.renard.ocr.documents.creation.ocr.LayoutQuestionDialog.LayoutKind.COMPLEX
+import com.renard.ocr.documents.creation.ocr.LayoutQuestionDialog.LayoutKind.SIMPLE
 import com.renard.ocr.documents.viewing.single.DocumentActivity.EXTRA_ACCURACY
 import com.renard.ocr.documents.viewing.single.DocumentActivity.EXTRA_LANGUAGE
 
@@ -112,7 +111,7 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
     }
 
     private fun loadImage() {
-        val model by viewModels<NewDocumentActivityViewModel>()
+        val model by viewModels<ImageLoadingViewModel>()
         model.content.observe(this) { status ->
             when (status) {
                 is Success -> {
@@ -132,11 +131,8 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
                 is Loading -> {
                     showLoadingImageProgressDialog()
                 }
-                is NewDocumentActivityViewModel.Status.Error -> {
+                is ImageLoadingViewModel.Status.Error -> {
                     NewDocumentActivity.showFileError(this, status.pixLoadStatus)
-                }
-                is SuccessPdf -> {
-                    //TODO remove
                 }
             }
         }

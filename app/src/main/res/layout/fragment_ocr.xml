@@ -5,7 +5,7 @@
     android:background="#ff000000"
     android:keepScreenOn="true">
 
-    <com.renard.ocr.documents.creation.visualisation.OCRImageView
+    <com.renard.ocr.documents.creation.ocr.OCRImageView
         android:id="@+id/progress_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

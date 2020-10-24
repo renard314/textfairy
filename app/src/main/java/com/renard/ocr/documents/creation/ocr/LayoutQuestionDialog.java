@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.renard.ocr.documents.creation.visualisation;
+package com.renard.ocr.documents.creation.ocr;
 
 import android.app.Activity;
 import android.app.Dialog;

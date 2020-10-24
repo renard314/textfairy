@@ -1,4 +1,4 @@
-package com.renard.ocr.documents.creation.visualisation
+package com.renard.ocr.documents.creation.ocr
 
 import android.os.Bundle
 import android.view.LayoutInflater

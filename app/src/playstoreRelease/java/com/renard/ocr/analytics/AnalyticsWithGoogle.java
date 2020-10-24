@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.renard.ocr.cropimage.image_processing.BlurDetectionResult;
-import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog;
+import com.renard.ocr.documents.creation.ocr.LayoutQuestionDialog;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 
 /**

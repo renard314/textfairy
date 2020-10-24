@@ -1,4 +1,4 @@
-package com.renard.ocr.documents.creation
+package com.renard.ocr.documents.creation.ocr
 
 import android.app.Application
 import android.net.Uri
@@ -10,21 +10,20 @@ import com.googlecode.leptonica.android.Pix
 import com.googlecode.leptonica.android.ReadFile
 import com.googlecode.leptonica.android.Scale
 import com.renard.ocr.TextFairyApplication
-import com.renard.ocr.documents.creation.ContentLoading.loadAsPdf
-import com.renard.ocr.documents.creation.NewDocumentActivityViewModel.Status.*
+import com.renard.ocr.documents.creation.PixLoadStatus
+import com.renard.ocr.documents.creation.ocr.ImageLoadingViewModel.Status.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 import kotlin.math.sqrt
 
-class NewDocumentActivityViewModel(application: Application) : AndroidViewModel(application) {
+class ImageLoadingViewModel(application: Application) : AndroidViewModel(application) {
 
     private val application: TextFairyApplication = getApplication()
 
     sealed class Status {
         object Loading : Status()
         data class Success(val pix: Pix) : Status()
-        data class SuccessPdf(val pdf: PdfDocumentWrapper) : Status()
         data class Error(val pixLoadStatus: PixLoadStatus) : Status()
     }
 
@@ -36,16 +35,12 @@ class NewDocumentActivityViewModel(application: Application) : AndroidViewModel(
     fun loadContent(contentUri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
             _content.postValue(Loading)
-            val type = application.contentResolver.getType(contentUri)
-            val result = if (contentUri.path?.endsWith(".pdf") == true || "application/pdf".equals(type, ignoreCase = true)) {
-                loadAsPdf(application, contentUri)
-                        ?.run { SuccessPdf(this) }
-                        ?: Error(PixLoadStatus.IO_ERROR)
-            } else {
-                ReadFile.load(application, contentUri)
-                        ?.run { Success(maybeUpscale(this)) }
-                        ?: Error(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED)
-            }
+            val result =
+                    ReadFile.load(application, contentUri)
+                            ?.run { Success(maybeUpscale(this)) }
+                            ?: Error(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED)
+
+
             if (result is Error) {
                 application.crashLogger.setString("content uri", contentUri.toString())
                 application.crashLogger.logException(IOException(result.pixLoadStatus.name))

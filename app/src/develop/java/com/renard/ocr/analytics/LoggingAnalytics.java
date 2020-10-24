@@ -3,7 +3,7 @@ package com.renard.ocr.analytics;
 import android.util.Log;
 
 import com.renard.ocr.cropimage.image_processing.BlurDetectionResult;
-import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog;
+import com.renard.ocr.documents.creation.ocr.LayoutQuestionDialog;
 import com.renard.ocr.main_menu.language.OcrLanguage;
 
 public class LoggingAnalytics implements Analytics {

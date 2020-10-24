@@ -1,16 +1,11 @@
 package com.renard.ocr.documents.creation
 
-import android.content.Context
 import android.graphics.Bitmap
-import android.net.Uri
-import android.os.ParcelFileDescriptor
 import com.googlecode.leptonica.android.Pix
 import com.googlecode.leptonica.android.ReadFile
 import com.shockwave.pdfium.PdfDocument
 import com.shockwave.pdfium.PdfiumCore
 import java.io.Closeable
-import java.io.IOException
-
 
 class PdfDocumentWrapper(private val pdfiumCore: PdfiumCore, private val pdfDocument: PdfDocument) : Closeable {
 
@@ -31,21 +26,5 @@ class PdfDocumentWrapper(private val pdfiumCore: PdfiumCore, private val pdfDocu
 
     override fun close() {
         pdfiumCore.closeDocument(pdfDocument)
-    }
-}
-
-object ContentLoading {
-    fun loadAsPdf(context: Context, cameraPicUri: Uri): PdfDocumentWrapper? {
-        return try {
-            val fixedUri = Uri.parse(cameraPicUri.toString().replace("/file/file", "/file"))
-            val fd: ParcelFileDescriptor = context.contentResolver.openFileDescriptor(fixedUri, "r")
-                    ?: return null
-            val pdfiumCore = PdfiumCore(context)
-            val pdfDocument = pdfiumCore.newDocument(fd)
-            PdfDocumentWrapper(pdfiumCore, pdfDocument)
-        } catch (ex: IOException) {
-            ex.printStackTrace()
-            null
-        }
     }
 }
