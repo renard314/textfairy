@@ -158,7 +158,7 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
             if (imageUri != null) {
                 loadBitmapFromContentUri(imageUri, ImageSource.INTENT);
             } else {
-                showFileError(PixLoadStatus.IMAGE_COULD_NOT_BE_READ, new DialogInterface.OnClickListener() {
+                showFileError(this, PixLoadStatus.IMAGE_COULD_NOT_BE_READ, new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

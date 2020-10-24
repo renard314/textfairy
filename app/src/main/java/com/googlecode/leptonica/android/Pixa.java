@@ -18,6 +18,8 @@ package com.googlecode.leptonica.android;
 
 import android.graphics.Rect;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -330,6 +332,7 @@ public class Pixa implements Iterable<Pix> {
      *
      * @return an ArrayList of Box bounding Rects
      */
+    @NonNull
     public ArrayList<Rect> getBoxRects() {
         final int pixaCount = nativeGetCount(mNativePixa);
         final int[] buffer = new int[4];

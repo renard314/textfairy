@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013, 2014, 2015 Renard Wellnitz.
+ * Copyright (C) Renard Wellnitz.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,46 +15,38 @@
  */
 package com.renard.ocr.documents.creation.visualisation
 
-import android.Manifest
-import android.app.Activity
-import android.content.ContentValues
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.RemoteException
-import android.text.format.DateFormat
-import android.view.View
-import android.widget.Button
+import android.util.Log
+import android.view.accessibility.AccessibilityManager
 import android.widget.Toast
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import butterknife.BindView
-import butterknife.ButterKnife
+import androidx.activity.viewModels
+import androidx.core.view.accessibility.AccessibilityManagerCompat
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.commit
 import com.googlecode.leptonica.android.Pix
 import com.googlecode.tesseract.android.OCR
-import com.googlecode.tesseract.android.OcrProgress
-import com.googlecode.tesseract.android.PreviewPicture
+import com.googlecode.tesseract.android.OcrProgress.*
+import com.googlecode.tesseract.android.OcrProgress.Error
 import com.renard.ocr.MonitoredActivity
 import com.renard.ocr.R
 import com.renard.ocr.TextFairyApplication
+import com.renard.ocr.databinding.ActivityOcrBinding
+import com.renard.ocr.documents.creation.DocumentStore.saveDocument
+import com.renard.ocr.documents.creation.NewDocumentActivity
+import com.renard.ocr.documents.creation.NewDocumentActivity.EXTRA_IMAGE_SOURCE
+import com.renard.ocr.documents.creation.NewDocumentActivityViewModel
+import com.renard.ocr.documents.creation.NewDocumentActivityViewModel.Status.*
+import com.renard.ocr.documents.creation.ProgressDialogFragment
+import com.renard.ocr.documents.creation.crop.CropImageActivity
+import com.renard.ocr.documents.creation.crop.CropImageActivity.RESULT_NEW_IMAGE
 import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutChoseListener
 import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutKind
-import com.renard.ocr.documents.viewing.DocumentContentProvider
-import com.renard.ocr.documents.viewing.DocumentContentProvider.Columns
-import com.renard.ocr.documents.viewing.single.DocumentActivity
-import com.renard.ocr.util.Screen
-import com.renard.ocr.util.Util
-import de.greenrobot.event.EventBus
-import java.io.File
-import java.io.IOException
-import java.util.*
-import kotlin.jvm.Throws
-
-private const val LOG_TAG = "OcrActivity"
+import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutKind.COMPLEX
+import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog.LayoutKind.SIMPLE
+import com.renard.ocr.documents.viewing.single.DocumentActivity.EXTRA_ACCURACY
+import com.renard.ocr.documents.viewing.single.DocumentActivity.EXTRA_LANGUAGE
 
 
 /**
@@ -64,240 +56,175 @@ private const val LOG_TAG = "OcrActivity"
  */
 class OCRActivity : MonitoredActivity(), LayoutChoseListener {
 
-    @BindView(R.id.column_pick_completed)
-    lateinit var mButtonStartOCR: Button
-
-    @BindView(R.id.progress_image)
-    lateinit var mImageView: OCRImageView
-
-    private var mOcrLanguage: String? = null
-    private lateinit var mOCR: OCR
-    private var mParentId = -1
+    private lateinit var binding: ActivityOcrBinding
+    private val ocrModel: OCR by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Screen.lockOrientation(this)
-        val nativePix = (application as TextFairyApplication).nativePix
-        if (nativePix == null) {
-            setResult(Activity.RESULT_CANCELED)
-            finish()
-            return
-        }
-        mParentId = intent.getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1)
-
-        mOCR = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return OCR(Pix(nativePix), application as TextFairyApplication) as T
-            }
-
-        }).get(OCR::class.java)
-
-        setContentView(R.layout.activity_ocr)
-        ButterKnife.bind(this)
+        loadImage()
+        setupOcr()
+        binding = ActivityOcrBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initToolbar()
-        mOCR.getOcrProgress().observe(this, Observer<OcrProgress> {
-            when (it) {
-                is OcrProgress.Message -> setToolbarMessage(it.message)
-                is OcrProgress.LayoutElements -> onLayoutElements(it)
-                is OcrProgress.Progress -> onProgress(it)
-                is OcrProgress.Result -> onRecognisedText(it)
-                is OcrProgress.Error -> onError(it)
-            }
-        })
-        mOCR.getPreviewPictures().observe(this, Observer<PreviewPicture> {
-            previewPicture(it?.bitmap)
-        })
-        askUserAboutDocumentLayout()
-
     }
 
-    private fun onError(it: OcrProgress.Error) {
-        Toast.makeText(applicationContext, getText(it.message), Toast.LENGTH_LONG).show()
-        Screen.unlockOrientation(this@OCRActivity)
+    private fun setupOcr() {
+        ocrModel.getOcrProgress().observe(this, {
+            when (it) {
+                is Message -> binding.toolbar.toolbarText.setText(it.message)
+                is LayoutElements -> {
+                    anaLytics.sendScreenView("Pick Columns")
+                    binding.toolbar.toolbarText.setText(R.string.progress_choose_columns)
+                }
+                is Result -> onOcrResult(it)
+                is Error -> onOcrError(it)
+            }
+        })
+    }
+
+    private fun onOcrError(it: Error) {
+        Toast.makeText(this, getText(it.message), Toast.LENGTH_LONG).show()
+        setResult(RESULT_CANCELED)
         finish()
     }
 
-    private fun onRecognisedText(it: OcrProgress.Result) {
-        saveDocument(it.nativePix, it.hocrText, it.utf8Text, it.accuracy)
-    }
-
-    private fun onLayoutElements(it: OcrProgress.LayoutElements) {
-
-        mImageView.setImageRects(it.imageBounds)
-        mImageView.setTextRects(it.columnBounds)
-
-        mButtonStartOCR.visibility = View.VISIBLE
-        mButtonStartOCR.setOnClickListener { view ->
-            val selectedTexts = mImageView.selectedTextIndexes
-            val selectedImages = mImageView.selectedImageIndexes
-            if (selectedTexts.isNotEmpty() || selectedImages.isNotEmpty()) {
-                mAnalytics.sendScreenView("Ocr")
-                mImageView.clearAllProgressInfo()
-                mOCR.startOCRForComplexLayout(
-                        this@OCRActivity,
-                        mOcrLanguage!!,
-                        it.columns,
-                        it.images,
-                        selectedTexts,
-                        selectedImages
-                )
-                mButtonStartOCR.visibility = View.GONE
+    private fun onOcrResult(it: Result) {
+        val parentId = intent.getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1)
+        saveDocument(this,
+                it.pix.nativePix,
+                it.hocrText,
+                it.utf8Text,
+                parentId,
+                it.language
+        ) { uri: Uri? ->
+            if (uri != null) {
+                val intent = Intent()
+                intent.data = uri
+                intent.putExtra(EXTRA_ACCURACY, it.accuracy)
+                intent.putExtra(EXTRA_LANGUAGE, it.language)
+                setResult(RESULT_OK, intent)
+                finish()
             } else {
-                Toast.makeText(
-                        applicationContext,
-                        R.string.please_tap_on_column,
-                        Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-        mAnalytics.sendScreenView("Pick Columns")
-
-        setToolbarMessage(R.string.progress_choose_columns)
-
-    }
-
-    private fun onProgress(it: OcrProgress.Progress) {
-        mImageView.setProgress(it.percent, it.wordBounds, it.pageBounds)
-    }
-
-    override fun onLayoutChosen(layoutKind: LayoutKind, ocrLanguage: String) {
-        if (layoutKind == LayoutKind.DO_NOTHING) {
-            //saveDocument(mNativePix, null, null, 0)
-            //TODO
-        } else {
-            mOcrLanguage = ocrLanguage
-
-            setToolbarMessage(R.string.progress_start)
-
-            if (layoutKind == LayoutKind.SIMPLE) {
-                mAnalytics.sendScreenView("Ocr")
-                mOCR.startOCRForSimpleLayout(this@OCRActivity, ocrLanguage, mImageView.width, mImageView.height)
-            } else if (layoutKind == LayoutKind.COMPLEX) {
-                mOCR.startLayoutAnalysis(mImageView.width, mImageView.height)
+                setResult(RESULT_CANCELED)
+                finish()
             }
         }
     }
 
-    private fun previewPicture(bitmap: Bitmap?) {
-        if (bitmap == null) {
+    private fun loadImage() {
+        val model by viewModels<NewDocumentActivityViewModel>()
+        model.content.observe(this) { status ->
+            when (status) {
+                is Success -> {
+                    dismissLoadingImageProgressDialog()
+                    (application as TextFairyApplication).nativePix = status.pix.nativePix
+                    val am = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
+                    val isAccessibilityEnabled = am.isEnabled
+                    val isExploreByTouchEnabled = AccessibilityManagerCompat.isTouchExplorationEnabled(am)
+                    val skipCrop = isExploreByTouchEnabled && isAccessibilityEnabled
+                    if (skipCrop) {
+                        askForLayout()
+                    } else {
+                        val actionIntent = Intent(this, CropImageActivity::class.java)
+                        startActivityForResult(actionIntent, REQUEST_CODE_CROP_PHOTO)
+                    }
+                }
+                is Loading -> {
+                    showLoadingImageProgressDialog()
+                }
+                is NewDocumentActivityViewModel.Status.Error -> {
+                    NewDocumentActivity.showFileError(this, status.pixLoadStatus)
+                }
+                is SuccessPdf -> {
+                    //TODO remove
+                }
+            }
+        }
+        model.loadContent(intent.data!!)
+    }
+
+    private fun askForLayout() {
+        supportFragmentManager.commit {
+            add(LayoutQuestionDialog.newInstance(), LayoutQuestionDialog.TAG)
+            add(R.id.fragment_container, OcrFragment(), OCR_FRAGMENT_TAG)
+        }
+    }
+
+    override fun onLayoutChosen(layoutKind: LayoutKind, language: String) {
+        binding.toolbar.toolbarText.setText(R.string.progress_start)
+        val nativePix = (application as TextFairyApplication).nativePix!!
+        when (layoutKind) {
+            SIMPLE -> {
+                anaLytics.sendScreenView("Ocr")
+                ocrModel.startOCRForSimpleLayout(this, Pix(nativePix), language)
+            }
+            COMPLEX -> {
+                ocrModel.startLayoutAnalysis(Pix(nativePix), language)
+            }
+        }
+    }
+
+    override fun onLayoutSelectionCancelled() {
+        setResult(RESULT_CANCELED)
+        finish()
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != REQUEST_CODE_CROP_PHOTO) {
             return
         }
-        mImageView.setImageBitmapResetBase(bitmap, true, 0)
-    }
-
-    private fun saveDocument(pix: Long, hocrString: String?, utf8String: String?, accuracy: Int) {
-
-        Util.startBackgroundJob(this@OCRActivity, "",
-                getText(R.string.saving_document).toString(), {
-            var imageFile: File? = null
-            var documentUri: Uri? = null
-
-            try {
-                imageFile = saveImage(pix)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                runOnUiThread {
-                    Toast.makeText(
-                            applicationContext,
-                            getText(R.string.error_create_file),
-                            Toast.LENGTH_LONG).show()
-                }
+        when (resultCode) {
+            RESULT_OK -> {
+                askForLayout()
             }
-
-            try {
-
-                documentUri = saveDocumentToDB(imageFile, hocrString, utf8String)
-                if (imageFile != null) {
-                    Util.createThumbnail(this@OCRActivity, imageFile, Integer.valueOf(documentUri!!.lastPathSegment!!))
-                }
-            } catch (e: RemoteException) {
-                e.printStackTrace()
-
-                runOnUiThread {
-                    Toast.makeText(
-                            applicationContext,
-                            getText(R.string.error_create_file),
-                            Toast.LENGTH_LONG).show()
-                }
-            } finally {
-                if (documentUri != null && !isFinishing) {
-                    startActivity(
-                            Intent(this@OCRActivity, DocumentActivity::class.java).apply {
-                                putExtra(DocumentActivity.EXTRA_ACCURACY, accuracy)
-                                putExtra(DocumentActivity.EXTRA_LANGUAGE, mOcrLanguage)
-                                data = documentUri
-                                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            }
-                    )
-                    finish()
-                    Screen.unlockOrientation(this@OCRActivity)
-                }
+            RESULT_NEW_IMAGE -> {
+                val intent = Intent()
+                intent.putExtra(EXTRA_IMAGE_SOURCE, intent.getStringExtra(EXTRA_IMAGE_SOURCE))
+                setResult(resultCode, intent)
+                finish()
             }
-        }, Handler())
-
-    }
-
-    @Throws(IOException::class)
-    private fun saveImage(p: Long): File {
-        val id = DateFormat.format("ssmmhhddMMyy", Date(System.currentTimeMillis()))
-        return Util.savePixToSD(this, Pix(p), id.toString())
-    }
-
-    @Throws(RemoteException::class)
-    private fun saveDocumentToDB(imageFile: File?, hocr: String?, plainText: String?): Uri? {
-        val client = contentResolver.acquireContentProviderClient(DocumentContentProvider.CONTENT_URI)
-        try {
-            return client?.insert(DocumentContentProvider.CONTENT_URI, ContentValues().apply {
-                if (imageFile != null) {
-                    put(DocumentContentProvider.Columns.PHOTO_PATH, imageFile.path)
-                }
-                if (hocr != null) {
-                    put(Columns.HOCR_TEXT, hocr)
-                }
-                if (plainText != null) {
-                    put(Columns.OCR_TEXT, plainText)
-                }
-                if (mParentId > -1) {
-                    put(Columns.PARENT_ID, mParentId)
-                }
-                put(Columns.OCR_LANG, mOcrLanguage)
-            })
-        } finally {
-            client?.release()
+            RESULT_CANCELED -> {
+                setResult(RESULT_CANCELED)
+                finish()
+            }
         }
     }
 
+    override fun finish() {
+        super.finish()
+        (application as TextFairyApplication).nativePix = null
+    }
 
     override fun getHintDialogId() = -1
 
-    private fun askUserAboutDocumentLayout() {
-        LayoutQuestionDialog.newInstance().show(supportFragmentManager, LayoutQuestionDialog.TAG)
-    }
+    override fun getScreenName() = ""
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(OCR_LANGUAGE, mOcrLanguage)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        if (mOcrLanguage == null) {
-            mOcrLanguage = savedInstanceState.getString(OCR_LANGUAGE)
+    private fun dismissLoadingImageProgressDialog() {
+        val prev = supportFragmentManager.findFragmentByTag(IMAGE_LOAD_PROGRESS_TAG)
+        if (prev != null) {
+            Log.i(LOG_TAG, "dismissing dialog")
+            val df = prev as DialogFragment
+            df.dismissAllowingStateLoss()
+        } else {
+            Log.i(LOG_TAG, "cannot dismiss dialog. its null! $this")
         }
     }
 
-    override fun getScreenName() = ""
-
-    override fun onDestroy() {
-        super.onDestroy()
-        EventBus.getDefault().unregister(this)
-        mImageView.clear()
-
+    private fun showLoadingImageProgressDialog() {
+        Log.i(LOG_TAG, "showLoadingImageProgressDialog")
+        supportFragmentManager.commit(true){
+            add(ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image),IMAGE_LOAD_PROGRESS_TAG)
+        }
     }
 
     companion object {
+        private const val IMAGE_LOAD_PROGRESS_TAG = "image_load_progress"
+        private val LOG_TAG = OCRActivity::class.java.simpleName
+        private const val OCR_FRAGMENT_TAG = "OCR"
+        const val REQUEST_CODE_CROP_PHOTO = 2
         const val EXTRA_PARENT_DOCUMENT_ID = "parent_id"
-        private const val OCR_LANGUAGE = "ocr_language"
-        const val EXTRA_USE_ACCESSIBILITY_MODE = "ACCESSIBILTY_MODE"
     }
+
 }

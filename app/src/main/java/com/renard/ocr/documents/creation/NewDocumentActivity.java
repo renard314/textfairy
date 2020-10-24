@@ -42,23 +42,18 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
-import androidx.core.view.accessibility.AccessibilityManagerCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.googlecode.tesseract.android.OCR;
+import com.googlecode.tesseract.android.OcrProgress;
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
-import com.renard.ocr.TextFairyApplication;
-import com.renard.ocr.documents.creation.NewDocumentActivityViewModel.Status;
 import com.renard.ocr.documents.creation.crop.CropImageActivity;
 import com.renard.ocr.documents.creation.visualisation.OCRActivity;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
@@ -84,9 +79,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import kotlin.Unit;
+
+import static com.renard.ocr.documents.viewing.single.DocumentActivity.EXTRA_ACCURACY;
+import static com.renard.ocr.documents.viewing.single.DocumentActivity.EXTRA_LANGUAGE;
+
 /**
  * activities which extend this activity can create a new document. this class
- * also containes the code for functionality which is shared by
+ * also contains the code for functionality which is shared by
  * {@link DocumentGridActivity} and {@link DocumentActivity}
  *
  * @author renard
@@ -94,7 +94,6 @@ import java.util.Set;
 public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private final static String LOG_TAG = NewDocumentActivity.class.getSimpleName();
-    private final static String IMAGE_LOAD_PROGRESS_TAG = "image_load_progress";
 
 
     private static final int PDF_PROGRESS_DIALOG_ID = 0;
@@ -111,19 +110,17 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private final static int REQUEST_CODE_MAKE_PHOTO = 0;
     private final static int REQUEST_CODE_PICK_PHOTO = 1;
-    final static int REQUEST_CODE_CROP_PHOTO = 2;
+
     protected final static int REQUEST_CODE_OCR = 3;
 
     private static final String DATE_CAMERA_INTENT_STARTED_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.dateCameraIntentStarted";
-    private static final String IMAGE_SOURCE = "image_source";
+    public static final String EXTRA_IMAGE_SOURCE = "image_source";
     private static Date dateCameraIntentStarted = null;
     private static final String CAMERA_PIC_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_URI_STATE";
     private static final String CAMERA_PIC_LOCAL_URI_STATE = "com.renard.ocr.android.photo.TakePhotoActivity.CAMERA_PIC_LOCAL_URI_STATE";
 
     private static Uri cameraPicUri = null;
     private static Uri localCameraPicUri = null;
-    private ImageSource mImageSource = ImageSource.CAMERA;
-
 
     private static class CameraResult {
         public CameraResult(int requestCode, int resultCode, Intent data, ImageSource source) {
@@ -144,42 +141,8 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     private ProgressDialog pdfProgressDialog;
     private ProgressDialog deleteProgressDialog;
     private CameraResult mCameraResult;
-    private NewDocumentActivityViewModel model;
-
-
-    @Override
-    protected synchronized void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        model = new ViewModelProvider(this).get(NewDocumentActivityViewModel.class);
-        model.getContent().observe(this, status -> {
-            Log.i(LOG_TAG, "content changed " + status);
-            if (status instanceof Status.Success) {
-                Status.Success success = (Status.Success) status;
-                dismissLoadingImageProgressDialog();
-                ((TextFairyApplication) getApplication()).setNativePix(success.getPix().getNativePix());
-
-                AccessibilityManager am = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
-                boolean isAccessibilityEnabled = am.isEnabled();
-                boolean isExploreByTouchEnabled = AccessibilityManagerCompat.isTouchExplorationEnabled(am);
-                final boolean skipCrop = isExploreByTouchEnabled && isAccessibilityEnabled;
-
-                if (skipCrop) {
-                    startOcrActivity(true);
-                } else {
-                    Intent actionIntent = new Intent(NewDocumentActivity.this, CropImageActivity.class);
-                    startActivityForResult(actionIntent, NewDocumentActivity.REQUEST_CODE_CROP_PHOTO);
-                }
-            } else if (status instanceof Status.Loading) {
-                showLoadingImageProgressDialog();
-            } else if (status instanceof Status.Error) {
-                showFileError(((Status.Error) status).getPixLoadStatus());
-            }
-
-        });
-    }
 
     private void checkRam(MemoryWarningDialog.DoAfter doAfter) {
-
         long availableMegs = MemoryInfo.getFreeMemory(this);
         Log.i(LOG_TAG, "available ram = " + availableMegs);
         if (availableMegs < MemoryInfo.MINIMUM_RECOMMENDED_RAM) {
@@ -237,7 +200,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
             } catch (ActivityNotFoundException e) {
-                showFileError(PixLoadStatus.CAMERA_APP_NOT_FOUND);
+                showFileError(this, PixLoadStatus.CAMERA_APP_NOT_FOUND);
             }
         });
 
@@ -292,7 +255,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         if (localCameraPicUri != null) {
             savedInstanceState.putString(CAMERA_PIC_LOCAL_URI_STATE, localCameraPicUri.toString());
         }
-        savedInstanceState.putInt(IMAGE_SOURCE, mImageSource.ordinal());
     }
 
     @Override
@@ -309,9 +271,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         if (savedInstanceState.containsKey(CAMERA_PIC_LOCAL_URI_STATE)) {
             localCameraPicUri = Uri.parse(savedInstanceState.getString(CAMERA_PIC_LOCAL_URI_STATE));
         }
-
-        final int index = savedInstanceState.getInt(IMAGE_SOURCE);
-        mImageSource = ImageSource.values()[index];
     }
 
     @Override
@@ -380,43 +339,52 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                 try {
                     cameraPicUri = mCameraResult.mData.getData();
                 } catch (Exception e) {
-                    showFileError(PixLoadStatus.CAMERA_APP_ERROR);
+                    showFileError(this, PixLoadStatus.CAMERA_APP_ERROR);
                 }
             }
 
             if (cameraPicUri != null) {
                 loadBitmapFromContentUri(cameraPicUri, mCameraResult.mSource);
             } else {
-                showFileError(PixLoadStatus.CAMERA_NO_IMAGE_RETURNED);
+                showFileError(this, PixLoadStatus.CAMERA_NO_IMAGE_RETURNED);
             }
         }
     }
 
     protected void loadBitmapFromContentUri(final Uri cameraPicUri, ImageSource source) {
         mCrashLogger.logMessage("Loading " + cameraPicUri.toString() + " from " + source.name());
-        mImageSource = source;
-        model.loadContent(cameraPicUri);
-    }
+        Intent intent = new Intent(this, OCRActivity.class);
+        intent.putExtra(EXTRA_IMAGE_SOURCE, source.name());
+        intent.setData(cameraPicUri);
+        intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
+        startActivityForResult(intent, REQUEST_CODE_OCR);
 
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
-                case REQUEST_CODE_CROP_PHOTO: {
-                    startOcrActivity(false);
-                    break;
-                }
                 case REQUEST_CODE_MAKE_PHOTO:
                     mCameraResult = new CameraResult(requestCode, resultCode, data, ImageSource.CAMERA);
                     break;
                 case REQUEST_CODE_PICK_PHOTO:
                     mCameraResult = new CameraResult(requestCode, resultCode, data, ImageSource.PICK);
                     break;
+                case REQUEST_CODE_OCR:
+                    final Intent intent = new Intent(this, DocumentActivity.class);
+                    intent.putExtra(EXTRA_ACCURACY, data.getIntExtra(EXTRA_ACCURACY,0));
+                    intent.putExtra(EXTRA_LANGUAGE, data.getStringExtra(EXTRA_LANGUAGE));
+                    intent.setData(data.getData());
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    break;
             }
         } else if (CropImageActivity.RESULT_NEW_IMAGE == resultCode) {
-            switch (mImageSource) {
+            String source = data.getStringExtra(EXTRA_IMAGE_SOURCE);
+            switch (ImageSource.valueOf(source)) {
                 case PICK:
                     startGallery();
                     break;
@@ -426,15 +394,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                     startCamera();
                     break;
             }
-
         }
-    }
-
-    void startOcrActivity(boolean accessibilityMode) {
-        Intent intent = new Intent(this, OCRActivity.class);
-        intent.putExtra(OCRActivity.EXTRA_USE_ACCESSIBILITY_MODE, accessibilityMode);
-        intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
-        startActivityForResult(intent, REQUEST_CODE_OCR);
     }
 
     @Override
@@ -446,31 +406,12 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         }
     }
 
-    private void dismissLoadingImageProgressDialog() {
-        Fragment prev = getSupportFragmentManager().findFragmentByTag(IMAGE_LOAD_PROGRESS_TAG);
-        if (prev != null) {
-            Log.i(LOG_TAG, "dismissing dialog");
-            DialogFragment df = (DialogFragment) prev;
-            df.dismissAllowingStateLoss();
-        } else {
-            Log.i(LOG_TAG, "cannot dismiss dialog. its null! " + this);
-        }
+
+    public static void showFileError(Context context, PixLoadStatus status) {
+        showFileError(context, status, null);
     }
 
-    private void showLoadingImageProgressDialog() {
-        Log.i(LOG_TAG, "showLoadingImageProgressDialog");
-        //dialog.show(getSupportFragmentManager(), null);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        final ProgressDialogFragment dialog = ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image);
-        ft.add(dialog, IMAGE_LOAD_PROGRESS_TAG);
-        ft.commitAllowingStateLoss();
-    }
-
-    void showFileError(PixLoadStatus status) {
-        showFileError(status, null);
-    }
-
-    protected void showFileError(PixLoadStatus second, OnClickListener positiveListener) {
+    public static void showFileError(Context context, PixLoadStatus second, OnClickListener positiveListener) {
         int textId;
         switch (second) {
             case IMAGE_NOT_32_BIT:
@@ -504,9 +445,9 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                 textId = R.string.error_could_not_take_photo;
         }
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(context);
         alert.setTitle(R.string.error_title);
-        final TextView textview = new TextView(this);
+        final TextView textview = new TextView(context);
         textview.setText(textId);
         alert.setView(textview);
         alert.setPositiveButton(android.R.string.ok, positiveListener);
@@ -652,6 +593,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         }
 
     }
+
 
     /**
      * *******************************************
@@ -970,5 +912,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             return result;
         }
     }
+
 
 }

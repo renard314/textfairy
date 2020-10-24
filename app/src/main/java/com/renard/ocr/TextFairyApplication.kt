@@ -15,16 +15,17 @@
  */
 package com.renard.ocr
 
+import android.content.Context
 import android.os.StrictMode
 import android.util.Log
 import android.view.ViewConfiguration
+import androidx.multidex.MultiDex
 import androidx.multidex.MultiDexApplication
 import com.getkeepsafe.relinker.ReLinker
 import com.renard.ocr.analytics.Analytics
 import com.renard.ocr.analytics.AnalyticsFactory
 import com.renard.ocr.analytics.CrashLogger
 import com.renard.ocr.analytics.CrashLoggerFactory.createCrashLogger
-import com.renard.ocr.main_menu.language.OcrLanguageDataStore
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore.deleteLanguage
 import com.renard.ocr.util.PreferencesUtils
 import com.squareup.leakcanary.LeakCanary
@@ -36,6 +37,11 @@ class TextFairyApplication : MultiDexApplication() {
         private set
 
     var nativePix: Long? = null
+
+    override fun attachBaseContext(base: Context) {
+        MultiDex.install(this);
+        super.attachBaseContext(base);
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -77,9 +83,9 @@ class TextFairyApplication : MultiDexApplication() {
     }
 
     private fun enableStrictMode() {
-        if (BuildConfig.DEBUG) {
-            StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build())
-        }
+//        if (BuildConfig.DEBUG) {
+//            StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build())
+//        }
     }
 
     private fun alwaysShowOverflowButton() {

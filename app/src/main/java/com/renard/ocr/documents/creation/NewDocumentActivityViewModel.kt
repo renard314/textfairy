@@ -10,7 +10,7 @@ import com.googlecode.leptonica.android.Pix
 import com.googlecode.leptonica.android.ReadFile
 import com.googlecode.leptonica.android.Scale
 import com.renard.ocr.TextFairyApplication
-import com.renard.ocr.documents.ContentLoading.loadAsPdf
+import com.renard.ocr.documents.creation.ContentLoading.loadAsPdf
 import com.renard.ocr.documents.creation.NewDocumentActivityViewModel.Status.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,11 +19,12 @@ import kotlin.math.sqrt
 
 class NewDocumentActivityViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val application:TextFairyApplication = getApplication()
+    private val application: TextFairyApplication = getApplication()
 
     sealed class Status {
         object Loading : Status()
         data class Success(val pix: Pix) : Status()
+        data class SuccessPdf(val pdf: PdfDocumentWrapper) : Status()
         data class Error(val pixLoadStatus: PixLoadStatus) : Status()
     }
 
@@ -35,25 +36,22 @@ class NewDocumentActivityViewModel(application: Application) : AndroidViewModel(
     fun loadContent(contentUri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
             _content.postValue(Loading)
-            val pix = loadContentUnscaled(contentUri)
-            if (pix != null) {
-                _content.postValue(Success(maybeUpscale(pix)))
+            val type = application.contentResolver.getType(contentUri)
+            val result = if (contentUri.path?.endsWith(".pdf") == true || "application/pdf".equals(type, ignoreCase = true)) {
+                loadAsPdf(application, contentUri)
+                        ?.run { SuccessPdf(this) }
+                        ?: Error(PixLoadStatus.IO_ERROR)
             } else {
-                application.crashLogger.setString("content uri", contentUri.toString())
-                application.crashLogger.logException(IOException(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED.name))
-                _content.postValue(Error(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED))
+                ReadFile.load(application, contentUri)
+                        ?.run { Success(maybeUpscale(this)) }
+                        ?: Error(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED)
             }
+            if (result is Error) {
+                application.crashLogger.setString("content uri", contentUri.toString())
+                application.crashLogger.logException(IOException(result.pixLoadStatus.name))
+            }
+            _content.postValue(result)
         }
-    }
-
-    private fun loadContentUnscaled(contentUri: Uri): Pix? {
-        val type = application.contentResolver.getType(contentUri)
-        return if (contentUri.path?.endsWith(".pdf") == true || "application/pdf".equals(type, ignoreCase = true)) {
-            loadAsPdf(application, contentUri)
-        } else {
-            ReadFile.load(application, contentUri)
-        }
-
     }
 
     private fun maybeUpscale(p: Pix): Pix {

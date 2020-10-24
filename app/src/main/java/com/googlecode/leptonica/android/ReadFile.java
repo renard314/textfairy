@@ -24,6 +24,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import android.util.Log;
 
@@ -162,6 +164,7 @@ public class ReadFile {
     }
 
     @WorkerThread
+    @Nullable
     public static Pix load(Context context, Uri uri) {
         try {
             final Bitmap bmp = Glide.with(context)

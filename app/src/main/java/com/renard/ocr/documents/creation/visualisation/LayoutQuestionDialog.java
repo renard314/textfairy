@@ -64,8 +64,7 @@ public class LayoutQuestionDialog extends DialogFragment {
 
     public enum LayoutKind {
         SIMPLE,
-        COMPLEX,
-        DO_NOTHING;
+        COMPLEX
     }
 
     private static LayoutKind mLayout = LayoutKind.SIMPLE;
@@ -73,6 +72,7 @@ public class LayoutQuestionDialog extends DialogFragment {
 
     public interface LayoutChoseListener {
         void onLayoutChosen(final LayoutKind layoutKind, final String language);
+        void onLayoutSelectionCancelled();
     }
 
     public Analytics getAnalytics() {
@@ -206,7 +206,8 @@ public class LayoutQuestionDialog extends DialogFragment {
                 new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int id) {
-                        getActivity().finish();
+                        LayoutChoseListener listener = (LayoutChoseListener) getActivity();
+                        listener.onLayoutSelectionCancelled();
                         dialog.dismiss();
                         getAnalytics().sendLayoutDialogCancelled();
                     }
