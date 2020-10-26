@@ -16,7 +16,6 @@
 package com.renard.ocr
 
 import android.content.Context
-import android.os.StrictMode
 import android.util.Log
 import android.view.ViewConfiguration
 import androidx.multidex.MultiDex
@@ -35,8 +34,6 @@ class TextFairyApplication : MultiDexApplication() {
         private set
     lateinit var crashLogger: CrashLogger
         private set
-
-    var nativePix: Long? = null
 
     override fun attachBaseContext(base: Context) {
         MultiDex.install(this);

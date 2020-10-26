@@ -16,6 +16,8 @@
 
 package com.googlecode.leptonica.android;
 
+import androidx.annotation.Nullable;
+
 /**
  * @author renard
  */
@@ -31,6 +33,7 @@ public class Projective {
      *      Return: pixd, or null on error
      *
      **/
+    @Nullable
     public static Pix projectiveTransform(Pix pixs, float[] dest, float[] src) {
         if (pixs == null) {
             throw new IllegalArgumentException("Source pix must be non-null");

@@ -71,6 +71,10 @@ class OCR(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
+        when (val status = ocrProgress.value){
+            is Preview -> status.pix.recycle()
+            is Result -> status.pix.recycle()
+        }
         mCrashLogger.logMessage("OCR#onCleared")
         mStopped.set(true)
         mNativeBinding.destroy()
@@ -87,6 +91,7 @@ class OCR(application: Application) : AndroidViewModel(application) {
     fun startLayoutAnalysis(pix: Pix, language: String) {
         setupImageProcessingCallback(pix.width, pix.height, language)
         mExecutorService.execute {
+            ocrProgress.postValue(Preview(pix))
             mNativeBinding.analyseLayout(pix)
         }
     }
@@ -208,7 +213,6 @@ class OCR(application: Application) : AndroidViewModel(application) {
                     sendPreview(pixText)
                     pixText
                 }.use { pixText ->
-                    sendPreview(pixText)
                     if (mStopped.get()) {
                         return@use
                     }
@@ -239,7 +243,7 @@ class OCR(application: Application) : AndroidViewModel(application) {
                         if (accuracy == 95) {
                             accuracy = 0
                         }
-                        ocrProgress.postValue(Result(pixText, htmlText.toString(), hocrText.toString(), accuracy, lang))
+                        ocrProgress.postValue(Result(pixText.clone(), htmlText.toString(), hocrText.toString(), accuracy, lang))
                     }
                 }
 

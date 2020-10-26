@@ -20,13 +20,10 @@
     <RelativeLayout android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-        <include layout="@layout/toolbar"
-                 android:id="@+id/toolbar"/>
 
         <com.renard.ocr.documents.creation.crop.CropImageView
                 android:layout_marginLeft="@dimen/crop_margin"
                 android:layout_marginRight="@dimen/crop_margin"
-                android:layout_below="@+id/toolbar"
                 android:layout_above="@+id/toolbar_bottom"
                 android:id="@+id/cropImageView"
                 android:layout_width="fill_parent"

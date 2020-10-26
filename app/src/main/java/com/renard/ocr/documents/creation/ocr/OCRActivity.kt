@@ -15,6 +15,7 @@
  */
 package com.renard.ocr.documents.creation.ocr
 
+import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -25,21 +26,23 @@ import androidx.activity.viewModels
 import androidx.core.view.accessibility.AccessibilityManagerCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.commit
-import com.googlecode.leptonica.android.Pix
+import androidx.fragment.app.commitNow
 import com.googlecode.tesseract.android.OCR
 import com.googlecode.tesseract.android.OcrProgress.*
 import com.googlecode.tesseract.android.OcrProgress.Error
+import com.renard.ocr.HintDialog
 import com.renard.ocr.MonitoredActivity
 import com.renard.ocr.R
-import com.renard.ocr.TextFairyApplication
 import com.renard.ocr.databinding.ActivityOcrBinding
 import com.renard.ocr.documents.creation.DocumentStore.saveDocument
 import com.renard.ocr.documents.creation.NewDocumentActivity
 import com.renard.ocr.documents.creation.NewDocumentActivity.EXTRA_IMAGE_SOURCE
-import com.renard.ocr.documents.creation.ocr.ImageLoadingViewModel.Status.*
 import com.renard.ocr.documents.creation.ProgressDialogFragment
-import com.renard.ocr.documents.creation.crop.CropImageActivity
-import com.renard.ocr.documents.creation.crop.CropImageActivity.RESULT_NEW_IMAGE
+import com.renard.ocr.documents.creation.crop.BlurWarningDialog
+import com.renard.ocr.documents.creation.crop.CropImageFragment
+import com.renard.ocr.documents.creation.crop.CropImageFragment.Companion.HINT_DIALOG_ID
+import com.renard.ocr.documents.creation.ocr.ImageLoadingViewModel.ImageLoadStatus
+import com.renard.ocr.documents.creation.ocr.ImageLoadingViewModel.ImageLoadStatus.*
 import com.renard.ocr.documents.creation.ocr.LayoutQuestionDialog.LayoutChoseListener
 import com.renard.ocr.documents.creation.ocr.LayoutQuestionDialog.LayoutKind
 import com.renard.ocr.documents.creation.ocr.LayoutQuestionDialog.LayoutKind.COMPLEX
@@ -53,7 +56,7 @@ import com.renard.ocr.documents.viewing.single.DocumentActivity.EXTRA_LANGUAGE
  *
  * @author renard
  */
-class OCRActivity : MonitoredActivity(), LayoutChoseListener {
+class OCRActivity : MonitoredActivity(), LayoutChoseListener, BlurWarningDialog.BlurDialogClickListener {
 
     private lateinit var binding: ActivityOcrBinding
     private val ocrModel: OCR by viewModels()
@@ -116,7 +119,6 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
             when (status) {
                 is Success -> {
                     dismissLoadingImageProgressDialog()
-                    (application as TextFairyApplication).nativePix = status.pix.nativePix
                     val am = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
                     val isAccessibilityEnabled = am.isEnabled
                     val isExploreByTouchEnabled = AccessibilityManagerCompat.isTouchExplorationEnabled(am)
@@ -124,38 +126,58 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
                     if (skipCrop) {
                         askForLayout()
                     } else {
-                        val actionIntent = Intent(this, CropImageActivity::class.java)
-                        startActivityForResult(actionIntent, REQUEST_CODE_CROP_PHOTO)
+                        supportFragmentManager.commit {
+                            replace(R.id.fragment_container, CropImageFragment(), CROP_FRAGMENT_TAG)
+                        }
                     }
                 }
-                is Loading -> {
+                Loading -> {
                     showLoadingImageProgressDialog()
                 }
-                is ImageLoadingViewModel.Status.Error -> {
+                is ImageLoadStatus.Error -> {
                     NewDocumentActivity.showFileError(this, status.pixLoadStatus)
+                    finish()
+                }
+                Initial -> model.loadContent(intent.data!!)
+                is CropSuccess -> askForLayout()
+                CropError -> {
+                    //should not happen. Scaling of the original document failed some how. Maybe out of memory?
+                    anaLytics.sendCropError()
+                    Toast.makeText(this, R.string.could_not_load_image, Toast.LENGTH_LONG).show()
+                    onNewImageClicked()
                 }
             }
         }
-        model.loadContent(intent.data!!)
+
     }
 
     private fun askForLayout() {
         supportFragmentManager.commit {
             add(LayoutQuestionDialog.newInstance(), LayoutQuestionDialog.TAG)
-            add(R.id.fragment_container, OcrFragment(), OCR_FRAGMENT_TAG)
         }
     }
 
     override fun onLayoutChosen(layoutKind: LayoutKind, language: String) {
         binding.toolbar.toolbarText.setText(R.string.progress_start)
-        val nativePix = (application as TextFairyApplication).nativePix!!
-        when (layoutKind) {
-            SIMPLE -> {
-                anaLytics.sendScreenView("Ocr")
-                ocrModel.startOCRForSimpleLayout(this, Pix(nativePix), language)
+        supportFragmentManager.commit {
+            replace(R.id.fragment_container, OcrFragment(), OCR_FRAGMENT_TAG)
+        }
+
+        val model by viewModels<ImageLoadingViewModel>()
+        model.content.observe(this) { status ->
+            val pix = when (status) {
+                is Success -> status.pix
+                is CropSuccess -> status.pix
+                else -> throw IllegalStateException()
             }
-            COMPLEX -> {
-                ocrModel.startLayoutAnalysis(Pix(nativePix), language)
+            when (layoutKind) {
+                SIMPLE -> {
+                    anaLytics.sendScreenView("Ocr")
+                    ocrModel.startOCRForSimpleLayout(this, pix, language)
+                }
+                COMPLEX -> {
+                    ocrModel.startLayoutAnalysis(pix, language)
+                }
             }
         }
     }
@@ -165,35 +187,23 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
         finish()
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode != REQUEST_CODE_CROP_PHOTO) {
-            return
-        }
-        when (resultCode) {
-            RESULT_OK -> {
-                askForLayout()
-            }
-            RESULT_NEW_IMAGE -> {
-                val intent = Intent()
-                intent.putExtra(EXTRA_IMAGE_SOURCE, intent.getStringExtra(EXTRA_IMAGE_SOURCE))
-                setResult(resultCode, intent)
-                finish()
-            }
-            RESULT_CANCELED -> {
-                setResult(RESULT_CANCELED)
-                finish()
-            }
-        }
+    override fun onContinueClicked() {
+        setToolbarMessage(R.string.crop_title)
     }
 
-    override fun finish() {
-        super.finish()
-        (application as TextFairyApplication).nativePix = null
+    override fun onNewImageClicked() {
+        val intent = Intent()
+        intent.putExtra(EXTRA_IMAGE_SOURCE, intent.getStringExtra(EXTRA_IMAGE_SOURCE))
+        setResult(RESULT_NEW_IMAGE, intent)
+        finish()
     }
 
-    override fun getHintDialogId() = -1
+    override fun getHintDialogId() =
+            if (supportFragmentManager.findFragmentByTag(CROP_FRAGMENT_TAG) != null) {
+                HINT_DIALOG_ID
+            } else {
+                -1
+            }
 
     override fun getScreenName() = ""
 
@@ -210,16 +220,26 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener {
 
     private fun showLoadingImageProgressDialog() {
         Log.i(LOG_TAG, "showLoadingImageProgressDialog")
-        supportFragmentManager.commit(true){
-            add(ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image),IMAGE_LOAD_PROGRESS_TAG)
+        supportFragmentManager.commit(true) {
+            add(ProgressDialogFragment.newInstance(R.string.please_wait, R.string.loading_image), IMAGE_LOAD_PROGRESS_TAG)
         }
     }
 
+
+    override fun onCreateDialog(id: Int, args: Bundle): Dialog? {
+        when (id) {
+            HINT_DIALOG_ID -> return HintDialog.createDialog(this, R.string.crop_help_title, R.raw.crop_help)
+        }
+        return super.onCreateDialog(id, args)
+    }
+
+
     companion object {
+        const val RESULT_NEW_IMAGE = RESULT_CANCELED + 1
         private const val IMAGE_LOAD_PROGRESS_TAG = "image_load_progress"
         private val LOG_TAG = OCRActivity::class.java.simpleName
         private const val OCR_FRAGMENT_TAG = "OCR"
-        const val REQUEST_CODE_CROP_PHOTO = 2
+        private const val CROP_FRAGMENT_TAG = "CROP"
         const val EXTRA_PARENT_DOCUMENT_ID = "parent_id"
     }
 

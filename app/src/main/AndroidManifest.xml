@@ -78,9 +78,6 @@
                 android:name=".install.InstallActivity"
                 android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
-                android:name=".documents.creation.crop.CropImageActivity"
-                android:configChanges="orientation|keyboardHidden"/>
-        <activity
                 android:name=".documents.viewing.grid.DocumentGridActivity"
                 android:hardwareAccelerated="false"
                 android:launchMode="singleTop"

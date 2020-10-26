@@ -51,7 +51,7 @@ import androidx.core.content.FileProvider;
 
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
-import com.renard.ocr.documents.creation.crop.CropImageActivity;
+import com.renard.ocr.documents.creation.crop.CropImageFragment;
 import com.renard.ocr.documents.creation.ocr.OCRActivity;
 import com.renard.ocr.documents.creation.ocr.OcrPdfActivity;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
@@ -387,7 +387,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                     startActivity(intent);
                     break;
             }
-        } else if (CropImageActivity.RESULT_NEW_IMAGE == resultCode) {
+        } else if (OCRActivity.RESULT_NEW_IMAGE == resultCode) {
             String source = data.getStringExtra(EXTRA_IMAGE_SOURCE);
             switch (ImageSource.valueOf(source)) {
                 case PICK:

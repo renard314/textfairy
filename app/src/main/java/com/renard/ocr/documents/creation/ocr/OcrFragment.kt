@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Transformations
 import com.googlecode.leptonica.android.Pix
 import com.googlecode.leptonica.android.WriteFile
 import com.googlecode.tesseract.android.OCR
@@ -39,8 +40,6 @@ class OcrFragment : Fragment() {
                 is Preview -> showPreview(it.pix)
             }
         })
-        val nativePix = (requireActivity().application as TextFairyApplication).nativePix!!
-        showPreview(Pix(nativePix))
     }
 
     private fun showPreview(pix: Pix) {

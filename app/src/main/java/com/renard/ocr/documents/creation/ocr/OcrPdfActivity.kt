@@ -74,7 +74,8 @@ class OcrPdfActivity : MonitoredActivity() {
     }
 
     private fun showAllFiles(it: Success) {
-        TODO("Not yet implemented")
+        //it.pdfDocument.
+        //TODO("Not yet implemented")
     }
 
     override fun getScreenName() = ""

@@ -48,7 +48,7 @@ public class BlurWarningDialog extends TopDialogFragment implements DialogInterf
 
     }
 
-    interface BlurDialogClickListener {
+    public interface BlurDialogClickListener {
         void onContinueClicked();
 
         void onNewImageClicked();
