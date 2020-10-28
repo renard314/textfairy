@@ -83,10 +83,12 @@ class CropImageFragment : Fragment(R.layout.activity_cropimage) {
         model.blurResult.observe(viewLifecycleOwner) { scaleResult ->
             when (scaleResult) {
                 is Initial -> {
-                    val margin = resources.getDimension(R.dimen.crop_margin)
-                    val width = (binding.cropLayout.width - 2 * margin).toInt()
-                    val height = (binding.cropLayout.height - 2 * margin).toInt()
-                    model.scaleForCrop(scaleResult.pix, width, height)
+                    binding.root.afterMeasured {
+                        val margin = resources.getDimension(R.dimen.crop_margin)
+                        val width = (binding.cropLayout.width - 2 * margin).toInt()
+                        val height = (binding.cropLayout.height - 2 * margin).toInt()
+                        model.scaleForCrop(scaleResult.pix, width, height)
+                    }
                 }
                 is ScaleSuccess -> {
                     analytics().sendBlurResult(scaleResult.blurDetectionResult)

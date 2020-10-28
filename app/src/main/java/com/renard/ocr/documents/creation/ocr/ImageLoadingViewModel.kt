@@ -23,7 +23,9 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import kotlin.math.sqrt
 
+
 class ImageLoadingViewModel(application: Application) : AndroidViewModel(application) {
+
 
     private val application: TextFairyApplication = getApplication()
 
@@ -32,7 +34,7 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
         object Loading : ImageLoadStatus()
         data class Success(val pix: Pix) : ImageLoadStatus()
         data class CropSuccess(val pix: Pix) : ImageLoadStatus()
-        object CropError:ImageLoadStatus()
+        object CropError : ImageLoadStatus()
         data class Error(val pixLoadStatus: PixLoadStatus) : ImageLoadStatus()
     }
 
@@ -56,6 +58,7 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun scaleForCrop(pix: Pix, width: Int, height: Int) {
+        application.espressoTestIdlingResource.increment()
         viewModelScope.launch(Dispatchers.Default) {
             val scale = CropImageScaler().scale(pix, width, height)
             val bitmap = WriteFile.writeBitmap(scale.pix)
@@ -66,10 +69,12 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
             scale.pix.recycle()
 
             _blurResult.postValue(ScaleResult.ScaleSuccess(Blur.blurDetect(pix), bitmap, scale.scaleFactor, pix))
+            application.espressoTestIdlingResource.decrement()
         }
     }
 
     fun loadContent(contentUri: Uri) {
+        application.espressoTestIdlingResource.increment()
         viewModelScope.launch(Dispatchers.IO) {
             _content.postValue(ImageLoadStatus.Loading)
             val result =
@@ -86,6 +91,7 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
                 application.crashLogger.logException(IOException(result.pixLoadStatus.name))
             }
             _content.postValue(result)
+            application.espressoTestIdlingResource.decrement()
         }
     }
 
@@ -113,6 +119,7 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
             perspectiveCorrectedBoundingRect: Rect,
             rotation: Int
     ) {
+        application.espressoTestIdlingResource.increment()
         viewModelScope.launch(Dispatchers.IO) {
             val scale = 1f / scaleFactor
             val scaleMatrix = Matrix()
@@ -141,6 +148,7 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
             checkNotNull(bilinear)
             OCR.savePixToCacheDir(getApplication(), bilinear.copy())
             _content.postValue(ImageLoadStatus.CropSuccess(bilinear))
+            application.espressoTestIdlingResource.decrement()
         }
 
     }

@@ -26,7 +26,6 @@ import androidx.activity.viewModels
 import androidx.core.view.accessibility.AccessibilityManagerCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.commit
-import androidx.fragment.app.commitNow
 import com.googlecode.tesseract.android.OCR
 import com.googlecode.tesseract.android.OcrProgress.*
 import com.googlecode.tesseract.android.OcrProgress.Error
@@ -93,12 +92,13 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener, BlurWarningDialog.
     private fun onOcrResult(it: Result) {
         val parentId = intent.getIntExtra(EXTRA_PARENT_DOCUMENT_ID, -1)
         saveDocument(this,
-                it.pix.nativePix,
+                it.pix,
                 it.hocrText,
                 it.utf8Text,
                 parentId,
                 it.language
         ) { uri: Uri? ->
+            it.pix.recycle()
             if (uri != null) {
                 val intent = Intent()
                 intent.data = uri
@@ -153,15 +153,13 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener, BlurWarningDialog.
 
     private fun askForLayout() {
         supportFragmentManager.commit {
+            replace(R.id.fragment_container, OcrFragment(), OCR_FRAGMENT_TAG)
             add(LayoutQuestionDialog.newInstance(), LayoutQuestionDialog.TAG)
         }
     }
 
     override fun onLayoutChosen(layoutKind: LayoutKind, language: String) {
         binding.toolbar.toolbarText.setText(R.string.progress_start)
-        supportFragmentManager.commit {
-            replace(R.id.fragment_container, OcrFragment(), OCR_FRAGMENT_TAG)
-        }
 
         val model by viewModels<ImageLoadingViewModel>()
         model.content.observe(this) { status ->
@@ -193,7 +191,7 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener, BlurWarningDialog.
 
     override fun onNewImageClicked() {
         val intent = Intent()
-        intent.putExtra(EXTRA_IMAGE_SOURCE, intent.getStringExtra(EXTRA_IMAGE_SOURCE))
+        intent.putExtra(EXTRA_IMAGE_SOURCE, getIntent().getStringExtra(EXTRA_IMAGE_SOURCE))
         setResult(RESULT_NEW_IMAGE, intent)
         finish()
     }

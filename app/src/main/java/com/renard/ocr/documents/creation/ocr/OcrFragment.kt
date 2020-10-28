@@ -37,17 +37,17 @@ class OcrFragment : Fragment() {
             when (it) {
                 is LayoutElements -> onLayoutElements(it)
                 is Progress -> showProgress(it)
-                is Preview -> showPreview(it.pix)
             }
         })
+        ocr.preview.observe(viewLifecycleOwner){ showPreview(it) }
     }
 
     private fun showPreview(pix: Pix) {
-        val scale = CropImageScaler().scale(pix, binding.progressImage.width, binding.progressImage.height)
-        val previewBitmap = WriteFile.writeBitmap(scale.pix)
+        val previewBitmap = WriteFile.writeBitmap(pix)
         if (previewBitmap != null) {
-            scale.pix.recycle()
             binding.progressImage.setImageBitmapResetBase(previewBitmap, true, 0)
+        } else {
+            throw IllegalStateException("preview null")
         }
     }
 

@@ -17,12 +17,15 @@ package com.googlecode.tesseract.android
 
 import android.app.Application
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Rect
 import androidx.annotation.StringRes
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations.map
+import androidx.test.espresso.idling.concurrent.IdlingScheduledThreadPoolExecutor
 import com.googlecode.leptonica.android.Boxa
 import com.googlecode.leptonica.android.Pix
 import com.googlecode.leptonica.android.Pixa
@@ -31,12 +34,12 @@ import com.googlecode.tesseract.android.TessBaseAPI.OEM_LSTM_ONLY
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode
 import com.renard.ocr.R
 import com.renard.ocr.TextFairyApplication
+import com.renard.ocr.documents.creation.crop.CropImageScaler
 import com.renard.ocr.main_menu.language.OcrLanguage
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore.deleteLanguage
 import com.renard.ocr.util.AppStorage
 import com.renard.ocr.util.MemoryInfo
 import java.io.File
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.roundToInt
 
@@ -44,7 +47,6 @@ sealed class OcrProgress {
     data class Message(@StringRes val message: Int) : OcrProgress()
     data class LayoutElements(val columns: Pixa, val images: Pixa, val pageWidth: Int, val pageHeight: Int, val language: String) : OcrProgress()
     data class Progress(val percent: Int, val wordBounds: Rect, val rectBounds: Rect, val pageWidth: Int, val pageHeight: Int) : OcrProgress()
-    data class Preview(val pix: Pix) : OcrProgress()
     data class Result(val pix: Pix, val utf8Text: String, val hocrText: String, val accuracy: Int, val language: String) : OcrProgress()
     data class Error(@StringRes val message: Int) : OcrProgress()
 }
@@ -58,23 +60,27 @@ class OCR(application: Application) : AndroidViewModel(application) {
     private val mNativeBinding: NativeBinding = NativeBinding()
     private val mStopped = AtomicBoolean(false)
     private var mCompleted = AtomicBoolean(false)
-    private val mExecutorService = Executors.newSingleThreadExecutor()
-    private val ocrProgress: MutableLiveData<OcrProgress> = MutableLiveData()
+    private val mExecutorService = IdlingScheduledThreadPoolExecutor("Ocr Thread Pool", 1) { r -> Thread(r) }
+    private var lastPreview: Pix? = null
 
-    private fun sendPreview(pix: Pix) {
-        ocrProgress.postValue(Preview(pix))
-    }
+    private val ocrProgress: MutableLiveData<OcrProgress> = MutableLiveData()
+    private val _preview = MutableLiveData<Pix>()
+    val preview: LiveData<Pix>
+        get() = map(_preview) {
+            lastPreview?.recycle()
+            lastPreview = it
+            it
+        }
+
 
     fun getOcrProgress(): LiveData<OcrProgress> {
         return ocrProgress
     }
 
+
     override fun onCleared() {
         super.onCleared()
-        when (val status = ocrProgress.value){
-            is Preview -> status.pix.recycle()
-            is Result -> status.pix.recycle()
-        }
+        lastPreview?.recycle()
         mCrashLogger.logMessage("OCR#onCleared")
         mStopped.set(true)
         mNativeBinding.destroy()
@@ -91,7 +97,6 @@ class OCR(application: Application) : AndroidViewModel(application) {
     fun startLayoutAnalysis(pix: Pix, language: String) {
         setupImageProcessingCallback(pix.width, pix.height, language)
         mExecutorService.execute {
-            ocrProgress.postValue(Preview(pix))
             mNativeBinding.analyseLayout(pix)
         }
     }
@@ -145,7 +150,7 @@ class OCR(application: Application) : AndroidViewModel(application) {
                 pixOcr = Pix(columnData[1])
                 boxa = Boxa(columnData[2])
 
-                sendPreview(Pix(pixOrgPointer))
+                sendPreview(pixOcr)
                 ocrProgress.postValue(Message(R.string.progress_ocr))
 
                 initTessApi(
@@ -207,44 +212,40 @@ class OCR(application: Application) : AndroidViewModel(application) {
             mCrashLogger.logMessage("startOCRForSimpleLayout")
             try {
                 logMemory(context)
-                pix.use {
-                    sendPreview(it)
-                    val pixText = Pix(mNativeBinding.convertBookPage(it))
-                    sendPreview(pixText)
-                    pixText
-                }.use { pixText ->
-                    if (mStopped.get()) {
-                        return@use
-                    }
-                    ocrProgress.postValue(Message(R.string.progress_ocr))
-                    initTessApi(
-                            lang = lang,
-                            pageWidth = pixText.width,
-                            pageHeight = pixText.height
-                    )?. use scan@ { tess ->
-                        tess.pageSegMode = PageSegMode.PSM_AUTO
+                sendPreview(pix)
+                val pixText = Pix(mNativeBinding.convertBookPage(pix))
+                sendPreview(pixText)
+                if (mStopped.get()) {
+                    return@execute
+                }
+                ocrProgress.postValue(Message(R.string.progress_ocr))
+                initTessApi(
+                        lang = lang,
+                        pageWidth = pixText.width,
+                        pageHeight = pixText.height
+                )?.use scan@{ tess ->
+                    tess.pageSegMode = PageSegMode.PSM_AUTO
+                    tess.setImage(pixText)
+                    var hocrText = tess.getHOCRText(0)
+                    var accuracy = tess.meanConfidence()
+                    val utf8Text = tess.utF8Text
+
+                    if (!mStopped.get() && utf8Text.isEmpty()) {
+                        mCrashLogger.logMessage("No words found. Looking for sparse text.")
+                        tess.pageSegMode = PageSegMode.PSM_SPARSE_TEXT
                         tess.setImage(pixText)
-                        var hocrText = tess.getHOCRText(0)
-                        var accuracy = tess.meanConfidence()
-                        val utf8Text = tess.utF8Text
-
-                        if (!mStopped.get() && utf8Text.isEmpty()) {
-                            mCrashLogger.logMessage("No words found. Looking for sparse text.")
-                            tess.pageSegMode = PageSegMode.PSM_SPARSE_TEXT
-                            tess.setImage(pixText)
-                            hocrText = tess.getHOCRText(0)
-                            accuracy = tess.meanConfidence()
-                        }
-
-                        if (mStopped.get()) {
-                            return@scan
-                        }
-                        val htmlText = tess.htmlText
-                        if (accuracy == 95) {
-                            accuracy = 0
-                        }
-                        ocrProgress.postValue(Result(pixText.clone(), htmlText.toString(), hocrText.toString(), accuracy, lang))
+                        hocrText = tess.getHOCRText(0)
+                        accuracy = tess.meanConfidence()
                     }
+
+                    if (mStopped.get()) {
+                        return@scan
+                    }
+                    val htmlText = tess.htmlText
+                    if (accuracy == 95) {
+                        accuracy = 0
+                    }
+                    ocrProgress.postValue(Result(pixText, htmlText.toString(), hocrText.toString(), accuracy, lang))
                 }
 
             } finally {
@@ -252,6 +253,13 @@ class OCR(application: Application) : AndroidViewModel(application) {
                 mCrashLogger.logMessage("startOCRForSimpleLayout finished")
             }
         }
+    }
+
+    private fun sendPreview(it: Pix) {
+        val widthPixels = Resources.getSystem().displayMetrics.widthPixels
+        val heightPixels = Resources.getSystem().displayMetrics.heightPixels
+        val scale = CropImageScaler().scale(it, widthPixels, heightPixels)
+        _preview.postValue(scale.pix)
     }
 
     private fun initTessApi(lang: String, pageWidth: Int, pageHeight: Int): TessBaseAPI? {

@@ -45,6 +45,8 @@ import com.renard.ocr.main_menu.language.OcrLanguage;
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore;
 import com.renard.ocr.util.PreferencesUtils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import static com.renard.ocr.main_menu.language.OcrLanguageDataStore.getInstallStatusFor;
@@ -203,19 +205,21 @@ public class LayoutQuestionDialog extends DialogFragment {
 
         builder.setNegativeButton(
                 R.string.cancel,
-                new DialogInterface.OnClickListener() {
+                (dialog, id) -> dialog.cancel());
 
-                    public void onClick(DialogInterface dialog, int id) {
-                        LayoutChoseListener listener = (LayoutChoseListener) getActivity();
-                        listener.onLayoutSelectionCancelled();
-                        dialog.dismiss();
-                        getAnalytics().sendLayoutDialogCancelled();
-                    }
-                });
 
         final AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
         return alertDialog;
+    }
+
+
+    @Override
+    public void onCancel(@NonNull DialogInterface dialog) {
+        super.onCancel(dialog);
+        LayoutChoseListener listener = (LayoutChoseListener) getActivity();
+        listener.onLayoutSelectionCancelled();
+        getAnalytics().sendLayoutDialogCancelled();
     }
 
     @Nullable

@@ -20,6 +20,7 @@ import android.util.Log
 import android.view.ViewConfiguration
 import androidx.multidex.MultiDex
 import androidx.multidex.MultiDexApplication
+import androidx.test.espresso.idling.CountingIdlingResource
 import com.getkeepsafe.relinker.ReLinker
 import com.renard.ocr.analytics.Analytics
 import com.renard.ocr.analytics.AnalyticsFactory
@@ -30,6 +31,9 @@ import com.renard.ocr.util.PreferencesUtils
 import com.squareup.leakcanary.LeakCanary
 
 class TextFairyApplication : MultiDexApplication() {
+
+    val espressoTestIdlingResource: CountingIdlingResource = CountingIdlingResource("Background Thread")
+
     lateinit var analytics: Analytics
         private set
     lateinit var crashLogger: CrashLogger

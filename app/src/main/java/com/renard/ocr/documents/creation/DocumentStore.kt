@@ -21,7 +21,7 @@ object DocumentStore {
     @JvmName("saveDocument")
     internal fun saveDocument(
             monitoredActivity: MonitoredActivity,
-            pix: Long,
+            pix: Pix,
             hocrString: String?,
             utf8String: String?,
             parentId: Int,
@@ -70,9 +70,9 @@ object DocumentStore {
 
     }
 
-    private fun saveImage(activity: MonitoredActivity, p: Long): File {
+    private fun saveImage(activity: MonitoredActivity, p: Pix): File {
         val id = DateFormat.format("ssmmhhddMMyy", Date(System.currentTimeMillis()))
-        return Util.savePixToSD(activity, Pix(p), id.toString())
+        return Util.savePixToSD(activity, p, id.toString())
     }
 
     private fun saveDocumentToDB(parentId: Int, lang: String, monitoredActivity: MonitoredActivity, imageFile: File?, hocr: String?, plainText: String?): Uri? {

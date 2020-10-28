@@ -219,12 +219,14 @@ public class Util {
         return o;
     }
 
-    public static int determineScaleFactor(int w, int h, int maxWidth, int maxHeight) {
-        int scale = 1;
-        if (w > maxWidth || h > maxHeight) {
-            scale = (int) Math.pow(2, (int) Math.round(Math.log(Math.max(maxWidth, maxHeight) / (double) Math.max(h, w)) / Math.log(0.5)));
+    public static int determineScaleFactor(int width, int height, int maxWidth, int maxHeight) {
+        int inSampleSize = 1;
+        while (height > maxHeight || width > maxWidth) {
+            height /= 2;
+            width /= 2;
+            inSampleSize *= 2;
         }
-        return scale;
+        return inSampleSize;
     }
 
     /***
@@ -265,6 +267,8 @@ public class Util {
     }
 
     public static File savePixToDir(final Pix pix, final String name, File picDir) throws IOException {
+        Log.v("Util", "savePixToDir");
+
         final String fileName = name + ".png";
         if (!picDir.exists()) {
             if (picDir.mkdirs() || picDir.isDirectory()) {
@@ -276,7 +280,8 @@ public class Util {
         File image = new File(picDir, fileName);
         image.createNewFile();
         try {
-            WriteFile.writeImpliedFormat(pix, image, 85, true);
+            boolean result = WriteFile.writeImpliedFormat(pix, image, 85, true);
+            Log.v("Util", "writeImpliedFormat = " + result);
         } catch (Exception e) {
             throw new IOException(e);
         }
