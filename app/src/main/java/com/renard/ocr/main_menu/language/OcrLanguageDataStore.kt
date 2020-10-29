@@ -159,7 +159,7 @@ val OCR_LANGUAGES = mapOf(
         "sin" to "Sinhala; Sinhalese",
         "slk" to "Slovak",
         "slv" to "Slovenian",
-        "sat" to "Satali",
+        "sat" to "Santali",
         "spa" to "Spanish; Castilian",
         "spa_old" to "Spanish; Castilian - Old",
         "sqi" to "Albanian",
