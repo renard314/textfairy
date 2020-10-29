@@ -96,9 +96,9 @@ public class LayoutQuestionDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         getAnalytics().sendScreenView(SCREEN_NAME);
-        final Context context = getContext();
+        final Context context = requireContext();
         mLayout = null;
-        mLanguage = getOcrLanguage(context);
+        mLanguage = Language.INSTANCE.getOcrLanguage(context);
         if (mLanguage == null) {
             throw new IllegalStateException("No OCR Language Available.");
         }
@@ -220,49 +220,5 @@ public class LayoutQuestionDialog extends DialogFragment {
         LayoutChoseListener listener = (LayoutChoseListener) getActivity();
         listener.onLayoutSelectionCancelled();
         getAnalytics().sendLayoutDialogCancelled();
-    }
-
-    @Nullable
-    private String getOcrLanguage(Context context) {
-        String language = getOrcLanguageFromPreferences(context);
-        if (language == null) {
-            language = getOrcLanguageFromUserLocale(context);
-        }
-        if (language == null) {
-            language = getOcrLanguageFromSdCard(context);
-        }
-        return language;
-    }
-
-    @Nullable
-    private String getOcrLanguageFromSdCard(Context context) {
-        final List<OcrLanguage> installedOCRLanguages = getInstalledOCRLanguages(context);
-        if (!installedOCRLanguages.isEmpty()) {
-            return installedOCRLanguages.get(0).getValue();
-        } else {
-            return null;
-        }
-    }
-
-    @Nullable
-    private String getOrcLanguageFromPreferences(Context context) {
-        Pair<String, String> language = PreferencesUtils.getOCRLanguage(context);
-        if (language.first == null) {
-            return null;
-        }
-        if (getInstallStatusFor(language.first, context).isInstalled()) {
-            return language.first;
-        } else {
-            return null;
-        }
-    }
-
-    @Nullable
-    private String getOrcLanguageFromUserLocale(Context context) {
-        @Nullable final OcrLanguage userLocaleOcrLanguage = getUserLocaleOcrLanguage(context);
-        if (userLocaleOcrLanguage != null && userLocaleOcrLanguage.isInstalled()) {
-            return userLocaleOcrLanguage.getValue();
-        }
-        return null;
     }
 }

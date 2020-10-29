@@ -1,5 +1,6 @@
 package com.renard.ocr.documents.creation
 
+import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
 import android.os.Handler
@@ -17,6 +18,12 @@ import java.util.*
 
 object DocumentStore {
 
+    internal fun getDocumentUri(id: Int): Uri =
+            ContentUris.withAppendedId(DocumentContentProvider.CONTENT_URI, id.toLong())
+
+    internal fun getDocumentId(uri: Uri) =
+            Integer.parseInt(uri.lastPathSegment!!)
+
     @JvmStatic
     @JvmName("saveDocument")
     internal fun saveDocument(
@@ -26,7 +33,7 @@ object DocumentStore {
             utf8String: String?,
             parentId: Int,
             lang: String,
-            onCompleted: (Uri) -> Unit
+            onCompleted: (Uri?) -> Unit
     ) {
 
         Util.startBackgroundJob(monitoredActivity, "",
@@ -62,9 +69,7 @@ object DocumentStore {
                             Toast.LENGTH_LONG).show()
                 }
             } finally {
-                if (documentUri != null) {
-                    onCompleted(documentUri)
-                }
+                onCompleted(documentUri)
             }
         }, Handler())
 
