@@ -4,8 +4,9 @@ import androidx.annotation.StringRes
 import android.util.Log
 import com.googlecode.leptonica.android.Pix
 import com.renard.ocr.R
+import java.io.Closeable
 
-class NativeBinding {
+class NativeBinding : Closeable{
 
     private var mCallBack: ProgressCallBack? = null
 
@@ -87,6 +88,10 @@ class NativeBinding {
         }
     }
 
+    override fun close() {
+        destroy()
+    }
+
     private external fun nativeConstruct()
 
     private external fun nativeDestruct()
@@ -109,5 +114,6 @@ class NativeBinding {
         @JvmStatic
         private external fun nativeClassInit()
     }
+
 
 }

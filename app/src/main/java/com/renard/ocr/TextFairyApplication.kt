@@ -30,7 +30,10 @@ import com.renard.ocr.main_menu.language.OcrLanguageDataStore.deleteLanguage
 import com.renard.ocr.util.PreferencesUtils
 import com.squareup.leakcanary.LeakCanary
 
+lateinit var applicationInstance: TextFairyApplication
+
 class TextFairyApplication : MultiDexApplication() {
+
 
     val espressoTestIdlingResource: CountingIdlingResource = CountingIdlingResource("Background Thread")
 
@@ -46,6 +49,7 @@ class TextFairyApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        applicationInstance = this
         loadLibaries()
         createAnalytics()
         createCrashLogger()

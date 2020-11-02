@@ -37,9 +37,14 @@ class OcrFragment : Fragment() {
             when (it) {
                 is LayoutElements -> onLayoutElements(it)
                 is Progress -> showProgress(it)
+                is Result -> resetProgress()
             }
         })
         ocr.preview.observe(viewLifecycleOwner){ showPreview(it) }
+    }
+
+    private fun resetProgress() {
+        binding.progressImage.clearAllProgressInfo()
     }
 
     private fun showPreview(pix: Pix) {

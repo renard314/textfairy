@@ -12,12 +12,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.googlecode.leptonica.android.*
 import com.googlecode.leptonica.android.Convert.convertTo8
+import com.googlecode.tesseract.android.NativeBinding
 import com.googlecode.tesseract.android.OCR
 import com.renard.ocr.TextFairyApplication
 import com.renard.ocr.cropimage.image_processing.Blur
 import com.renard.ocr.cropimage.image_processing.BlurDetectionResult
 import com.renard.ocr.documents.creation.PixLoadStatus
 import com.renard.ocr.documents.creation.crop.CropImageScaler
+import com.renard.ocr.documents.creation.ocr.ImageLoadingViewModel.ImageLoadStatus.PreparedForCrop
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -28,36 +30,38 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
 
 
     private val application: TextFairyApplication = getApplication()
+    private val mNativeBinding: NativeBinding = NativeBinding()
 
     sealed class ImageLoadStatus {
         object Initial : ImageLoadStatus()
         object Loading : ImageLoadStatus()
-        data class Success(val pix: Pix) : ImageLoadStatus()
+        data class Loaded(val pix: Pix, val prepareForCropping:(Int,Int)->Unit ) : ImageLoadStatus()
+        data class PreparedForCrop(
+                val blurDetectionResult: BlurDetectionResult,
+                val bitmap: Bitmap,
+                val scaleFactor: Float,
+                val pix: Pix,
+                val cropAndProject:(FloatArray, Rect, Int)->Unit
+        ) : ImageLoadStatus()
         data class CropSuccess(val pix: Pix) : ImageLoadStatus()
         object CropError : ImageLoadStatus()
         data class Error(val pixLoadStatus: PixLoadStatus) : ImageLoadStatus()
     }
 
-    sealed class ScaleResult {
-        data class Initial(val pix: Pix) : ScaleResult()
-        data class ScaleSuccess(val blurDetectionResult: BlurDetectionResult, val bitmap: Bitmap, val scaleFactor: Float, val pix: Pix) : ScaleResult()
-    }
-
-
     private val _content = MutableLiveData<ImageLoadStatus>()
     val content: LiveData<ImageLoadStatus>
         get() = _content
-
-    private val _blurResult = MutableLiveData<ScaleResult>()
-    val blurResult: LiveData<ScaleResult>
-        get() = _blurResult
 
 
     init {
         _content.value = ImageLoadStatus.Initial
     }
 
-    fun scaleForCrop(pix: Pix, width: Int, height: Int) {
+    override fun onCleared() {
+        mNativeBinding.destroy()
+    }
+
+    private fun scaleForCrop(pix: Pix, width: Int, height: Int) {
         application.espressoTestIdlingResource.increment()
         viewModelScope.launch(Dispatchers.Default) {
             val scale = CropImageScaler().scale(pix, width, height)
@@ -68,7 +72,12 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
             }
             scale.pix.recycle()
 
-            _blurResult.postValue(ScaleResult.ScaleSuccess(Blur.blurDetect(pix), bitmap, scale.scaleFactor, pix))
+            _content.postValue(PreparedForCrop(
+                    Blur.blurDetect(pix),
+                    bitmap,
+                    scale.scaleFactor,
+                    pix
+            ) { trapezoid, bounds, rotation -> cropAndProject(pix, scale.scaleFactor, trapezoid, bounds, rotation) })
             application.espressoTestIdlingResource.decrement()
         }
     }
@@ -79,12 +88,11 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
             _content.postValue(ImageLoadStatus.Loading)
             val result =
                     ReadFile.load(application, contentUri)
-                            ?.run { ImageLoadStatus.Success(maybeUpscale(this)) }
+                            ?.run {
+                                val upscaledPix = maybeUpscale(this)
+                                ImageLoadStatus.Loaded(upscaledPix) { w, h -> scaleForCrop(upscaledPix, w, h) }
+                            }
                             ?: ImageLoadStatus.Error(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED)
-
-            if (result is ImageLoadStatus.Success) {
-                _blurResult.postValue(ScaleResult.Initial(result.pix))
-            }
 
             if (result is ImageLoadStatus.Error) {
                 application.crashLogger.setString("content uri", contentUri.toString())
@@ -112,7 +120,7 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    fun cropAndProject(
+    private fun cropAndProject(
             pix: Pix,
             scaleFactor: Float,
             trapezoid: FloatArray,

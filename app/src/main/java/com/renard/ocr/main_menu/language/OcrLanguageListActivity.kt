@@ -126,7 +126,6 @@ class OcrLanguageListActivity : MonitoredActivity(), SearchView.OnQueryTextListe
         return super.onOptionsItemSelected(item)
     }
 
-
     override fun getHintDialogId() = -1
 
     override fun getScreenName() = "Ocr Languages"

@@ -18,12 +18,15 @@ package com.googlecode.leptonica.android;
 
 import android.graphics.Rect;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 /**
  * Java representation of a native Leptonica PIX object.
  *
  * @author alanv@google.com (Alan Viverette)
  */
-public class Pix {
+public class Pix implements Closeable {
 
 
     /** Index of the image width within the dimensions array. */
@@ -273,6 +276,11 @@ public class Pix {
         nativeSetPixel(mNativePix, x, y, color);
     }
 
+    @Override
+    public void close() {
+        recycle();
+    }
+
     // ***************
     // * NATIVE CODE *
     // ***************
@@ -306,4 +314,5 @@ public class Pix {
     private static native int nativeGetPixel(long nativePix, int x, int y);
 
     private static native void nativeSetPixel(long nativePix, int x, int y, int color);
+
 }

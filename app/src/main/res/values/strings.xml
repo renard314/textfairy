@@ -272,4 +272,6 @@
     <string name="action_search">Search</string>
     <string name="action_search_languages">search languages</string>
     <string name="could_not_load_pdf">Could not load PDF.</string>
+    <string name="scanning_pdf">scanning %1$s</string>
+    <string name="notification_channel_title">Scanning progress</string>
 </resources>

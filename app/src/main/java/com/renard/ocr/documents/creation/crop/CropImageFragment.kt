@@ -22,7 +22,6 @@ import android.graphics.RectF
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -32,8 +31,7 @@ import com.renard.ocr.R
 import com.renard.ocr.cropimage.image_processing.BlurDetectionResult.Blurriness.STRONG_BLUR
 import com.renard.ocr.databinding.ActivityCropimageBinding
 import com.renard.ocr.documents.creation.ocr.ImageLoadingViewModel
-import com.renard.ocr.documents.creation.ocr.ImageLoadingViewModel.ScaleResult.Initial
-import com.renard.ocr.documents.creation.ocr.ImageLoadingViewModel.ScaleResult.ScaleSuccess
+import com.renard.ocr.documents.creation.ocr.ImageLoadingViewModel.ImageLoadStatus.PreparedForCrop
 import com.renard.ocr.util.PreferencesUtils
 import com.renard.ocr.util.afterMeasured
 
@@ -54,7 +52,7 @@ class CropImageFragment : Fragment(R.layout.activity_cropimage) {
     }
 
 
-    private fun showCropOnBoarding(blurDetectionResult: ScaleSuccess) {
+    private fun showCropOnBoarding(blurDetectionResult: PreparedForCrop) {
         PreferencesUtils.setFirstScan(requireContext(), false)
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(R.string.crop_onboarding_title)
@@ -80,25 +78,25 @@ class CropImageFragment : Fragment(R.layout.activity_cropimage) {
     private fun startCropping() {
         (requireActivity() as MonitoredActivity).setToolbarMessage(R.string.crop_title)
         val model by activityViewModels<ImageLoadingViewModel>()
-        model.blurResult.observe(viewLifecycleOwner) { scaleResult ->
-            when (scaleResult) {
-                is Initial -> {
+        model.content.observe(viewLifecycleOwner) { status ->
+            when (status) {
+                is ImageLoadingViewModel.ImageLoadStatus.Loaded -> {
                     binding.root.afterMeasured {
                         val margin = resources.getDimension(R.dimen.crop_margin)
                         val width = (binding.cropLayout.width - 2 * margin).toInt()
                         val height = (binding.cropLayout.height - 2 * margin).toInt()
-                        model.scaleForCrop(scaleResult.pix, width, height)
+                        status.prepareForCropping(width, height)
                     }
                 }
-                is ScaleSuccess -> {
-                    analytics().sendBlurResult(scaleResult.blurDetectionResult)
+                is PreparedForCrop -> {
+                    analytics().sendBlurResult(status.blurDetectionResult)
                     binding.cropLayout.displayedChild = 1
                     binding.root.afterMeasured {
-                        binding.cropImageView.setImageBitmapResetBase(scaleResult.bitmap, true, mRotation * 90)
+                        binding.cropImageView.setImageBitmapResetBase(status.bitmap, true, mRotation * 90)
                         if (PreferencesUtils.isFirstScan(requireContext())) {
-                            showCropOnBoarding(scaleResult)
+                            showCropOnBoarding(status)
                         } else {
-                            handleBlurResult(scaleResult)
+                            handleBlurResult(status)
                         }
 
                         binding.itemRotateLeft.isVisible = true
@@ -106,9 +104,7 @@ class CropImageFragment : Fragment(R.layout.activity_cropimage) {
                         binding.itemSave.isVisible = true
 
                         binding.itemSave.setOnClickListener {
-                            model.cropAndProject(
-                                    scaleResult.pix,
-                                    scaleResult.scaleFactor,
+                            status.cropAndProject(
                                     mCrop!!.trapezoid,
                                     mCrop!!.perspectiveCorrectedBoundingRect,
                                     mRotation
@@ -116,14 +112,17 @@ class CropImageFragment : Fragment(R.layout.activity_cropimage) {
                         }
                     }
                 }
+                else -> { /*ignored*/
+                }
             }
         }
+
     }
 
 
     private fun analytics() = (requireActivity() as MonitoredActivity).anaLytics
 
-    private fun handleBlurResult(blurDetectionResult: ScaleSuccess) {
+    private fun handleBlurResult(blurDetectionResult: PreparedForCrop) {
         analytics().sendScreenView(SCREEN_NAME)
         showDefaultCroppingRectangle(blurDetectionResult.bitmap)
         if (blurDetectionResult.blurDetectionResult.blurriness == STRONG_BLUR) {

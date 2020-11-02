@@ -58,6 +58,10 @@ class OCRImageView : ImageViewTouchBase {
         mTouchedTextRects.clear()
         mImageRects.clear()
         mTextRects.clear()
+        mProgress = -1
+        mWordBoundingBox.setEmpty()
+        mOCRBoundingBox.setEmpty()
+        invalidate()
     }
 
     fun getSelectedImageIndexes(): IntArray {

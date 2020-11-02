@@ -117,7 +117,7 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener, BlurWarningDialog.
         val model by viewModels<ImageLoadingViewModel>()
         model.content.observe(this) { status ->
             when (status) {
-                is Success -> {
+                is Loaded -> {
                     dismissLoadingImageProgressDialog()
                     val am = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
                     val isAccessibilityEnabled = am.isEnabled
@@ -164,7 +164,7 @@ class OCRActivity : MonitoredActivity(), LayoutChoseListener, BlurWarningDialog.
         val model by viewModels<ImageLoadingViewModel>()
         model.content.observe(this) { status ->
             val pix = when (status) {
-                is Success -> status.pix
+                is Loaded -> status.pix
                 is CropSuccess -> status.pix
                 else -> throw IllegalStateException()
             }

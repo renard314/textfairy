@@ -2,6 +2,7 @@ package com.renard.ocr.documents.creation
 
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import android.os.RemoteException
@@ -75,13 +76,13 @@ object DocumentStore {
 
     }
 
-    private fun saveImage(activity: MonitoredActivity, p: Pix): File {
+    fun saveImage(context: Context, p: Pix): File {
         val id = DateFormat.format("ssmmhhddMMyy", Date(System.currentTimeMillis()))
-        return Util.savePixToSD(activity, p, id.toString())
+        return Util.savePixToSD(context, p, id.toString())
     }
 
-    private fun saveDocumentToDB(parentId: Int, lang: String, monitoredActivity: MonitoredActivity, imageFile: File?, hocr: String?, plainText: String?): Uri? {
-        val client = monitoredActivity.contentResolver.acquireContentProviderClient(DocumentContentProvider.CONTENT_URI)
+    fun saveDocumentToDB(parentId: Int, lang: String, context: Context, imageFile: File?, hocr: String?, plainText: String?): Uri? {
+        val client = context.contentResolver.acquireContentProviderClient(DocumentContentProvider.CONTENT_URI)
         try {
             return client?.insert(DocumentContentProvider.CONTENT_URI, ContentValues().apply {
                 if (imageFile != null) {

@@ -27,7 +27,9 @@ import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.leptonica.android.ReadFile;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
@@ -40,7 +42,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * @author alanv@google.com (Alan Viverette)
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class TessBaseAPI {
+public class TessBaseAPI implements Closeable {
     /**
      * Used by the native implementation of the class.
      */
@@ -48,6 +50,12 @@ public class TessBaseAPI {
 
     static {
         nativeClassInit();
+    }
+
+    @Override
+    public void close() {
+        stop();
+        end();
     }
 
     /** Page segmentation mode. */

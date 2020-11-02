@@ -34,6 +34,7 @@ import com.googlecode.tesseract.android.TessBaseAPI.OEM_LSTM_ONLY
 import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode
 import com.renard.ocr.R
 import com.renard.ocr.TextFairyApplication
+import com.renard.ocr.analytics.CrashLogger
 import com.renard.ocr.documents.creation.crop.CropImageScaler
 import com.renard.ocr.main_menu.language.OcrLanguage
 import com.renard.ocr.main_menu.language.OcrLanguageDataStore.deleteLanguage
@@ -153,11 +154,21 @@ class OCR(application: Application) : AndroidViewModel(application) {
                 sendPreview(pixOcr)
                 ocrProgress.postValue(Message(R.string.progress_ocr))
 
-                initTessApi(
-                        lang = lang,
-                        pageWidth = pixOcr.width,
-                        pageHeight = pixOcr.height
-                )?.use { tess ->
+                val tessApi = initTessApi(getApplication(), lang, mCrashLogger) { progressValues ->
+                    ocrProgress.postValue(
+                            Progress(
+                                    percent = progressValues.percent,
+                                    wordBounds = progressValues.currentWordRect,
+                                    rectBounds = progressValues.currentRect,
+                                    pageWidth = pixOcr.width,
+                                    pageHeight = pixOcr.height
+                            )
+                    )
+                }
+                if (tessApi == null) {
+                    ocrProgress.postValue(Error(R.string.error_tess_init))
+                }
+                tessApi?.use { tess ->
                     tess.pageSegMode = PageSegMode.PSM_SINGLE_BLOCK
                     tess.setImage(pixOcr)
 
@@ -215,15 +226,27 @@ class OCR(application: Application) : AndroidViewModel(application) {
                 sendPreview(pix)
                 val pixText = Pix(mNativeBinding.convertBookPage(pix))
                 sendPreview(pixText)
+                pix.recycle()
                 if (mStopped.get()) {
+                    pixText.recycle()
                     return@execute
                 }
                 ocrProgress.postValue(Message(R.string.progress_ocr))
-                initTessApi(
-                        lang = lang,
-                        pageWidth = pixText.width,
-                        pageHeight = pixText.height
-                )?.use scan@{ tess ->
+                val tessApi = initTessApi(getApplication(), lang, mCrashLogger) { progressValues ->
+                    ocrProgress.postValue(
+                            Progress(
+                                    percent = progressValues.percent,
+                                    wordBounds = progressValues.currentWordRect,
+                                    rectBounds = progressValues.currentRect,
+                                    pageWidth = pixText.width,
+                                    pageHeight = pixText.height
+                            )
+                    )
+                }
+                if(tessApi==null){
+                    ocrProgress.postValue(Error(R.string.error_tess_init))
+                }
+                tessApi?.use scan@{ tess ->
                     tess.pageSegMode = PageSegMode.PSM_AUTO
                     tess.setImage(pixText)
                     var hocrText = tess.getHOCRText(0)
@@ -262,42 +285,6 @@ class OCR(application: Application) : AndroidViewModel(application) {
         _preview.postValue(scale.pix)
     }
 
-    private fun initTessApi(lang: String, pageWidth: Int, pageHeight: Int): TessBaseAPI? {
-        val mTess = TessBaseAPI { progressValues ->
-            val availableMegs = MemoryInfo.getFreeMemory(getApplication())
-            mCrashLogger.logMessage("available ram = $availableMegs, percent done = ${progressValues.percent}")
-            mCrashLogger.setLong("ocr progress", progressValues.percent.toLong())
-            ocrProgress.postValue(
-                    Progress(
-                            percent = progressValues.percent,
-                            wordBounds = progressValues.currentWordRect,
-                            rectBounds = progressValues.currentRect,
-                            pageWidth = pageWidth,
-                            pageHeight = pageHeight
-                    )
-            )
-        }
-
-        val tessDir = AppStorage.getTrainingDataDir(getApplication())?.path ?: return null
-        with(mCrashLogger) {
-            setString(
-                    tag = "page seg mode",
-                    value = "OEM_LSTM_ONLY"
-            )
-            setString("ocr language", lang)
-        }
-        val result = mTess.init(tessDir, lang, OEM_LSTM_ONLY)
-        if (!result) {
-            mCrashLogger.logMessage("init failed. deleting $lang")
-            deleteLanguage(lang, getApplication())
-            OcrLanguage(lang).installLanguage(getApplication())
-            ocrProgress.postValue(OcrProgress.Error(R.string.error_tess_init))
-            return null
-        }
-        mCrashLogger.logMessage("init succeeded")
-        mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "ﬀﬁﬂﬃﬄﬅﬆ")
-        return mTess
-    }
 
     private fun logMemory(context: Context) {
         val freeMemory = MemoryInfo.getFreeMemory(context)
@@ -321,8 +308,31 @@ class OCR(application: Application) : AndroidViewModel(application) {
 
     private fun <T> Pix.use(block: (Pix) -> T) = block(this).also { recycle() }
 
-    private fun TessBaseAPI.use(block: (TessBaseAPI) -> Unit) {
-        block(this)
-        this.end()
+}
+
+fun initTessApi(context: Context, lang: String, crashLogger: CrashLogger, onProgress: (TessBaseAPI.ProgressValues) -> Unit): TessBaseAPI? {
+    val mTess = TessBaseAPI(onProgress)
+    val tessDir = AppStorage.getTrainingDataDir(context)?.path ?: return null
+    with(crashLogger) {
+        setString(
+                tag = "page seg mode",
+                value = "OEM_LSTM_ONLY"
+        )
+        setString("ocr language", lang)
     }
+    val result = mTess.init(tessDir, lang, OEM_LSTM_ONLY)
+    if (!result) {
+        crashLogger.logMessage("init failed. deleting $lang")
+        deleteLanguage(lang, context)
+        OcrLanguage(lang).installLanguage(context)
+        return null
+    }
+    crashLogger.logMessage("init succeeded")
+    mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "ﬀﬁﬂﬃﬄﬅﬆ")
+    return mTess
+}
+
+public fun TessBaseAPI.use(block: (TessBaseAPI) -> Unit) {
+    block(this)
+    this.end()
 }

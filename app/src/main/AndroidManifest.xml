@@ -36,6 +36,7 @@
                 android:name=".documents.creation.ocr.OCRActivity"
                 android:launchMode="singleTop"/>
         <activity
+                android:parentActivityName=".documents.viewing.grid.DocumentGridActivity"
                 android:name=".documents.creation.ocr.OcrPdfActivity"
                 android:launchMode="singleTop"/>
 

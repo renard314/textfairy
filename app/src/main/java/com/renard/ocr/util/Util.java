@@ -266,6 +266,11 @@ public class Util {
 
     }
 
+    public static void deleteFileFromDir(final String name, File picDir) {
+        new File(picDir, name + ".png").delete();
+    }
+
+
     public static File savePixToDir(final Pix pix, final String name, File picDir) throws IOException {
         Log.v("Util", "savePixToDir");
 
@@ -278,14 +283,12 @@ public class Util {
             }
         }
         File image = new File(picDir, fileName);
-        image.createNewFile();
         try {
-            boolean result = WriteFile.writeImpliedFormat(pix, image, 85, true);
+            boolean result = WriteFile.writeImpliedFormat(pix, image);
             Log.v("Util", "writeImpliedFormat = " + result);
         } catch (Exception e) {
             throw new IOException(e);
         }
-
         return image;
     }
 

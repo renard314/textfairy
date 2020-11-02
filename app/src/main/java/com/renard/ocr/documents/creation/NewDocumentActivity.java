@@ -355,7 +355,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             Intent intent = new Intent(this, OcrPdfActivity.class);
             intent.setData(cameraPicUri);
             intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
-            startActivityForResult(intent, REQUEST_CODE_OCR);
+            startActivity(intent);
 
         } else {
             Intent intent = new Intent(this, OCRActivity.class);
