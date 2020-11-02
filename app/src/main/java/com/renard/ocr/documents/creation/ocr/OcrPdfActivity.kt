@@ -1,9 +1,7 @@
 package com.renard.ocr.documents.creation.ocr
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -14,11 +12,6 @@ import androidx.core.view.isVisible
 import androidx.work.*
 import androidx.work.ExistingWorkPolicy.KEEP
 import androidx.work.WorkInfo.State.*
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomViewTarget
-import com.bumptech.glide.request.transition.Transition
 import com.renard.ocr.MonitoredActivity
 import com.renard.ocr.R
 import com.renard.ocr.databinding.ActivityOcrPdfBinding
@@ -49,6 +42,8 @@ class OcrPdfActivity : MonitoredActivity() {
         val lang = Language.getOcrLanguage(this)!!
         val parentId = intent.getIntExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, -1)
         val data = intent.dataString!!
+        val fileName = intent.data?.lastPathSegment?.substringAfterLast("/")
+        setToolbarMessage(applicationContext.getString(R.string.scanning_pdf, fileName))
 
         val workRequest = OneTimeWorkRequestBuilder<OcrWorker>()
                 .setInputData(workDataOf(KEY_INPUT_URL to data, KEY_INPUT_LANG to lang, KEY_INPUT_PARENT_ID to parentId))
@@ -60,7 +55,7 @@ class OcrPdfActivity : MonitoredActivity() {
         workManager.getWorkInfosForUniqueWorkLiveData(data).observe(this) { workInfos ->
             val workInfo = workInfos.firstOrNull()
             when (workInfo?.state) {
-                ENQUEUED -> binding.toolbar.toolbarText.setText(R.string.progress_start)
+                ENQUEUED -> {}
                 RUNNING -> onProgress(workInfo.progress)
                 SUCCEEDED -> onSuccess(workInfo, lang)
                 FAILED, CANCELLED -> finish()
@@ -85,22 +80,21 @@ class OcrPdfActivity : MonitoredActivity() {
         }
     }
 
-    private var bitmapJob: Job?=null
+    private var bitmapJob: Job? = null
     private fun onProgress(progressData: Data) {
         Log.d(LOG_TAG, "RUNNING =$progressData")
-
         val progress = fromWorkData(progressData) ?: return
         if (progress.previewImage != null && progress.previewImage != currentPreviewUri) {
             //Glide is crashing so decode by hand.
             currentPreviewUri = progress.previewImage
-            binding.progressImage.isVisible=false
+            binding.progressImage.isVisible = false
             bitmapJob?.cancel()
             bitmapJob = CoroutineScope(Dispatchers.IO).launch {
                 val bitmap = progress.previewImage?.toFile().inputStream().use {
                     BitmapFactory.decodeStream(it)
                 }
                 withContext(Dispatchers.Main) {
-                    binding.progressImage.isVisible=true
+                    binding.progressImage.isVisible = true
                     binding.progressImage.setImageBitmapResetBase(bitmap, true, 0)
                     binding.progressImage.setProgress(progress.percent, progress.lineBounds, progress.pageBounds, progress.pageBounds.width(), progress.pageBounds.height())
                 }

@@ -164,6 +164,7 @@ public abstract class MonitoredActivity extends AppCompatActivity implements Bas
     }
 
     public void setToolbarMessage(String message) {
+        mToolbarMessage.setVisibility(View.VISIBLE);
         mToolbarMessage.setText(message);
     }
 
