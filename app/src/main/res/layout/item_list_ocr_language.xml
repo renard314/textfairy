@@ -21,7 +21,7 @@
     <ViewFlipper
         android:id="@+id/viewFlipper"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_alignTop="@+id/textView_language"
         android:layout_alignBottom="@+id/textView_language"
         android:layout_alignParentEnd="true">
