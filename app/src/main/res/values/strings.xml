@@ -219,7 +219,7 @@
     <string name="first_time_bad_result">Please read the tips or send me your feedback and I\'ll try
         to help you.
     </string>
-    <string name="start_scan">Start</string>
+    <string name="start_scan">Start Scan</string>
     <string name="could_not_load_image">Could not load the image.</string>
     <string name="download_manager_disabled">DownloadManager is disabled. Please enable it.</string>
     <string name="ok">OK</string>

@@ -15,16 +15,18 @@ class PdfDocumentWrapper(context: Context, fd: ParcelFileDescriptor) : Closeable
     private val pdfiumCore = PdfiumCore(context)
     private val pdfDocument = pdfiumCore.newDocument(fd)
 
+    fun getPageAsBitmap(pageNumber: Int): Bitmap {
+        pdfiumCore.openPage(pdfDocument, pageNumber)
+        val width = pdfiumCore.getPageWidth(pdfDocument, pageNumber)
+        val height = pdfiumCore.getPageHeight(pdfDocument, pageNumber)
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        Log.d(OcrPdfActivity::class.java.simpleName,"renderPageBitmap($pageNumber)")
+        pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNumber, 0, 0, width, height)
+        return bitmap
+    }
 
     fun getPage(pageNumber: Int): Pix {
-        pdfiumCore.openPage(pdfDocument, pageNumber)
-        val width = pdfiumCore.getPageWidthPoint(pdfDocument, pageNumber)
-        val height = pdfiumCore.getPageHeightPoint(pdfDocument, pageNumber)
-        val widthPixels = (width / (72.0 / 300.0)).toInt()
-        val heightPixels = (height / (72.0 / 300.0)).toInt()
-        val bitmap = Bitmap.createBitmap(widthPixels, heightPixels, Bitmap.Config.ARGB_8888)
-        Log.d(OcrPdfActivity::class.java.simpleName,"renderPageBitmap($pageNumber)")
-        pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNumber, 0, 0, widthPixels, heightPixels)
+        val bitmap = getPageAsBitmap(pageNumber)
         val p = ReadFile.readBitmap(bitmap)
         bitmap.recycle()
         return p

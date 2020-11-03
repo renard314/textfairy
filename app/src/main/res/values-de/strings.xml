@@ -233,7 +233,7 @@
     <string name="first_time_bad_result">Bitte lies die Tipps oder sende mir Feedback damit ich dir
         helfen kann.
     </string>
-    <string name="start_scan">Start</string>
+    <string name="start_scan">Starte Scan</string>
     <string name="ok">ok</string>
     <string name="download_manager_disabled">Bitte aktiviere den Downloadmanager.</string>
     <string name="could_not_load_image">Bild konnte nicht geladen werden.</string>

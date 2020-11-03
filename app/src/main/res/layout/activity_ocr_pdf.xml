@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ff000000">
@@ -13,4 +14,46 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar" />
+
+    <RelativeLayout
+        tools:visibility="visible"
+        android:visibility="gone"
+        android:id="@+id/toolbar_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/document_grid_background"
+        android:elevation="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textview_ocr_language"
+            style="@android:style/TextAppearance.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center_vertical|end"
+            android:text="@string/text_is_in"
+            android:textAlignment="viewEnd" />
+
+        <Spinner
+            android:textAlignment="center"
+            android:id="@+id/button_language"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_toEndOf="@+id/textview_ocr_language"
+            android:drawSelectorOnTop="true"
+            tools:listitem="@android:layout/simple_spinner_item" />
+
+        <Button
+            android:textColor="@color/accent"
+            android:paddingHorizontal="16dp"
+            android:text="@string/start_scan"
+            android:id="@+id/item_save"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/continue_ocr" />
+    </RelativeLayout>
 </RelativeLayout>
