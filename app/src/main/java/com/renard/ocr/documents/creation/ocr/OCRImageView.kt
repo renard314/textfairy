@@ -101,6 +101,10 @@ class OCRImageView : ImageViewTouchBase {
     }
 
     fun setProgress(newProgress: Int, wordBoundingBox: Rect, pageBoundingBox: Rect, pageWidth: Int, pageHeight: Int) {
+
+        if (mBitmapDisplayed.bitmap == null) {
+            return
+        }
         // scale the word bounding rectangle to the preview image space
         val xScale = 1.0f * mBitmapDisplayed.width / pageWidth
         val wordBounds = wordBoundingBox.toRectF().times(xScale)
