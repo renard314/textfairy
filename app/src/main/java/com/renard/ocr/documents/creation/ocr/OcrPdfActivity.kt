@@ -10,19 +10,17 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.app.NavUtils
 import androidx.core.net.toFile
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.work.*
-import androidx.work.ExistingWorkPolicy.KEEP
 import androidx.work.WorkInfo.State.*
-import com.googlecode.leptonica.android.WriteFile
 import com.renard.ocr.MonitoredActivity
 import com.renard.ocr.R
 import com.renard.ocr.databinding.ActivityOcrPdfBinding
 import com.renard.ocr.documents.creation.DocumentStore
-import com.renard.ocr.documents.creation.crop.CropImageScaler
 import com.renard.ocr.documents.creation.ocr.OcrWorker.Companion.KEY_INPUT_LANG
 import com.renard.ocr.documents.creation.ocr.OcrWorker.Companion.KEY_INPUT_NOTIFICATION_ID
 import com.renard.ocr.documents.creation.ocr.OcrWorker.Companion.KEY_INPUT_PARENT_ID
@@ -44,6 +42,7 @@ class OcrPdfActivity : MonitoredActivity() {
     private lateinit var binding: ActivityOcrPdfBinding
     private var currentPreviewUri: Uri? = null
     private var workId: UUID? = null
+    private var bitmapJob: Job? = null
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -69,32 +68,33 @@ class OcrPdfActivity : MonitoredActivity() {
         val idString = savedInstanceState?.getString(KEY_WORK_ID)
                 ?: intent.getStringExtra(KEY_WORK_ID)
         if (idString != null) {
+            binding.group.isVisible = false
             binding.root.doOnLayout {
                 observeWorkManager(workManager, pdfUri, lang, UUID.fromString(idString))
             }
         } else {
-            showInitialPreview(pdfUri)
-            initLanguageSelectionUi(lang)
+            val pdf = getPdfDocument(pdfUri, this)
+            if (pdf == null) {
+                Toast.makeText(this, R.string.could_not_load_pdf, Toast.LENGTH_LONG).show()
+                return
+            }
+            initLanguageSelectionUi(pdf.getPageCount(), lang)
+            binding.root.doOnLayout {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val bitmap = pdf.getPageAsBitmap(0, binding.progressImage.width, binding.progressImage.height)
+                    pdf.close()
+                    withContext(Dispatchers.Main) {
+                        binding.progressImage.isVisible = true
+                        binding.progressImage.setImageBitmapResetBase(bitmap, true, 0)
+                    }
+                }
+            }
             binding.itemSave.setOnClickListener {
-                binding.toolbarBottom.isVisible = false
+                binding.group.isVisible = false
                 val workRequest = createWorkRequest(pdfUri, lang)
                 workManager.enqueue(workRequest)
                 workId = workRequest.id
                 observeWorkManager(workManager, pdfUri, lang, workRequest.id)
-            }
-        }
-    }
-
-    private fun showInitialPreview(pdfUri: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val bitmap = getPdfDocument(pdfUri, this@OcrPdfActivity)?.use {
-                it.getPageAsBitmap(0)
-            }
-            withContext(Dispatchers.Main) {
-                binding.root.doOnLayout {
-                    binding.progressImage.isVisible = true
-                    binding.progressImage.setImageBitmapResetBase(bitmap, true, 0)
-                }
             }
         }
     }
@@ -123,8 +123,9 @@ class OcrPdfActivity : MonitoredActivity() {
         }
     }
 
-    private fun initLanguageSelectionUi(lang: String) {
-        binding.toolbarBottom.isVisible = true
+    private fun initLanguageSelectionUi(pageCount: Int, lang: String) {
+        binding.group.isVisible = true
+        binding.textviewOcrPdf.text = getString(R.string.scan_pdf_title, pageCount)
         CoroutineScope(Dispatchers.IO).launch {
             val installedLanguages = getInstalledOCRLanguages(this@OcrPdfActivity)
             withContext(Dispatchers.Main) {
@@ -163,7 +164,6 @@ class OcrPdfActivity : MonitoredActivity() {
         }
     }
 
-    private var bitmapJob: Job? = null
     private fun onProgress(progressData: Data) {
         Log.d(LOG_TAG, "RUNNING =$progressData")
         val progress = fromWorkData(progressData) ?: return

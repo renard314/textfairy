@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animateLayoutChanges="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ff000000">
+    android:background="@color/dark_grey">
 
     <include
         android:id="@+id/toolbar"
@@ -12,48 +14,107 @@
     <com.renard.ocr.documents.creation.ocr.OCRImageView
         android:id="@+id/progress_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar" />
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/textview_ocr_pdf"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-    <RelativeLayout
-        tools:visibility="visible"
-        android:visibility="gone"
-        android:id="@+id/toolbar_bottom"
+    <TextView
+        android:id="@+id/textview_ocr_pdf"
+        style="@android:style/TextAppearance.Large.Inverse"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/document_grid_background"
-        android:elevation="4dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/scan_pdf_title"
+        app:layout_constraintBottom_toTopOf="@+id/textview_ocr_pdf_explanation_1"
+        app:layout_constraintTop_toBottomOf="@+id/progress_image" />
 
-        <TextView
-            android:id="@+id/textview_ocr_language"
-            style="@android:style/TextAppearance.Medium"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:gravity="center_vertical|end"
-            android:text="@string/text_is_in"
-            android:textAlignment="viewEnd" />
+    <TextView
+        android:id="@+id/textview_ocr_pdf_explanation_1"
+        style="@android:style/TextAppearance.Small.Inverse"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:drawablePadding="12dp"
+        android:text="@string/scan_pdf_explanation_1"
+        app:drawableStartCompat="@drawable/ic_baseline_check_circle_outline_24"
+        app:drawableTint="@color/accent"
+        app:layout_constraintBottom_toTopOf="@+id/textview_ocr_pdf_explanation_2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_ocr_pdf" />
 
-        <Spinner
-            android:textAlignment="center"
-            android:id="@+id/button_language"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_toEndOf="@+id/textview_ocr_language"
-            android:drawSelectorOnTop="true"
-            tools:listitem="@android:layout/simple_spinner_item" />
+    <TextView
+        android:id="@+id/textview_ocr_pdf_explanation_2"
+        style="@android:style/TextAppearance.Small.Inverse"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:drawablePadding="12dp"
+        android:text="@string/scan_pdf_explanation_2"
+        app:drawableStartCompat="@drawable/ic_baseline_check_circle_outline_24"
+        app:drawableTint="@color/accent"
+        app:layout_constraintBottom_toTopOf="@+id/button_language"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_ocr_pdf_explanation_1" />
 
-        <Button
-            android:textColor="@color/accent"
-            android:paddingHorizontal="16dp"
-            android:text="@string/start_scan"
-            android:id="@+id/item_save"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/continue_ocr" />
-    </RelativeLayout>
-</RelativeLayout>
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/button_language"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:drawSelectorOnTop="true"
+        android:textAlignment="center"
+        app:backgroundTint="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/barrier_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textview_ocr_language"
+        app:layout_constraintTop_toBottomOf="@+id/textview_ocr_pdf_explanation_2"
+        tools:listitem="@android:layout/simple_spinner_item" />
+
+    <TextView
+        android:id="@+id/textview_ocr_language"
+        style="@android:style/TextAppearance.Medium.Inverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:gravity="center_vertical|end"
+        android:text="@string/text_is_in"
+        android:textAlignment="viewEnd"
+        app:layout_constraintBottom_toTopOf="@+id/barrier_button"
+        app:layout_constraintEnd_toStartOf="@+id/button_language"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_ocr_pdf_explanation_2"
+        app:layout_constraintVertical_chainStyle="spread_inside" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="item_save" />
+
+    <Button
+        android:id="@+id/item_save"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/continue_ocr"
+        app:backgroundTint="@color/btn_background_accent_tint"
+        android:paddingHorizontal="16dp"
+        android:text="@string/start_scan"
+        android:textColor="@color/dark_grey"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/barrier_button" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="item_save,textview_ocr_language, textview_ocr_pdf, textview_ocr_pdf_explanation_1, textview_ocr_pdf_explanation_2,button_language" />
+</androidx.constraintlayout.widget.ConstraintLayout>
