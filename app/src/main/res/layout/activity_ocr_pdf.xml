@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:animateLayoutChanges="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/dark_grey">
 
     <include
@@ -56,25 +56,35 @@
         android:text="@string/scan_pdf_explanation_2"
         app:drawableStartCompat="@drawable/ic_baseline_check_circle_outline_24"
         app:drawableTint="@color/accent"
-        app:layout_constraintBottom_toTopOf="@+id/button_language"
+        app:layout_constraintBottom_toTopOf="@+id/button_language_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_ocr_pdf_explanation_1" />
 
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/button_language"
+    <FrameLayout
+        android:layout_marginTop="64dp"
+        android:id="@+id/button_language_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:drawSelectorOnTop="true"
-        android:textAlignment="center"
-        app:backgroundTint="@android:color/white"
+        android:background="@drawable/spinner_background"
         app:layout_constraintBottom_toTopOf="@+id/barrier_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textview_ocr_language"
-        app:layout_constraintTop_toBottomOf="@+id/textview_ocr_pdf_explanation_2"
-        tools:listitem="@android:layout/simple_spinner_item" />
+        app:layout_constraintTop_toBottomOf="@+id/textview_ocr_pdf_explanation_2">
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:id="@+id/button_language"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawSelectorOnTop="true"
+            android:textAlignment="center"
+            app:backgroundTint="@android:color/white"
+            tools:listitem="@android:layout/simple_spinner_item" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/textview_ocr_language"
@@ -86,7 +96,7 @@
         android:text="@string/text_is_in"
         android:textAlignment="viewEnd"
         app:layout_constraintBottom_toTopOf="@+id/barrier_button"
-        app:layout_constraintEnd_toStartOf="@+id/button_language"
+        app:layout_constraintEnd_toStartOf="@+id/button_language_background"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_ocr_pdf_explanation_2"
@@ -105,10 +115,10 @@
         android:layout_height="48dp"
         android:layout_margin="16dp"
         android:contentDescription="@string/continue_ocr"
-        app:backgroundTint="@color/btn_background_accent_tint"
         android:paddingHorizontal="16dp"
         android:text="@string/start_scan"
         android:textColor="@color/dark_grey"
+        app:backgroundTint="@color/btn_background_accent_tint"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barrier_button" />
 
@@ -116,5 +126,5 @@
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="item_save,textview_ocr_language, textview_ocr_pdf, textview_ocr_pdf_explanation_1, textview_ocr_pdf_explanation_2,button_language" />
+        app:constraint_referenced_ids="item_save,textview_ocr_language, textview_ocr_pdf, textview_ocr_pdf_explanation_1, textview_ocr_pdf_explanation_2,button_language_background" />
 </androidx.constraintlayout.widget.ConstraintLayout>
