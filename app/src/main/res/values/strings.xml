@@ -277,4 +277,5 @@
     <string name="scan_pdf_title">You\'re ready to scan %1$d pages.</string>
     <string name="scan_pdf_explanation_1">It might take a while, you can close the app in the meantime.</string>
     <string name="scan_pdf_explanation_2">You\'ll be notified when the scanning is complete.</string>
+    <string name="scanning_pdf_progress">Page %1$d of %2$d</string>
 </resources>

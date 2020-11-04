@@ -103,7 +103,8 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
             }?.use { tess ->
                 getPdfDocument(inputUrl, applicationContext)?.use { pdf ->
                     for (i in 0 until pdf.getPageCount()) {
-                        progress = ProgressData()
+                        progress = ProgressData(currentPage = i+1, pageCount = pdf.getPageCount())
+                        setForeground(createForegroundInfo(Uri.parse(inputUrl), parentId, i, pdf.getPageCount()))
                         pdf.getPage(i)
                                 .use { Pix(binding.convertBookPage(it)) }
                                 .use { pixText ->
@@ -116,7 +117,6 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
                                         parentId = DocumentStore.getDocumentId(documentUri)
                                     }
                                 }
-                        setForeground(createForegroundInfo(Uri.parse(inputUrl), parentId, i, pdf.getPageCount()))
                     }
                 }
                 return ScanPdfResult.Success(accuracy.average().toInt(), parentId)
@@ -152,7 +152,6 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
     }
 
 
-
     private fun scanPage(tess: TessBaseAPI, pixText: Pix): ScanPageResult {
         tess.pageSegMode = TessBaseAPI.PageSegMode.PSM_AUTO
         tess.setImage(pixText)
@@ -177,6 +176,7 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
     private fun createForegroundInfo(pdfFileUri: Uri, parentId: Int, currentPage: Int, pageCount: Int): ForegroundInfo {
         return createForegroundInfo(pdfFileUri, parentId) {
             it.setProgress(pageCount, currentPage + 1, false)
+            it.setContentText(applicationContext.getString(R.string.scanning_pdf_progress, currentPage + 1, pageCount))
         }
     }
 
@@ -205,7 +205,7 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
         val notification = NotificationCompat.Builder(applicationContext, id)
                 .setContentTitle(title)
                 .setTicker(title)
-                .setSmallIcon(R.drawable.title1)
+                .setSmallIcon(R.drawable.ic_fairy_happy)
                 .setOngoing(true)
                 .setContentIntent(contentIntent)
                 .addAction(android.R.drawable.ic_menu_close_clear_cancel, cancel, intent)
@@ -232,6 +232,8 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
     private data class ScanPageResult(val htmlText: String, val hocrText: String, val accuracy: Int)
 
     data class ProgressData(
+            val currentPage:Int = 0,
+            val pageCount:Int = 0,
             val percent: Int = 0,
             val previewImage: Uri? = null,
             val pageBounds: Rect = Rect(),
@@ -239,6 +241,8 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
             val progressCount: Int = 0
     ) {
         fun asWorkData() = workDataOf(
+                CurrentPage to currentPage,
+                PageCount to pageCount,
                 Progress to percent,
                 PreviewImage to previewImage?.toString(),
                 PageBounds to pageBounds.flattenToString(),
@@ -251,6 +255,8 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
                 null
             } else
                 ProgressData(
+                        currentPage = data.getInt(CurrentPage,0),
+                        pageCount = data.getInt(PageCount,0),
                         percent = data.getInt(Progress, 0),
                         previewImage = getUri(data),
                         pageBounds = Rect.unflattenFromString(data.getString(PageBounds))!!,
@@ -271,6 +277,8 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
     }
 
     companion object {
+        const val CurrentPage = "CurrentPage"
+        const val PageCount = "PageCount"
         const val Progress = "Progress"
         const val PreviewImage = "Preview"
         const val PageBounds = "PageBounds"

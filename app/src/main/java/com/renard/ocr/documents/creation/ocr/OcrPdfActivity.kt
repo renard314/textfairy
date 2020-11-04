@@ -167,6 +167,7 @@ class OcrPdfActivity : MonitoredActivity() {
     private fun onProgress(progressData: Data) {
         Log.d(LOG_TAG, "RUNNING =$progressData")
         val progress = fromWorkData(progressData) ?: return
+        setToolbarMessage(getString(R.string.scanning_pdf_progress,progress.currentPage, progress.pageCount))
         if (progress.previewImage != null && progress.previewImage != currentPreviewUri) {
             //Glide is crashing so decode by hand.
             currentPreviewUri = progress.previewImage

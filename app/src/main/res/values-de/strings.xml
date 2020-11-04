@@ -290,5 +290,6 @@
     <string name="scan_pdf_title">Scanne PDF datei mit %1$d Seiten.</string>
     <string name="scan_pdf_explanation_1">Das kann ein bisschen dauern. Sie können die App solange schließen.</string>
     <string name="scan_pdf_explanation_2">Sie bekommen eine Benachrichtigung sobald der Scanvorgang abgeschlossen ist.</string>
+    <string name="scanning_pdf_progress">Seite %1$d von %2$d</string>
 
 </resources>
