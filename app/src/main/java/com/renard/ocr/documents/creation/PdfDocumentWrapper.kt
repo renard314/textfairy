@@ -15,12 +15,20 @@ class PdfDocumentWrapper(context: Context, fd: ParcelFileDescriptor) : Closeable
     private val pdfiumCore = PdfiumCore(context)
     private val pdfDocument = pdfiumCore.newDocument(fd)
 
-    fun getPageAsBitmap(pageNumber: Int): Bitmap {
+    fun getPageAsBitmap(pageNumber: Int, targetWidth: Int = -1, targetHeight: Int = -1): Bitmap {
         pdfiumCore.openPage(pdfDocument, pageNumber)
-        val width = pdfiumCore.getPageWidth(pdfDocument, pageNumber)
-        val height = pdfiumCore.getPageHeight(pdfDocument, pageNumber)
+        val height = if(targetHeight==-1){
+            pdfiumCore.getPageHeightPoint(pdfDocument, pageNumber) * (200 / 72)
+        } else {
+            targetHeight
+        }
+        val width = if(targetWidth==-1){
+            pdfiumCore.getPageWidthPoint(pdfDocument, pageNumber) *(200 / 72)
+        } else {
+            targetWidth
+        }
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        Log.d(OcrPdfActivity::class.java.simpleName,"renderPageBitmap($pageNumber)")
+        Log.d(OcrPdfActivity::class.java.simpleName, "renderPageBitmap($pageNumber)")
         pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNumber, 0, 0, width, height)
         return bitmap
     }
