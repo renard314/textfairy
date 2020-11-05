@@ -21,6 +21,7 @@ import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Context;
@@ -51,7 +52,6 @@ import androidx.core.content.FileProvider;
 
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
-import com.renard.ocr.documents.creation.crop.CropImageFragment;
 import com.renard.ocr.documents.creation.ocr.OCRActivity;
 import com.renard.ocr.documents.creation.ocr.OcrPdfActivity;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
@@ -156,10 +156,12 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             cameraPicUri = null;
             Intent i;
             if (Build.VERSION.SDK_INT >= 19) {
-                i = new Intent(Intent.ACTION_GET_CONTENT, null);
+                i = new Intent(Intent.ACTION_OPEN_DOCUMENT, null);
+                //i = new Intent(Intent.ACTION_GET_CONTENT, null);
+                i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 i.addCategory(Intent.CATEGORY_OPENABLE);
-                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                i.setType("image/*");
+                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                i.setType("*/*");
                 i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/png", "image/jpg", "image/jpeg", "application/pdf"});
             } else {
                 i = new Intent(Intent.ACTION_GET_CONTENT, null);
@@ -291,79 +293,110 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
 
     private void onTakePhotoActivityResult(CameraResult cameraResult) {
         if (cameraResult.mResultCode == RESULT_OK) {
-            if (cameraResult.mRequestCode == REQUEST_CODE_MAKE_PHOTO) {
-                Cursor myCursor = null;
-                Date dateOfPicture;
-                //check if there is a file at the uri we specified
-                if (cameraPicUri != null) {
-                    File f = new File(localCameraPicUri.getPath());
-                    if (f.isFile() && f.exists() && f.canRead()) {
-                        //all is well
-                        Log.i(LOG_TAG, "onTakePhotoActivityResult");
-                        loadBitmapFromContentUri(localCameraPicUri, ImageSource.CAMERA);
-                        return;
-                    }
 
+            if (cameraResult.mRequestCode == REQUEST_CODE_MAKE_PHOTO) {
+                final Uri uri = loadCameraResult();
+                if (uri == null) {
+                    showFileError(this, PixLoadStatus.CAMERA_NO_IMAGE_RETURNED);
+                } else {
+                    startOcr(uri, ImageSource.CAMERA);
                 }
-                //try to look up the image by querying the media content provider
+            } else if (cameraResult.mRequestCode == REQUEST_CODE_PICK_PHOTO) {
+                final ArrayList<Uri> uris = new ArrayList<>();
+                if (cameraResult.mData.getClipData() != null) {
+                    for (int i = 0; i < cameraResult.mData.getClipData().getItemCount(); i++) {
+                        final ClipData.Item itemAt = cameraResult.mData.getClipData().getItemAt(i);
+                        uris.add(itemAt.getUri());
+                    }
+                }
                 try {
-                    // Create a Cursor to obtain the file Path for the large
-                    // image
-                    String[] largeFileProjection = {MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.ORIENTATION, MediaStore.Images.ImageColumns.DATE_TAKEN};
-                    String largeFileSort = MediaStore.Images.ImageColumns._ID + " DESC";
-                    myCursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, largeFileProjection, null, null, largeFileSort);
-                    if (myCursor != null) {
-                        myCursor.moveToFirst();
-                        // This will actually give you the file path location of the
-                        // image.
-                        String largeImagePath = myCursor.getString(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
-                        Uri tempCameraPicUri = Uri.fromFile(new File(largeImagePath));
-                        dateOfPicture = new Date(myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)));
-                        if (dateOfPicture.getTime() == 0 || (dateOfPicture.after(dateCameraIntentStarted))) {
-                            cameraPicUri = tempCameraPicUri;
-                        }
+                    if (cameraResult.mData.getData() != null) {
+                        uris.add(cameraResult.mData.getData());
                     }
                 } catch (Exception ignored) {
-                } finally {
-                    if (myCursor != null) {
-                        myCursor.close();
-                    }
                 }
-            }
-
-            if (cameraPicUri == null) {
-                try {
-                    cameraPicUri = mCameraResult.mData.getData();
-                } catch (Exception e) {
-                    showFileError(this, PixLoadStatus.CAMERA_APP_ERROR);
+                if (uris.isEmpty()) {
+                    showFileError(this, PixLoadStatus.MEDIA_STORE_RETURNED_NULL);
+                } else if (isOneImage(uris)) {
+                    startOcr(uris.get(0), ImageSource.PICK);
+                } else {
+                    startOcr(uris);
                 }
-            }
-
-            if (cameraPicUri != null) {
-                loadBitmapFromContentUri(cameraPicUri, mCameraResult.mSource);
-            } else {
-                showFileError(this, PixLoadStatus.CAMERA_NO_IMAGE_RETURNED);
             }
         }
     }
 
-    protected void loadBitmapFromContentUri(final Uri cameraPicUri, ImageSource source) {
-        mCrashLogger.logMessage("Loading " + cameraPicUri.toString() + " from " + source.name());
-        final String type = getContentResolver().getType(cameraPicUri);
-        if ((cameraPicUri.getPath().endsWith(".pdf")) || "application/pdf".equalsIgnoreCase(type)) {
-
-            Intent intent = new Intent(this, OcrPdfActivity.class);
-            intent.setData(cameraPicUri);
-            intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
-            startActivity(intent);
-
-        } else {
-            Intent intent = new Intent(this, OCRActivity.class);
-            intent.putExtra(EXTRA_IMAGE_SOURCE, source.name());
-            intent.setData(cameraPicUri);
-            intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
-            startActivityForResult(intent, REQUEST_CODE_OCR);
+    private void startOcr(ArrayList<Uri> uris) {
+        Intent intent = new Intent(this, OcrPdfActivity.class);
+        ClipData clipData = null;
+        for (Uri uri : uris) {
+            if (clipData == null) {
+                clipData = ClipData.newUri(getContentResolver(), "", uri);
+            } else {
+                clipData.addItem(new ClipData.Item(uri));
+            }
         }
+        intent.setClipData(clipData);
+        intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
+        startActivity(intent);
+    }
+
+    private boolean isOneImage(ArrayList<Uri> uris) {
+        if (uris.size() != 1) {
+            return false;
+        }
+        final Uri uri = uris.get(0);
+        final String type = getContentResolver().getType(uri);
+        return type != null && type.contains("image");
+    }
+
+    private Uri loadCameraResult() {
+        Cursor myCursor = null;
+        Date dateOfPicture;
+        //check if there is a file at the uri we specified
+        if (cameraPicUri != null) {
+            File f = new File(localCameraPicUri.getPath());
+            if (f.isFile() && f.exists() && f.canRead()) {
+                //all is well
+                Log.i(LOG_TAG, "onTakePhotoActivityResult");
+                return localCameraPicUri;
+            }
+
+        }
+        //try to look up the image by querying the media content provider
+        try {
+            // Create a Cursor to obtain the file Path for the large
+            // image
+            String[] largeFileProjection = {MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.ORIENTATION, MediaStore.Images.ImageColumns.DATE_TAKEN};
+            String largeFileSort = MediaStore.Images.ImageColumns._ID + " DESC";
+            myCursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, largeFileProjection, null, null, largeFileSort);
+            if (myCursor != null) {
+                myCursor.moveToFirst();
+                // This will actually give you the file path location of the
+                // image.
+                String largeImagePath = myCursor.getString(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+                Uri tempCameraPicUri = Uri.fromFile(new File(largeImagePath));
+                dateOfPicture = new Date(myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)));
+                if (dateOfPicture.getTime() == 0 || (dateOfPicture.after(dateCameraIntentStarted))) {
+                    return tempCameraPicUri;
+                }
+            }
+        } catch (Exception ignored) {
+        } finally {
+            if (myCursor != null) {
+                myCursor.close();
+            }
+        }
+        return null;
+    }
+
+    protected void startOcr(final Uri cameraPicUri, ImageSource source) {
+        mCrashLogger.logMessage("Loading " + cameraPicUri.toString() + " from " + source.name());
+        Intent intent = new Intent(this, OCRActivity.class);
+        intent.putExtra(EXTRA_IMAGE_SOURCE, source.name());
+        intent.setData(cameraPicUri);
+        intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
+        startActivityForResult(intent, REQUEST_CODE_OCR);
     }
 
     @Override
@@ -380,7 +413,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                     break;
                 case REQUEST_CODE_OCR:
                     final Intent intent = new Intent(this, DocumentActivity.class);
-                    intent.putExtra(EXTRA_ACCURACY, data.getIntExtra(EXTRA_ACCURACY,0));
+                    intent.putExtra(EXTRA_ACCURACY, data.getIntExtra(EXTRA_ACCURACY, 0));
                     intent.putExtra(EXTRA_LANGUAGE, data.getStringExtra(EXTRA_LANGUAGE));
                     intent.setData(data.getData());
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

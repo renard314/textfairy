@@ -17,6 +17,7 @@ import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.work.*
 import com.googlecode.leptonica.android.Pix
+import com.googlecode.leptonica.android.ReadFile
 import com.googlecode.leptonica.android.WriteFile
 import com.googlecode.tesseract.android.NativeBinding
 import com.googlecode.tesseract.android.TessBaseAPI
@@ -28,6 +29,7 @@ import com.renard.ocr.documents.creation.PdfDocumentWrapper
 import com.renard.ocr.documents.creation.crop.CropImageScaler
 import com.renard.ocr.util.Util
 import kotlinx.coroutines.coroutineScope
+import java.io.Closeable
 import java.io.File
 import java.io.IOException
 
@@ -37,17 +39,38 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
 
 
     override suspend fun doWork(): Result {
-        val inputUrl = inputData.getString(KEY_INPUT_URL) ?: return Result.failure()
+        val inputUrls = inputData.getStringArray(KEY_INPUT_URLS)?.map(Uri::parse)
+                ?: return Result.failure()
         val inputLang = inputData.getString(KEY_INPUT_LANG) ?: return Result.failure()
         val parentId = inputData.getInt(KEY_INPUT_PARENT_ID, -1)
-        setForeground(createForegroundInfo(Uri.parse(inputUrl), parentId))
+        setForeground(createForegroundInfo(inputUrls.first(), parentId))
+        takeUriPermission(inputUrls)
+
         return coroutineScope {
-            when (val result = scanPdf(inputLang, inputUrl, parentId)) {
+            when (val result = scanUris(inputUrls, inputLang, parentId)) {
                 is ScanPdfResult.Success -> Result.success(workDataOf(
                         KEY_OUTPUT_ACCURACY to result.accuracy,
                         KEY_OUTPUT_DOCUMENT_ID to result.documentId
                 ))
                 is ScanPdfResult.Failure -> Result.failure()
+            }
+        }.also {
+            releaseUriPermission(inputUrls)
+        }
+    }
+
+    private fun releaseUriPermission(inputUrls: List<Uri>) {
+        if (Build.VERSION.SDK_INT >= 19) {
+            inputUrls.forEach {
+                applicationContext.contentResolver.releasePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        }
+    }
+
+    private fun takeUriPermission(inputUrls: List<Uri>) {
+        if (Build.VERSION.SDK_INT >= 19) {
+            inputUrls.forEach {
+                applicationContext.contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
         }
     }
@@ -60,7 +83,7 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
         val uri = CropImageScaler().scale(pix, widthPixels, heightPixels).pix.use {
             try {
                 val image = File(file, "progress_${id}_${progress.progressCount}.png")
-                if (WriteFile.writeImpliedFormat(pix, image, 50, true)) {
+                if (WriteFile.writeImpliedFormat(pix, image)) {
                     image.toUri()
                 } else {
                     null
@@ -78,9 +101,9 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
         )
     }
 
-    private suspend fun scanPdf(inputLang: String, inputUrl: String, parentIdParam: Int): ScanPdfResult {
+    private suspend fun scanUris(uris: List<Uri>, inputLang: String, parentIdParam: Int): ScanPdfResult {
         var parentId = parentIdParam
-        var progress = ProgressData()
+        var progress = ProgressData(pageCount = getPageCount(applicationContext, uris))
         val accuracy = mutableListOf<Int>()
 
         NativeBinding().use { binding ->
@@ -101,16 +124,16 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
                 progress = progress.copy(percent = it.percent, pageBounds = it.currentRect, lineBounds = it.currentWordRect)
                 setProgressAsync(progress.asWorkData())
             }?.use { tess ->
-                getPdfDocument(inputUrl, applicationContext)?.use { pdf ->
-                    for (i in 0 until pdf.getPageCount()) {
-                        progress = ProgressData(currentPage = i+1, pageCount = pdf.getPageCount())
-                        setForeground(createForegroundInfo(Uri.parse(inputUrl), parentId, i, pdf.getPageCount()))
-                        pdf.getPage(i)
-                                .use { Pix(binding.convertBookPage(it)) }
+                for (uri in uris) {
+                    pages(uri).forEach {
+                        progress = ProgressData(currentPage = progress.currentPage + 1, pageCount = progress.pageCount)
+                        setForeground(createForegroundInfo(uri, parentId, progress.currentPage, progress.pageCount))
+                        Pix(binding.convertBookPage(it))
                                 .use { pixText ->
+                                    it.recycle()
                                     progress = sendProgressImage(pixText.nativePix, progress)
                                     setProgress(progress.asWorkData())
-                                    val scan = scanPage(tess, pixText)
+                                    val scan = ocr(tess, pixText)
                                     accuracy.add(scan.accuracy)
                                     val documentUri = saveDocument(scan, inputLang, pixText, parentId)
                                     if (parentId == -1 && documentUri != null) {
@@ -119,11 +142,28 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
                                 }
                     }
                 }
-                return ScanPdfResult.Success(accuracy.average().toInt(), parentId)
+                return if (accuracy.isEmpty()) {
+                    ScanPdfResult.Failure
+                } else {
+                    ScanPdfResult.Success(accuracy.average().toInt(), parentId)
+                }
             }
         }
         return ScanPdfResult.Failure
     }
+
+    private fun pages(uri: Uri): Sequence<Pix> = sequence {
+        if (uri.isPdf(applicationContext.contentResolver)) {
+            getPdfDocument(uri, applicationContext)?.use {
+                for(i in 0 until it.getPageCount()){
+                    yield(it.getPage(i))
+                }
+            }
+        } else {
+            ReadFile.load(applicationContext, uri)?.let { yield(it) }
+        }
+    }
+
 
     private fun saveDocument(scan: ScanPageResult, lang: String, pixText: Pix, parentId: Int): Uri? {
         val imageFile = try {
@@ -152,7 +192,7 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
     }
 
 
-    private fun scanPage(tess: TessBaseAPI, pixText: Pix): ScanPageResult {
+    private fun ocr(tess: TessBaseAPI, pixText: Pix): ScanPageResult {
         tess.pageSegMode = TessBaseAPI.PageSegMode.PSM_AUTO
         tess.setImage(pixText)
         var hocrText = tess.getHOCRText(0)
@@ -180,9 +220,9 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
         }
     }
 
-    private fun createForegroundInfo(pdfFileUri: Uri, parentId: Int, applyToNotif: (NotificationCompat.Builder) -> Unit = {}): ForegroundInfo {
+    private fun createForegroundInfo(fileUri: Uri, parentId: Int, applyToNotif: (NotificationCompat.Builder) -> Unit = {}): ForegroundInfo {
         val id = applicationContext.packageName
-        val title = applicationContext.getString(R.string.scanning_pdf, pdfFileUri.lastPathSegment?.substringAfterLast("/"))
+        val title = applicationContext.getString(R.string.notification_scanning_title, fileUri.lastPathSegment?.substringAfterLast("/"))
         val cancel = applicationContext.getString(R.string.cancel)
         // This PendingIntent can be used to cancel the worker
         val intent = WorkManager.getInstance(applicationContext)
@@ -194,7 +234,7 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
         }
 
         val ocrPdfActivityIntent = Intent(applicationContext, OcrPdfActivity::class.java)
-        ocrPdfActivityIntent.data = pdfFileUri
+        ocrPdfActivityIntent.data = fileUri
         ocrPdfActivityIntent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, parentId)
         ocrPdfActivityIntent.putExtra(OcrPdfActivity.KEY_WORK_ID, getId().toString())
 
@@ -232,8 +272,8 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
     private data class ScanPageResult(val htmlText: String, val hocrText: String, val accuracy: Int)
 
     data class ProgressData(
-            val currentPage:Int = 0,
-            val pageCount:Int = 0,
+            val currentPage: Int = 0,
+            val pageCount: Int = 0,
             val percent: Int = 0,
             val previewImage: Uri? = null,
             val pageBounds: Rect = Rect(),
@@ -255,8 +295,8 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
                 null
             } else
                 ProgressData(
-                        currentPage = data.getInt(CurrentPage,0),
-                        pageCount = data.getInt(PageCount,0),
+                        currentPage = data.getInt(CurrentPage, 0),
+                        pageCount = data.getInt(PageCount, 0),
                         percent = data.getInt(Progress, 0),
                         previewImage = getUri(data),
                         pageBounds = Rect.unflattenFromString(data.getString(PageBounds))!!,
@@ -284,7 +324,7 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
         const val PageBounds = "PageBounds"
         const val LineBounds = "LineBounds"
         const val KEY_INPUT_NOTIFICATION_ID = "KEY_INPUT_NOTIFICATION_ID"
-        const val KEY_INPUT_URL = "KEY_INPUT_URL"
+        const val KEY_INPUT_URLS = "KEY_INPUT_URLS"
         const val KEY_INPUT_LANG = "KEY_INPUT_LANG"
         const val KEY_INPUT_PARENT_ID = "KEY_INPUT_PARENT_ID"
         const val KEY_OUTPUT_ACCURACY = "KEY_OUTPUT_ACCURACY"
@@ -292,8 +332,8 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
     }
 }
 
-internal fun getPdfDocument(inputUrl: String, context: Context): PdfDocumentWrapper? {
-    val fixedUri = Uri.parse(inputUrl.replace("/file/file", "/file"))
+internal fun getPdfDocument(inputUrl: Uri, context: Context): PdfDocumentWrapper? {
+    val fixedUri = Uri.parse(inputUrl.toString().replace("/file/file", "/file"))
     val fd = try {
         context.contentResolver.openFileDescriptor(fixedUri, "r") ?: return null
     } catch (e: Exception) {

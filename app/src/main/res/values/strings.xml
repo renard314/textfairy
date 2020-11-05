@@ -272,10 +272,11 @@
     <string name="action_search">Search</string>
     <string name="action_search_languages">search languages</string>
     <string name="could_not_load_pdf">Could not load PDF.</string>
-    <string name="scanning_pdf">scanning %1$s</string>
+    <string name="notification_scanning_title">scanning %1$s</string>
     <string name="notification_channel_title">Scanning progress</string>
     <string name="scan_pdf_title">You\'re ready to scan %1$d pages.</string>
     <string name="scan_pdf_explanation_1">It might take a while, you can close the app in the meantime.</string>
     <string name="scan_pdf_explanation_2">You\'ll be notified when the scanning is complete.</string>
     <string name="scanning_pdf_progress">Page %1$d of %2$d</string>
+    <string name="scanning_multiple_title">Scanning %1$d files</string>
 </resources>

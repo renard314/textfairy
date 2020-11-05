@@ -1,5 +1,7 @@
 package com.renard.ocr.documents.creation.ocr
 
+import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -17,6 +19,8 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.work.*
 import androidx.work.WorkInfo.State.*
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.renard.ocr.MonitoredActivity
 import com.renard.ocr.R
 import com.renard.ocr.databinding.ActivityOcrPdfBinding
@@ -24,7 +28,7 @@ import com.renard.ocr.documents.creation.DocumentStore
 import com.renard.ocr.documents.creation.ocr.OcrWorker.Companion.KEY_INPUT_LANG
 import com.renard.ocr.documents.creation.ocr.OcrWorker.Companion.KEY_INPUT_NOTIFICATION_ID
 import com.renard.ocr.documents.creation.ocr.OcrWorker.Companion.KEY_INPUT_PARENT_ID
-import com.renard.ocr.documents.creation.ocr.OcrWorker.Companion.KEY_INPUT_URL
+import com.renard.ocr.documents.creation.ocr.OcrWorker.Companion.KEY_INPUT_URLS
 import com.renard.ocr.documents.creation.ocr.OcrWorker.Companion.KEY_OUTPUT_ACCURACY
 import com.renard.ocr.documents.creation.ocr.OcrWorker.ProgressData.Companion.fromWorkData
 import com.renard.ocr.documents.viewing.single.DocumentActivity
@@ -36,6 +40,22 @@ import com.renard.ocr.util.PreferencesUtils
 import kotlinx.coroutines.*
 import java.util.*
 import kotlin.random.Random
+
+fun Uri.isPdf(contentResolver: ContentResolver) =
+        contentResolver.getType(this)?.contains("pdf", true) == true
+
+fun getPageCount(context: Context, uris: List<Uri>) =
+        uris.map {
+            if (it.isPdf(context.contentResolver)) {
+                getPageCount(context, it)
+            } else {
+                1
+            }
+        }.sum()
+
+private fun getPageCount(context: Context, it: Uri) = getPdfDocument(it, context).use { pdf ->
+    pdf?.getPageCount() ?: 0
+}
 
 class OcrPdfActivity : MonitoredActivity() {
 
@@ -57,12 +77,17 @@ class OcrPdfActivity : MonitoredActivity() {
         setContentView(binding.root)
         initToolbar()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val uris = getContentUris(intent)
+        if (uris.isEmpty()) return
 
-        val fileName = intent.data?.lastPathSegment?.substringAfterLast("/")
-        setToolbarMessage(applicationContext.getString(R.string.scanning_pdf, fileName))
+        if (uris.size == 1) {
+            val fileName = uris.first().lastPathSegment?.substringAfterLast("/")
+            setToolbarMessage(applicationContext.getString(R.string.notification_scanning_title, fileName))
+        } else {
+            setToolbarMessage(applicationContext.getString(R.string.scanning_multiple_title, uris.size))
+        }
 
         val lang = Language.getOcrLanguage(this)!!
-        val pdfUri = intent.dataString!!
         val workManager = WorkManager.getInstance(this)
 
         val idString = savedInstanceState?.getString(KEY_WORK_ID)
@@ -70,48 +95,76 @@ class OcrPdfActivity : MonitoredActivity() {
         if (idString != null) {
             binding.group.isVisible = false
             binding.root.doOnLayout {
-                observeWorkManager(workManager, pdfUri, lang, UUID.fromString(idString))
+                observeWorkManager(workManager, lang, UUID.fromString(idString))
             }
         } else {
-            val pdf = getPdfDocument(pdfUri, this)
-            if (pdf == null) {
-                Toast.makeText(this, R.string.could_not_load_pdf, Toast.LENGTH_LONG).show()
-                return
-            }
-            initLanguageSelectionUi(pdf.getPageCount(), lang)
+            initLanguageSelectionUi(getPageCount(this, uris), lang)
             binding.root.doOnLayout {
                 CoroutineScope(Dispatchers.IO).launch {
-                    val bitmap = pdf.getPageAsBitmap(0, binding.progressImage.width, binding.progressImage.height)
-                    pdf.close()
+                    val bitmap = loadPreview(uris[0])
                     withContext(Dispatchers.Main) {
-                        binding.progressImage.isVisible = true
-                        binding.progressImage.setImageBitmapResetBase(bitmap, true, 0)
+                        if (bitmap == null) {
+                            Toast.makeText(this@OcrPdfActivity, R.string.could_not_load_pdf, Toast.LENGTH_LONG).show()
+                            finish()
+                        } else {
+                            binding.progressImage.isVisible = true
+                            binding.progressImage.setImageBitmapResetBase(bitmap, true, 0)
+                        }
                     }
                 }
             }
             binding.itemSave.setOnClickListener {
                 binding.group.isVisible = false
-                val workRequest = createWorkRequest(pdfUri, lang)
+                val workRequest = createWorkRequest(uris, lang)
                 workManager.enqueue(workRequest)
                 workId = workRequest.id
-                observeWorkManager(workManager, pdfUri, lang, workRequest.id)
+                observeWorkManager(workManager, lang, workRequest.id)
             }
         }
     }
 
-    private fun createWorkRequest(pdfUri: String, lang: String): OneTimeWorkRequest {
+
+
+
+    private fun loadPreview(uri: Uri) =
+            if (uri.isPdf(contentResolver)) {
+                getPdfDocument(uri, this)?.use {
+                    it.getPageAsBitmap(0, binding.progressImage.width, binding.progressImage.height)
+                }
+            } else {
+                Glide.with(this)
+                        .asBitmap()
+                        .load(uri)
+                        .apply(RequestOptions.skipMemoryCacheOf(true))
+                        .submit(binding.progressImage.width, binding.progressImage.height).get()
+            }
+
+
+    private fun getContentUris(intent: Intent): List<Uri> {
+        val clipData = intent.clipData
+        if (clipData == null || clipData.itemCount == 0) {
+            return listOf()
+        }
+        val result = mutableListOf<Uri>()
+        for (i in 0 until clipData.itemCount) {
+            result.add(clipData.getItemAt(i).uri)
+        }
+        return result
+    }
+
+    private fun createWorkRequest(uris: List<Uri>, lang: String): OneTimeWorkRequest {
         val parentId = intent.getIntExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, -1)
         return OneTimeWorkRequestBuilder<OcrWorker>()
                 .setInputData(workDataOf(
                         KEY_INPUT_NOTIFICATION_ID to Random.nextInt(),
-                        KEY_INPUT_URL to pdfUri,
+                        KEY_INPUT_URLS to uris.map { it.toString() }.toTypedArray(),
                         KEY_INPUT_LANG to lang,
                         KEY_INPUT_PARENT_ID to parentId
                 ))
                 .build()
     }
 
-    private fun observeWorkManager(workManager: WorkManager, pdfUri: String, lang: String, id: UUID) {
+    private fun observeWorkManager(workManager: WorkManager, lang: String, id: UUID) {
         workManager.getWorkInfoByIdLiveData(id).observe(this) { workInfo ->
             when (workInfo.state) {
                 RUNNING -> onProgress(workInfo.progress)
@@ -167,7 +220,7 @@ class OcrPdfActivity : MonitoredActivity() {
     private fun onProgress(progressData: Data) {
         Log.d(LOG_TAG, "RUNNING =$progressData")
         val progress = fromWorkData(progressData) ?: return
-        setToolbarMessage(getString(R.string.scanning_pdf_progress,progress.currentPage, progress.pageCount))
+        setToolbarMessage(getString(R.string.scanning_pdf_progress, progress.currentPage, progress.pageCount))
         if (progress.previewImage != null && progress.previewImage != currentPreviewUri) {
             //Glide is crashing so decode by hand.
             currentPreviewUri = progress.previewImage

@@ -15,7 +15,6 @@
  */
 package com.renard.ocr.documents.viewing.grid;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -26,7 +25,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
@@ -155,8 +153,9 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
 
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            //TODO handle multiple
             if (imageUri != null) {
-                loadBitmapFromContentUri(imageUri, ImageSource.INTENT);
+                startOcr(imageUri, ImageSource.INTENT);
             } else {
                 showFileError(this, PixLoadStatus.IMAGE_COULD_NOT_BE_READ, new DialogInterface.OnClickListener() {
 
