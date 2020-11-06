@@ -12,15 +12,15 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.core.app.NavUtils
 import androidx.core.net.toFile
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
-import androidx.work.WorkInfo.State.*
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
+import androidx.work.WorkInfo.State
 import com.renard.ocr.MonitoredActivity
 import com.renard.ocr.R
 import com.renard.ocr.databinding.ActivityOcrPdfBinding
@@ -71,21 +71,16 @@ class OcrPdfActivity : MonitoredActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOcrPdfBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initToolbar()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val uris = getContentUris(intent)
-        if (uris.isEmpty()) return
-
-        if (uris.size == 1) {
-            val fileName = uris.first().lastPathSegment?.substringAfterLast("/")
-            setToolbarMessage(applicationContext.getString(R.string.notification_scanning_title, fileName))
-        } else {
-            setToolbarMessage(applicationContext.getString(R.string.scanning_multiple_title, uris.size))
-        }
 
         val lang = Language.getOcrLanguage(this)!!
         val workManager = WorkManager.getInstance(this)
@@ -93,26 +88,24 @@ class OcrPdfActivity : MonitoredActivity() {
         val idString = savedInstanceState?.getString(KEY_WORK_ID)
                 ?: intent.getStringExtra(KEY_WORK_ID)
         if (idString != null) {
-            binding.group.isVisible = false
             binding.root.doOnLayout {
                 observeWorkManager(workManager, lang, UUID.fromString(idString))
             }
         } else {
-            initLanguageSelectionUi(getPageCount(this, uris), lang)
-            binding.root.doOnLayout {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val bitmap = loadPreview(uris[0])
-                    withContext(Dispatchers.Main) {
-                        if (bitmap == null) {
-                            Toast.makeText(this@OcrPdfActivity, R.string.could_not_load_pdf, Toast.LENGTH_LONG).show()
-                            finish()
-                        } else {
-                            binding.progressImage.isVisible = true
-                            binding.progressImage.setImageBitmapResetBase(bitmap, true, 0)
-                        }
-                    }
-                }
+            val uris = getContentUris(intent)
+            if (uris.isEmpty()) {
+                finish()
+                return
             }
+
+            if (uris.size == 1) {
+                val fileName = uris.first().lastPathSegment?.substringAfterLast("/")
+                setToolbarMessage(applicationContext.getString(R.string.notification_scanning_title, fileName))
+            } else {
+                setToolbarMessage(applicationContext.getString(R.string.scanning_multiple_title, uris.size))
+            }
+            initLanguageSelectionUi(getPageCount(this, uris), lang)
+            showPages(uris)
             binding.itemSave.setOnClickListener {
                 binding.group.isVisible = false
                 val workRequest = createWorkRequest(uris, lang)
@@ -123,22 +116,25 @@ class OcrPdfActivity : MonitoredActivity() {
         }
     }
 
-
-
-
-    private fun loadPreview(uri: Uri) =
+    private fun showPages(uris: List<Uri>) {
+        val linearLayoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+        binding.pageList.layoutManager = linearLayoutManager
+        val pageAdapter = PageAdapter()
+        binding.pageList.setHasFixedSize(true)
+        val dividerItemDecoration = DividerItemDecoration(this, linearLayoutManager.orientation)
+        binding.pageList.addItemDecoration(dividerItemDecoration)
+        binding.pageList.adapter = pageAdapter
+        val pages = uris.flatMap { uri ->
             if (uri.isPdf(contentResolver)) {
-                getPdfDocument(uri, this)?.use {
-                    it.getPageAsBitmap(0, binding.progressImage.width, binding.progressImage.height)
-                }
+                (0 until getPageCount(this, uri)).map { PageAdapter.Page(uri, it) }
             } else {
-                Glide.with(this)
-                        .asBitmap()
-                        .load(uri)
-                        .apply(RequestOptions.skipMemoryCacheOf(true))
-                        .submit(binding.progressImage.width, binding.progressImage.height).get()
+                listOf(PageAdapter.Page(uri, 0))
             }
-
+        }
+        binding.pageList.doOnLayout {
+            pageAdapter.submitList(pages)
+        }
+    }
 
     private fun getContentUris(intent: Intent): List<Uri> {
         val clipData = intent.clipData
@@ -167,10 +163,10 @@ class OcrPdfActivity : MonitoredActivity() {
     private fun observeWorkManager(workManager: WorkManager, lang: String, id: UUID) {
         workManager.getWorkInfoByIdLiveData(id).observe(this) { workInfo ->
             when (workInfo.state) {
-                RUNNING -> onProgress(workInfo.progress)
-                SUCCEEDED -> onSuccess(workInfo, lang)
-                FAILED, CANCELLED -> finish()
-                ENQUEUED, BLOCKED, null -> {
+                State.RUNNING -> onProgress(workInfo.progress)
+                State.SUCCEEDED -> onSuccess(workInfo, lang)
+                State.FAILED, State.CANCELLED -> finish()
+                State.ENQUEUED, State.BLOCKED, null -> {
                 }
             }
         }
@@ -218,6 +214,9 @@ class OcrPdfActivity : MonitoredActivity() {
     }
 
     private fun onProgress(progressData: Data) {
+        binding.group.isVisible = false
+        binding.progressImage.isVisible = true
+
         Log.d(LOG_TAG, "RUNNING =$progressData")
         val progress = fromWorkData(progressData) ?: return
         setToolbarMessage(getString(R.string.scanning_pdf_progress, progress.currentPage, progress.pageCount))

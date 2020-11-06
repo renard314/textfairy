@@ -215,8 +215,8 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
 
     private fun createForegroundInfo(pdfFileUri: Uri, parentId: Int, currentPage: Int, pageCount: Int): ForegroundInfo {
         return createForegroundInfo(pdfFileUri, parentId) {
-            it.setProgress(pageCount, currentPage + 1, false)
-            it.setContentText(applicationContext.getString(R.string.scanning_pdf_progress, currentPage + 1, pageCount))
+            it.setProgress(pageCount, currentPage, false)
+            it.setContentText(applicationContext.getString(R.string.scanning_pdf_progress, currentPage, pageCount))
         }
     }
 

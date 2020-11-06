@@ -10,12 +10,19 @@
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/page_list"
+        app:layout_constraintBottom_toTopOf="@+id/textview_ocr_pdf"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
 
     <com.renard.ocr.documents.creation.ocr.OCRImageView
+        android:visibility="gone"
         android:id="@+id/progress_image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/textview_ocr_pdf"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <TextView
@@ -27,7 +34,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/scan_pdf_title"
         app:layout_constraintBottom_toTopOf="@+id/textview_ocr_pdf_explanation_1"
-        app:layout_constraintTop_toBottomOf="@+id/progress_image" />
+        app:layout_constraintTop_toBottomOf="@+id/page_list" />
 
     <TextView
         android:id="@+id/textview_ocr_pdf_explanation_1"
@@ -126,5 +133,5 @@
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="item_save,textview_ocr_language, textview_ocr_pdf, textview_ocr_pdf_explanation_1, textview_ocr_pdf_explanation_2,button_language_background" />
+        app:constraint_referenced_ids="item_save,textview_ocr_language, textview_ocr_pdf, textview_ocr_pdf_explanation_1, textview_ocr_pdf_explanation_2,button_language_background,page_list" />
 </androidx.constraintlayout.widget.ConstraintLayout>
