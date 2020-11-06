@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +17,6 @@ import androidx.core.app.NavUtils
 import androidx.core.net.toFile
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
@@ -71,10 +71,6 @@ class OcrPdfActivity : MonitoredActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOcrPdfBinding.inflate(layoutInflater)
@@ -116,13 +112,30 @@ class OcrPdfActivity : MonitoredActivity() {
         }
     }
 
+    private class MarginItemDecoration(private val spaceHeight: Int) : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(outRect: Rect, view: View,
+                                    parent: RecyclerView, state: RecyclerView.State) {
+            val itemPosition = parent.getChildAdapterPosition(view)
+            if (itemPosition == RecyclerView.NO_POSITION) {
+                return
+            }
+            if (itemPosition > 0) {
+                outRect.left = spaceHeight
+            }
+
+            val adapter = parent.adapter
+            if (adapter != null && itemPosition < adapter.itemCount - 1) {
+                outRect.right = spaceHeight
+            }
+        }
+    }
+
     private fun showPages(uris: List<Uri>) {
         val linearLayoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         binding.pageList.layoutManager = linearLayoutManager
         val pageAdapter = PageAdapter()
         binding.pageList.setHasFixedSize(true)
-        val dividerItemDecoration = DividerItemDecoration(this, linearLayoutManager.orientation)
-        binding.pageList.addItemDecoration(dividerItemDecoration)
+        binding.pageList.addItemDecoration(MarginItemDecoration(resources.getDimensionPixelSize(R.dimen.page_preview_margin)))
         binding.pageList.adapter = pageAdapter
         val pages = uris.flatMap { uri ->
             if (uri.isPdf(contentResolver)) {

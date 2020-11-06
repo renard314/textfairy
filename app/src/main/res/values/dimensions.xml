@@ -25,5 +25,5 @@
     <dimen name="dropshadow_padding_top">4px</dimen>
     <dimen name="dropshadow_padding_bottom">9px</dimen>
     <dimen name="document_bottom_sheet_peek_height">48dp</dimen>
-
+    <dimen name="page_preview_margin">8dp</dimen>
 </resources>
