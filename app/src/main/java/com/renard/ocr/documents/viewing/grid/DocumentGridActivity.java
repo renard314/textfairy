@@ -151,9 +151,10 @@ public class DocumentGridActivity extends NewDocumentActivity implements Documen
         String action = intent.getAction();
         String type = intent.getType();
 
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
+        if(Intent.ACTION_SEND_MULTIPLE.equals(action)){
+            onDataFromGallery(intent, ImageSource.INTENT);
+        } else if (Intent.ACTION_SEND.equals(action) && type != null) {
             Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            //TODO handle multiple
             if (imageUri != null) {
                 startOcr(imageUri, ImageSource.INTENT);
             } else {

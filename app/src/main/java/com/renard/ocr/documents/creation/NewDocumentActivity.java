@@ -119,17 +119,15 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     private static Uri localCameraPicUri = null;
 
     private static class CameraResult {
-        public CameraResult(int requestCode, int resultCode, Intent data, ImageSource source) {
+        public CameraResult(int requestCode, int resultCode, Intent data) {
             mRequestCode = requestCode;
             mResultCode = resultCode;
             mData = data;
-            mSource = source;
         }
 
-        private int mRequestCode;
-        private int mResultCode;
-        private Intent mData;
-        private final ImageSource mSource;
+        private final int mRequestCode;
+        private final int mResultCode;
+        private final Intent mData;
     }
 
     protected abstract int getParentId();
@@ -157,7 +155,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
             Intent i;
             if (Build.VERSION.SDK_INT >= 19) {
                 i = new Intent(Intent.ACTION_OPEN_DOCUMENT, null);
-                //i = new Intent(Intent.ACTION_GET_CONTENT, null);
                 i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 i.addCategory(Intent.CATEGORY_OPENABLE);
                 i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
@@ -291,41 +288,6 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         return true;
     }
 
-    private void onTakePhotoActivityResult(CameraResult cameraResult) {
-        if (cameraResult.mResultCode == RESULT_OK) {
-
-            if (cameraResult.mRequestCode == REQUEST_CODE_MAKE_PHOTO) {
-                final Uri uri = loadCameraResult();
-                if (uri == null) {
-                    showFileError(this, PixLoadStatus.CAMERA_NO_IMAGE_RETURNED);
-                } else {
-                    startOcr(uri, ImageSource.CAMERA);
-                }
-            } else if (cameraResult.mRequestCode == REQUEST_CODE_PICK_PHOTO) {
-                final ArrayList<Uri> uris = new ArrayList<>();
-                if (cameraResult.mData.getClipData() != null) {
-                    for (int i = 0; i < cameraResult.mData.getClipData().getItemCount(); i++) {
-                        final ClipData.Item itemAt = cameraResult.mData.getClipData().getItemAt(i);
-                        uris.add(itemAt.getUri());
-                    }
-                }
-                try {
-                    if (cameraResult.mData.getData() != null) {
-                        uris.add(cameraResult.mData.getData());
-                    }
-                } catch (Exception ignored) {
-                }
-                if (uris.isEmpty()) {
-                    showFileError(this, PixLoadStatus.MEDIA_STORE_RETURNED_NULL);
-                } else if (isOneImage(uris)) {
-                    startOcr(uris.get(0), ImageSource.PICK);
-                } else {
-                    startOcr(uris);
-                }
-            }
-        }
-    }
-
     private void startOcr(ArrayList<Uri> uris) {
         Intent intent = new Intent(this, OcrPdfActivity.class);
         ClipData clipData = null;
@@ -406,10 +368,8 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case REQUEST_CODE_MAKE_PHOTO:
-                    mCameraResult = new CameraResult(requestCode, resultCode, data, ImageSource.CAMERA);
-                    break;
                 case REQUEST_CODE_PICK_PHOTO:
-                    mCameraResult = new CameraResult(requestCode, resultCode, data, ImageSource.PICK);
+                    mCameraResult = new CameraResult(requestCode, resultCode, data);
                     break;
                 case REQUEST_CODE_OCR:
                     final Intent intent = new Intent(this, DocumentActivity.class);
@@ -427,6 +387,7 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
                     startGallery();
                     break;
                 case INTENT:
+                    finish();
                     break;
                 case CAMERA:
                     startCamera();
@@ -439,8 +400,53 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     protected void onResumeFragments() {
         super.onResumeFragments();
         if (mCameraResult != null) {
-            onTakePhotoActivityResult(mCameraResult);
+            final int resultCode = mCameraResult.mResultCode;
+            final int requestCode = mCameraResult.mRequestCode;
+            final Intent intent = mCameraResult.mData;
             mCameraResult = null;
+
+            if (resultCode != RESULT_OK) {
+                return;
+            }
+
+            if (requestCode == REQUEST_CODE_MAKE_PHOTO) {
+                onImageFromCamera();
+            } else if (requestCode == REQUEST_CODE_PICK_PHOTO) {
+                onDataFromGallery(intent, ImageSource.PICK);
+            }
+
+        }
+    }
+
+    protected void onDataFromGallery(Intent intent, ImageSource imageSource) {
+        final ArrayList<Uri> uris = new ArrayList<>();
+        if (intent.getClipData() != null) {
+            for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+                final ClipData.Item itemAt = intent.getClipData().getItemAt(i);
+                uris.add(itemAt.getUri());
+            }
+        }
+        try {
+            if (intent.getData() != null) {
+                uris.add(intent.getData());
+            }
+        } catch (Exception ignored) {
+        }
+        if (uris.isEmpty()) {
+            showFileError(this, PixLoadStatus.MEDIA_STORE_RETURNED_NULL);
+        } else if (isOneImage(uris)) {
+            startOcr(uris.get(0), imageSource);
+        } else {
+            startOcr(uris);
+        }
+    }
+
+    private void onImageFromCamera() {
+        final Uri uri = loadCameraResult();
+        if (uri == null) {
+            showFileError(this, PixLoadStatus.CAMERA_NO_IMAGE_RETURNED);
+        } else {
+            startOcr(uri, ImageSource.CAMERA);
         }
     }
 
