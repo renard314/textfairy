@@ -102,9 +102,6 @@ android {
         playstore {
             dimension "mode"
             ext.useProprietaryLibraries = true
-            firebaseCrashlytics {
-                nativeSymbolUploadEnabled true
-            }
 
         }
         develop {
@@ -207,5 +204,8 @@ android.productFlavors.each { flavor ->
     if (getGradle().getStartParameter().getTaskRequests().toString().toLowerCase().contains(flavor.name) && flavor.ext.useProprietaryLibraries) {
         apply plugin: 'com.google.gms.google-services'
         apply plugin: 'com.google.firebase.crashlytics'
+        firebaseCrashlytics {
+            nativeSymbolUploadEnabled true
+        }
     }
 }
