@@ -37,15 +37,9 @@ public interface Analytics {
 
     void optionsCopyToClipboard();
 
-    void optionsStartTts();
-
     void optionsShareText();
 
-    void ttsLanguageChanged(OcrLanguage lang);
-
     void ttsStart(String language);
-
-    void ttsStop();
 
     void startGallery();
 
@@ -60,8 +54,6 @@ public interface Analytics {
     void continueDespiteOfBlurWarning(float blurriness);
 
     void ocrResultSendFeedback();
-
-    void ocrResultStartTts();
 
     void ocrResultCopyToClipboard();
 

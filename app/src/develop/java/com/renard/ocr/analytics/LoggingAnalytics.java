@@ -1,10 +1,10 @@
 package com.renard.ocr.analytics;
 
+import android.util.Log;
+
 import com.renard.ocr.cropimage.image_processing.BlurDetectionResult;
 import com.renard.ocr.documents.creation.visualisation.LayoutQuestionDialog;
 import com.renard.ocr.main_menu.language.OcrLanguage;
-
-import android.util.Log;
 
 public class LoggingAnalytics implements Analytics {
 
@@ -92,28 +92,13 @@ public class LoggingAnalytics implements Analytics {
     }
 
     @Override
-    public void optionsStartTts() {
-        Log.i(LOG_TAG, "optionsStartTts");
-    }
-
-    @Override
     public void optionsShareText() {
         Log.i(LOG_TAG, "optionsShareText");
     }
 
     @Override
-    public void ttsLanguageChanged(OcrLanguage lang) {
-        Log.i(LOG_TAG, "ttsLanguageChanged " + lang.getValue());
-    }
-
-    @Override
     public void ttsStart(String language) {
         Log.i(LOG_TAG, "ttsStart " + language);
-    }
-
-    @Override
-    public void ttsStop() {
-        Log.i(LOG_TAG, "ttsStop");
     }
 
     @Override
@@ -150,12 +135,7 @@ public class LoggingAnalytics implements Analytics {
     public void ocrResultSendFeedback() {
         Log.i(LOG_TAG, "ocrResultSendFeedback");
     }
-
-    @Override
-    public void ocrResultStartTts() {
-        Log.i(LOG_TAG, "ocrResultStartTts");
-    }
-
+    
     @Override
     public void ocrResultCopyToClipboard() {
         Log.i(LOG_TAG, "ocrResultCopyToClipboard");

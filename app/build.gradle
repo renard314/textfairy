@@ -184,7 +184,7 @@ dependencies {
     playstoreImplementation platform('com.google.firebase:firebase-bom:25.12.0')
     playstoreImplementation 'com.google.firebase:firebase-analytics-ktx'
     playstoreImplementation 'com.google.firebase:firebase-crashlytics:17.2.2'
-    playstoreImplementation 'com.google.firebase:firebase-analytics:17.6.0'
+    playstoreImplementation 'com.google.firebase:firebase-analytics-ktx:18.0.0'
     playstoreImplementation 'com.google.firebase:firebase-crashlytics-ndk:17.2.2'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
