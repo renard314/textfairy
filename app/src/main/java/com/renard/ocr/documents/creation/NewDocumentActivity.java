@@ -49,9 +49,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.renard.ocr.MonitoredActivity;
 import com.renard.ocr.R;
+import com.renard.ocr.billing.BillingViewModel;
 import com.renard.ocr.documents.creation.ocr.OCRActivity;
 import com.renard.ocr.documents.creation.ocr.OcrPdfActivity;
 import com.renard.ocr.documents.viewing.DocumentContentProvider;
@@ -135,6 +138,14 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     private ProgressDialog pdfProgressDialog;
     private ProgressDialog deleteProgressDialog;
     private CameraResult mCameraResult;
+    private boolean mMultiScanEnabled = false;
+
+    @Override
+    protected synchronized void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        BillingViewModel model = new ViewModelProvider(this).get(BillingViewModel.class);
+        model.getMultiScanEnabled().observe(this, enabled -> mMultiScanEnabled = enabled);
+    }
 
     private void checkRam(MemoryWarningDialog.DoAfter doAfter) {
         long availableMegs = MemoryInfo.getFreeMemory(this);
@@ -289,18 +300,25 @@ public abstract class NewDocumentActivity extends MonitoredActivity {
     }
 
     private void startOcr(ArrayList<Uri> uris) {
-        Intent intent = new Intent(this, OcrPdfActivity.class);
-        ClipData clipData = null;
-        for (Uri uri : uris) {
-            if (clipData == null) {
-                clipData = ClipData.newUri(getContentResolver(), "", uri);
-            } else {
-                clipData.addItem(new ClipData.Item(uri));
+        if(mMultiScanEnabled) {
+            Intent intent = new Intent(this, OcrPdfActivity.class);
+            ClipData clipData = null;
+            for (Uri uri : uris) {
+                if (clipData == null) {
+                    clipData = ClipData.newUri(getContentResolver(), "", uri);
+                } else {
+                    clipData.addItem(new ClipData.Item(uri));
+                }
             }
+            intent.setClipData(clipData);
+            intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
+            startActivity(intent);
+        } else {
+            //TODO
+            //remember uris or use start activity for result
+            //show upsell
+            // handle result in onActivityResult -> user either watched an add or bought
         }
-        intent.setClipData(clipData);
-        intent.putExtra(OCRActivity.EXTRA_PARENT_DOCUMENT_ID, getParentId());
-        startActivity(intent);
     }
 
     private boolean isOneImage(ArrayList<Uri> uris) {
