@@ -332,7 +332,7 @@ class OcrWorker(context: Context, parameters: WorkerParameters) :
     }
 }
 
-internal fun getPdfDocument(inputUrl: Uri, context: Context): PdfDocumentWrapper? {
+fun getPdfDocument(inputUrl: Uri, context: Context): PdfDocumentWrapper? {
     val fixedUri = Uri.parse(inputUrl.toString().replace("/file/file", "/file"))
     val fd = try {
         context.contentResolver.openFileDescriptor(fixedUri, "r") ?: return null

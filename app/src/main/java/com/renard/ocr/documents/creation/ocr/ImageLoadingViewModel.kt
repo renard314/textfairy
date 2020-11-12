@@ -35,14 +35,15 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
     sealed class ImageLoadStatus {
         object Initial : ImageLoadStatus()
         object Loading : ImageLoadStatus()
-        data class Loaded(val pix: Pix, val prepareForCropping:(Int,Int)->Unit ) : ImageLoadStatus()
+        data class Loaded(val pix: Pix, val prepareForCropping: (Int, Int) -> Unit) : ImageLoadStatus()
         data class PreparedForCrop(
                 val blurDetectionResult: BlurDetectionResult,
                 val bitmap: Bitmap,
                 val scaleFactor: Float,
                 val pix: Pix,
-                val cropAndProject:(FloatArray, Rect, Int)->Unit
+                val cropAndProject: (FloatArray, Rect, Int) -> Unit
         ) : ImageLoadStatus()
+
         data class CropSuccess(val pix: Pix) : ImageLoadStatus()
         object CropError : ImageLoadStatus()
         data class Error(val pixLoadStatus: PixLoadStatus) : ImageLoadStatus()
@@ -86,20 +87,34 @@ class ImageLoadingViewModel(application: Application) : AndroidViewModel(applica
         application.espressoTestIdlingResource.increment()
         viewModelScope.launch(Dispatchers.IO) {
             _content.postValue(ImageLoadStatus.Loading)
-            val result =
-                    ReadFile.load(application, contentUri)
-                            ?.run {
-                                val upscaledPix = maybeUpscale(this)
-                                ImageLoadStatus.Loaded(upscaledPix) { w, h -> scaleForCrop(upscaledPix, w, h) }
-                            }
-                            ?: ImageLoadStatus.Error(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED)
-
+            val type = application.contentResolver.getType(contentUri);
+            val result = if (contentUri.path?.endsWith(".pdf") == true || "application/pdf" == type) {
+                loadAsPdf(contentUri)
+            } else {
+                ReadFile.load(application, contentUri)
+                        ?.run {
+                            val upscaledPix = maybeUpscale(this)
+                            ImageLoadStatus.Loaded(upscaledPix) { w, h -> scaleForCrop(upscaledPix, w, h) }
+                        }
+                        ?: ImageLoadStatus.Error(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED)
+            }
             if (result is ImageLoadStatus.Error) {
                 application.crashLogger.setString("content uri", contentUri.toString())
                 application.crashLogger.logException(IOException(result.pixLoadStatus.name))
             }
             _content.postValue(result)
             application.espressoTestIdlingResource.decrement()
+        }
+    }
+
+    private fun loadAsPdf(contentUri: Uri): ImageLoadStatus {
+        val page = getPdfDocument(contentUri, application)?.use {
+         it.getPage(0)
+        }
+        return if (page != null) {
+            ImageLoadStatus.Loaded(page) { w, h -> scaleForCrop(page, w, h) }
+        } else {
+            ImageLoadStatus.Error(PixLoadStatus.IMAGE_FORMAT_UNSUPPORTED)
         }
     }
 
