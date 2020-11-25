@@ -2,11 +2,11 @@
 <resources>
     <string name="drawer_open">Ana Menüyü aç</string>
     <string name="drawer_close">Ana Menüyü kapat</string>
-    <string name="whats_new_title">Nelerin değiştiğine bakın</string>
+    <string name="whats_new_title">Nelerin değiştiğine göz atın</string>
     <string name="whats_new">Sürüm notları</string>
     <string name="text_was_copied_to_clipboard">Metin panoya kopyalandı.</string>
     <string name="copy_to_clipboard">Kopyala</string>
-    <string name="image_could_not_be_read">The image was not found in the data sent.</string>
+    <string name="image_could_not_be_read">Gönderilen verilerde görüntü bulunamadı.</string>
     <string name="image_does_not_exist">Resim telefonunuzda bulunamadı.</string>
     <string name="camera_app_not_found">Kamera uygulaması bulunamadı.</string>
     <string name="gallery_io_error">Görüntü yüklenemedi.</string>
@@ -21,22 +21,22 @@
         <a href="http://www.exactcode.com/site/open_source/exactimage/hocr2pdf/">hocr2pdf</a>
         from exactCODE
     </string>
-    <string name="hocr2pdf_summary">hocr2pdf is a command line front-end for the image processing
-        library to create perfectly layouted, searchable PDF files from hOCR, annotated HTML, input
-        obtained from an OCR system.
+    <string name="hocr2pdf_summary">hocr2pdf, bir OCR sisteminden elde edilen girdiden mükemmel şekilde düzenlenmiş,
+        aranabilir PDF dosyaları oluşturmak için görüntü işleme kitaplığının
+        bir komut satırı ön ucudur.
     </string>
     <string name="leptonica_title">
         <a href="http://www.leptonica.com/">leptonica</a>
     </string>
-    <string name="leptonica_summary">Leptonica is a pedagogically-oriented open source site
-        containing software that is broadly useful for image processing and image analysis
-        applications.
+    <string name="leptonica_summary">Leptonica, görüntü işleme ve görüntü analizi uygulamaları için
+        geniş ölçüde yararlı olan yazılım içeren, pedagojik odaklı açık kaynaklı bir
+        sitedir.
     </string>
     <string name="tesseract_ocr_title">
         <a href="https://github.com/tesseract-ocr/tesseract">tesseract-ocr</a>
     </string>
-    <string name="tesseract_ocr_summary">Tesseract muhtemelen mevcutlar içinde en doğru sonuçlar veren
-         açık kaynak (OCR) Optik Karakter Tanıma motorudur.
+    <string name="tesseract_ocr_summary">Tesseract, muhtemelen mevcutlar içinde en doğru sonuçlar veren
+         açık kaynaklı (OCR) Optik Karakter Tanıma motorudur.
     </string>
     <string name="contact_welcome_text">Merhaba benim adım Renard. Text Fairy programını
         boş zamanlarımda kodladım. Umarım sizin için faydalı olmuştur.
@@ -90,193 +90,193 @@
     <string name="option_text">Metin ayarları</string>
     <string name="option_content">İçindekiler</string>
     <string name="option_line_spacing">Satır aralığı</string>
-    <string name="option_text_alignment">Text alignment</string>
-    <string name="options_preview_text">This is a preview of your current text settings. Press the
-        back key to continue reading.\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+    <string name="option_text_alignment">Metin hizalama</string>
+    <string name="options_preview_text">Bu, mevcut metin ayarlarınızın bir önizlemesidir. Okumaya
+        devam etmek için geri tuşuna basın.\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
         diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
         voluptua.
     </string>
-    <string name="progress_analyse_layout">I\'m analysing the layout. Please wait some seconds.
+    <string name="progress_analyse_layout">Analiz devam ediyor. Lütfen bekleyiniz.
     </string>
     <string name="progress_image_detection">Metin aranıyor</string>
-    <string name="progress_assemble_pix">I\'m assembling the final picture now.</string>
+    <string name="progress_assemble_pix">Şimdi son resmi oluşturuyorum.</string>
     <string name="progress_choose_columns">Lütfen sonuç belgede olmasını istediğiniz yazı
         ve görselleri seçiniz
     </string>
-    <string name="no_sd_card">No SD card mounted. Is the phone connected to your pc? If so please
-        remove it and try again.
+    <string name="no_sd_card">SD kard ulaşılamaz durumda. Telefonunuz PC\'ye mi bağlı? Eğer öyle ise
+        lütfen bağlantıyı kesip yeniden deneyin.
     </string>
     <string name="content_description_fairy">The helpful text fairy</string>
-    <string name="crop_title">Choose image section</string>
-    <string name="text_options_title">Change your text settings</string>
-    <string name="edit_title_hint">Enter a title</string>
-    <string name="option_gallery_title">Pick an image from the gallery</string>
-    <string name="option_camera_title">Make a new photo</string>
+    <string name="crop_title">Görüntü bölümünü seçin</string>
+    <string name="text_options_title">Metin ayarlarınızı değiştirin</string>
+    <string name="edit_title_hint">Belge adı</string>
+    <string name="option_gallery_title">Galeriden bir resim seçin</string>
+    <string name="option_camera_title">Yeni bir fotoğraf oluştur</string>
     <string name="show_tips">İpuçlarını görüntüle</string>
-    <string name="document_help_title">You can manage your document here.</string>
-    <string name="join">Join</string>
-    <string name="join_documents_title">Joining Documents</string>
-    <string name="join_documents_result">%1$d documents joined</string>
+    <string name="document_help_title">Belgenizi buradan yönetebilirsiniz.</string>
+    <string name="join">Birleştir</string>
+    <string name="join_documents_title">Belgeleri birleştirme</string>
+    <string name="join_documents_result">%1$d belge birleştirildi</string>
     <string name="start_app">Hadi başlayalım</string>
-    <string name="install_error_disk_space">Not enough disk space. You need to free %1$d MB on your
-        SD card
+    <string name="install_error_disk_space">Yeterli disk alanı yok. SD kartınızda %1$d MB
+        alan açmanız gerekiyor
     </string>
-    <string name="install_error">Could not install configuration files.</string>
+    <string name="install_error">Yapılandırma dosyaları yüklenemedi.</string>
     <string name="toc_title">İçindekiler</string>
-    <string name="document_list_help_title">Manage your scanned documents here.</string>
+    <string name="document_list_help_title">Taranan belgelerinizi burada yönetin.</string>
     <string name="toc_help_title">Burada belgedeki tüm sayfaların bir listesini görüyorsunuz</string>
-    <string name="crop_help_title">You can crop and rotate your photo now</string>
+    <string name="crop_help_title">Şimdi fotoğrafınızı kırpabilir ve döndürebilirsiniz</string>
     <string name="continue_ocr">Devam et</string>
     <string name="start_speaking">Speak text</string>
     <string name="ocr_result_is_bad">Oops. Bir şeyler doğru görünmüyor.</string>
-    <string name="ocr_result_is_ok">I think i got most of the text.</string>
+    <string name="ocr_result_is_ok">Sanırım metnin çoğunu aldım.</string>
     <string name="ocr_result_is_good">Herşey yolunda</string>
     <string name="tts_init_error">Text to speech could not load.</string>
-    <string name="choose_language">Pick a language for text to speech.</string>
+    <string name="choose_language">Metin okuma için bir dil seçin.</string>
     <string name="share_text">Paylaş</string>
-    <string name="help_to_improve">Feedback</string>
+    <string name="help_to_improve">Geri bildirim</string>
     <string name="empty_grid_camera">Kameradan alınan görüntü üzerinde metin taramak için buraya dokunun.</string>
-    <string name="empty_grid_gallery">Tap here to convert text from an existing image.</string>
+    <string name="empty_grid_gallery">Mevcut olan bir görüntü üzerinde metin taramak için buraya dokunun.</string>
     <string name="empty_grid_fairy">Not: Daha fazla bilgi için periye dokunun.</string>
-    <string name="contribute_title">Improve the app</string>
+    <string name="contribute_title">Uygulamayı geliştirin</string>
     <string name="contribute_text">Bir ( OCR ) Optik Karakter Tanıma uygulaması oluşturmak büyük emek isteyen bir iştir. Ancak uygulamayı
-        geliştirmeme yardım edebilirsiniz.
+        geliştirmemde bana yardım edebilirsiniz.
     </string>
     <string name="rating_title">Uygulamayı değerlendirin</string>
-    <string name="rating_text">The app is useful to you? Review it on the Play Store.</string>
+    <string name="rating_text">Uygulama sizin için yararlı mı? Play Store\'da bizi değerlendirin.</string>
     <string name="feedback_title">Geri bildirim yolla</string>
-    <string name="feedback_text_1">The app is not working as expected?</string>
+    <string name="feedback_text_1">Uygulama beklendiği gibi çalışmıyor mu?</string>
     <string name="feedback_text_2">Bir özellik öneriniz mi var?</string>
-    <string name="feedback_text_3">You found a nasty bug?</string>
+    <string name="feedback_text_3">Kötü bir bug mı buldunuz?</string>
     <string name="beta_test_title">Beta test kullanıcısı olun</string>
-    <string name="beta_test_text_1">Try new features as soon as possible?</string>
+    <string name="beta_test_text_1">Yeni özellikleri mümkün olan en kısa sürede denemek ister misiniz?</string>
     <string name="beta_test_text_2">Yeni özelliklerin gelişmesinde katkı sağlamak ister misiniz?</string>
-    <string name="enroll_as_beta_tester">Enroll in beta test program.</string>
+    <string name="enroll_as_beta_tester">Beta test programına kaydolun.</string>
     <string name="about">Program hakkında</string>
-    <string name="feedback_subject">Text fairy feedback</string>
+    <string name="feedback_subject">Text fairy geri bildirim</string>
     <string name="app_version">Versiyon %s</string>
-    <string name="image_not_32_bit">Image needs to be 32 bit.</string>
+    <string name="image_not_32_bit">Görüntü 32 bit olmalıdır.</string>
     <string name="image_format_unsupported">Görüntü biçimi tanınmadı. Şimdilik sadece png ve jpeg dosyaları
         desteklenmektedir.
     </string>
     <string name="empty_document">Belge metin içermiyor.</string>
-    <string name="join_beta_test_community">Join the beta testers community.</string>
+    <string name="join_beta_test_community">Beta test kullanıcıları topluluğuna katılın.</string>
     <string name="join_beta_program">Beta test kullanıcısı olun</string>
-    <string name="first_step">First step</string>
+    <string name="first_step">İlk adım</string>
     <string name="second_step">İkinci adım</string>
-    <string name="first_step_detail">If you are not a member the second step won\'t work.</string>
-    <string name="second_step_first_detail">You can opt out of the beta program anytime.</string>
+    <string name="first_step_detail">Üye değilseniz ikinci adım çalışmayacaktır.</string>
+    <string name="second_step_first_detail">Beta programından istediğiniz zaman çıkabilirsiniz.</string>
     <string name="second_step_second_detail">Bir hata bulursanız lütfen bana bir mail atın.</string>
-    <string name="explanation_crop_video">(Video) How to fix the viewpoint</string>
+    <string name="explanation_crop_video">(Video) Bakış açısı nasıl düzeltilir</string>
     <string name="ocr_tip_1">İyi aydınlantma çok önemlidir. Mümkünse el fenerini kullanın.
     </string>
     <string name="ocr_tip_2">Bulanık metinleri okumak benim için zor. Kameranın metni doğru şekilde
         odakladığından emin olun.
     </string>
-    <string name="ocr_tip_3">Experiment with different iso values. High iso values can lead to image
-        noise that makes it harder to recognize the letters
+    <string name="ocr_tip_3">Farklı iso değerlerini test edebilirsiniz. Yüksek iso değerleri 
+        harflerin tanınmasını zorlaştırabilir.
     </string>
-    <string name="ocr_tip_4">Most of the time 5 to 7 megapixels is enough resolution to get good
-        results. Higher values will often only increase the processing time.
+    <string name="ocr_tip_4">Genellikle 5 ile 7 megapixels çözünürlük iyi sonuçlar için idealdir.
+        Daha yüksek çözünürlüklerde çözümleme zamanı gereksiz uzamış olur.
     </string>
     <string name="ocr_tip_heading">Metin tanıma nasıl iyileştirilir</string>
-    <string name="additional_tips">Additional tips</string>
+    <string name="additional_tips">Ek ipuçları</string>
     <string name="ocr_tip_5">Çekilen fotoğrafı kırparak metin tanımayı hızlandırabilirsiniz.
     </string>
-    <string name="ocr_tip_6">I\'m best at recognizing text from books, magazines or new papers.
-        Ornate or colorful letters are problematic for me.
+    <string name="ocr_tip_6">Kitap,dergi ve gazetelerden metin okumada başarılıyım.
+        Süslü veya renkli harfler benim için sorunludur.
     </string>
-    <string name="ocr_tip_7">I\'m having equally difficulties when reading light text from dark
-        backgrounds.
+    <string name="ocr_tip_7">Aynı zamanda koyu zemin üzerindeki açık renk yazıları
+        okumakta da zorlanırım.
     </string>
     <string name="crop_image_tutorial">0tcFdaDuLTs</string>
-    <string name="image_source">Pick image source.</string>
+    <string name="image_source">Görüntü kaynağı seçin.</string>
     <string name="promo_video_title">Daha fazla bilgi.</string>
     <string name="youtube_promo_link">https://youtu.be/vUmZnwyLH6I</string>
     <string name="greeting">Merhaba</string>
-    <string name="text_is_in">"The text is in: "</string>
-    <string name="empty_grid_language">Birkaç dil kullanıma hazır, ancak daha fazla dil indirebilirsiniz.
+    <string name="text_is_in">"Metin dili: "</string>
+    <string name="empty_grid_language">Bazı diller kullanıma hazır, ancak daha fazla dil indirebilirsiniz.
     </string>
     <string name="error_tess_init">OCR Hatası. Lütfen programı yeniden kurun yada dil dosyalarını
         güncelleyin.
     </string>
     <string name="image_is_blurred">Bir sorun var.</string>
-    <string name="new_image">New image</string>
+    <string name="new_image">Yeni görüntü</string>
     <string name="keep_camera_steady">Kamerayı sabit tutun.</string>
-    <string name="image_not_too_dark">Make sure the image is not too dark.</string>
+    <string name="image_not_too_dark">Görüntünün çok karanlık olmadığından emin olun.</string>
     <string name="text_is_very_blurry">Resim çok bulanık. Yazıyı doğru şekilde çözümlemem 
         mümkün olmayabilir.
     </string>
     <string name="text_is_blurry">Resim yeteri kadar net değil. Yazıyı çözümlemem vakit alabilir ayrıca
         çözümlemede hatalar yapabilirim.
     </string>
-    <string name="nav_drawer_download_language">Add language</string>
+    <string name="nav_drawer_download_language">Dil ekle</string>
     <string name="first_scan_successful">Tebrikler, iyi iş çıkardın.</string>
-    <string name="love_it">Love it!</string>
-    <string name="could_be_better">Could be better</string>
+    <string name="love_it">Beğendim!</string>
+    <string name="could_be_better">Daha iyi olabilir</string>
     <string name="continue_editing">Devam et</string>
-    <string name="feedback_description">How was your experience using this app?</string>
+    <string name="feedback_description">Bu uygulamayı kullanma deneyiminiz nasıldı?</string>
     <string name="first_time_bad_result">Lütfen ipuçlarını okuyun veya bana geri bildiriminizi gönderin.
         Sana yardım etmeye çalışacağım.
     </string>
-    <string name="start_scan">Start Scan</string>
+    <string name="start_scan">Taramayı Başlat</string>
     <string name="could_not_load_image">Resim yüklenemedi.</string>
-    <string name="download_manager_disabled">DownloadManager is disabled. Please enable it.</string>
-    <string name="ok">OK</string>
+    <string name="download_manager_disabled">İndirme Yöneticisi aktif değil. Lütfen aktifleştirin.</string>
+    <string name="ok">Tamam</string>
     <string name="document_scanned_as">Belge dili şu şekilde ayarlandı: %s.</string>
-    <string name="delete_whole_document">Delete document?</string>
+    <string name="delete_whole_document">Belge silinsin mi?</string>
     <string name="delete_document_message">Bütün sayfalar silinecek.</string>
-    <string name="permission_explanation">I need permission to read and write to your SD card. I
-        will access the folder texfee which contains my configuration file and your scanned
-        documents.
+    <string name="permission_explanation">SD kartınızı okumak ve ona yazmak için izne ihtiyacım var.
+        Yapılandırma dosyamı ve taranan belgelerinizi içeren texfee klasörüne
+         erişeceğim.
     </string>
-    <string name="permission_explanation_install">I need permission to write my configuration files
-        to your SD
-        card. I will only access the folder textfee which will also contain your scanned documents
-        later.
+    <string name="permission_explanation_install">Yapılandırma dosyalarımı SD kartınıza yazmak için
+        izne ihtiyacım var.
+        Yalnızca daha sonra taranan belgelerinizi de içerecek olan
+        textfee klasörüne erişeceğim.
     </string>
     <string name="no_gallery_found">Galeri uygulaması bulunamadı.</string>
-    <string name="install_tip_1">Sharp and clear text will get you the best results.
+    <string name="install_tip_1">Bulanık olmayan ve net resimlerde en iyi sonucu alırsınız.
     </string>
-    <string name="install_tip_2">I <b>cannot</b> read handwriting.</string>
+    <string name="install_tip_2">El yazısını <b>okuyamam</b>.</string>
     <string name="pref_title_privacy">Gizlilik Politikası</string>
-    <string name="pref_summary_privacy">View the privacy policy</string>
-    <string name="install_tip_3">I extract text from images. But I
-        <b>cannot</b>
-        translate it right away.
+    <string name="pref_summary_privacy">Gizlilik politikamızı inceleyin</string>
+    <string name="install_tip_3">Kameradan alınan görüntüler üzerinden yada mevcut resimlerden
+         metinleri çözümleyebilirim fakat tercüme
+        <b>edemem</b>
     </string>
-    <string name="data_tracking_on">"I'm tracking anonymous usage data."</string>
-    <string name="data_tracking_off">No anonymous usage data is tracked.</string>
-    <string name="no_mail_app">No mail app found.</string>
-    <string name="memory_low">Memory Low</string>
-    <string name="memory_low_description">You have %d of MB memory left. Please close some
-        background apps or restart your device.
+    <string name="data_tracking_on">"Anonim kullanım verileri izlenir."</string>
+    <string name="data_tracking_off">Anonim kullanım verileri izlenmez.</string>
+    <string name="no_mail_app">Mail uygulaması bulunamadı.</string>
+    <string name="memory_low">Düşük hafıza</string>
+    <string name="memory_low_description">Cihaz hafızası sadece %d MB kullanılabilir. Lütfen bazı uygulamaları
+        kapatın yada cihazınızı yeniden başlatın.
     </string>
-    <string name="memory_low_warning">The app might crash if you continue.</string>
+    <string name="memory_low_warning">Devam ederseniz uygulama çalışamayabilir.</string>
     <string name="crop_onboarding_title">İlk taramanız için bir ipucu</string>
     <string name="crop_onboarding_message">Lütfen metnin dik olduğundan emin olun. Görüntüyü döndürmek için ekranın
         altındaki döndür düğmelerini kullanabilirsiniz.
     </string>
-    <string name="got_it">got it</string>
+    <string name="got_it">anladım</string>
     <string name="ocr_tip_8">Lütfen metnin dik olduğundan emin olun. Görüntüyü döndürmek için ekranın
         altındaki döndür düğmelerini kullanın.
     </string>
-    <string name="translate">Translate</string>
-    <string name="stop_speaking">stop speaking</string>
-    <string name="volume_is_off">Volume is off</string>
-    <string name="install_tts_prompt">You need to install text to speech first.</string>
+    <string name="translate">Tercüme et</string>
+    <string name="stop_speaking">Konuşmayı durdur</string>
+    <string name="volume_is_off">Ses kapalı</string>
+    <string name="install_tts_prompt">Önce metin seslendirme özelliğini yüklemeniz gerekir.</string>
     <string name="chose_market">Chose Market</string>
-    <string name="install_language">Please install a language first</string>
-    <string name="install">install</string>
-    <string name="no_download_manager">No DownloadManager found.</string>
-    <string name="action_search">Search</string>
-    <string name="action_search_languages">search languages</string>
-    <string name="could_not_load_pdf">Could not load PDF.</string>
-    <string name="notification_scanning_title">scanning %1$s</string>
+    <string name="install_language">Lütfen önce dil yükleyin</string>
+    <string name="install">kurulum</string>
+    <string name="no_download_manager">İndirme yöneticisi bulunamadı.</string>
+    <string name="action_search">Ara</string>
+    <string name="action_search_languages">dil ara</string>
+    <string name="could_not_load_pdf">PDF dosyası yüklenemedi.</string>
+    <string name="notification_scanning_title">taranıyor %1$s</string>
     <string name="notification_channel_title">Scanning progress</string>
-    <string name="scan_pdf_title">You\'re ready to scan %1$d pages.</string>
-    <string name="scan_pdf_explanation_1">It might take a while, you can close the app in the meantime.</string>
-    <string name="scan_pdf_explanation_2">You\'ll be notified when the scanning is complete.</string>
-    <string name="scanning_pdf_progress">Page %1$d of %2$d</string>
-    <string name="scanning_multiple_title">Scanning %1$d files</string>
+    <string name="scan_pdf_title">%1$d sayfanın taranması için hazırsınız.</string>
+    <string name="scan_pdf_explanation_1">Biraz zaman alabilir, bu arada uygulamayı kapatabilirsiniz.</string>
+    <string name="scan_pdf_explanation_2">Tarama tamamlandığında bilgilendirileceksiniz.</string>
+    <string name="scanning_pdf_progress">Sayfa %1$d of %2$d</string>
+    <string name="scanning_multiple_title">%1$d dosya taranıyor</string>
 </resources>
